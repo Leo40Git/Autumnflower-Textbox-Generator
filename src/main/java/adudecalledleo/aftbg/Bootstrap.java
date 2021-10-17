@@ -29,6 +29,7 @@ public final class Bootstrap {
 
         BufferedImage dest = new BufferedImage(816, 180, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = dest.createGraphics();
+        g.setBackground(new Color(0, 0, 0, 0));
         g.clearRect(0, 0, 816, 180);
 
         bg.draw(g, 4, 4, 808, 172, null);
