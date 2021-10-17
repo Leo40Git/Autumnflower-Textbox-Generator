@@ -25,6 +25,9 @@ public final class TextboxBG {
         var oldClip = g.getClip();
         g.setClip(x, y, width, height);
 
+        // FIXME colors are off compared to the real deal.
+        //  color blending? simple tinting? who knows?
+
         final int tilesWide = width / tileWidth, tilesHigh = height / tileHeight;
         for (int ty = 0; ty <= tilesHigh; ty++) {
             for (int tx = 0; tx <= tilesWide; tx++) {
