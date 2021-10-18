@@ -34,7 +34,7 @@ public final class WindowBackground {
             sg.dispose();
         }
 
-        g.drawImage(scratchBuf, x, y, observer);
+        g.drawImage(scratchBuf, x, y, x + width, y + height, 0, 0, width, height, observer);
     }
 
     private boolean resizeScratchBuf(int width, int height) {
