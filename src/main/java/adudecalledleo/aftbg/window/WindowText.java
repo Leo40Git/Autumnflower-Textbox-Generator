@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-// TODO "rich dialogue" support - modifiers!
 public final class WindowText {
     public static final Font FONT;
 
@@ -48,6 +47,7 @@ public final class WindowText {
         for (Node node : nodes) {
             if (node instanceof TextNode textNode) {
                 var c = g.getColor();
+                // TODO figure out how to properly replicate the RPG Maker drop shadow
                 g.setColor(Color.BLACK);
                 for (int yo = -1; yo < 2; yo++) {
                     for (int xo = -1; xo < 2; xo++) {
