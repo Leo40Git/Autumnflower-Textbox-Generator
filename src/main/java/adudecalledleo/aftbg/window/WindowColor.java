@@ -1,9 +1,7 @@
-package adudecalledleo.aftbg.tone;
+package adudecalledleo.aftbg.window;
 
-public record Tone(int red, int green, int blue) {
-    public static final Tone CLEAR = new Tone(0, 0, 0);
-
-    public Tone {
+public record WindowColor(int red, int green, int blue) {
+    public WindowColor {
         checkRange(red, "Red");
         checkRange(green, "Green");
         checkRange(blue, "Blue");

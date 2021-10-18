@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.tone;
+package adudecalledleo.aftbg.window;
 
 import java.awt.*;
 import java.awt.image.ColorModel;
@@ -6,21 +6,15 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
 /**
- * Custom "tone" composite, based on <a href="https://github.com/rpgtkoolmv/corescript/blob/master/js/libs/pixi.js">PIXI's ColorMatrixFilter</a>
+ * Composite for properly drawing the window background, including tinting with its color.
+ * Based on <a href="https://github.com/rpgtkoolmv/corescript/blob/master/js/libs/pixi.js">PIXI's ColorMatrixFilter</a>
  * and <a href="https://github.com/rpgtkoolmv/corescript/blob/master/js/rpg_core/ToneFilter.js">rpg_core's ToneFilter</a>).
  */
-public final class ToneComposite implements Composite {
-    public static final ToneComposite CLEAR = new ToneComposite(Tone.CLEAR);
-
-    public static ToneComposite get(Tone tone) {
-        if (Tone.CLEAR.equals(tone))
-            return CLEAR;
-        return new ToneComposite(tone);
-    }
-
+final class WindowBackgroundComposite implements Composite {
     private final Context context;
-    private ToneComposite(Tone tone) {
-        context = new Context(tone);
+
+    public WindowBackgroundComposite(WindowColor color) {
+        context = new Context(color);
     }
 
     @Override
@@ -31,12 +25,12 @@ public final class ToneComposite implements Composite {
     private static final class Context implements CompositeContext {
         private final double[][] matrix;
 
-        private Context(Tone tone) {
+        private Context(WindowColor color) {
             matrix = new double[][] {
-                    new double[] { 1, 0, 0, tone.red() / 255.0 },
-                    new double[] { 0, 1, 0, tone.green() / 255.0 },
-                    new double[] { 0, 0, 1, tone.blue() / 255.0 },
-                    new double[] { 0, 0, 0, 192 / 255.0 } // NOTE: RPG Maker draws textbox BG at 75% alpha,
+                    new double[] { 1, 0, 0, color.red() / 255.0 },
+                    new double[] { 0, 1, 0, color.green() / 255.0 },
+                    new double[] { 0, 0, 1, color.blue() / 255.0 },
+                    new double[] { 0, 0, 0, 192 / 255.0 } // NOTE: RPG Maker draws window BG at 75% alpha,
                                                           //  so we replicate that here
             };
             System.out.println("TONE MATRIX: {");

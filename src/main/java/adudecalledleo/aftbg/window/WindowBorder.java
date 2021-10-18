@@ -1,10 +1,10 @@
-package adudecalledleo.aftbg.draw;
+package adudecalledleo.aftbg.window;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 
-public final class TextboxBorder {
+public final class WindowBorder {
     // modified "nine patch"
     // center/middle pieces are thinner, 32x24 for center-left/right and 24x32 for top/bottom-middle
     // (RPG Maker puts some menu-related arrows here, for some reason)
@@ -25,7 +25,7 @@ public final class TextboxBorder {
 
     private final BufferedImage[] pieces = new BufferedImage[PIECE_MAX];
 
-    public TextboxBorder(BufferedImage window) {
+    public WindowBorder(BufferedImage window) {
         final int startX = 96;
 
         pieces[PIECE_TL] = window.getSubimage(startX, 0, pieceWidth, pieceHeight);
