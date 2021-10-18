@@ -1,5 +1,8 @@
 package adudecalledleo.aftbg;
 
+import adudecalledleo.aftbg.text.TextParser;
+import adudecalledleo.aftbg.text.TextParserException;
+import adudecalledleo.aftbg.text.node.Node;
 import adudecalledleo.aftbg.window.*;
 
 import javax.imageio.ImageIO;
@@ -12,11 +15,20 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 public final class Bootstrap {
     public static final boolean OUTPUT_TRANSPARENT = false;
 
     public static void main(String[] args) {
+        TextParser parser = new TextParser();
+        List<Node> nodes;
+        try {
+            nodes = parser.parse("\\c[0]Mercia:\n\\c[25]Hold on.");
+        } catch (TextParserException e) {
+            throw new RuntimeException("Failed to parse text!", e);
+        }
+
         Path windowPath = Paths.get("scratch", "Window.png");
         BufferedImage window;
         try (InputStream in = Files.newInputStream(windowPath)) {
@@ -38,10 +50,7 @@ public final class Bootstrap {
 
         bg.draw(g, 4, 4, 808, 172, null);
         border.draw(g, 0, 0, 816, 180, null);
-        g.setColor(colors.get(0));
-        WindowText.draw(g, "Mercia:", 186, 21);
-        g.setColor(colors.get(25));
-        WindowText.draw(g, "Hold on.", 186, 57); // 36 pixels between each line
+        WindowText.draw(g, nodes, colors, 186, 21);
         arrow.draw(g, 0, 0, 816, 180, 3, null);
 
         g.dispose();
