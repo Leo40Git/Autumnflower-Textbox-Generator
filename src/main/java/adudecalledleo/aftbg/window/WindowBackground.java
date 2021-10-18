@@ -11,11 +11,11 @@ public final class WindowBackground {
     // RPG Maker uses a color matrix filter to apply it, which I replicate through a custom Composite
 
     private final BufferedImage base, overlay;
-    private final WindowColor color;
+    private final WindowTint color;
     private final int tileWidth = 96, tileHeight = 96;
     private BufferedImage scratchBuf;
 
-    public WindowBackground(BufferedImage window, WindowColor color) {
+    public WindowBackground(BufferedImage window, WindowTint color) {
         base = window.getSubimage(0, 0, tileWidth, tileHeight);
         overlay = window.getSubimage(0, tileHeight, tileWidth, tileHeight);
         this.color = color;

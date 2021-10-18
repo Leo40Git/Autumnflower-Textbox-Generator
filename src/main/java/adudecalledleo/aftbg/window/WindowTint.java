@@ -1,7 +1,7 @@
 package adudecalledleo.aftbg.window;
 
-public record WindowColor(int red, int green, int blue) {
-    public WindowColor {
+public record WindowTint(int red, int green, int blue) {
+    public WindowTint {
         checkRange(red, "Red");
         checkRange(green, "Green");
         checkRange(blue, "Blue");

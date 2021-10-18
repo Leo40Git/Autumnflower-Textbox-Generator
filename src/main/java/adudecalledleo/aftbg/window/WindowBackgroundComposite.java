@@ -14,7 +14,7 @@ import java.awt.image.WritableRaster;
 final class WindowBackgroundComposite implements Composite {
     private final Context context;
 
-    public WindowBackgroundComposite(WindowColor color) {
+    public WindowBackgroundComposite(WindowTint color) {
         context = new Context(color);
     }
 
@@ -23,7 +23,7 @@ final class WindowBackgroundComposite implements Composite {
         return context;
     }
 
-    private record Context(WindowColor color) implements CompositeContext {
+    private record Context(WindowTint color) implements CompositeContext {
         @Override
         public void dispose() { }
 

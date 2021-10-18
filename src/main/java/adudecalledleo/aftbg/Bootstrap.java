@@ -1,9 +1,6 @@
 package adudecalledleo.aftbg;
 
-import adudecalledleo.aftbg.window.WindowArrow;
-import adudecalledleo.aftbg.window.WindowBackground;
-import adudecalledleo.aftbg.window.WindowBorder;
-import adudecalledleo.aftbg.window.WindowColor;
+import adudecalledleo.aftbg.window.*;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -28,9 +25,11 @@ public final class Bootstrap {
             throw new UncheckedIOException("Failed to read window image from \"" + windowPath.toAbsolutePath() + "\"!", e);
         }
 
-        WindowBackground bg = new WindowBackground(window, new WindowColor(-17, -255, -255));
+        WindowBackground bg = new WindowBackground(window, new WindowTint(-17, -255, -255));
         WindowBorder border = new WindowBorder(window);
+
         WindowArrow arrow = new WindowArrow(window);
+        WindowColors colors = new WindowColors(window);
 
         BufferedImage dest = new BufferedImage(816, 180, OUTPUT_TRANSPARENT ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB);
         Graphics2D g = dest.createGraphics();
@@ -39,6 +38,10 @@ public final class Bootstrap {
 
         bg.draw(g, 4, 4, 808, 172, null);
         border.draw(g, 0, 0, 816, 180, null);
+        g.setColor(colors.get(0));
+        WindowText.draw(g, "Mercia:", 186, 21);
+        g.setColor(colors.get(25));
+        WindowText.draw(g, "Hold on.", 186, 57); // 36 pixels between each line
         arrow.draw(g, 0, 0, 816, 180, 3, null);
 
         g.dispose();
