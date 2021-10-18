@@ -47,6 +47,14 @@ public final class WindowText {
 
         for (Node node : nodes) {
             if (node instanceof TextNode textNode) {
+                var c = g.getColor();
+                g.setColor(Color.BLACK);
+                for (int yo = -1; yo < 2; yo++) {
+                    for (int xo = -1; xo < 2; xo++) {
+                        g.drawString(textNode.contents(), x + xo, y + ma + yo);
+                    }
+                }
+                g.setColor(c);
                 g.drawString(textNode.contents(), x, y + ma);
                 x += fm.stringWidth(textNode.contents());
             } else if (node instanceof ModifierNode modifierNode) {

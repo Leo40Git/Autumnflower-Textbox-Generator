@@ -3,6 +3,7 @@ package adudecalledleo.aftbg;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.TextParserException;
 import adudecalledleo.aftbg.text.node.Node;
+import adudecalledleo.aftbg.util.ColorUtils;
 import adudecalledleo.aftbg.window.*;
 
 import javax.imageio.ImageIO;
@@ -24,7 +25,7 @@ public final class Bootstrap {
         TextParser parser = new TextParser();
         List<Node> nodes;
         try {
-            nodes = parser.parse("\\c[0]Mercia:\n\\c[25]Hold on.");
+            nodes = parser.parse("\\c[0]Mercia:\n\\c[25]Hold on.\n\\c[#123]te\\c[4]st");
         } catch (TextParserException e) {
             throw new RuntimeException("Failed to parse text!", e);
         }
@@ -45,12 +46,12 @@ public final class Bootstrap {
 
         BufferedImage dest = new BufferedImage(816, 180, OUTPUT_TRANSPARENT ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB);
         Graphics2D g = dest.createGraphics();
-        g.setBackground(OUTPUT_TRANSPARENT ? new Color(0, 0, 0, 0) : Color.BLACK);
+        g.setBackground(OUTPUT_TRANSPARENT ? ColorUtils.TRANSPARENT : Color.BLACK);
         g.clearRect(0, 0, 816, 180);
 
         bg.draw(g, 4, 4, 808, 172, null);
         border.draw(g, 0, 0, 816, 180, null);
-        WindowText.draw(g, nodes, colors, 186, 21);
+        WindowText.draw(g, nodes, colors, 20, 21);
         arrow.draw(g, 0, 0, 816, 180, 3, null);
 
         g.dispose();
