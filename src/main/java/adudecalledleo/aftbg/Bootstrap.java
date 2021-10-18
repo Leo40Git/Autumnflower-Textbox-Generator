@@ -1,5 +1,6 @@
 package adudecalledleo.aftbg;
 
+import adudecalledleo.aftbg.window.WindowArrow;
 import adudecalledleo.aftbg.window.WindowBackground;
 import adudecalledleo.aftbg.window.WindowBorder;
 import adudecalledleo.aftbg.window.WindowColor;
@@ -29,6 +30,7 @@ public final class Bootstrap {
 
         WindowBackground bg = new WindowBackground(window, new WindowColor(-17, -255, -255));
         WindowBorder border = new WindowBorder(window);
+        WindowArrow arrow = new WindowArrow(window);
 
         BufferedImage dest = new BufferedImage(816, 180, OUTPUT_TRANSPARENT ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB);
         Graphics2D g = dest.createGraphics();
@@ -37,6 +39,7 @@ public final class Bootstrap {
 
         bg.draw(g, 4, 4, 808, 172, null);
         border.draw(g, 0, 0, 816, 180, null);
+        arrow.draw(g, 0, 0, 816, 180, 3, null);
 
         g.dispose();
 

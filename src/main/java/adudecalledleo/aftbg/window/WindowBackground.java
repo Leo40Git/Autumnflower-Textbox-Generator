@@ -45,7 +45,7 @@ public final class WindowBackground {
         return false;
     }
 
-    private void drawPart(BufferedImage part, Graphics2D g, int width, int height) {
+    private void drawPart(BufferedImage part, Graphics g, int width, int height) {
         final int tilesWide = width / tileWidth, tilesHigh = height / tileHeight;
         for (int ty = 0; ty <= tilesHigh; ty++) {
             for (int tx = 0; tx <= tilesWide; tx++) {
