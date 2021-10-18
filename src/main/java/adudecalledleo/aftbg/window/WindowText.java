@@ -15,16 +15,17 @@ import java.util.List;
 public final class WindowText {
     public static final Font FONT;
 
+    private static final String FONT_PATH = "font/VL-Gothic-Regular.ttf";
     static {
         Font base;
-        try (InputStream in = WindowText.class.getResourceAsStream("/font/VL-Gothic-Regular.ttf")) {
+        try (InputStream in = WindowText.class.getResourceAsStream("/" + FONT_PATH)) {
             if (in == null)
-                throw new FileNotFoundException("font.tff");
+                throw new FileNotFoundException(FONT_PATH);
             base = Font.createFont(Font.TRUETYPE_FONT, in);
         } catch (FileNotFoundException e) {
-            throw new InternalError("Missing embedded resource 'font.ttf'?!");
+            throw new InternalError("Missing embedded resource '" + FONT_PATH + "'?!");
         } catch (IOException | FontFormatException e) {
-            throw new InternalError("Failed to read embedded font 'font.ttf'?!", e);
+            throw new InternalError("Failed to read embedded font '" + FONT_PATH + "'?!", e);
         }
 
         GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(base);
