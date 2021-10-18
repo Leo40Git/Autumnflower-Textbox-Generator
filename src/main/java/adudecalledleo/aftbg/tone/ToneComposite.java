@@ -36,7 +36,8 @@ public final class ToneComposite implements Composite {
                     new double[] { 1, 0, 0, tone.red() / 255.0 },
                     new double[] { 0, 1, 0, tone.green() / 255.0 },
                     new double[] { 0, 0, 1, tone.blue() / 255.0 },
-                    new double[] { 0, 0, 0, 1 }
+                    new double[] { 0, 0, 0, 192 / 255.0 } // NOTE: RPG Maker draws textbox BG at 75% alpha,
+                                                          //  so we replicate that here
             };
             System.out.println("TONE MATRIX: {");
             for (int r = 0; r < 4; r++) {
@@ -80,7 +81,6 @@ public final class ToneComposite implements Composite {
                         resultVec[r] = sum;
                     }
                     for (int i = 0; i < 4; i++) {
-                        // FIXME somehow final color is lighter than it should be?
                         dstRgba[i] = Math.min(255, Math.max(0, (int) (resultVec[i] * 255)));
                     }
                     dstOut.setPixel(x + dstOut.getMinX(), y + dstOut.getMinY(), dstRgba);
