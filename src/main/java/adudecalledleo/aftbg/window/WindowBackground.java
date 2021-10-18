@@ -25,8 +25,8 @@ public final class WindowBackground {
         if (resizeScratchBuf(width, height)) {
             Graphics2D sg = scratchBuf.createGraphics();
 
-            drawPart(base, sg, width, height, observer);
-            drawPart(overlay, sg, width, height, observer);
+            drawPart(base, sg, width, height);
+            drawPart(overlay, sg, width, height);
 
             sg.setComposite(new WindowBackgroundComposite(color));
             sg.fillRect(0, 0, width, height);
@@ -45,11 +45,11 @@ public final class WindowBackground {
         return false;
     }
 
-    private void drawPart(BufferedImage part, Graphics2D g, int width, int height, ImageObserver observer) {
+    private void drawPart(BufferedImage part, Graphics2D g, int width, int height) {
         final int tilesWide = width / tileWidth, tilesHigh = height / tileHeight;
         for (int ty = 0; ty <= tilesHigh; ty++) {
             for (int tx = 0; tx <= tilesWide; tx++) {
-                g.drawImage(part, tx * tileWidth, ty * tileHeight, observer);
+                g.drawImage(part, tx * tileWidth, ty * tileHeight, null);
             }
         }
     }
