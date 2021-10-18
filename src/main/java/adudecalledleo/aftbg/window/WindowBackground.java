@@ -13,6 +13,7 @@ public final class WindowBackground {
     private final BufferedImage base, overlay;
     private final WindowColor color;
     private final int tileWidth = 96, tileHeight = 96;
+    private BufferedImage scratchBuf;
 
     public WindowBackground(BufferedImage window, WindowColor color) {
         base = window.getSubimage(0, 0, tileWidth, tileHeight);
@@ -21,26 +22,34 @@ public final class WindowBackground {
     }
 
     public void draw(Graphics2D g, int x, int y, int width, int height, ImageObserver observer) {
-        var oldClip = g.getClip();
-        var oldComp = g.getComposite();
+        if (resizeScratchBuf(width, height)) {
+            Graphics2D sg = scratchBuf.createGraphics();
 
-        g.setClip(x, y, width, height);
+            drawPart(base, sg, width, height, observer);
+            drawPart(overlay, sg, width, height, observer);
 
-        drawPart(base, g, x, y, width, height, observer);
-        drawPart(overlay, g, x, y, width, height, observer);
+            sg.setComposite(new WindowBackgroundComposite(color));
+            sg.fillRect(0, 0, width, height);
 
-        g.setComposite(new WindowBackgroundComposite(color));
-        g.fillRect(x, y, width, height);
-        g.setComposite(oldComp);
+            sg.dispose();
+        }
 
-        g.setClip(oldClip);
+        g.drawImage(scratchBuf, x, y, observer);
     }
 
-    private void drawPart(BufferedImage part, Graphics2D g, int x, int y, int width, int height, ImageObserver observer) {
+    private boolean resizeScratchBuf(int width, int height) {
+        if (scratchBuf == null || scratchBuf.getWidth() < width || scratchBuf.getHeight() < height) {
+            scratchBuf = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            return true;
+        }
+        return false;
+    }
+
+    private void drawPart(BufferedImage part, Graphics2D g, int width, int height, ImageObserver observer) {
         final int tilesWide = width / tileWidth, tilesHigh = height / tileHeight;
         for (int ty = 0; ty <= tilesHigh; ty++) {
             for (int tx = 0; tx <= tilesWide; tx++) {
-                g.drawImage(part, x + (tx * tileWidth), y + (ty * tileHeight), observer);
+                g.drawImage(part, tx * tileWidth, ty * tileHeight, observer);
             }
         }
     }
