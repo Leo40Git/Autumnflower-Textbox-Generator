@@ -5,7 +5,7 @@ import adudecalledleo.aftbg.window.WindowColors;
 
 import java.awt.*;
 
-public interface ColorModifier extends Modifier {
+public sealed interface ColorModifier extends Modifier {
     Color getColor(WindowColors windowColors);
 
     record ColorIdModifier(int id) implements ColorModifier {

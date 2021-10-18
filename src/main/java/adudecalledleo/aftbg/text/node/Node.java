@@ -1,3 +1,3 @@
 package adudecalledleo.aftbg.text.node;
 
-public interface Node { }
+public sealed interface Node permits LineBreakNode, ModifierNode, TextNode { }
