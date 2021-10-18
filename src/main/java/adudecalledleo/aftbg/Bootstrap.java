@@ -2,6 +2,7 @@ package adudecalledleo.aftbg;
 
 import adudecalledleo.aftbg.draw.TextboxBG;
 import adudecalledleo.aftbg.draw.TextboxBorder;
+import adudecalledleo.aftbg.tone.Tone;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -24,7 +25,7 @@ public final class Bootstrap {
             throw new UncheckedIOException("Failed to read window image from \"" + windowPath.toAbsolutePath() + "\"!", e);
         }
 
-        TextboxBG bg = new TextboxBG(window);
+        TextboxBG bg = new TextboxBG(window, new Tone(-17, -255, -255));
         TextboxBorder border = new TextboxBorder(window);
 
         BufferedImage dest = new BufferedImage(816, 180, BufferedImage.TYPE_INT_ARGB);
