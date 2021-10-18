@@ -6,9 +6,10 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
 /**
- * Composite for properly drawing the window background, including tinting with its color.
- * Based on <a href="https://github.com/rpgtkoolmv/corescript/blob/master/js/libs/pixi.js">PIXI's ColorMatrixFilter</a>
- * and <a href="https://github.com/rpgtkoolmv/corescript/blob/master/js/rpg_core/ToneFilter.js">rpg_core's ToneFilter</a>).
+ * Composite for properly drawing the window background:<ul>
+ *     <li>Tints the background using the supplied color.</li>
+ *     <li>Reduces background alpha by 25%, since RPG Maker draws it at 75% alpha.</li>
+ * </ul>
  */
 final class WindowBackgroundComposite implements Composite {
     private final Context context;
