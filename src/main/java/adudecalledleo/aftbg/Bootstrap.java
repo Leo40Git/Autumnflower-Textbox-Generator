@@ -16,6 +16,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public final class Bootstrap {
+    public static final boolean OUTPUT_TRANSPARENT = false;
+
     public static void main(String[] args) {
         Path windowPath = Paths.get("scratch", "Window.png");
         BufferedImage window;
@@ -28,9 +30,9 @@ public final class Bootstrap {
         WindowBackground bg = new WindowBackground(window, new WindowColor(-17, -255, -255));
         WindowBorder border = new WindowBorder(window);
 
-        BufferedImage dest = new BufferedImage(816, 180, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage dest = new BufferedImage(816, 180, OUTPUT_TRANSPARENT ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB);
         Graphics2D g = dest.createGraphics();
-        g.setBackground(new Color(0, 0, 0, 0));
+        g.setBackground(OUTPUT_TRANSPARENT ? new Color(0, 0, 0, 0) : Color.BLACK);
         g.clearRect(0, 0, 816, 180);
 
         bg.draw(g, 4, 4, 808, 172, null);
