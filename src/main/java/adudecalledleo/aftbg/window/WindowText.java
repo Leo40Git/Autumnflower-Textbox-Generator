@@ -7,12 +7,18 @@ import adudecalledleo.aftbg.text.node.Node;
 import adudecalledleo.aftbg.text.node.TextNode;
 
 import java.awt.*;
+import java.awt.font.TextLayout;
+import java.awt.geom.AffineTransform;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
 public final class WindowText {
+    public static final Color OUTLINE_COLOR = new Color(0, 0, 0, 127);
+    public static final int OUTLINE_WIDTH = 4;
+    private static final Stroke OUTLINE_STROKE = new BasicStroke(OUTLINE_WIDTH, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
     public static final Font FONT;
 
     private static final String FONT_PATH = "font/VL-Gothic-Regular.ttf";
@@ -35,29 +41,39 @@ public final class WindowText {
     private WindowText() { }
 
     public static void draw(Graphics2D g, List<Node> nodes, WindowColors colors, int x, int y) {
-        var oldColor = g.getColor();
-        var oldFont = g.getFont();
-        var oldAA = g.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
+        // region Save current state
+        final var oldColor = g.getColor();
+        final var oldPaint = g.getPaint();
+        final var oldStroke = g.getStroke();
+        final var oldFont = g.getFont();
+        final var oldRendering = g.getRenderingHint(RenderingHints.KEY_RENDERING);
+        final var oldAA = g.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+        final var oldTextAA = g.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
+        // endregion
+
         g.setFont(FONT);
+        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        var fm = g.getFontMetrics();
+        final var fm = g.getFontMetrics();
+        final var frc = g.getFontRenderContext();
         final int ma = fm.getMaxAscent();
         final int startX = x;
 
         for (Node node : nodes) {
             if (node instanceof TextNode textNode) {
+                var layout = new TextLayout(textNode.contents(), FONT, frc);
+                var outline = layout.getOutline(AffineTransform.getTranslateInstance(x, y + ma));
+
                 var c = g.getColor();
-                // TODO figure out how to properly replicate the RPG Maker drop shadow
-                g.setColor(Color.BLACK);
-                for (int yo = -1; yo < 2; yo++) {
-                    for (int xo = -1; xo < 2; xo++) {
-                        g.drawString(textNode.contents(), x + xo, y + ma + yo);
-                    }
-                }
+                g.setStroke(OUTLINE_STROKE);
+                g.setColor(OUTLINE_COLOR);
+                g.draw(outline);
+                g.setStroke(oldStroke);
                 g.setColor(c);
-                g.drawString(textNode.contents(), x, y + ma);
-                x += fm.stringWidth(textNode.contents());
+                g.fill(outline);
+                x += outline.getBounds().width;
             } else if (node instanceof ModifierNode modifierNode) {
                 var mod = modifierNode.modifier();
                 if (mod instanceof ColorModifier colorMod) {
@@ -69,8 +85,14 @@ public final class WindowText {
             }
         }
 
+        // region Restore old state
         g.setColor(oldColor);
+        g.setPaint(oldPaint);
+        g.setStroke(oldStroke);
         g.setFont(oldFont);
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, oldAA);
+        g.setRenderingHint(RenderingHints.KEY_RENDERING, oldRendering);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAA);
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, oldTextAA);
+        // endregion
     }
 }
