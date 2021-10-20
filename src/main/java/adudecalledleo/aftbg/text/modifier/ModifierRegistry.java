@@ -1,7 +1,5 @@
 package adudecalledleo.aftbg.text.modifier;
 
-import adudecalledleo.aftbg.text.TextParserException;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +9,7 @@ public final class ModifierRegistry {
     public ModifierRegistry() {
         map = new HashMap<>();
 
-        register('c', new ColorModifier.Parser());
+        register('c', new ColorModifierNode.Parser());
     }
 
     public void register(char c, ModifierParser parser) {
@@ -20,11 +18,7 @@ public final class ModifierRegistry {
         }
     }
 
-    public ModifierParser get(char c, int pos) throws TextParserException {
-        var parser = map.get(c);
-        if (parser == null) {
-            throw new TextParserException("Unknown modifier key '" + c + "!", pos);
-        }
-        return parser;
+    public ModifierParser get(char c) {
+        return map.get(c);
     }
 }

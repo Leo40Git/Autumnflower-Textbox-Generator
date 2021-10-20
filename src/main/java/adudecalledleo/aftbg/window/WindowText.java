@@ -1,9 +1,9 @@
 package adudecalledleo.aftbg.window;
 
-import adudecalledleo.aftbg.text.modifier.ColorModifier;
+import adudecalledleo.aftbg.text.modifier.ColorModifierNode;
 import adudecalledleo.aftbg.text.node.LineBreakNode;
-import adudecalledleo.aftbg.text.node.ModifierNode;
 import adudecalledleo.aftbg.text.node.Node;
+import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.text.node.TextNode;
 
 import java.awt.*;
@@ -12,7 +12,6 @@ import java.awt.geom.AffineTransform;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 public final class WindowText {
     public static final Color OUTLINE_COLOR = new Color(0, 0, 0, 127);
@@ -40,7 +39,7 @@ public final class WindowText {
 
     private WindowText() { }
 
-    public static void draw(Graphics2D g, List<Node> nodes, WindowColors colors, int x, int y) {
+    public static void draw(Graphics2D g, NodeList nodes, WindowColors colors, int x, int y) {
         // region Save current state
         final var oldColor = g.getColor();
         final var oldPaint = g.getPaint();
@@ -56,14 +55,13 @@ public final class WindowText {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        final var fm = g.getFontMetrics();
         final var frc = g.getFontRenderContext();
-        final int ma = fm.getMaxAscent();
+        final int ma = g.getFontMetrics().getMaxAscent();
         final int startX = x;
 
         for (Node node : nodes) {
             if (node instanceof TextNode textNode) {
-                var layout = new TextLayout(textNode.contents(), FONT, frc);
+                var layout = new TextLayout(textNode.getContents(), FONT, frc);
                 var outline = layout.getOutline(AffineTransform.getTranslateInstance(x, y + ma));
 
                 var c = g.getColor();
@@ -74,11 +72,8 @@ public final class WindowText {
                 g.setColor(c);
                 g.fill(outline);
                 x += outline.getBounds().width;
-            } else if (node instanceof ModifierNode modifierNode) {
-                var mod = modifierNode.modifier();
-                if (mod instanceof ColorModifier colorMod) {
-                    g.setColor(colorMod.getColor(colors));
-                }
+            } else if (node instanceof ColorModifierNode colorModNode) {
+                g.setColor(colorModNode.getColor(colors));
             } else if (node instanceof LineBreakNode) {
                 x = startX;
                 y += 36;

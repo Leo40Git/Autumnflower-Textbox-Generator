@@ -1,12 +1,12 @@
 package adudecalledleo.aftbg.text.node;
 
-public final class LineBreakNode implements Node {
-    public static final LineBreakNode INSTANCE = new LineBreakNode();
-
-    private LineBreakNode() { }
+public final class LineBreakNode extends Node {
+    public LineBreakNode(int start) {
+        super(start, 1);
+    }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName();
+        return "LineBreakNode{start=" + start + "}";
     }
 }

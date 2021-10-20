@@ -1,7 +1,7 @@
 package adudecalledleo.aftbg.text.modifier;
 
-import adudecalledleo.aftbg.text.TextParserException;
+import adudecalledleo.aftbg.text.node.NodeList;
 
 public interface ModifierParser {
-    Modifier parse(String args, int pos) throws TextParserException;
+    void parse(int start, int argsStart, String args, NodeList nodes);
 }

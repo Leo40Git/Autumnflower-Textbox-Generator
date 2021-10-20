@@ -2,19 +2,17 @@ package adudecalledleo.aftbg.text;
 
 import adudecalledleo.aftbg.text.modifier.ModifierParser;
 import adudecalledleo.aftbg.text.modifier.ModifierRegistry;
+import adudecalledleo.aftbg.text.node.ErrorNode;
 import adudecalledleo.aftbg.text.node.LineBreakNode;
-import adudecalledleo.aftbg.text.node.ModifierNode;
-import adudecalledleo.aftbg.text.node.Node;
+import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.text.node.TextNode;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public final class TextParser {
     private final ModifierRegistry modifierRegistry;
     private final StringBuilder sb;
+    private int pos, textStartPos, modStartPos;
     private char[] chars;
-    private List<Node> nodes;
+    private NodeList nodes;
 
     public TextParser() {
         modifierRegistry = new ModifierRegistry();
@@ -25,13 +23,14 @@ public final class TextParser {
         modifierRegistry.register(c, parser);
     }
 
-    public List<Node> parse(String text) throws TextParserException {
+    public NodeList parse(String text) {
         chars = text.toCharArray();
         sb.setLength(0);
-        nodes = new ArrayList<>();
+        nodes = new NodeList();
+        textStartPos = 0;
 
         boolean backslash = false;
-        for (int pos = 0; pos < chars.length; pos++) {
+        for (pos = 0; pos < chars.length; pos++) {
             char c = chars[pos];
             if (backslash) {
                 backslash = false;
@@ -39,8 +38,8 @@ public final class TextParser {
                     sb.append('\\');
                 else {
                     flushTextNode();
-                    pos++;
-                    var parser = modifierRegistry.get(c, pos);
+                    modStartPos = pos++ - 1;
+                    var parser = modifierRegistry.get(c);
                     if (pos < chars.length && chars[pos] == '[') {
                         final int start = pos++;
                         boolean end = false;
@@ -50,54 +49,56 @@ public final class TextParser {
                                 end = true;
                                 break;
                             } else {
-                                sb.append(c2);
+                                if (parser != null) {
+                                    sb.append(c2);
+                                }
                                 pos++;
                             }
                         }
                         if (!end) {
-                            throw new TextParserException("Unclosed argument brackets []", start);
+                            //throw new TextParserException("Unclosed argument brackets []", start);
+                            nodes.add(new ErrorNode(start, pos - start, "Unclosed argument brackets []"));
+                            continue;
                         }
-                        nodes.add(new ModifierNode(parser.parse(sb.toString(), start)));
-                        sb.setLength(0);
-                    } else
-                        nodes.add(new ModifierNode(parser.parse("", pos)));
+                        //nodes.add(new ModifierNode(parser.parse(sb.toString(), start)));
+                        if (parser == null) {
+                            nodes.add(new ErrorNode(modStartPos, pos - modStartPos, "Unknown modifier key '" + c + "'"));
+                        } else {
+                            parser.parse(modStartPos, start, sb.toString(), nodes);
+                            sb.setLength(0);
+                        }
+                    } else {
+                        if (parser == null) {
+                            nodes.add(new ErrorNode(modStartPos, 2, "Unknown modifier key '" + c + "'"));
+                        } else {
+                            parser.parse(modStartPos, -1, null, nodes);
+                        }
+                    }
+                    textStartPos = pos + 1;
                 }
             } else {
                 if (c == '\\')
                     backslash = true;
                 else if (c == '\n') {
                     flushTextNode();
-                    nodes.add(LineBreakNode.INSTANCE);
+                    nodes.add(new LineBreakNode(pos));
+                    textStartPos = pos + 1;
                 } else
                     sb.append(c);
             }
         }
         if (backslash) {
-            throw new TextParserException("Backslash at end of text", chars.length - 1);
+            //throw new TextParserException("Backslash at end of text", chars.length - 1);
+            nodes.add(new ErrorNode(chars.length - 1, 1, "Backslash at end of text"));
         }
         flushTextNode();
-        mergeTextNodes();
+
+        nodes.optimize();
         return nodes;
     }
 
     private void flushTextNode() {
-        nodes.add(new TextNode(sb.toString()));
+        nodes.add(new TextNode(textStartPos, sb.toString()));
         sb.setLength(0);
-    }
-
-    private void mergeTextNodes() {
-        for (int i = 0; i < nodes.size() - 1; i++) {
-            Node node = nodes.get(i);
-            if (node instanceof TextNode t1) {
-                Node nextNode = nodes.get(i + 1);
-                if (nextNode instanceof TextNode t2) {
-                    nodes.set(i, new TextNode(t1.contents() + t2.contents()));
-                    nodes.remove(i + 1);
-                } else if (t1.contents().isEmpty()) {
-                    nodes.remove(i);
-                    i--;
-                }
-            }
-        }
     }
 }

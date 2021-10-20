@@ -1,8 +1,7 @@
 package adudecalledleo.aftbg;
 
 import adudecalledleo.aftbg.text.TextParser;
-import adudecalledleo.aftbg.text.TextParserException;
-import adudecalledleo.aftbg.text.node.Node;
+import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.util.ColorUtils;
 import adudecalledleo.aftbg.window.*;
 
@@ -16,18 +15,23 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 public final class Bootstrap {
     public static final boolean OUTPUT_TRANSPARENT = false;
 
     public static void main(String[] args) {
         TextParser parser = new TextParser();
-        List<Node> nodes;
-        try {
-            nodes = parser.parse("\\c[0]Mercia:\n\\c[25]Hold on.\n\\c[#123]te\\c[4]st");
-        } catch (TextParserException e) {
-            throw new RuntimeException("Failed to parse text!", e);
+        NodeList nodes = parser.parse("\\c[0]Mercia:\n\\c[25]Hold on.\n\\c[#555]t\\c[4]e\\c[#FEDCBA]s\\c[2]t");
+        if (nodes.hasErrors()) {
+            System.out.format("has %d error(s):%n", nodes.getErrors().size());
+            for (var error : nodes.getErrors()) {
+                System.out.println(error);
+            }
+            return;
+        } else {
+            for (var node : nodes) {
+                System.out.println(node);
+            }
         }
 
         Path windowPath = Paths.get("scratch", "Window.png");
