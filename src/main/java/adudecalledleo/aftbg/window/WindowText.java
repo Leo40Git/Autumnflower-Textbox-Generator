@@ -21,6 +21,7 @@ public final class WindowText {
     public static final Font FONT;
 
     private static final String FONT_PATH = "font/VL-Gothic-Regular.ttf";
+    // region Font loading stuff
     static {
         Font base;
         try (InputStream in = WindowText.class.getResourceAsStream("/" + FONT_PATH)) {
@@ -36,6 +37,7 @@ public final class WindowText {
         GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(base);
         FONT = base.deriveFont(Font.PLAIN, 28);
     }
+    // endregion
 
     private WindowText() { }
 
@@ -61,16 +63,20 @@ public final class WindowText {
 
         for (Node node : nodes) {
             if (node instanceof TextNode textNode) {
+                // generate an outline of the text
                 var layout = new TextLayout(textNode.getContents(), FONT, frc);
                 var outline = layout.getOutline(AffineTransform.getTranslateInstance(x, y + ma));
 
-                var c = g.getColor();
+                // draw a transparent outline of the text...
+                var c = g.getColor(); // (save the actual text color for later)
                 g.setStroke(OUTLINE_STROKE);
                 g.setColor(OUTLINE_COLOR);
                 g.draw(outline);
+                // ...then draw the text itself
                 g.setStroke(oldStroke);
                 g.setColor(c);
                 g.fill(outline);
+                // advance X by "advance" (text width + padding, I think?)
                 x += layout.getAdvance();
             } else if (node instanceof ColorModifierNode colorModNode) {
                 g.setColor(colorModNode.getColor(colors));

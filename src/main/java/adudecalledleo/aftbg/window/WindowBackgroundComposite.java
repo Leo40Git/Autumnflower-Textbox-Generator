@@ -9,7 +9,11 @@ import java.awt.image.WritableRaster;
  * Composite for properly drawing the window background:<ul>
  *     <li>Tints the background using the supplied color.</li>
  *     <li>Reduces background alpha by 25%, since RPG Maker draws it at 75% alpha.</li>
- * </ul>
+ * </ul><p>
+ * <b>As a note to people who want to port this to another rendering engine:</b><br>
+ * You most definitely don't need something this complex for that,
+ * just stick the two background images together, tint them and
+ * draw that combined image at 75% opacity.
  */
 final class WindowBackgroundComposite implements Composite {
     private final Context context;

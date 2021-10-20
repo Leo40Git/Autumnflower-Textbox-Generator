@@ -4,6 +4,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public final class WindowColors {
+    // this is simple: there are 32 colored squares on the Window sheet,
+    // these directly map to the available 32 preset colors
+    // (according to RPG Maker MV's source code, it only samples the first pixel of each square.
+    //  because that's the sane thing to do.)
+
     private final Color[] colors = new Color[32];
 
     public WindowColors(BufferedImage window) {

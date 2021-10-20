@@ -5,6 +5,12 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 
 public final class WindowArrow {
+    // this simple "arrow moving up and down" animation is stored as 4 pre-moved frames in the Window sheet
+    // (possibly to allow for more interesting animations)
+    // anyway, it's drawn centered on the center-bottom piece of the window border when there's no more text to display,
+    // and the next button press will begin the next textbox
+    // TODO document animation speed
+
     private final int frameWidth = 24, frameHeight = 24;
 
     private final BufferedImage[] frames = new BufferedImage[4];

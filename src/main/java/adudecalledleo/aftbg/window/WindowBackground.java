@@ -5,10 +5,11 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 
 public final class WindowBackground {
-    // BG is made up of a base and an overlay
-    // both are tiled
-    // additionally, there's a tone layer that's rendered over the base and overlay
-    // RPG Maker uses a color matrix filter to apply it, which I replicate through a custom Composite
+    // there are 2 separate layers for this in the Window sheet: a "base" one and an "overlay" one
+    // as far as I understand it, RPG Maker sandwiches the "base" and "overlay" layers of the BG together,
+    // tints them with the editor-specified window tint, and then renders that tinted sandwich at 75% opacity
+    // (here we tint the image and pre-multiply it to be at 75% opacity, just because they're convenient to do
+    //  at the same time)
 
     private final BufferedImage base, overlay;
     private final WindowTint color;
