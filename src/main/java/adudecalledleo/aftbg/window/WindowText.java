@@ -71,7 +71,7 @@ public final class WindowText {
                 g.setStroke(oldStroke);
                 g.setColor(c);
                 g.fill(outline);
-                x += outline.getBounds().width;
+                x += layout.getAdvance();
             } else if (node instanceof ColorModifierNode colorModNode) {
                 g.setColor(colorModNode.getColor(colors));
             } else if (node instanceof LineBreakNode) {
