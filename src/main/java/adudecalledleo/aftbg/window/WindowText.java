@@ -16,7 +16,13 @@ import java.io.InputStream;
 public final class WindowText {
     public static final Color OUTLINE_COLOR = new Color(0, 0, 0, 127);
     public static final int OUTLINE_WIDTH = 4;
-    private static final Stroke OUTLINE_STROKE = new BasicStroke(OUTLINE_WIDTH, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 10f);
+    private static final Stroke OUTLINE_STROKE = new BasicStroke(OUTLINE_WIDTH, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+    // this secondary outline is drawn with the actual text color, to try and replicate RPG Maker MV (AKA browser) AA
+    public static final int OUTLINE2_WIDTH = 1;
+    public static final float OUTLINE2_OPAQUENESS = 0.275f;
+    private static final Stroke OUTLINE2_STROKE = new BasicStroke(OUTLINE2_WIDTH, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND);
+    public static final Composite OUTLINE2_COMPOSITE = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, OUTLINE2_OPAQUENESS);
 
     public static final Font FONT;
 
@@ -46,15 +52,15 @@ public final class WindowText {
         final var oldColor = g.getColor();
         final var oldStroke = g.getStroke();
         final var oldFont = g.getFont();
-        final var oldRendering = g.getRenderingHint(RenderingHints.KEY_RENDERING);
-        final var oldAA = g.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
-        final var oldTextAA = g.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
+        final var oldComposite = g.getComposite();
+        final var oldHints = g.getRenderingHints();
         // endregion
 
         g.setFont(FONT);
-        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
         final var frc = g.getFontRenderContext();
         final int ma = g.getFontMetrics().getMaxAscent();
@@ -71,9 +77,14 @@ public final class WindowText {
                 g.setStroke(OUTLINE_STROKE);
                 g.setColor(OUTLINE_COLOR);
                 g.draw(outline);
-                // ...then draw the text itself
-                g.setStroke(oldStroke);
+
                 g.setColor(c);
+                // ...then draw a secondary outline...
+                g.setComposite(OUTLINE2_COMPOSITE);
+                g.setStroke(OUTLINE2_STROKE);
+                g.draw(outline);
+                // ...and then, fill in the text!
+                g.setComposite(oldComposite);
                 g.fill(outline);
                 // advance X by "advance" (text width + padding, I think?)
                 x += layout.getAdvance();
@@ -89,9 +100,8 @@ public final class WindowText {
         g.setColor(oldColor);
         g.setStroke(oldStroke);
         g.setFont(oldFont);
-        g.setRenderingHint(RenderingHints.KEY_RENDERING, oldRendering);
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAA);
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, oldTextAA);
+        g.setComposite(oldComposite);
+        g.setRenderingHints(oldHints);
         // endregion
     }
 }
