@@ -1,15 +1,16 @@
 package adudecalledleo.aftbg.window;
 
+import adudecalledleo.aftbg.util.AlphaMultiplicationComposite;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 
 public final class WindowBackground {
     // there are 2 separate layers for this in the Window sheet: a "base" one and an "overlay" one
-    // as far as I understand it, RPG Maker sandwiches the "base" and "overlay" layers of the BG together,
-    // tints them with the editor-specified window tint, and then renders that tinted sandwich at 75% opacity
-    // (here we tint the image and pre-multiply it to be at 75% opacity, just because they're convenient to do
-    //  at the same time)
+    // the "base" overlay is stretched into the correct width and height and tinted by the editor-specified window tint,
+    //  while the "overlay" is tiled
+    // RPG Maker also renders both layers together at 75% opacity
 
     private final BufferedImage base, overlay;
     private final WindowTint color;
@@ -26,10 +27,16 @@ public final class WindowBackground {
         if (resizeScratchBuf(width, height)) {
             Graphics2D sg = scratchBuf.createGraphics();
 
-            drawPart(base, sg, width, height);
-            drawPart(overlay, sg, width, height);
+            var oldComposite = sg.getComposite();
+            // draw stretched and tinted base
+            sg.setComposite(new WindowTintComposite(color));
+            sg.drawImage(base, 0, 0, width, height, 0, 0, base.getWidth(), base.getHeight(), null);
+            sg.setComposite(oldComposite);
+            // draw tiled overlay
+            drawTiled(overlay, sg, width, height);
 
-            sg.setComposite(new WindowBackgroundComposite(color));
+            // reduce everyone's alpha by 25%
+            sg.setComposite(new AlphaMultiplicationComposite(0.75f));
             sg.fillRect(0, 0, width, height);
 
             sg.dispose();
@@ -46,7 +53,7 @@ public final class WindowBackground {
         return false;
     }
 
-    private void drawPart(BufferedImage part, Graphics g, int width, int height) {
+    private void drawTiled(BufferedImage part, Graphics g, int width, int height) {
         final int tilesWide = width / tileWidth, tilesHigh = height / tileHeight;
         for (int ty = 0; ty <= tilesHigh; ty++) {
             for (int tx = 0; tx <= tilesWide; tx++) {
