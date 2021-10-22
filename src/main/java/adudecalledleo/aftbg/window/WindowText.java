@@ -16,7 +16,7 @@ import java.io.InputStream;
 public final class WindowText {
     public static final Color OUTLINE_COLOR = new Color(0, 0, 0, 127);
     public static final int OUTLINE_WIDTH = 4;
-    private static final Stroke OUTLINE_STROKE = new BasicStroke(OUTLINE_WIDTH, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    private static final Stroke OUTLINE_STROKE = new BasicStroke(OUTLINE_WIDTH, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 10f);
 
     public static final Font FONT;
 
@@ -44,7 +44,6 @@ public final class WindowText {
     public static void draw(Graphics2D g, NodeList nodes, WindowColors colors, int x, int y) {
         // region Save current state
         final var oldColor = g.getColor();
-        final var oldPaint = g.getPaint();
         final var oldStroke = g.getStroke();
         final var oldFont = g.getFont();
         final var oldRendering = g.getRenderingHint(RenderingHints.KEY_RENDERING);
@@ -88,7 +87,6 @@ public final class WindowText {
 
         // region Restore old state
         g.setColor(oldColor);
-        g.setPaint(oldPaint);
         g.setStroke(oldStroke);
         g.setFont(oldFont);
         g.setRenderingHint(RenderingHints.KEY_RENDERING, oldRendering);
