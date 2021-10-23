@@ -11,13 +11,18 @@ public final class Face {
     private final String name;
     private final String category;
     private final Path imagePath;
-    private BufferedImage image;
+    BufferedImage image;
     private ImageIcon icon;
 
-    public Face(String name, String category, Path imagePath) {
+    Face(String name, String category, Path imagePath, BufferedImage image) {
         this.name = name;
         this.category = category;
         this.imagePath = imagePath;
+        this.image = image;
+    }
+
+    Face(String name, String category, Path imagePath) {
+        this(name, category, imagePath, null);
     }
 
     public String getName() {

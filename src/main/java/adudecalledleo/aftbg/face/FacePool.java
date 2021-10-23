@@ -13,46 +13,48 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class FacePool {
-    private final Map<String, Face> byPath;
-    private final Map<String, Map<String, Face>> byCategory, byCategoryU;
+    private final Map<String, FaceCategory> categories, categoriesU;
 
     public FacePool() {
-        byPath = new HashMap<>();
-        byCategory = new HashMap<>();
-        byCategoryU = Collections.unmodifiableMap(byCategory);
+        categories = new HashMap<>();
+        categoriesU = Collections.unmodifiableMap(categories);
     }
 
-    public void add(Face face) {
-        if (byPath.put(face.getPath(), face) != null) {
-            throw new IllegalStateException("Tried to add face with duplicate path \"" + face.getPath() + "\"!");
-        }
-        byCategory.computeIfAbsent(face.getCategory(), ignored -> new HashMap<>()).put(face.getName(), face);
-    }
-
-    public void addFrom(FacePool pool) {
-        byPath.putAll(pool.byPath);
-        for (var entry : pool.byCategory.entrySet()) {
-            var map = byCategory.computeIfAbsent(entry.getKey(), ignored -> new HashMap<>());
-            map.putAll(entry.getValue());
+    public void addFrom(FacePool other) {
+        for (var entry : other.categories.entrySet()) {
+            var cat = categories.get(entry.getKey());
+            if (cat == null) {
+                categories.put(entry.getKey(), new FaceCategory(entry.getValue()));
+            } else {
+                cat.addFrom(entry.getValue());
+            }
         }
     }
 
     public void loadAll(Path basePath) throws FaceLoadException {
-        for (Face face : byPath.values()) {
-            face.loadImage(basePath);
+        for (FaceCategory cat : categories.values()) {
+            cat.loadAll(basePath);
         }
     }
 
     public Face getByPath(String path) {
-        return byPath.get(path);
+        String[] parts = path.split("/");
+        if (parts.length != 2) {
+            throw new IllegalArgumentException("Path \"" + path + "\" should have 2 parts, but instead has " + parts.length);
+        }
+        FaceCategory cat = getCategory(parts[0]);
+        if (cat == null) {
+            return null;
+        }
+        return cat.get(parts[1]);
     }
 
-    public Map<String, Face> getCategory(String category) {
-        return byCategory.get(category);
+    public FaceCategory getCategory(String category) {
+        return categories.get(category);
     }
 
-    public Map<String, Map<String, Face>> getCategories() {
-        return byCategoryU;
+    public Map<String, FaceCategory> getCategories() {
+        return categoriesU;
     }
 
     public static final class Adapter extends TypeAdapter<FacePool> {
@@ -65,19 +67,30 @@ public final class FacePool {
             FacePool pool = new FacePool();
             in.beginObject();
             while (in.hasNext()) {
-                String category = in.nextName();
-                readCategory(pool, category, in);
+                FaceCategory cat = pool.categories.computeIfAbsent(in.nextName(), FaceCategory::new);
+                in.beginObject();
+                while (in.hasNext()) {
+                    switch (in.nextName()) {
+                        case "icon" -> cat.icon = in.nextString();
+                        case "entries" -> readCategoryEntries(cat, in);
+                    }
+                }
+                in.endObject();
             }
             in.endObject();
             return pool;
         }
 
-        private void readCategory(FacePool pool, String category, JsonReader in) throws IOException {
+        private void readCategoryEntries(FaceCategory cat, JsonReader in) throws IOException {
             in.beginObject();
             while (in.hasNext()) {
                 String name = in.nextName();
+                if (cat.icon == null) {
+                    // default icon is first entry
+                    cat.icon = name;
+                }
                 Path imagePath = Paths.get(in.nextString());
-                pool.add(new Face(name, category, imagePath));
+                cat.add(name, imagePath);
             }
             in.endObject();
         }
@@ -85,19 +98,22 @@ public final class FacePool {
         @Override
         public void write(JsonWriter out, FacePool value) throws IOException {
             out.beginObject();
-            for (var catEntry : value.byCategory.entrySet()) {
-                out.name(catEntry.getKey());
-                out.beginArray();
-                for (var entry : catEntry.getValue().entrySet()) {
-                    final Face face = entry.getValue();
-                    out.beginObject();
-                    out.name("name");
-                    out.value(face.getName());
-                    out.name("path");
-                    out.value(face.getImagePath().toString());
-                    out.endObject();
+            for (var cat : value.categories.values()) {
+                out.name(cat.getName());
+                out.beginObject();
+                if (cat.icon != null) {
+                    out.name("icon");
+                    out.value(cat.icon);
                 }
-                out.endArray();
+                out.name("entries");
+                out.beginObject();
+                for (var entry : cat.faces.entrySet()) {
+                    final Face face = entry.getValue();
+                    out.name(face.getName());
+                    out.value(face.getImagePath().toString());
+                }
+                out.endObject();
+                out.endObject();
             }
             out.endObject();
         }

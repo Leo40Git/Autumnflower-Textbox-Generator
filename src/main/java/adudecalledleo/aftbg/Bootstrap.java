@@ -52,6 +52,9 @@ public final class Bootstrap {
         }
 
         Face merciaNeutral = def.getFaces().getByPath("Mercia/Neutral");
+        if (merciaNeutral == null) {
+            throw new NullPointerException("Face \"Mercia/Neutral\" is missing!");
+        }
 
         Path windowPath = basePath.resolve(def.getWindowPath());
         BufferedImage window;
