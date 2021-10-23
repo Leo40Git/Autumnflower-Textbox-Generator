@@ -47,6 +47,8 @@ public final class WindowText {
 
     private WindowText() { }
 
+    public static void loadFont() { /* <clinit> */ }
+
     public static void draw(Graphics2D g, NodeList nodes, WindowColors colors, int x, int y) {
         // region Save current state
         final var oldColor = g.getColor();

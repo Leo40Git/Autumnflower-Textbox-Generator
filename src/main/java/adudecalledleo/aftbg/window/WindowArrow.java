@@ -25,10 +25,10 @@ public final class WindowArrow {
         }
     }
 
-    public void draw(Graphics g, int x, int y, int width, int height, int frame, ImageObserver observer) {
-        int fx = x + (width / 2) - (frameWidth / 2);
-        int fy = y + height - frameHeight;
+    public void draw(Graphics g, int boxX, int boxY, int boxWidth, int boxHeight, int frame, ImageObserver observer) {
+        int x = boxX + (boxWidth / 2) - (frameWidth / 2);
+        int y = boxY + boxHeight - frameHeight;
 
-        g.drawImage(frames[frame], fx, fy, observer);
+        g.drawImage(frames[frame], x, y, observer);
     }
 }

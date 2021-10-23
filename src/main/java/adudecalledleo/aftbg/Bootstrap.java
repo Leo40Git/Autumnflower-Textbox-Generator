@@ -28,6 +28,8 @@ public final class Bootstrap {
             e.printStackTrace();
         }
 
+        WindowText.loadFont();
+
         Path basePath = Paths.get("scratch");
 
         Path defPath = basePath.resolve("def.json");
@@ -45,14 +47,27 @@ public final class Bootstrap {
             throw new RuntimeException("Failed to load faces", e);
         }
 
+        WindowContext winCtx = loadWinCtx(def, basePath);
+
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setContentPane(new MainPanel(def.getFaces()));
+        frame.setContentPane(new MainPanel(new TextParser(), winCtx, def.getFaces()));
         frame.pack();
         frame.setVisible(true);
     }
 
-    private void generateTestBox(Path basePath, GameDefinition def) {
+    private static WindowContext loadWinCtx(GameDefinition def, Path basePath) {
+        Path windowPath = basePath.resolve(def.getWindowPath());
+        BufferedImage window;
+        try (InputStream in = Files.newInputStream(windowPath)) {
+            window = ImageIO.read(in);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to read window image from \"" + windowPath.toAbsolutePath() + "\"!", e);
+        }
+        return new WindowContext(window, def.getWindowTint());
+    }
+
+    private void generateTestBox(GameDefinition def, Path basePath, WindowContext winCtx) {
         TextParser parser = new TextParser();
         NodeList nodes = parser.parse("\\c[0]Mercia:\n\\c[25]Hold on.\n\\c[#555]t\\c[4]e\\c[#FEDCBA]s\\c[10]t");
         if (nodes.hasErrors()) {
@@ -72,30 +87,16 @@ public final class Bootstrap {
             throw new NullPointerException("Face \"Mercia/Neutral\" is missing!");
         }
 
-        Path windowPath = basePath.resolve(def.getWindowPath());
-        BufferedImage window;
-        try (InputStream in = Files.newInputStream(windowPath)) {
-            window = ImageIO.read(in);
-        } catch (IOException e) {
-            throw new UncheckedIOException("Failed to read window image from \"" + windowPath.toAbsolutePath() + "\"!", e);
-        }
-
-        WindowBackground bg = new WindowBackground(window, def.getWindowTint());
-        WindowBorder border = new WindowBorder(window);
-
-        WindowArrow arrow = new WindowArrow(window);
-        WindowColors colors = new WindowColors(window);
-
         BufferedImage dest = new BufferedImage(816, 180, OUTPUT_TRANSPARENT ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB);
         Graphics2D g = dest.createGraphics();
         g.setBackground(OUTPUT_TRANSPARENT ? ColorUtils.TRANSPARENT : Color.BLACK);
         g.clearRect(0, 0, 816, 180);
 
-        bg.draw(g, 4, 4, 808, 172, null);
-        border.draw(g, 0, 0, 816, 180, null);
+        winCtx.drawBackground(g, 4, 4, 808, 172, null);
+        winCtx.drawBorder(g, 0, 0, 816, 180, null);
         g.drawImage(merciaNeutral.getImage(), 18, 18, null);
-        WindowText.draw(g, nodes, colors, 186, 21);
-        arrow.draw(g, 0, 0, 816, 180, 3, null);
+        WindowText.draw(g, nodes, winCtx.getColors(), 186, 21);
+        winCtx.drawArrow(g, 0, 0, 816, 180, 3, null);
 
         g.dispose();
 

@@ -100,4 +100,9 @@ public final class Face {
         g.dispose();
         return dst;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

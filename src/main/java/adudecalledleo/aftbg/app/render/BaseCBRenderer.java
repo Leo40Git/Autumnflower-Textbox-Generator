@@ -8,6 +8,7 @@ public abstract class BaseCBRenderer<T> extends JLabel implements ListCellRender
         setOpaque(true);
         setHorizontalAlignment(LEFT);
         setVerticalAlignment(CENTER);
+        setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
     }
 
     protected void updateColors(JList<?> list, boolean isSelected, boolean hasFocus) {

@@ -6,6 +6,12 @@ import javax.swing.*;
 import java.awt.*;
 
 public final class FaceCategoryCBRenderer extends BaseCBRenderer<FaceCategory> {
+    public FaceCategoryCBRenderer() {
+        super();
+        setPreferredSize(new Dimension(72 * 3 + 4, 72));
+        setMinimumSize(new Dimension(72 * 3 + 4, 72));
+    }
+
     @Override
     public Component getListCellRendererComponent(JList<? extends FaceCategory> list, FaceCategory value, int index,
                                                   boolean isSelected, boolean cellHasFocus) {

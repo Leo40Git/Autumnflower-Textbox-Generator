@@ -64,7 +64,7 @@ public final class TextParser {
                         if (parser == null) {
                             nodes.add(new ErrorNode(modStartPos, pos - modStartPos, "Unknown modifier key '" + c + "'"));
                         } else {
-                            parser.parse(modStartPos, start, sb.toString(), nodes);
+                            parser.parse(modStartPos, start + 1, sb.toString(), nodes);
                             sb.setLength(0);
                         }
                     } else {

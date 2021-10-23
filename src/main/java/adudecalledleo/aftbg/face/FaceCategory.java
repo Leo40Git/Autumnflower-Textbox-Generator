@@ -64,4 +64,9 @@ public final class FaceCategory {
             face.loadImage(basePath);
         }
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

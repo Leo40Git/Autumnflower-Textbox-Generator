@@ -9,9 +9,10 @@ import adudecalledleo.aftbg.face.FaceCategory;
 import adudecalledleo.aftbg.face.FacePool;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.function.Consumer;
 
-public class FaceSelectionPanel extends JPanel {
+public final class FaceSelectionPanel extends JPanel {
     private final JComboBox<FaceCategory> catSel;
     private final JComboBox<Face> faceSel;
     private final FaceCategoryCBModel catModel;
@@ -52,9 +53,16 @@ public class FaceSelectionPanel extends JPanel {
             }
         });
 
-        setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-        add(catSel);
-        add(faceSel);
+        setLayout(new GridBagLayout());
+        var c = new GridBagConstraints();
+        c.fill = GridBagConstraints.BOTH;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.weightx = 0.6;
+        add(catSel, c);
+        c.gridx++;
+        c.weightx = 0.4;
+        add(faceSel, c);
     }
 
     public void updateFacePool(FacePool pool) {
