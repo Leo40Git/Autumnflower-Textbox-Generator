@@ -9,20 +9,24 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class FacePool {
     private final Map<String, FaceCategory> categories, categoriesU;
 
     public FacePool() {
-        categories = new HashMap<>();
+        categories = new LinkedHashMap<>();
+        categories.put(FaceCategory.NONE.getName(), FaceCategory.NONE);
         categoriesU = Collections.unmodifiableMap(categories);
     }
 
     public void addFrom(FacePool other) {
         for (var entry : other.categories.entrySet()) {
             var cat = categories.get(entry.getKey());
+            if (cat == FaceCategory.NONE) {
+                continue;
+            }
             if (cat == null) {
                 categories.put(entry.getKey(), new FaceCategory(entry.getValue()));
             } else {
@@ -67,7 +71,11 @@ public final class FacePool {
             FacePool pool = new FacePool();
             in.beginObject();
             while (in.hasNext()) {
-                FaceCategory cat = pool.categories.computeIfAbsent(in.nextName(), FaceCategory::new);
+                String name = in.nextName();
+                if (FaceCategory.NONE.getName().equals(name)) {
+                    throw new IllegalStateException("Category name \"" + FaceCategory.NONE.getName() + "\" is reserved!");
+                }
+                FaceCategory cat = pool.categories.computeIfAbsent(name, FaceCategory::new);
                 in.beginObject();
                 while (in.hasNext()) {
                     switch (in.nextName()) {

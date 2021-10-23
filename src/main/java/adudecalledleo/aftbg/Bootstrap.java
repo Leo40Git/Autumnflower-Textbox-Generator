@@ -1,5 +1,6 @@
 package adudecalledleo.aftbg;
 
+import adudecalledleo.aftbg.app.MainPanel;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FaceLoadException;
 import adudecalledleo.aftbg.game.GameDefinition;
@@ -9,6 +10,7 @@ import adudecalledleo.aftbg.util.ColorUtils;
 import adudecalledleo.aftbg.window.*;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -20,18 +22,10 @@ public final class Bootstrap {
     public static final boolean OUTPUT_TRANSPARENT = false;
 
     public static void main(String[] args) {
-        TextParser parser = new TextParser();
-        NodeList nodes = parser.parse("\\c[0]Mercia:\n\\c[25]Hold on.\n\\c[#555]t\\c[4]e\\c[#FEDCBA]s\\c[10]t");
-        if (nodes.hasErrors()) {
-            System.out.format("has %d error(s):%n", nodes.getErrors().size());
-            for (var error : nodes.getErrors()) {
-                System.out.println(error);
-            }
-            return;
-        } else {
-            for (var node : nodes) {
-                System.out.println(node);
-            }
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
         }
 
         Path basePath = Paths.get("scratch");
@@ -49,6 +43,28 @@ public final class Bootstrap {
             def.getFaces().loadAll(basePath);
         } catch (FaceLoadException e) {
             throw new RuntimeException("Failed to load faces", e);
+        }
+
+        JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setContentPane(new MainPanel(def.getFaces()));
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    private void generateTestBox(Path basePath, GameDefinition def) {
+        TextParser parser = new TextParser();
+        NodeList nodes = parser.parse("\\c[0]Mercia:\n\\c[25]Hold on.\n\\c[#555]t\\c[4]e\\c[#FEDCBA]s\\c[10]t");
+        if (nodes.hasErrors()) {
+            System.out.format("has %d error(s):%n", nodes.getErrors().size());
+            for (var error : nodes.getErrors()) {
+                System.out.println(error);
+            }
+            return;
+        } else {
+            for (var node : nodes) {
+                System.out.println(node);
+            }
         }
 
         Face merciaNeutral = def.getFaces().getByPath("Mercia/Neutral");

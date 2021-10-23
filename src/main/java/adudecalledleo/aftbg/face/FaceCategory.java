@@ -1,20 +1,29 @@
 package adudecalledleo.aftbg.face;
 
 import java.nio.file.Path;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class FaceCategory {
+    public static final FaceCategory NONE = new FaceCategory("None");
+
+    static {
+        NONE.add("(none)", null);
+    }
+
     private final String name;
     String icon;
-    final Map<String, Face> faces;
+    final Map<String, Face> faces, facesU;
 
     FaceCategory(String name) {
         this.name = name;
         icon = null;
-        faces = new HashMap<>();
+        faces = new LinkedHashMap<>();
+        facesU = Collections.unmodifiableMap(faces);
     }
 
+    @SuppressWarnings("CopyConstructorMissesField") // intentional
     public FaceCategory(FaceCategory other) {
         this(other.name);
         icon = other.icon;
@@ -44,6 +53,10 @@ public final class FaceCategory {
             return null;
         }
         return faces.get(icon);
+    }
+
+    public Map<String, Face> getFaces() {
+        return facesU;
     }
 
     public void loadAll(Path basePath) throws FaceLoadException {
