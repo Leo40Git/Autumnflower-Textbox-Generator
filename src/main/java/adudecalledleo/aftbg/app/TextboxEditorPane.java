@@ -2,7 +2,10 @@ package adudecalledleo.aftbg.app;
 
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.modifier.ColorModifierNode;
-import adudecalledleo.aftbg.text.node.*;
+import adudecalledleo.aftbg.text.node.ErrorNode;
+import adudecalledleo.aftbg.text.node.Node;
+import adudecalledleo.aftbg.text.node.NodeList;
+import adudecalledleo.aftbg.text.node.Span;
 import adudecalledleo.aftbg.util.ColorUtils;
 import adudecalledleo.aftbg.window.WindowContext;
 import adudecalledleo.aftbg.window.WindowText;
@@ -12,13 +15,21 @@ import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public final class TextboxEditorPane extends JEditorPane {
     private final TextParser textParser;
     private final Consumer<String> textUpdateConsumer;
     private final Timer updateTimer;
-    private final SimpleAttributeSet styleNormal, styleMod, styleError;
+    private final Map<Rectangle2D, String> errors;
+    private final Line2D scratchLine;
+    private final SimpleAttributeSet styleNormal, styleMod;
+    private final Map<Color, AttributeSet> coloredStyles;
 
     private WindowContext winCtx;
     private boolean hasFace;
@@ -28,12 +39,14 @@ public final class TextboxEditorPane extends JEditorPane {
         this.textParser = textParser;
         this.winCtx = winCtx;
         this.textUpdateConsumer = textUpdateConsumer;
+        errors = new HashMap<>();
+        scratchLine = new Line2D.Double(0, 0, 0, 0);
         hasFace = false;
 
-        setEditorKit(new EditorKit());
+        setEditorKit(new EditorKitImpl());
         setDocument(new StyledDocumentImpl());
 
-        updateTimer = new Timer(1000, e -> {
+        updateTimer = new Timer(500, e -> {
             SwingUtilities.invokeLater(() -> {
                 textUpdateConsumer.accept(getText());
                 highlight();
@@ -53,9 +66,7 @@ public final class TextboxEditorPane extends JEditorPane {
         StyleConstants.setForeground(styleNormal, winCtx.getColor(0));
         styleMod = new SimpleAttributeSet(styleNormal);
         StyleConstants.setForeground(styleMod, Color.GRAY);
-        styleError = new SimpleAttributeSet(styleNormal);
-        StyleConstants.setBackground(styleError, Color.RED);
-        StyleConstants.setForeground(styleError, Color.WHITE);
+        coloredStyles = new HashMap<>();
 
         addKeyListener(new KeyAdapter() {
             @Override
@@ -66,6 +77,8 @@ public final class TextboxEditorPane extends JEditorPane {
 
         setOpaque(true);
         setBackground(ColorUtils.TRANSPARENT);
+
+        ToolTipManager.sharedInstance().registerComponent(this);
 
         highlight();
     }
@@ -78,6 +91,32 @@ public final class TextboxEditorPane extends JEditorPane {
         g2d.clearRect(0, 0, getWidth(), getHeight());
         winCtx.drawBackground((Graphics2D) g, 0, 0, getWidth(), getHeight(), null);
         super.paintComponent(g);
+
+        g2d.setColor(Color.RED);
+        for (var entry : errors.entrySet()) {
+            var rect = entry.getKey();
+            var oldClip = g2d.getClip();
+            g2d.clip(rect);
+            final double y = rect.getY() + rect.getHeight() - 3;
+            boolean raised = true;
+            for (double x = rect.getX(); x <= rect.getX() + rect.getWidth() + 2; x += 2) {
+                scratchLine.setLine(x, y + (raised ? 2 : 0), x + 2, y + (raised ? 0 : 2));
+                g2d.draw(scratchLine);
+                raised = !raised;
+            }
+            g2d.clip(oldClip);
+        }
+    }
+
+    @Override
+    public String getToolTipText(MouseEvent event) {
+        var point = event.getPoint();
+        for (var entry : errors.entrySet()) {
+            if (entry.getKey().contains(point.x, point.y)) {
+                return entry.getValue();
+            }
+        }
+        return null;
     }
 
     public void setHasFace(boolean hasFace) {
@@ -96,7 +135,7 @@ public final class TextboxEditorPane extends JEditorPane {
 
     private void highlight() {
         if (getDocument() instanceof StyledDocument doc) {
-            MutableAttributeSet style = styleNormal;
+            AttributeSet style = styleNormal;
             doc.setParagraphAttributes(0, doc.getLength(), style, true);
             doc.setCharacterAttributes(0, doc.getLength(), style, true);
 
@@ -108,19 +147,35 @@ public final class TextboxEditorPane extends JEditorPane {
                 return;
             }
 
+            errors.clear();
+
             for (Node node : nodes) {
                 System.out.println(node);
                 if (node instanceof ColorModifierNode modCol) {
                     doc.setCharacterAttributes(modCol.getStart(), modCol.getLength(), styleMod, true);
                     Color c = modCol.getColor(winCtx.getColors());
-                    style = new SimpleAttributeSet(styleNormal);
-                    StyleConstants.setForeground(style, c);
+                    style = coloredStyles.computeIfAbsent(c, color -> {
+                        var colStyle = new SimpleAttributeSet(styleNormal);
+                        StyleConstants.setForeground(colStyle, c);
+                        return colStyle;
+                    });
                     Span argSpan = modCol.getArgSpans()[0];
                     doc.setCharacterAttributes(argSpan.start(), argSpan.length(), style, true);
                 } else if (node instanceof ErrorNode err) {
-                    // TODO squiggly line instead?
-                    // TODO tooltip malarkey??
-                    doc.setCharacterAttributes(err.getStart(), err.getLength(), styleError, true);
+                    doc.setCharacterAttributes(err.getStart(), err.getLength(), styleNormal, true);
+
+                    Rectangle2D startRect, endRect;
+                    final int end = err.getStart() + err.getLength();
+                    try {
+                        startRect = modelToView2D(err.getStart());
+                        endRect = modelToView2D(end);
+
+                        errors.put(new Rectangle2D.Double(startRect.getX(), startRect.getY(),
+                                endRect.getX() - startRect.getX(), Math.max(startRect.getHeight(), endRect.getHeight())),
+                                err.getMessage());
+                    } catch (BadLocationException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     doc.setCharacterAttributes(node.getStart(), node.getLength(), style, true);
                 }
@@ -136,7 +191,7 @@ public final class TextboxEditorPane extends JEditorPane {
         }
     }
 
-    private static final class EditorKit extends DefaultEditorKit {
+    private static final class EditorKitImpl extends DefaultEditorKit {
         @Override
         public ViewFactory getViewFactory() {
             return new ViewFactoryImpl();
