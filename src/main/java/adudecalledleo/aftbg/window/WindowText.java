@@ -70,6 +70,10 @@ public final class WindowText {
 
         for (Node node : nodes) {
             if (node instanceof TextNode textNode) {
+                if (textNode.getContents().isEmpty()) {
+                    continue;
+                }
+
                 // generate an outline of the text
                 var layout = new TextLayout(textNode.getContents(), FONT, frc);
                 var outline = layout.getOutline(AffineTransform.getTranslateInstance(x, y + ma));
