@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.app.components;
+package adudecalledleo.aftbg.app.component;
 
 import adudecalledleo.aftbg.app.model.FaceCBModel;
 import adudecalledleo.aftbg.app.model.FaceCategoryCBModel;
@@ -13,12 +13,15 @@ import java.awt.*;
 import java.util.function.Consumer;
 
 public final class FaceSelectionPanel extends JPanel {
+    private final Consumer<Face> faceUpdateListener;
     private final JComboBox<FaceCategory> catSel;
     private final JComboBox<Face> faceSel;
     private final FaceCategoryCBModel catModel;
     private final FaceCBModel faceModel;
 
     public FaceSelectionPanel(Consumer<Face> faceUpdateListener) {
+        this.faceUpdateListener = faceUpdateListener;
+
         catSel = new JComboBox<>();
         faceSel = new JComboBox<>();
 
@@ -68,5 +71,9 @@ public final class FaceSelectionPanel extends JPanel {
 
     public void updateFacePool(FacePool pool) {
         catModel.update(pool);
+    }
+
+    public void flushChanges() {
+        faceUpdateListener.accept(faceModel.getSelectedItem());
     }
 }

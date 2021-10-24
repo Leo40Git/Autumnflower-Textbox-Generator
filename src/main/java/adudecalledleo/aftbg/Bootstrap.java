@@ -57,6 +57,7 @@ public final class Bootstrap {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(panel);
         frame.pack();
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
@@ -91,12 +92,12 @@ public final class Bootstrap {
             throw new NullPointerException("Face \"Mercia/Neutral\" is missing!");
         }
 
-        BufferedImage dest = new BufferedImage(816, 180, OUTPUT_TRANSPARENT ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB);
+        BufferedImage dest = new BufferedImage(816, 180, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = dest.createGraphics();
         g.setBackground(OUTPUT_TRANSPARENT ? ColorUtils.TRANSPARENT : Color.BLACK);
         g.clearRect(0, 0, 816, 180);
 
-        winCtx.drawBackground(g, 4, 4, 808, 172, null);
+        winCtx.drawBackground(g, 4, 4, 812, 176, null);
         winCtx.drawBorder(g, 0, 0, 816, 180, null);
         g.drawImage(merciaNeutral.getImage(), 18, 18, null);
         WindowText.draw(g, nodes, winCtx.getColors(), 186, 21);

@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.app.components;
+package adudecalledleo.aftbg.app.component;
 
 import adudecalledleo.aftbg.app.WindowContextUpdateListener;
 import adudecalledleo.aftbg.util.ColorUtils;

@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.app.components;
+package adudecalledleo.aftbg.app.component;
 
 import adudecalledleo.aftbg.app.WindowContextUpdateListener;
 import adudecalledleo.aftbg.text.TextParser;
@@ -128,17 +128,22 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         this.hasFace = hasFace;
     }
 
+    public void flushChanges(boolean highlight) {
+        updateTimer.stop();
+        SwingUtilities.invokeLater(() -> {
+            textUpdateConsumer.accept(getText());
+            if (highlight) {
+                highlight();
+            }
+        });
+    }
+
     @Override
     public void updateWindowContext(WindowContext winCtx) {
         this.winCtx = winCtx;
         setCaretColor(winCtx.getColor(0));
         StyleConstants.setForeground(styleNormal, winCtx.getColor(0));
-        updateTimer.stop();
-        SwingUtilities.invokeLater(() -> {
-            repaint();
-            textUpdateConsumer.accept(getText());
-            highlight();
-        });
+        flushChanges(true);
     }
 
     private void highlight() {
@@ -193,6 +198,8 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                 }
             }
         }
+
+        SwingUtilities.invokeLater(this::repaint);
     }
 
     private static final class StyledDocumentImpl extends DefaultStyledDocument {
