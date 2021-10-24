@@ -34,12 +34,11 @@ public final class FaceSelectionPanel extends JPanel {
             if (catSel.equals(e.getSource())) {
                 var cat = catModel.getSelectedItem();
                 if (cat == null) {
-                    faceModel.update(FaceCategory.NONE);
-                    faceSel.setEnabled(false);
-                } else {
-                    faceModel.update(cat);
-                    faceSel.setEnabled(true);
+                    catModel.setSelectedItem(FaceCategory.NONE);
+                    return;
                 }
+                faceModel.update(cat);
+                faceSel.setEnabled(cat != FaceCategory.NONE);
             }
         });
         faceSel.addItemListener(e -> {
