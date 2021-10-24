@@ -17,22 +17,22 @@ public sealed abstract class ColorModifierNode extends ModifierNode {
     public abstract Color getColor(WindowColors windowColors);
 
     public static final class Window extends ColorModifierNode {
-        private final int i;
+        private final int index;
 
-        public Window(int start, int length, Span argSpan, int i) {
+        public Window(int start, int length, Span argSpan, int index) {
             super(start, length, argSpan);
-            this.i = i;
+            this.index = index;
         }
 
         @Override
         public Color getColor(WindowColors windowColors) {
-            return windowColors.get(i);
+            return windowColors.get(index);
         }
 
         @Override
         public String toString() {
             return "ColorModifierNode.Window{" +
-                    "i=" + i +
+                    "index=" + index +
                     ", start=" + start +
                     ", length=" + length +
                     ", argSpans=" + Arrays.toString(argSpans) +
@@ -109,13 +109,25 @@ public sealed abstract class ColorModifierNode extends ModifierNode {
                 nodes.add(new Constant(start, 2 + hexlen + 2, new Span(argsStart, hexlen + 1),
                         new Color(r | g << 8 | b << 16, false)));
             } else {
+                int index;
                 try {
-                    nodes.add(new Window(start, 2 + args.length() + 2, new Span(argsStart, args.length()),
-                            Integer.parseUnsignedInt(args)));
+                    index = Integer.parseUnsignedInt(args);
                 } catch (NumberFormatException e) {
                     nodes.add(new ErrorNode(argsStart, args.length(),
                             ERROR_PREFIX + "Couldn't parse window color ID"));
+                    return;
                 }
+                if (index < 0) {
+                    nodes.add(new ErrorNode(argsStart, args.length(),
+                            ERROR_PREFIX + "Window color ID cannot be negative"));
+                    return;
+                }
+                if (index >= 32) {
+                    nodes.add(new ErrorNode(argsStart, args.length(),
+                            ERROR_PREFIX + "Window color ID is too high, max is 31"));
+                    return;
+                }
+                nodes.add(new Window(start, 2 + args.length() + 2, new Span(argsStart, args.length()), index));
             }
         }
     }
