@@ -1,5 +1,6 @@
 package adudecalledleo.aftbg.app.render;
 
+import adudecalledleo.aftbg.app.WindowContextUpdateListener;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.node.NodeUtils;
@@ -8,16 +9,18 @@ import adudecalledleo.aftbg.window.WindowContext;
 import javax.swing.*;
 import java.awt.*;
 
-public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox> {
-    private static final Color HIGHLIGHT = new Color(255, 255, 255, 31);
-
+public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox> implements WindowContextUpdateListener {
     private final TextParser textParser;
 
-    public TextboxListCellRenderer(TextParser textParser, WindowContext winCtx) {
+    public TextboxListCellRenderer(TextParser textParser) {
         super();
         this.textParser = textParser;
         setPreferredSize(new Dimension(72 * 4 + 4, 72));
         setMinimumSize(new Dimension(72 * 4 + 4, 72));
+    }
+
+    @Override
+    public void updateWindowContext(WindowContext winCtx) {
         setForeground(winCtx.getColor(0));
     }
 

@@ -1,5 +1,6 @@
 package adudecalledleo.aftbg.app.components;
 
+import adudecalledleo.aftbg.app.WindowContextUpdateListener;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.modifier.ColorModifierNode;
 import adudecalledleo.aftbg.text.node.ErrorNode;
@@ -23,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public final class TextboxEditorPane extends JEditorPane {
+public final class TextboxEditorPane extends JEditorPane implements WindowContextUpdateListener {
     private static final BufferedImage SCRATCH_IMAGE = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 
     private final TextParser textParser;
@@ -37,10 +38,9 @@ public final class TextboxEditorPane extends JEditorPane {
     private WindowContext winCtx;
     private boolean hasFace;
 
-    public TextboxEditorPane(TextParser textParser, WindowContext winCtx, Consumer<String> textUpdateConsumer) {
+    public TextboxEditorPane(TextParser textParser, Consumer<String> textUpdateConsumer) {
         super();
         this.textParser = textParser;
-        this.winCtx = winCtx;
         this.textUpdateConsumer = textUpdateConsumer;
         errors = new HashMap<>();
         scratchLine = new Line2D.Double(0, 0, 0, 0);
@@ -58,12 +58,10 @@ public final class TextboxEditorPane extends JEditorPane {
         updateTimer.setRepeats(false);
         updateTimer.setCoalesce(true);
 
-        setCaretColor(winCtx.getColor(0));
-
         styleNormal = new SimpleAttributeSet();
         StyleConstants.setFontFamily(styleNormal, WindowText.FONT.getFamily());
         StyleConstants.setFontSize(styleNormal, WindowText.FONT.getSize());
-        StyleConstants.setForeground(styleNormal, winCtx.getColor(0));
+        StyleConstants.setForeground(styleNormal, Color.WHITE);
         styleMod = new SimpleAttributeSet(styleNormal);
         StyleConstants.setForeground(styleMod, Color.GRAY);
         coloredStyles = new HashMap<>();
@@ -130,8 +128,11 @@ public final class TextboxEditorPane extends JEditorPane {
         this.hasFace = hasFace;
     }
 
-    public void setWindowContext(WindowContext winCtx) {
+    @Override
+    public void updateWindowContext(WindowContext winCtx) {
         this.winCtx = winCtx;
+        setCaretColor(winCtx.getColor(0));
+        StyleConstants.setForeground(styleNormal, winCtx.getColor(0));
         updateTimer.stop();
         SwingUtilities.invokeLater(() -> {
             repaint();
@@ -145,6 +146,10 @@ public final class TextboxEditorPane extends JEditorPane {
             AttributeSet style = styleNormal;
             doc.setParagraphAttributes(0, doc.getLength(), style, true);
             doc.setCharacterAttributes(0, doc.getLength(), style, true);
+
+            if (winCtx == null) {
+                return;
+            }
 
             NodeList nodes;
             try {

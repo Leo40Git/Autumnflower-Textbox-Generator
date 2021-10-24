@@ -13,7 +13,8 @@ public final class FaceCBModel extends AbstractListModel<Face> implements ComboB
 
     public FaceCBModel() {
         faces = new ArrayList<>();
-        selected = -1;
+        faces.add(Face.NONE);
+        selected = 0;
     }
 
     public void update(FaceCategory cat) {

@@ -13,7 +13,8 @@ public final class FaceCategoryCBModel extends AbstractListModel<FaceCategory> i
 
     public FaceCategoryCBModel() {
         categories = new ArrayList<>();
-        selected = -1;
+        categories.add(FaceCategory.NONE);
+        selected = 0;
     }
 
     public void update(FacePool pool) {

@@ -7,9 +7,6 @@ public final class NodeUtils {
         if (nodes.hasErrors()) {
             return "(has errors)";
         }
-        if (nodes.isEmpty()) {
-            return "(empty)";
-        }
         int len = 0;
         StringBuilder sb = new StringBuilder();
         for (var node : nodes) {
@@ -26,6 +23,10 @@ public final class NodeUtils {
                 break;
             }
         }
-        return '"' + sb.toString() + '"';
+        if (len == 0) {
+            return "(empty)";
+        } else {
+            return '"' + sb.toString() + '"';
+        }
     }
 }

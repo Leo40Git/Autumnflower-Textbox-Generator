@@ -6,7 +6,7 @@ import adudecalledleo.aftbg.app.components.TextboxSelectorScrollPane;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.render.TextboxListCellRenderer;
 import adudecalledleo.aftbg.face.Face;
-import adudecalledleo.aftbg.face.FacePool;
+import adudecalledleo.aftbg.game.GameDefinition;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.window.WindowContext;
 
@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class MainPanel extends JPanel {
+    private final List<WindowContextUpdateListener> winCtxUpdateListeners;
+
     private final List<Textbox> textboxes;
     private int currentTextbox;
 
@@ -23,25 +25,29 @@ public final class MainPanel extends JPanel {
     private final FaceSelectionPanel faceSelection;
     private final TextboxEditorPane editorPane;
 
-    public MainPanel(TextParser textParser, WindowContext winCtx, FacePool pool) {
-        faceSelection = new FaceSelectionPanel(this::onFaceChanged);
-        faceSelection.updateFacePool(pool);
-        editorPane = new TextboxEditorPane(textParser, winCtx, this::onTextUpdated);
+    public MainPanel(TextParser textParser) {
+        winCtxUpdateListeners = new ArrayList<>();
 
         textboxes = new ArrayList<>();
-        textboxes.add(new Textbox(Face.NONE, "Hello!"));
-        textboxes.add(new Textbox(Face.NONE, "This is a test."));
-        textboxes.add(new Textbox(Face.NONE, "blablablablablablablablablablablablablablabla"));
+        textboxes.add(new Textbox(Face.NONE, ""));
         currentTextbox = 0;
+
+        faceSelection = new FaceSelectionPanel(this::onFaceChanged);
+        editorPane = new TextboxEditorPane(textParser, this::onTextUpdated);
+        winCtxUpdateListeners.add(editorPane);
 
         textboxSelector = new JList<>();
         textboxSelector.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         updateTextboxSelectorModel();
-        textboxSelector.setCellRenderer(new TextboxListCellRenderer(textParser, winCtx));
+        var renderer = new TextboxListCellRenderer(textParser);
+        winCtxUpdateListeners.add(renderer);
+        textboxSelector.setCellRenderer(renderer);
         textboxSelector.setOpaque(false);
 
         JPanel listPanel = new JPanel();
-        listPanel.add(new TextboxSelectorScrollPane(textboxSelector, winCtx));
+        var scroll = new TextboxSelectorScrollPane(textboxSelector);
+        winCtxUpdateListeners.add(scroll);
+        listPanel.add(scroll);
 
         JPanel textboxPanel = new JPanel();
         textboxPanel.setLayout(new BorderLayout());
@@ -53,6 +59,16 @@ public final class MainPanel extends JPanel {
         add(textboxPanel, BorderLayout.CENTER);
     }
 
+    public void updateWindowContext(WindowContext winCtx) {
+        for (var listener : winCtxUpdateListeners) {
+            listener.updateWindowContext(winCtx);
+        }
+    }
+
+    public void updateGameDefinition(GameDefinition gameDef) {
+        faceSelection.updateFacePool(gameDef.getFaces());
+    }
+
     private void updateTextboxSelectorModel() {
         DefaultListModel<Textbox> model = new DefaultListModel<>();
         model.addAll(textboxes);
@@ -62,10 +78,12 @@ public final class MainPanel extends JPanel {
     }
 
     public void onFaceChanged(Face newFace) {
-        System.out.println("Changed to " + newFace.getPath());
+        textboxes.get(currentTextbox).setFace(newFace);
+        updateTextboxSelectorModel();
     }
 
     public void onTextUpdated(String newText) {
-        // NOOP
+        textboxes.get(currentTextbox).setText(newText);
+        updateTextboxSelectorModel();
     }
 }

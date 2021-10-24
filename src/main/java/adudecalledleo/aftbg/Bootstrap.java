@@ -49,9 +49,13 @@ public final class Bootstrap {
 
         WindowContext winCtx = loadWinCtx(def, basePath);
 
+        var panel = new MainPanel(new TextParser());
+        panel.updateGameDefinition(def);
+        panel.updateWindowContext(winCtx);
+
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(new MainPanel(new TextParser(), winCtx, def.getFaces()));
+        frame.add(panel);
         frame.pack();
         frame.setVisible(true);
     }
