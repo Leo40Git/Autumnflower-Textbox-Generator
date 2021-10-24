@@ -51,7 +51,7 @@ public final class Bootstrap {
 
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setContentPane(new MainPanel(new TextParser(), winCtx, def.getFaces()));
+        frame.add(new MainPanel(new TextParser(), winCtx, def.getFaces()));
         frame.pack();
         frame.setVisible(true);
     }

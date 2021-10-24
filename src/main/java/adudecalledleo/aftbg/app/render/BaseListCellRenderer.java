@@ -2,8 +2,8 @@ package adudecalledleo.aftbg.app.render;
 
 import javax.swing.*;
 
-public abstract class BaseCBRenderer<T> extends JLabel implements ListCellRenderer<T> {
-    protected BaseCBRenderer() {
+public abstract class BaseListCellRenderer<T> extends JLabel implements ListCellRenderer<T> {
+    protected BaseListCellRenderer() {
         super();
         setOpaque(true);
         setHorizontalAlignment(LEFT);

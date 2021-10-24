@@ -5,8 +5,8 @@ import adudecalledleo.aftbg.face.FaceCategory;
 import javax.swing.*;
 import java.awt.*;
 
-public final class FaceCategoryCBRenderer extends BaseCBRenderer<FaceCategory> {
-    public FaceCategoryCBRenderer() {
+public final class FaceCategoryListCellRenderer extends BaseListCellRenderer<FaceCategory> {
+    public FaceCategoryListCellRenderer() {
         super();
         setPreferredSize(new Dimension(72 * 3 + 4, 72));
         setMinimumSize(new Dimension(72 * 3 + 4, 72));

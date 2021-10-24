@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.app;
+package adudecalledleo.aftbg.app.components;
 
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.modifier.ColorModifierNode;
@@ -18,11 +18,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
 public final class TextboxEditorPane extends JEditorPane {
+    private static final BufferedImage SCRATCH_IMAGE = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+
     private final TextParser textParser;
     private final Consumer<String> textUpdateConsumer;
     private final Timer updateTimer;
@@ -57,9 +60,6 @@ public final class TextboxEditorPane extends JEditorPane {
 
         setCaretColor(winCtx.getColor(0));
 
-        setFont(WindowText.FONT);
-        setForeground(winCtx.getColor(0));
-
         styleNormal = new SimpleAttributeSet();
         StyleConstants.setFontFamily(styleNormal, WindowText.FONT.getFamily());
         StyleConstants.setFontSize(styleNormal, WindowText.FONT.getSize());
@@ -67,6 +67,14 @@ public final class TextboxEditorPane extends JEditorPane {
         styleMod = new SimpleAttributeSet(styleNormal);
         StyleConstants.setForeground(styleMod, Color.GRAY);
         coloredStyles = new HashMap<>();
+
+        Graphics2D g = SCRATCH_IMAGE.createGraphics();
+        g.setFont(WindowText.FONT);
+        var fm = g.getFontMetrics();
+        var size = new Dimension(fm.stringWidth("XXXXXXXXXXXXXXXXXXXXXXXXXX"), fm.getHeight() * 4 + fm.getDescent());
+        setMinimumSize(size);
+        setPreferredSize(size);
+        g.dispose();
 
         addKeyListener(new KeyAdapter() {
             @Override
@@ -86,10 +94,9 @@ public final class TextboxEditorPane extends JEditorPane {
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setComposite(AlphaComposite.SrcOver);
         g2d.setBackground(ColorUtils.TRANSPARENT);
         g2d.clearRect(0, 0, getWidth(), getHeight());
-        winCtx.drawBackground((Graphics2D) g, 0, 0, getWidth(), getHeight(), null);
+        winCtx.drawBackground(g2d, 0, 0, getWidth(), getHeight(), null);
         super.paintComponent(g);
 
         g2d.setColor(Color.RED);

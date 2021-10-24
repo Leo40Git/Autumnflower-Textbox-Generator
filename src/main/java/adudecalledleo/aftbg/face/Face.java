@@ -13,6 +13,8 @@ import java.nio.file.Path;
 public final class Face {
     private static final BufferedImage BLANK = new BufferedImage(144, 144, BufferedImage.TYPE_INT_ARGB);
 
+    public static final Face NONE = new Face("(none)", "None", null, BLANK);
+
     static {
         Graphics2D g = BLANK.createGraphics();
         g.setBackground(ColorUtils.TRANSPARENT);

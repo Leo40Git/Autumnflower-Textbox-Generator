@@ -25,7 +25,7 @@ public final class WindowColors {
         return colors.length;
     }
 
-    public Color get(int i) {
-        return colors[i];
+    public Color get(int index) {
+        return colors[index];
     }
 }

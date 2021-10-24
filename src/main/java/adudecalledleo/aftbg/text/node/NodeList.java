@@ -15,6 +15,10 @@ public final class NodeList implements Iterable<Node> {
         errors = new ArrayList<>();
     }
 
+    public boolean isEmpty() {
+        return wrapped.isEmpty();
+    }
+
     public void add(Node node) {
         if (node instanceof ErrorNode err)
             errors.add(err);

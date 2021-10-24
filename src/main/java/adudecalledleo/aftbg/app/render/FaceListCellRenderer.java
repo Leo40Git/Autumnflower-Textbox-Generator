@@ -1,13 +1,12 @@
 package adudecalledleo.aftbg.app.render;
 
 import adudecalledleo.aftbg.face.Face;
-import adudecalledleo.aftbg.face.FaceCategory;
 
 import javax.swing.*;
 import java.awt.*;
 
-public final class FaceCBRenderer extends BaseCBRenderer<Face> {
-    public FaceCBRenderer() {
+public final class FaceListCellRenderer extends BaseListCellRenderer<Face> {
+    public FaceListCellRenderer() {
         super();
         setPreferredSize(new Dimension(72 * 4 + 4, 72));
         setMinimumSize(new Dimension(72 * 4 + 4, 72));

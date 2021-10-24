@@ -6,10 +6,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class FaceCategory {
-    public static final FaceCategory NONE = new FaceCategory("None");
+    public static final FaceCategory NONE = new FaceCategory(Face.NONE.getCategory());
 
     static {
-        NONE.add("(none)", null);
+        NONE.faces.put(Face.NONE.getName(), Face.NONE);
     }
 
     private final String name;

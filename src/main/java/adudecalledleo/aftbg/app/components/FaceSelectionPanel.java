@@ -1,9 +1,9 @@
-package adudecalledleo.aftbg.app;
+package adudecalledleo.aftbg.app.components;
 
 import adudecalledleo.aftbg.app.model.FaceCBModel;
 import adudecalledleo.aftbg.app.model.FaceCategoryCBModel;
-import adudecalledleo.aftbg.app.render.FaceCBRenderer;
-import adudecalledleo.aftbg.app.render.FaceCategoryCBRenderer;
+import adudecalledleo.aftbg.app.render.FaceListCellRenderer;
+import adudecalledleo.aftbg.app.render.FaceCategoryListCellRenderer;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FaceCategory;
 import adudecalledleo.aftbg.face.FacePool;
@@ -26,9 +26,9 @@ public final class FaceSelectionPanel extends JPanel {
         faceModel = new FaceCBModel();
 
         catSel.setModel(catModel);
-        catSel.setRenderer(new FaceCategoryCBRenderer());
+        catSel.setRenderer(new FaceCategoryListCellRenderer());
         faceSel.setModel(faceModel);
-        faceSel.setRenderer(new FaceCBRenderer());
+        faceSel.setRenderer(new FaceListCellRenderer());
 
         catSel.addItemListener(e -> {
             if (catSel.equals(e.getSource())) {
@@ -58,9 +58,11 @@ public final class FaceSelectionPanel extends JPanel {
         c.gridx = 0;
         c.gridy = 0;
         c.weightx = 0.6;
+        c.insets.right = 4;
         add(catSel, c);
         c.gridx++;
         c.weightx = 0.4;
+        c.insets.right = 0;
         add(faceSel, c);
     }
 

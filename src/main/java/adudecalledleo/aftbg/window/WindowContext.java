@@ -33,7 +33,7 @@ public final class WindowContext {
         return colors;
     }
 
-    public Color getColor(int i) {
-        return colors.get(i);
+    public Color getColor(int index) {
+        return colors.get(index);
     }
 }
