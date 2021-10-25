@@ -31,7 +31,7 @@ public final class NodeList implements Iterable<Node> {
             if (node instanceof TextNode t1) {
                 Node nextNode = wrapped.get(i + 1);
                 if (nextNode instanceof TextNode t2) {
-                    wrapped.set(i, new TextNode(0, t1.getContents() + t2.getContents()));
+                    wrapped.set(i, new TextNode(t1.getStart(), t1.getContents() + t2.getContents()));
                     wrapped.remove(i + 1);
                 } else if (t1.getContents().isEmpty()) {
                     wrapped.remove(i);

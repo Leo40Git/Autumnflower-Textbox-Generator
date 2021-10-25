@@ -87,18 +87,20 @@ public final class TextParser {
                     sb.append(c);
             }
         }
+
+        flushTextNode();
         if (backslash) {
             //throw new TextParserException("Backslash at end of text", chars.length - 1);
             nodes.add(new ErrorNode(chars.length - 1, 1, "Backslash at end of text"));
         }
-        flushTextNode();
-
         nodes.optimize();
         return nodes;
     }
 
     private void flushTextNode() {
-        nodes.add(new TextNode(textStartPos, sb.toString()));
-        sb.setLength(0);
+        if (sb.length() > 0) {
+            nodes.add(new TextNode(textStartPos, sb.toString()));
+            sb.setLength(0);
+        }
     }
 }

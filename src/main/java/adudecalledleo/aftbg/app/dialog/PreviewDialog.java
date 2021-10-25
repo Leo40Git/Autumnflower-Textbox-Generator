@@ -2,7 +2,6 @@ package adudecalledleo.aftbg.app.dialog;
 
 import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.TransferableImage;
-import com.sun.tools.javac.Main;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

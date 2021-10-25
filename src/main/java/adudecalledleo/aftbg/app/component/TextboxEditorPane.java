@@ -49,7 +49,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         setEditorKit(new EditorKitImpl());
         setDocument(new StyledDocumentImpl());
 
-        updateTimer = new Timer(500, e -> {
+        updateTimer = new Timer(250, e -> {
             SwingUtilities.invokeLater(() -> {
                 textUpdateConsumer.accept(getText());
                 highlight();
@@ -69,7 +69,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         Graphics2D g = SCRATCH_IMAGE.createGraphics();
         g.setFont(WindowText.FONT);
         var fm = g.getFontMetrics();
-        var size = new Dimension(fm.stringWidth("XXXXXXXXXXXXXXXXXXXXXXXXXX"), fm.getHeight() * 4 + fm.getDescent());
+        var size = new Dimension(780, fm.getHeight() * 4 + fm.getDescent());
         setMinimumSize(size);
         setPreferredSize(size);
         g.dispose();
@@ -136,6 +136,13 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                 highlight();
             }
         });
+    }
+
+    @Override
+    public void setText(String t) {
+        super.setText(t);
+        updateTimer.stop();
+        SwingUtilities.invokeLater(this::highlight);
     }
 
     @Override

@@ -6,6 +6,8 @@ public final class NodeUtils {
     public static String getTruncatedDisplay(NodeList nodes, int maxLength) {
         if (nodes.hasErrors()) {
             return "(has errors)";
+        } else if (nodes.isEmpty()) {
+            return "(empty)";
         }
         int len = 0;
         StringBuilder sb = new StringBuilder();

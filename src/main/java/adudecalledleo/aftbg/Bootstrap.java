@@ -97,7 +97,7 @@ public final class Bootstrap {
         g.setBackground(OUTPUT_TRANSPARENT ? ColorUtils.TRANSPARENT : Color.BLACK);
         g.clearRect(0, 0, 816, 180);
 
-        winCtx.drawBackground(g, 4, 4, 812, 176, null);
+        winCtx.drawBackground(g, 4, 4, 808, 172, null);
         winCtx.drawBorder(g, 0, 0, 816, 180, null);
         g.drawImage(merciaNeutral.getImage(), 18, 18, null);
         WindowText.draw(g, nodes, winCtx.getColors(), 186, 21);

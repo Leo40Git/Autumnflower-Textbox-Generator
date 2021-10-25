@@ -11,6 +11,10 @@ public final class Textbox {
         this.text = text;
     }
 
+    public Textbox(Textbox other) {
+        this(other.face, other.text);
+    }
+
     public Face getFace() {
         return face;
     }

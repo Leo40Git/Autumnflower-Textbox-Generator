@@ -19,6 +19,8 @@ public final class FaceSelectionPanel extends JPanel {
     private final FaceCategoryCBModel catModel;
     private final FaceCBModel faceModel;
 
+    private FacePool facePool;
+
     public FaceSelectionPanel(Consumer<Face> faceUpdateListener) {
         this.faceUpdateListener = faceUpdateListener;
 
@@ -67,10 +69,23 @@ public final class FaceSelectionPanel extends JPanel {
         c.weightx = 0.4;
         c.insets.right = 0;
         add(faceSel, c);
+
+        catSel.setSelectedItem(FaceCategory.NONE);
+        faceSel.setSelectedItem(Face.NONE);
+        faceSel.setEnabled(false);
     }
 
     public void updateFacePool(FacePool pool) {
+        this.facePool = pool;
         catModel.update(pool);
+    }
+
+    public void setFace(Face face) {
+        if (facePool != null) {
+            var cat = facePool.getCategory(face.getCategory());
+            catModel.setSelectedItem(cat);
+            faceModel.setSelectedItem(face);
+        }
     }
 
     public void flushChanges() {
