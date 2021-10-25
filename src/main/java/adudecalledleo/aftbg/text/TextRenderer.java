@@ -1,10 +1,11 @@
-package adudecalledleo.aftbg.window;
+package adudecalledleo.aftbg.text;
 
 import adudecalledleo.aftbg.text.modifier.ColorModifierNode;
 import adudecalledleo.aftbg.text.node.LineBreakNode;
 import adudecalledleo.aftbg.text.node.Node;
 import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.text.node.TextNode;
+import adudecalledleo.aftbg.window.WindowColors;
 
 import java.awt.*;
 import java.awt.font.TextLayout;
@@ -13,7 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-public final class WindowText {
+public final class TextRenderer {
     public static final Color OUTLINE_COLOR = new Color(0, 0, 0, 127);
     public static final int OUTLINE_WIDTH = 4;
     private static final Stroke OUTLINE_STROKE = new BasicStroke(OUTLINE_WIDTH, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
@@ -30,7 +31,7 @@ public final class WindowText {
     // region Font loading stuff
     static {
         Font base;
-        try (InputStream in = WindowText.class.getResourceAsStream("/" + FONT_PATH)) {
+        try (InputStream in = TextRenderer.class.getResourceAsStream("/" + FONT_PATH)) {
             if (in == null)
                 throw new FileNotFoundException(FONT_PATH);
             base = Font.createFont(Font.TRUETYPE_FONT, in);
@@ -45,7 +46,7 @@ public final class WindowText {
     }
     // endregion
 
-    private WindowText() { }
+    private TextRenderer() { }
 
     public static void loadFont() { /* <clinit> */ }
 

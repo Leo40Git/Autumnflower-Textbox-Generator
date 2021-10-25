@@ -5,6 +5,7 @@ import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FaceLoadException;
 import adudecalledleo.aftbg.game.GameDefinition;
 import adudecalledleo.aftbg.text.TextParser;
+import adudecalledleo.aftbg.text.TextRenderer;
 import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.util.ColorUtils;
 import adudecalledleo.aftbg.window.*;
@@ -28,7 +29,7 @@ public final class Bootstrap {
             e.printStackTrace();
         }
 
-        WindowText.loadFont();
+        TextRenderer.loadFont();
 
         Path basePath = Paths.get("scratch");
 
@@ -100,7 +101,7 @@ public final class Bootstrap {
         winCtx.drawBackground(g, 4, 4, 808, 172, null);
         winCtx.drawBorder(g, 0, 0, 816, 180, null);
         g.drawImage(merciaNeutral.getImage(), 18, 18, null);
-        WindowText.draw(g, nodes, winCtx.getColors(), 186, 21);
+        TextRenderer.draw(g, nodes, winCtx.getColors(), 186, 21);
         winCtx.drawArrow(g, 0, 0, 816, 180, 3, null);
 
         g.dispose();

@@ -10,7 +10,7 @@ import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.game.GameDefinition;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.window.WindowContext;
-import adudecalledleo.aftbg.window.WindowText;
+import adudecalledleo.aftbg.text.TextRenderer;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -205,7 +205,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     winCtx.drawBackground(g, 4, 4 + 182 * i, 808, 172, null);
                     winCtx.drawBorder(g, 0, 182 * i, 816, 180, null);
                     g.drawImage(textbox.getFace().getImage(), 18, 18 + 182 * i, null);
-                    WindowText.draw(g, nodes, winCtx.getColors(),
+                    TextRenderer.draw(g, nodes, winCtx.getColors(),
                             textbox.getFace().isBlank() ? 18 : 186,
                             21 + 182 * i);
                     winCtx.drawArrow(g, 0, 182 * i, 816, 180, 0, null);

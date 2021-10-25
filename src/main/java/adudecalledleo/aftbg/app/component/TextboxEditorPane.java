@@ -9,7 +9,7 @@ import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.text.node.Span;
 import adudecalledleo.aftbg.util.ColorUtils;
 import adudecalledleo.aftbg.window.WindowContext;
-import adudecalledleo.aftbg.window.WindowText;
+import adudecalledleo.aftbg.text.TextRenderer;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -59,15 +59,15 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         updateTimer.setCoalesce(true);
 
         styleNormal = new SimpleAttributeSet();
-        StyleConstants.setFontFamily(styleNormal, WindowText.FONT.getFamily());
-        StyleConstants.setFontSize(styleNormal, WindowText.FONT.getSize());
+        StyleConstants.setFontFamily(styleNormal, TextRenderer.FONT.getFamily());
+        StyleConstants.setFontSize(styleNormal, TextRenderer.FONT.getSize());
         StyleConstants.setForeground(styleNormal, Color.WHITE);
         styleMod = new SimpleAttributeSet(styleNormal);
         StyleConstants.setForeground(styleMod, Color.GRAY);
         coloredStyles = new HashMap<>();
 
         Graphics2D g = SCRATCH_IMAGE.createGraphics();
-        g.setFont(WindowText.FONT);
+        g.setFont(TextRenderer.FONT);
         var fm = g.getFontMetrics();
         var size = new Dimension(780, fm.getHeight() * 4 + fm.getDescent());
         setMinimumSize(size);
