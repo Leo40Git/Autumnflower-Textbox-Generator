@@ -20,6 +20,7 @@ public final class PreviewDialog extends JDialog {
     public PreviewDialog(Frame owner, BufferedImage image) {
         super(owner);
         this.image = image;
+        setTitle("Preview generated textbox(es)");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
         add(new PreviewPanel());

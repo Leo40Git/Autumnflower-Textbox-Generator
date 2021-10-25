@@ -55,6 +55,7 @@ public final class Bootstrap {
         panel.updateWindowContext(winCtx);
 
         JFrame frame = new JFrame();
+        frame.setTitle("Autumnflower Textbox Generator");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(panel);
         frame.pack();
