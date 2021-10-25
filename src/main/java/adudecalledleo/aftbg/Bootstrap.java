@@ -8,7 +8,7 @@ import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.TextRenderer;
 import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.util.ColorUtils;
-import adudecalledleo.aftbg.window.*;
+import adudecalledleo.aftbg.window.WindowContext;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

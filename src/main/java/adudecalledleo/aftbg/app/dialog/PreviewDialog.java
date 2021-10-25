@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 public final class PreviewDialog extends JDialog {
     private final BufferedImage image;
@@ -28,31 +29,49 @@ public final class PreviewDialog extends JDialog {
     }
 
     private final class PreviewPanel extends JPanel implements ActionListener {
+        private static final String AC_BGCOLOR = "bgcolor";
         private static final String AC_COPY = "copy";
         private static final String AC_SAVE = "save";
 
+        private final JLabel previewLabel;
+        private Color backgroundColor;
+
         public PreviewPanel() {
             super();
+            backgroundColor = Color.BLACK;
+
             ImageIcon icon = new ImageIcon(image, "textbox(es) preview");
             setLayout(new BorderLayout());
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-            final JPanel previewPanel = new JPanel();
-            final JLabel previewLabel = new JLabel(icon);
+            JPanel previewPanel = new JPanel();
+            previewLabel = new JLabel(icon);
             previewLabel.setMinimumSize(new Dimension(0, icon.getIconHeight()));
+            previewLabel.setOpaque(true);
+            previewLabel.setBackground(backgroundColor);
             previewPanel.add(previewLabel);
             previewPanel.setMinimumSize(new Dimension(icon.getIconWidth(), 0));
-            final JScrollPane previewScroll = new JScrollPane(previewPanel);
+            JScrollPane previewScroll = new JScrollPane(previewPanel);
             add(previewScroll, BorderLayout.CENTER);
-            final JPanel buttonPanel = new JPanel();
+
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setLayout(new GridLayout(1, 3));
+            JButton bgcolorButton = new JButton("Change Background Color");
+            bgcolorButton.addActionListener(this);
+            bgcolorButton.setActionCommand(AC_BGCOLOR);
+            bgcolorButton.setToolTipText("<html>Set the preview's background color<br>" +
+                    "<b>NOTE:</b> On Windows, this will also set the background color of the image on the clipboard</html>");
+            buttonPanel.add(bgcolorButton);
             JButton copyButton = new JButton("Copy to Clipboard");
             copyButton.addActionListener(this);
             copyButton.setActionCommand(AC_COPY);
-            copyButton.setToolTipText("Copy this textbox (or these textboxes) to the clipboard");
+            copyButton.setToolTipText("<html>Copy these textbox(es) to the clipboard<br>" +
+                    "<b>NOTE:</b> The clipboard image might not have transparency!</html>");
             buttonPanel.add(copyButton);
             JButton saveButton = new JButton("Save to File");
             saveButton.addActionListener(this);
             saveButton.setActionCommand(AC_SAVE);
-            saveButton.setToolTipText("Save this textbox (or these textboxes) as an image");
+            saveButton.setToolTipText("<html>Save these textbox(es) as an image<br>" +
+                    "This image will have transparency</html>");
             saveButton.setPreferredSize(copyButton.getPreferredSize());
             buttonPanel.add(saveButton);
             add(buttonPanel, BorderLayout.PAGE_END);
@@ -61,6 +80,14 @@ public final class PreviewDialog extends JDialog {
         @Override
         public void actionPerformed(ActionEvent e) {
             switch (e.getActionCommand()) {
+                case AC_BGCOLOR -> {
+                    Color newColor = JColorChooser.showDialog(PreviewDialog.this,
+                            "Set new background color", backgroundColor, false);
+                    if (newColor != null) {
+                        backgroundColor = newColor;
+                        previewLabel.setBackground(backgroundColor);
+                    }
+                }
                 case AC_COPY -> {
                     Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
                     if (cb == null) {
@@ -69,8 +96,20 @@ public final class PreviewDialog extends JDialog {
                                 "Couldn't copy image to clipboard!", JOptionPane.ERROR_MESSAGE);
                         break;
                     }
+
+                    BufferedImage imageToCopy = image;
+                    if (System.getProperty("os.name", "").toLowerCase(Locale.ROOT).startsWith("windows")) {
+                        // thanks to both Windows and Java being a shits, transparent images aren't supported on the clipboard
+                        imageToCopy = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+                        Graphics2D g = imageToCopy.createGraphics();
+                        g.setBackground(backgroundColor);
+                        g.clearRect(0, 0, image.getWidth(), image.getHeight());
+                        g.drawImage(image, 0, 0, null);
+                        g.dispose();
+                    }
+
                     try {
-                        cb.setContents(new TransferableImage(image), null);
+                        cb.setContents(new TransferableImage(imageToCopy), null);
                     } catch (Exception ex) {
                         //Main.LOGGER.error("Error while copying image to clipboard!", ex);
                         JOptionPane.showMessageDialog(this,

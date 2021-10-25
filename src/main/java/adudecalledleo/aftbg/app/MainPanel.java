@@ -9,6 +9,7 @@ import adudecalledleo.aftbg.app.render.TextboxListCellRenderer;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.game.GameDefinition;
 import adudecalledleo.aftbg.text.TextParser;
+import adudecalledleo.aftbg.util.ColorUtils;
 import adudecalledleo.aftbg.window.WindowContext;
 import adudecalledleo.aftbg.text.TextRenderer;
 
@@ -191,8 +192,12 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
                 final int textboxCount = textboxes.size();
                 var image = new BufferedImage(816, 180 * textboxCount + 2 * (textboxCount - 1), BufferedImage.TYPE_INT_ARGB);
-                var g = image.createGraphics();
 
+                var g = image.createGraphics();
+                g.setBackground(ColorUtils.TRANSPARENT);
+                g.clearRect(0, 0, image.getWidth(), image.getHeight());
+
+                var oldClip = g.getClip();
                 boolean success = true;
                 for (int i = 0; i < textboxCount; i++) {
                     var textbox = textboxes.get(i);
@@ -202,14 +207,16 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         break;
                     }
 
+                    g.setClip(0, 182 * i, 816, 180);
                     winCtx.drawBackground(g, 4, 4 + 182 * i, 808, 172, null);
-                    winCtx.drawBorder(g, 0, 182 * i, 816, 180, null);
                     g.drawImage(textbox.getFace().getImage(), 18, 18 + 182 * i, null);
                     TextRenderer.draw(g, nodes, winCtx.getColors(),
                             textbox.getFace().isBlank() ? 18 : 186,
                             21 + 182 * i);
+                    winCtx.drawBorder(g, 0, 182 * i, 816, 180, null);
                     winCtx.drawArrow(g, 0, 182 * i, 816, 180, 0, null);
                 }
+                g.setClip(oldClip);
 
                 g.dispose();
 
