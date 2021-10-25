@@ -10,8 +10,7 @@ import adudecalledleo.aftbg.text.node.TextNode;
 public final class TextParser {
     private final ModifierRegistry modifierRegistry;
     private final StringBuilder sb;
-    private int pos, textStartPos, modStartPos;
-    private char[] chars;
+    private int textStart, textLength;
     private NodeList nodes;
 
     public TextParser() {
@@ -24,21 +23,24 @@ public final class TextParser {
     }
 
     public NodeList parse(String text) {
-        chars = text.toCharArray();
+        char[] chars = text.toCharArray();
         sb.setLength(0);
         nodes = new NodeList();
-        textStartPos = 0;
+        textStart = 0;
+        textLength = 0;
 
         boolean backslash = false;
+        int pos;
         for (pos = 0; pos < chars.length; pos++) {
             char c = chars[pos];
             if (backslash) {
                 backslash = false;
-                if (c == '\\')
+                if (c == '\\') {
                     sb.append('\\');
-                else {
+                    textLength += 2;
+                } else {
                     flushTextNode();
-                    modStartPos = pos++ - 1;
+                    int modStartPos = pos++ - 1;
                     var parser = modifierRegistry.get(c);
                     if (pos < chars.length && chars[pos] == '[') {
                         final int start = pos++;
@@ -74,7 +76,7 @@ public final class TextParser {
                             parser.parse(modStartPos, -1, null, nodes);
                         }
                     }
-                    textStartPos = pos + 1;
+                    textStart = pos + 1;
                 }
             } else {
                 if (c == '\\')
@@ -82,9 +84,11 @@ public final class TextParser {
                 else if (c == '\n') {
                     flushTextNode();
                     nodes.add(new LineBreakNode(pos));
-                    textStartPos = pos + 1;
-                } else
+                    textStart = pos + 1;
+                } else {
                     sb.append(c);
+                    textLength++;
+                }
             }
         }
 
@@ -98,9 +102,10 @@ public final class TextParser {
     }
 
     private void flushTextNode() {
-        if (sb.length() > 0) {
-            nodes.add(new TextNode(textStartPos, sb.toString()));
+        if (textLength > 0) {
+            nodes.add(new TextNode(textStart, textLength, sb.toString()));
             sb.setLength(0);
+            textLength = 0;
         }
     }
 }
