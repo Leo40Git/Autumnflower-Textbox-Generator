@@ -127,14 +127,13 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
     private JPanel createTextboxEditorPanel() {
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(2, 1));
+        buttonPanel.setLayout(new GridLayout(1, 1));
         JButton btnGenerate = new JButton("Generate");
         btnGenerate.setActionCommand(AC_GENERATE);
         btnGenerate.addActionListener(this);
         btnGenerate.setEnabled(false);
         winCtxUpdateListeners.add(winCtx1 -> btnGenerate.setEnabled(true));
         buttonPanel.add(btnGenerate);
-        JButton btnFacePoolEdit = new JButton("(temp) edit face pool");
 
         JPanel textboxPanel = new JPanel();
         textboxPanel.setLayout(new BorderLayout());

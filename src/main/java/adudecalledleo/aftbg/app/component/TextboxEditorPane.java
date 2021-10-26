@@ -174,7 +174,6 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
             errors.clear();
 
             for (Node node : nodes) {
-                System.out.println(node);
                 if (node instanceof ColorModifierNode modCol) {
                     doc.setCharacterAttributes(modCol.getStart(), modCol.getLength(), styleMod, true);
                     Color c = modCol.getColor(winCtx.getColors());
