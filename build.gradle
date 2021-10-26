@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'org.beryx.runtime' version '1.12.7'
 }
 
 java {
@@ -10,6 +11,23 @@ java {
 
 application {
     mainClass = 'adudecalledleo.aftbg.Bootstrap'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'adudecalledleo.aftbg.Bootstrap'
+    }
+}
+
+runtime {
+    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+}
+
+tasks.jpackageImage.doLast {
+    copy {
+        from('scratch')
+        into("$buildDir/jpackage/${project.name}/scratch")
+    }
 }
 
 group 'adudecalledleo'

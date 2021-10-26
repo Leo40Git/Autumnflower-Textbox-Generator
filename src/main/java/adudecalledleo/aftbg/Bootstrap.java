@@ -38,14 +38,21 @@ public final class Bootstrap {
         try (BufferedReader reader = Files.newBufferedReader(defPath)) {
             def = GameDefinition.read(reader);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to read game definition from \"" + defPath.toAbsolutePath() + "\"!", e);
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "Failed to read game definition from \"" + defPath.toAbsolutePath() + "\"!\n" + e,
+                    "Failed to start application", JOptionPane.ERROR_MESSAGE);
+            return;
         }
         System.out.println("Using " + def.getName() + " game definition");
 
         try {
             def.getFaces().loadAll(basePath);
         } catch (FaceLoadException e) {
-            throw new RuntimeException("Failed to load faces", e);
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "Failed to load face pictures!\n" + e,
+                    "Failed to start application", JOptionPane.ERROR_MESSAGE);
         }
 
         WindowContext winCtx = loadWinCtx(def, basePath);

@@ -6,14 +6,18 @@ import adudecalledleo.aftbg.window.WindowTint;
 import adudecalledleo.aftbg.util.WindowTintAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
 
 import java.io.BufferedReader;
+import java.lang.reflect.Type;
 import java.nio.file.Path;
 
 @SuppressWarnings("ClassCanBeRecord")
 public final class GameDefinition {
     public static final Gson GSON = new GsonBuilder()
             .setLenient()
+            .registerTypeAdapter(GameDefinition.class,
+                    (InstanceCreator<Object>) type -> new GameDefinition(null, null, null, null))
             .registerTypeAdapter(Path.class, new PathAdapter())
             .registerTypeAdapter(WindowTint.class, new WindowTintAdapter())
             .registerTypeAdapter(FacePool.class, new FacePool.Adapter())
