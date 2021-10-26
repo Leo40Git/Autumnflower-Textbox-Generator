@@ -2,16 +2,16 @@ package adudecalledleo.aftbg.app;
 
 import adudecalledleo.aftbg.app.component.FaceSelectionPanel;
 import adudecalledleo.aftbg.app.component.TextboxEditorPane;
-import adudecalledleo.aftbg.app.component.TextboxSelectorScrollPane;
+import adudecalledleo.aftbg.app.component.WindowBackgroundScrollPane;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.dialog.PreviewDialog;
 import adudecalledleo.aftbg.app.render.TextboxListCellRenderer;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.game.GameDefinition;
 import adudecalledleo.aftbg.text.TextParser;
+import adudecalledleo.aftbg.text.TextRenderer;
 import adudecalledleo.aftbg.util.ColorUtils;
 import adudecalledleo.aftbg.window.WindowContext;
-import adudecalledleo.aftbg.text.TextRenderer;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -31,7 +31,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     private static final String AC_TEXTBOX_MOVE_UP = "textbox.move.up";
     private static final String AC_TEXTBOX_MOVE_DOWN = "textbox.move.down";
     private static final String AC_TEXTBOX_REMOVE = "textbox.remove";
-    
+
     private static final String AC_GENERATE = "generate";
 
     private final TextParser textParser;
@@ -46,6 +46,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     private final TextboxEditorPane editorPane;
 
     private WindowContext winCtx;
+    private GameDefinition gameDef;
 
     public MainPanel(TextParser textParser) {
         this.textParser = textParser;
@@ -114,7 +115,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         btn.setToolTipText("Remove the currently selected textbox");
         buttonPanel.add(btn);
 
-        var scroll = new TextboxSelectorScrollPane(textboxSelector);
+        var scroll = new WindowBackgroundScrollPane(textboxSelector);
         winCtxUpdateListeners.add(scroll);
 
         JPanel listPanel = new JPanel();
@@ -126,13 +127,14 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
     private JPanel createTextboxEditorPanel() {
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(1, 1));
-        var btn = new JButton("Generate");
-        btn.setActionCommand(AC_GENERATE);
-        btn.addActionListener(this);
-        btn.setEnabled(false);
-        winCtxUpdateListeners.add(winCtx1 -> btn.setEnabled(true));
-        buttonPanel.add(btn);
+        buttonPanel.setLayout(new GridLayout(2, 1));
+        JButton btnGenerate = new JButton("Generate");
+        btnGenerate.setActionCommand(AC_GENERATE);
+        btnGenerate.addActionListener(this);
+        btnGenerate.setEnabled(false);
+        winCtxUpdateListeners.add(winCtx1 -> btnGenerate.setEnabled(true));
+        buttonPanel.add(btnGenerate);
+        JButton btnFacePoolEdit = new JButton("(temp) edit face pool");
 
         JPanel textboxPanel = new JPanel();
         textboxPanel.setLayout(new BorderLayout());
@@ -150,6 +152,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     }
 
     public void updateGameDefinition(GameDefinition gameDef) {
+        this.gameDef = gameDef;
         faceSelection.updateFacePool(gameDef.getFaces());
     }
 

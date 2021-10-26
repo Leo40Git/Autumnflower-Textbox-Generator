@@ -55,6 +55,10 @@ public final class FaceCategory {
         return faces.get(icon);
     }
 
+    public String getIconName() {
+        return icon;
+    }
+
     public Map<String, Face> getFaces() {
         return facesU;
     }

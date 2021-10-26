@@ -7,13 +7,12 @@ import adudecalledleo.aftbg.window.WindowContext;
 import javax.swing.*;
 import java.awt.*;
 
-public final class TextboxSelectorScrollPane extends JScrollPane implements WindowContextUpdateListener {
+public final class WindowBackgroundScrollPane extends JScrollPane implements WindowContextUpdateListener {
     private final ViewportImpl viewport;
 
-    public TextboxSelectorScrollPane(Component view) {
+    public WindowBackgroundScrollPane(Component view) {
         super();
-        setViewport(viewport = new ViewportImpl());
-        setViewportView(view);
+        setViewport(viewport = new ViewportImpl(view));
     }
 
     @Override
@@ -24,8 +23,10 @@ public final class TextboxSelectorScrollPane extends JScrollPane implements Wind
     private static final class ViewportImpl extends JViewport {
         private WindowContext winCtx;
 
-        public ViewportImpl() {
+        public ViewportImpl(Component view) {
+            super();
             setOpaque(false);
+            setView(view);
         }
 
         @Override
