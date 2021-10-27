@@ -14,8 +14,10 @@
         "Sad": "faces/mercia/sad.png",
         "Angry": "faces/mercia/angry.png",
         "Mouth Full": "faces/mercia/mouth_full.png",
+        "Theather Disguise": "faces/mercia/kalith.png",
         "Darkened Eyes": "faces/mercia/gimmick.png",
-        "Lizardspeak": "faces/mercia/lizardspeak.png"
+        "Lizardspeak": "faces/mercia/lizardspeak.png",
+        "Undyed": "faces/mercia/undyed.png"
       }
     },
     "Kyron": {
@@ -43,11 +45,13 @@
       "icon": "Neutral",
       "entries": {
         "Neutral": "faces/lif/neutral.png",
+        "Smile": "faces/lif/smile.png",
         "Scowl": "faces/lif/scowl.png",
         "Suffering": "faces/lif/suffering.png",
-        "Hoodless": "faces/lif/hoodless.png",
-        "Neutral (Undiguised)": "faces/lif/neutral_undisguised.png",
-        "Angry (Undiguised)": "faces/lif/angry_undisguised.png"
+        "In Dress": "faces/lif/dress.png",
+        "In Underwear": "faces/lif/scandalous.png",
+        "Neutral (Undisguised)": "faces/lif/neutral_undisguised.png",
+        "Angry (Undisguised)": "faces/lif/angry_undisguised.png"
       }
     },
     "Sixty": {
