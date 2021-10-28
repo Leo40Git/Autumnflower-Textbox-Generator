@@ -216,7 +216,9 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                             textbox.getFace().isBlank() ? 18 : 186,
                             21 + 182 * i);
                     winCtx.drawBorder(g, 0, 182 * i, 816, 180, null);
-                    winCtx.drawArrow(g, 0, 182 * i, 816, 180, 0, null);
+                    if (i < textboxCount - 1) {
+                        winCtx.drawArrow(g, 0, 182 * i, 816, 180, 0, null);
+                    }
                 }
                 g.setClip(oldClip);
 
