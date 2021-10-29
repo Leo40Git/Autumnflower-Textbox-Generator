@@ -13,6 +13,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class FacePool {
+    public static final FacePool EMPTY = new FacePool();
+
     private final Map<String, FaceCategory> categories, categoriesU;
 
     public FacePool() {
