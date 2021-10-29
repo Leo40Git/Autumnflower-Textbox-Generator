@@ -16,6 +16,7 @@ import java.nio.file.Path;
 public final class GameDefinition {
     public static final Gson GSON = new GsonBuilder()
             .setLenient()
+            .setPrettyPrinting()
             .registerTypeAdapter(GameDefinition.class,
                     (InstanceCreator<Object>) type -> new GameDefinition(null, null, null, null))
             .registerTypeAdapter(Path.class, new PathAdapter())

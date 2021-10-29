@@ -13,20 +13,20 @@ public final class FaceCategory {
     }
 
     private final String name;
-    String icon;
+    private String iconName;
     final Map<String, Face> faces, facesU;
 
     FaceCategory(String name) {
         this.name = name;
-        icon = null;
+        iconName = null;
         faces = new LinkedHashMap<>();
         facesU = Collections.unmodifiableMap(faces);
     }
 
     @SuppressWarnings("CopyConstructorMissesField") // intentional
-    public FaceCategory(FaceCategory other) {
+    FaceCategory(FaceCategory other) {
         this(other.name);
-        icon = other.icon;
+        iconName = other.iconName;
         addFrom(other);
     }
 
@@ -34,14 +34,24 @@ public final class FaceCategory {
         return name;
     }
 
-    void add(String name, Path imagePath) {
-        faces.put(name, new Face(name, this.name, imagePath));
+    public Face add(String name, Path imagePath) {
+        Face face = new Face(name, this.name, imagePath);
+        faces.put(name, face);
+        return face;
     }
 
-    void addFrom(FaceCategory other) {
+    public void addFrom(FaceCategory other) {
         for (var entry : other.faces.values()) {
             faces.put(entry.getName(), new Face(entry.getName(), this.name, entry.getImagePath(), entry.image));
         }
+    }
+
+    public boolean remove(Face face) {
+        return faces.remove(face.getName(), face);
+    }
+
+    public Face remove(String name) {
+        return faces.remove(name);
     }
 
     public Face get(String name) {
@@ -49,14 +59,18 @@ public final class FaceCategory {
     }
 
     public Face getIcon() {
-        if (icon == null) {
+        if (iconName == null) {
             return null;
         }
-        return faces.get(icon);
+        return faces.get(iconName);
     }
 
     public String getIconName() {
-        return icon;
+        return iconName;
+    }
+
+    public void setIconName(String iconName) {
+        this.iconName = iconName;
     }
 
     public Map<String, Face> getFaces() {

@@ -31,7 +31,7 @@ public final class Bootstrap {
 
         TextRenderer.loadFont();
 
-        Path basePath = Paths.get("scratch");
+        Path basePath = Paths.get("scratch").toAbsolutePath();
 
         Path defPath = basePath.resolve("def.json");
         GameDefinition def;
@@ -58,7 +58,7 @@ public final class Bootstrap {
         WindowContext winCtx = loadWinCtx(def, basePath);
 
         var panel = new MainPanel(new TextParser());
-        panel.updateGameDefinition(def);
+        panel.updateGameDefinition(def, basePath);
         panel.updateWindowContext(winCtx);
 
         JFrame frame = new JFrame();

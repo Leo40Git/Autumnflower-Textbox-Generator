@@ -21,6 +21,12 @@ public final class FacePool {
         categoriesU = Collections.unmodifiableMap(categories);
     }
 
+    @SuppressWarnings("CopyConstructorMissesField")
+    public FacePool(FacePool other) {
+        this();
+        addFrom(other);
+    }
+
     public void addFrom(FacePool other) {
         for (var entry : other.categories.entrySet()) {
             var cat = categories.get(entry.getKey());
@@ -53,8 +59,20 @@ public final class FacePool {
         return cat.get(parts[1]);
     }
 
-    public FaceCategory getCategory(String category) {
-        return categories.get(category);
+    public FaceCategory getCategory(String name) {
+        return categories.get(name);
+    }
+
+    public FaceCategory getOrCreateCategory(String name) {
+        return categories.computeIfAbsent(name, FaceCategory::new);
+    }
+
+    public boolean removeCategory(FaceCategory category) {
+        return categories.remove(category.getName(), category);
+    }
+
+    public FaceCategory removeCategory(String name) {
+        return categories.remove(name);
     }
 
     public Map<String, FaceCategory> getCategories() {
@@ -79,7 +97,7 @@ public final class FacePool {
                 in.beginObject();
                 while (in.hasNext()) {
                     switch (in.nextName()) {
-                        case "icon" -> cat.icon = in.nextString();
+                        case "icon" -> cat.setIconName(in.nextString());
                         case "entries" -> readCategoryEntries(cat, in);
                     }
                 }
@@ -93,9 +111,9 @@ public final class FacePool {
             in.beginObject();
             while (in.hasNext()) {
                 String name = in.nextName();
-                if (cat.icon == null) {
+                if (cat.getIconName() == null) {
                     // default icon is first entry
-                    cat.icon = name;
+                    cat.setIconName(name);
                 }
                 Path imagePath = Paths.get(in.nextString());
                 cat.add(name, imagePath);
@@ -107,18 +125,21 @@ public final class FacePool {
         public void write(JsonWriter out, FacePool value) throws IOException {
             out.beginObject();
             for (var cat : value.categories.values()) {
+                if (cat == FaceCategory.NONE) {
+                    continue;
+                }
                 out.name(cat.getName());
                 out.beginObject();
-                if (cat.icon != null) {
+                if (cat.getIconName() != null) {
                     out.name("icon");
-                    out.value(cat.icon);
+                    out.value(cat.getIconName());
                 }
                 out.name("entries");
                 out.beginObject();
                 for (var entry : cat.faces.entrySet()) {
                     final Face face = entry.getValue();
                     out.name(face.getName());
-                    out.value(face.getImagePath().toString());
+                    out.value(face.getImagePath().toString().replaceAll("\\\\", "/"));
                 }
                 out.endObject();
                 out.endObject();

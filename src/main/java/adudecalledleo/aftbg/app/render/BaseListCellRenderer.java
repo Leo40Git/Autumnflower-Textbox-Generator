@@ -12,6 +12,7 @@ public abstract class BaseListCellRenderer<T> extends JLabel implements ListCell
     }
 
     protected void updateColors(JList<?> list, boolean isSelected, boolean hasFocus) {
+        setEnabled(list.isEnabled());
         if (isSelected) {
             setBackground(list.getSelectionBackground());
             setForeground(list.getSelectionForeground());

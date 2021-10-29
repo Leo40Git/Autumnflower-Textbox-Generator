@@ -1,11 +1,17 @@
 package adudecalledleo.aftbg.app.util;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
 
 public final class DialogUtils {
+    public static final FileNameExtensionFilter FILTER_IMAGE_FILES
+            = new FileNameExtensionFilter("Image files", ImageIO.getReaderFileSuffixes());
+    public static final FileNameExtensionFilter FILTER_JSON_FILES
+            = new FileNameExtensionFilter("JSON files", "json");
+
     public static int showCustomConfirmDialog(Component parentComponent, Object message, String title,
                                               String[] options, int messageType) {
         return JOptionPane.showOptionDialog(parentComponent, message, title, JOptionPane.DEFAULT_OPTION, messageType,
