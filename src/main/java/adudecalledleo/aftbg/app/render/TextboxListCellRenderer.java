@@ -32,7 +32,7 @@ public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox>
         String contents = NodeUtils.getTruncatedDisplay(textParser.parse(value.getText()), 30);
         setText("<html>"
                 + "<b>Textbox " + (index + 1) + "</b><br>"
-                + contents + "<br>"
+                + contents
                 + "</html>");
         return this;
     }

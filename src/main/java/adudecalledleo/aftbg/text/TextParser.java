@@ -58,11 +58,9 @@ public final class TextParser {
                             }
                         }
                         if (!end) {
-                            //throw new TextParserException("Unclosed argument brackets []", start);
                             nodes.add(new ErrorNode(start, pos - start, "Unclosed argument brackets []"));
                             continue;
                         }
-                        //nodes.add(new ModifierNode(parser.parse(sb.toString(), start)));
                         if (parser == null) {
                             nodes.add(new ErrorNode(modStartPos, pos - modStartPos, "Unknown modifier key '" + c + "'"));
                         } else {
@@ -94,7 +92,6 @@ public final class TextParser {
 
         flushTextNode();
         if (backslash) {
-            //throw new TextParserException("Backslash at end of text", chars.length - 1);
             nodes.add(new ErrorNode(chars.length - 1, 1, "Backslash at end of text"));
         }
         nodes.optimize();
