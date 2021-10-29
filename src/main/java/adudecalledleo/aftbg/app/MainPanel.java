@@ -4,11 +4,9 @@ import adudecalledleo.aftbg.app.component.FaceSelectionPanel;
 import adudecalledleo.aftbg.app.component.TextboxEditorPane;
 import adudecalledleo.aftbg.app.component.WindowBackgroundScrollPane;
 import adudecalledleo.aftbg.app.data.Textbox;
-import adudecalledleo.aftbg.app.dialog.FacePoolEditorDialog;
 import adudecalledleo.aftbg.app.dialog.PreviewDialog;
 import adudecalledleo.aftbg.app.render.TextboxListCellRenderer;
 import adudecalledleo.aftbg.face.Face;
-import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.game.GameDefinition;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.TextRenderer;
@@ -36,7 +34,6 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     private static final String AC_TEXTBOX_REMOVE = "textbox.remove";
 
     private static final String AC_GENERATE = "generate";
-    private static final String AC_TEMP_FPE = "TEMP-edit_face_pool"; // !!TEMP!!
 
     private final TextParser textParser;
 
@@ -132,19 +129,13 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
     private JPanel createTextboxEditorPanel() {
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(2, 1));
+        buttonPanel.setLayout(new GridLayout(1, 1));
         JButton btnGenerate = new JButton("Generate");
         btnGenerate.setActionCommand(AC_GENERATE);
         btnGenerate.addActionListener(this);
         btnGenerate.setEnabled(false);
         winCtxUpdateListeners.add(winCtx1 -> btnGenerate.setEnabled(true));
         buttonPanel.add(btnGenerate);
-        // region !!TEMP!!
-        JButton btnFPETEMP = new JButton("(TEMP) edit face pool");
-        btnFPETEMP.setActionCommand(AC_TEMP_FPE);
-        btnFPETEMP.addActionListener(this);
-        buttonPanel.add(btnFPETEMP);
-        // endregion
 
         JPanel textboxPanel = new JPanel();
         textboxPanel.setLayout(new BorderLayout());
@@ -200,14 +191,6 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
-            // region !!TEMP!!
-            case AC_TEMP_FPE:
-                var tdialog = new FacePoolEditorDialog((Frame) SwingUtilities.getWindowAncestor(this),
-                        basePath, new FacePool(gameDef.getFaces()));
-                tdialog.setLocationRelativeTo(null);
-                tdialog.setVisible(true);
-                break;
-            // endregion
             case AC_GENERATE:
                 editorPane.flushChanges(false);
                 faceSelection.flushChanges();

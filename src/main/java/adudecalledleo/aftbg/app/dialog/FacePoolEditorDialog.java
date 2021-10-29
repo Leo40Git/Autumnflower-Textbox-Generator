@@ -22,7 +22,7 @@ import java.util.Locale;
 public final class FacePoolEditorDialog extends JDialog {
     @FunctionalInterface
     public interface SaveCallback {
-        void save(Component parent, FacePool pool);
+        void saveFacePool(Component parent, FacePool pool);
     }
 
     private final Path basePath;
@@ -354,7 +354,7 @@ public final class FacePoolEditorDialog extends JDialog {
                             return;
                         }
                     }
-                    saveCallback.save(this, pool);
+                    saveCallback.saveFacePool(this, pool);
                 }
             }
         }
