@@ -7,6 +7,7 @@ import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.dialog.FacePoolEditorDialog;
 import adudecalledleo.aftbg.app.dialog.PreviewDialog;
 import adudecalledleo.aftbg.app.render.TextboxListCellRenderer;
+import adudecalledleo.aftbg.app.util.ListReorderTransferHandler;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.game.GameDefinition;
@@ -26,13 +27,11 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class MainPanel extends JPanel implements ActionListener, ListSelectionListener {
+public final class MainPanel extends JPanel implements ActionListener, ListSelectionListener, ListReorderTransferHandler.ReorderCallback {
     private static final String AC_TEXTBOX_ADD = "textbox.add";
     private static final String AC_TEXTBOX_CLONE = "textbox.clone";
     private static final String AC_TEXTBOX_INSERT_BEFORE = "textbox.insert.before";
     private static final String AC_TEXTBOX_INSERT_AFTER = "textbox.insert.after";
-    private static final String AC_TEXTBOX_MOVE_UP = "textbox.move.up";
-    private static final String AC_TEXTBOX_MOVE_DOWN = "textbox.move.down";
     private static final String AC_TEXTBOX_REMOVE = "textbox.remove";
 
     private static final String AC_GENERATE = "generate";
@@ -74,6 +73,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         winCtxUpdateListeners.add(renderer);
         textboxSelector.setCellRenderer(renderer);
         textboxSelector.setOpaque(false);
+        ListReorderTransferHandler.install(textboxSelector, this);
 
         setLayout(new BorderLayout());
         add(createTextboxSelectionPanel(), BorderLayout.LINE_START);
@@ -82,7 +82,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
     private JPanel createTextboxSelectionPanel() {
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(1, 7));
+        buttonPanel.setLayout(new GridLayout(1, 5));
         JButton btn;
         btn = new JButton("A");
         btn.addActionListener(this);
@@ -103,16 +103,6 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         btn.addActionListener(this);
         btn.setActionCommand(AC_TEXTBOX_INSERT_AFTER);
         btn.setToolTipText("Insert a textbox after the currently selected one");
-        buttonPanel.add(btn);
-        btn = new JButton("MU");
-        btn.addActionListener(this);
-        btn.setActionCommand(AC_TEXTBOX_MOVE_UP);
-        btn.setToolTipText("Move the currently selected textbox up");
-        buttonPanel.add(btn);
-        btn = new JButton("MD");
-        btn.addActionListener(this);
-        btn.setActionCommand(AC_TEXTBOX_MOVE_DOWN);
-        btn.setToolTipText("Move the currently selected textbox down");
         buttonPanel.add(btn);
         btn = new JButton("R");
         btn.addActionListener(this);
@@ -272,28 +262,6 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                 updateTextboxEditors();
                 updateTextboxSelectorModel();
                 break;
-            case AC_TEXTBOX_MOVE_UP:
-                flushChanges();
-                box = textboxes.get(currentTextbox);
-                textboxes.remove(box);
-                currentTextbox--;
-                if (currentTextbox < 0)
-                    currentTextbox = 0;
-                textboxes.add(currentTextbox, box);
-                updateTextboxEditors();
-                updateTextboxSelectorModel();
-                break;
-            case AC_TEXTBOX_MOVE_DOWN:
-                flushChanges();
-                box = textboxes.get(currentTextbox);
-                textboxes.remove(box);
-                currentTextbox++;
-                if (currentTextbox > textboxes.size())
-                    currentTextbox = textboxes.size();
-                textboxes.add(currentTextbox, box);
-                updateTextboxEditors();
-                updateTextboxSelectorModel();
-                break;
             case AC_TEXTBOX_REMOVE:
                 flushChanges();
                 box = textboxes.get(currentTextbox);
@@ -325,9 +293,18 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             if (selection < 0) {
                 return;
             }
-            System.out.println("selected textbox " + selection);
             currentTextbox = selection;
             updateTextboxEditors();
+        }
+    }
+
+    @Override
+    public void move(JList<?> source, int oldIndex, int newIndex) {
+        if (textboxSelector.equals(source)) {
+            flushChanges();
+            textboxes.add(newIndex, textboxes.remove(oldIndex));
+            updateTextboxSelectorModel();
+            textboxSelector.setSelectedIndex(newIndex);
         }
     }
 
