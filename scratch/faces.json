@@ -6,7 +6,7 @@
       "Sad": "faces/mercia/sad.png",
       "Angry": "faces/mercia/angry.png",
       "Mouth Full": "faces/mercia/mouth_full.png",
-      "Theather Disguise": "faces/mercia/kalith.png",
+      "Theater Disguise": "faces/mercia/kalith.png",
       "Darkened Eyes": "faces/mercia/gimmick.png",
       "Lizardspeak": "faces/mercia/lizardspeak.png",
       "Undyed": "faces/mercia/undyed.png"
@@ -72,9 +72,9 @@
     "icon": "Sniper",
     "entries": {
       "Revna": "faces/dhunters/revna.png",
-      "Revna (Eating)": "faces/dhunters/revna_nom.png",
-      "Revna (Nervous)": "faces/dhunters/revna_ohdear.png",
       "Revna (Talking)": "faces/dhunters/revna_squawk.png",
+      "Revna (Nervous)": "faces/dhunters/revna_ohdear.png",
+      "Revna (Eating)": "faces/dhunters/revna_nom.png",
       "Sniper": "faces/dhunters/sniper.png"
     }
   }

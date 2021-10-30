@@ -1,5 +1,7 @@
 package adudecalledleo.aftbg.face;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -75,6 +77,11 @@ public final class FaceCategory {
 
     public Map<String, Face> getFaces() {
         return facesU;
+    }
+
+    @ApiStatus.Internal
+    public Map<String, Face> getFacesMutable() {
+        return faces;
     }
 
     public void loadAll(Path basePath) throws FaceLoadException {

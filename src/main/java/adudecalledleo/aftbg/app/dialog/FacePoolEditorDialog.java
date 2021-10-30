@@ -3,6 +3,7 @@ package adudecalledleo.aftbg.app.dialog;
 import adudecalledleo.aftbg.app.render.FaceCategoryListCellRenderer;
 import adudecalledleo.aftbg.app.render.FaceListCellRenderer;
 import adudecalledleo.aftbg.app.util.DialogUtils;
+import adudecalledleo.aftbg.app.util.ListReorderTransferHandler;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FaceCategory;
 import adudecalledleo.aftbg.face.FaceLoadException;
@@ -17,6 +18,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Locale;
 
 public final class FacePoolEditorDialog extends JDialog {
@@ -79,14 +81,14 @@ public final class FacePoolEditorDialog extends JDialog {
         this(owner, basePath, pool, FacePoolEditorDialog::saveToFile);
     }
 
-    private final class ContentPanel extends JPanel implements ListSelectionListener, ActionListener {
+    private final class ContentPanel extends JPanel implements ListSelectionListener, ActionListener, ListReorderTransferHandler.ReorderCallback {
         private static final String AC_CATEGORY_ADD = "category.add";
         private static final String AC_FACE_ADD = "face.add";
         private static final String AC_CATEGORY_REMOVE = "category.remove";
         private static final String AC_FACE_REMOVE = "face.remove";
         private static final String AC_FACE_SET_AS_ICON = "face.set_as_icon";
         private static final String AC_SAVE = "save";
-        
+
         private final JList<FaceCategory> catList;
         private final DefaultListModel<FaceCategory> catModel;
         private final JList<Face> faceList;
@@ -107,6 +109,7 @@ public final class FacePoolEditorDialog extends JDialog {
             catList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             catList.setModel(catModel);
             catList.setCellRenderer(new FaceCategoryListCellRenderer());
+            ListReorderTransferHandler.install(catList, this);
             catList.setEnabled(false);
             catList.addListSelectionListener(this);
 
@@ -114,6 +117,7 @@ public final class FacePoolEditorDialog extends JDialog {
             faceList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             faceList.setModel(faceModel);
             faceList.setCellRenderer(new FaceListCellRenderer(true));
+            ListReorderTransferHandler.install(faceList, this);
             faceList.setEnabled(false);
             faceList.addListSelectionListener(this);
 
@@ -358,6 +362,36 @@ public final class FacePoolEditorDialog extends JDialog {
                 }
             }
         }
+
+        @Override
+        public void move(JList<?> source, int oldIndex, int newIndex) {
+            if (catList.equals(source)) {
+                var values = new ArrayList<>(pool.getCategories().values());
+                values.remove(FaceCategory.NONE); // so model indexes sync up with list indexes
+                values.add(newIndex, values.remove(oldIndex));
+                pool.clear();
+                for (var value : values) {
+                    pool.getCategoriesMutable().put(value.getName(), value);
+                }
+                updateCategoriesModel();
+                catList.setSelectedIndex(newIndex);
+                catList.ensureIndexIsVisible(newIndex);
+            } else if (faceList.equals(source)) {
+                var selectedCat = catList.getSelectedValue();
+                if (selectedCat == null) {
+                    return;
+                }
+                var values = new ArrayList<>(selectedCat.getFaces().values());
+                values.add(newIndex, values.remove(oldIndex));
+                selectedCat.getFacesMutable().clear();
+                for (var value : values) {
+                    selectedCat.getFacesMutable().put(value.getName(), value);
+                }
+                updateFacesModel();
+                faceList.setSelectedIndex(newIndex);
+                faceList.ensureIndexIsVisible(newIndex);
+            }
+        }
     }
 
     private static String processImageName(String name) {
@@ -368,7 +402,7 @@ public final class FacePoolEditorDialog extends JDialog {
             }
             name = (name.charAt(0) + "").toUpperCase(Locale.ROOT) + name.substring(1);
             while (name.contains("_")) {
-                name = name.replaceFirst("_[a-z]", String.valueOf(name.charAt(name.indexOf("_") + 1)).toUpperCase(Locale.ROOT));
+                name = name.replaceFirst("_[a-z]", " " + String.valueOf(name.charAt(name.indexOf("_") + 1)).toUpperCase(Locale.ROOT));
             }
         }
         return name;

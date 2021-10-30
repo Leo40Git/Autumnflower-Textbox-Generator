@@ -4,6 +4,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -79,6 +80,16 @@ public final class FacePool {
 
     public Map<String, FaceCategory> getCategories() {
         return categoriesU;
+    }
+
+    @ApiStatus.Internal
+    public Map<String, FaceCategory> getCategoriesMutable() {
+        return categories;
+    }
+
+    public void clear() {
+        categories.clear();
+        categories.put(FaceCategory.NONE.getName(), FaceCategory.NONE);
     }
 
     public static final class Adapter extends TypeAdapter<FacePool> {
