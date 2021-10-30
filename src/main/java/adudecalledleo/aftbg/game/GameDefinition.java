@@ -31,13 +31,13 @@ public final class GameDefinition {
     private final String name;
     private final Path windowPath;
     private final WindowTint windowTint;
-    private final FacePool faces;
+    private final Path facesPath;
 
-    public GameDefinition(String name, Path windowPath, WindowTint windowTint, FacePool faces) {
+    public GameDefinition(String name, Path windowPath, WindowTint windowTint, Path facesPath) {
         this.name = name;
         this.windowPath = windowPath;
         this.windowTint = windowTint;
-        this.faces = faces;
+        this.facesPath = facesPath;
     }
 
     public String getName() {
@@ -52,7 +52,7 @@ public final class GameDefinition {
         return windowTint;
     }
 
-    public FacePool getFaces() {
-        return faces;
+    public Path getFacesPath() {
+        return facesPath;
     }
 }

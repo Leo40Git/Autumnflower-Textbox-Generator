@@ -4,9 +4,11 @@ import adudecalledleo.aftbg.app.component.FaceSelectionPanel;
 import adudecalledleo.aftbg.app.component.TextboxEditorPane;
 import adudecalledleo.aftbg.app.component.WindowBackgroundScrollPane;
 import adudecalledleo.aftbg.app.data.Textbox;
+import adudecalledleo.aftbg.app.dialog.FacePoolEditorDialog;
 import adudecalledleo.aftbg.app.dialog.PreviewDialog;
 import adudecalledleo.aftbg.app.render.TextboxListCellRenderer;
 import adudecalledleo.aftbg.face.Face;
+import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.game.GameDefinition;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.TextRenderer;
@@ -48,6 +50,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
     private WindowContext winCtx;
     private GameDefinition gameDef;
+    private FacePool faces;
     private Path basePath;
 
     public MainPanel(TextParser textParser) {
@@ -152,10 +155,11 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         }
     }
 
-    public void updateGameDefinition(GameDefinition gameDef, Path basePath) {
+    public void updateGameDefinition(GameDefinition gameDef, FacePool faces, Path basePath) {
         this.gameDef = gameDef;
+        this.faces = faces;
         this.basePath = basePath;
-        faceSelection.updateFacePool(gameDef.getFaces());
+        faceSelection.updateFacePool(faces);
     }
 
     private void updateTextboxSelectorModel() {
@@ -324,6 +328,45 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             System.out.println("selected textbox " + selection);
             currentTextbox = selection;
             updateTextboxEditors();
+        }
+    }
+
+    private MenuBarImpl menuBar;
+
+    public JMenuBar getMenuBar() {
+        if (menuBar == null) {
+            menuBar = new MenuBarImpl();
+        }
+        return menuBar;
+    }
+
+    private final class MenuBarImpl extends JMenuBar implements ActionListener {
+        private static final String AC_FACE_POOL_EDITOR = "tools.face_pool_editor";
+
+        public MenuBarImpl() {
+            super();
+
+            JMenuItem item;
+
+            JMenu toolsMenu = new JMenu("Tools");
+            item = new JMenuItem("Face Pool Editor");
+            item.setActionCommand(AC_FACE_POOL_EDITOR);
+            item.addActionListener(this);
+            toolsMenu.add(item);
+
+            add(toolsMenu);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            switch (e.getActionCommand()) {
+                case AC_FACE_POOL_EDITOR -> {
+                    var fpd = new FacePoolEditorDialog((Frame) SwingUtilities.getWindowAncestor(this), basePath,
+                            new FacePool(faces));
+                    fpd.setLocationRelativeTo(null);
+                    fpd.setVisible(true);
+                }
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ package adudecalledleo.aftbg;
 import adudecalledleo.aftbg.app.MainPanel;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FaceLoadException;
+import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.game.GameDefinition;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.TextRenderer;
@@ -46,8 +47,20 @@ public final class Bootstrap {
         }
         System.out.println("Using " + def.getName() + " game definition");
 
+        FacePool faces;
+        Path facesPath = basePath.resolve(def.getFacesPath());
+        try (BufferedReader reader = Files.newBufferedReader(facesPath)) {
+            faces = GameDefinition.GSON.fromJson(reader, FacePool.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "Failed to read face pool from \"" + facesPath.toAbsolutePath() + "\"!\n" + e,
+                    "Failed to start application", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         try {
-            def.getFaces().loadAll(basePath);
+            faces.loadAll(basePath);
         } catch (FaceLoadException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null,
@@ -58,12 +71,13 @@ public final class Bootstrap {
         WindowContext winCtx = loadWinCtx(def, basePath);
 
         var panel = new MainPanel(new TextParser());
-        panel.updateGameDefinition(def, basePath);
+        panel.updateGameDefinition(def, faces, basePath);
         panel.updateWindowContext(winCtx);
 
         JFrame frame = new JFrame();
         frame.setTitle("Autumnflower Textbox Generator");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setJMenuBar(panel.getMenuBar());
         frame.add(panel);
         frame.pack();
         frame.setLocationRelativeTo(null);
@@ -81,7 +95,7 @@ public final class Bootstrap {
         return new WindowContext(window, def.getWindowTint());
     }
 
-    private void generateTestBox(GameDefinition def, Path basePath, WindowContext winCtx) {
+    private void generateTestBox(GameDefinition def, FacePool faces, Path basePath, WindowContext winCtx) {
         TextParser parser = new TextParser();
         NodeList nodes = parser.parse("\\c[0]Mercia:\n\\c[25]Hold on.\n\\c[#555]t\\c[4]e\\c[#FEDCBA]s\\c[10]t");
         if (nodes.hasErrors()) {
@@ -96,7 +110,7 @@ public final class Bootstrap {
             }
         }
 
-        Face merciaNeutral = def.getFaces().getByPath("Mercia/Neutral");
+        Face merciaNeutral = faces.getByPath("Mercia/Neutral");
         if (merciaNeutral == null) {
             throw new NullPointerException("Face \"Mercia/Neutral\" is missing!");
         }
