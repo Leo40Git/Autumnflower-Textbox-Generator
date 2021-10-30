@@ -29,7 +29,7 @@ public final class PreviewDialog extends JDialog {
         pack();
 
         var dim = getSize();
-        setSize(new Dimension(dim.width + 16, Math.min(dim.height, 182 * 4 + 40)));
+        setSize(new Dimension(dim.width + 24, Math.min(dim.height, 182 * 4 + 40)));
     }
 
     private final class PreviewPanel extends JPanel implements ActionListener {
