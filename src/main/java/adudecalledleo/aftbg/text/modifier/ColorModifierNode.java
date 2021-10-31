@@ -122,7 +122,7 @@ public sealed abstract class ColorModifierNode extends ModifierNode {
                             ERROR_PREFIX + "Window color ID cannot be negative"));
                     return;
                 }
-                if (index >= 32) {
+                if (index >= WindowColors.COUNT) {
                     nodes.add(new ErrorNode(argsStart, args.length(),
                             ERROR_PREFIX + "Window color ID is too high, max is 31"));
                     return;

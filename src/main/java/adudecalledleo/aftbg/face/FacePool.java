@@ -51,15 +51,15 @@ public final class FacePool {
     }
 
     public Face getByPath(String path) {
-        String[] parts = path.split("/");
-        if (parts.length != 2) {
-            throw new IllegalArgumentException("Path \"" + path + "\" should have 2 parts, but instead has " + parts.length);
+        int index = path.indexOf('/');
+        if (index < 0) {
+            throw new IllegalArgumentException("Path \"" + path + "\" is invalid: No separator between category and name!");
         }
-        FaceCategory cat = getCategory(parts[0]);
+        FaceCategory cat = getCategory(path.substring(0, index));
         if (cat == null) {
             return null;
         }
-        return cat.get(parts[1]);
+        return cat.get(path.substring(index + 1));
     }
 
     public FaceCategory getCategory(String name) {

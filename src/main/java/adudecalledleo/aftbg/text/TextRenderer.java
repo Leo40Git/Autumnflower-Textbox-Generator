@@ -27,11 +27,11 @@ public final class TextRenderer {
 
     public static final Font FONT;
 
-    private static final String FONT_PATH = "font/VL-Gothic-Regular.ttf";
+    private static final String FONT_PATH = "/font/VL-Gothic-Regular.ttf";
     // region Font loading stuff
     static {
         Font base;
-        try (InputStream in = TextRenderer.class.getResourceAsStream("/" + FONT_PATH)) {
+        try (InputStream in = TextRenderer.class.getResourceAsStream(FONT_PATH)) {
             if (in == null)
                 throw new FileNotFoundException(FONT_PATH);
             base = Font.createFont(Font.TRUETYPE_FONT, in);
@@ -41,7 +41,6 @@ public final class TextRenderer {
             throw new InternalError("Failed to read embedded font '" + FONT_PATH + "'?!", e);
         }
 
-        GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(base);
         FONT = base.deriveFont(Font.PLAIN, 28);
     }
     // endregion

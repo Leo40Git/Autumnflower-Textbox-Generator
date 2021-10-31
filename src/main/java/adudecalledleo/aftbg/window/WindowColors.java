@@ -8,8 +8,9 @@ public final class WindowColors {
     // these directly map to the available 32 preset colors
     // (according to RPG Maker MV's source code, it only samples the first pixel of each square.
     //  because that's the sane thing to do.)
+    public static final int COUNT = 32;
 
-    private final Color[] colors = new Color[32];
+    private final Color[] colors = new Color[COUNT];
 
     public WindowColors(BufferedImage window) {
         final int colorWidth = 12, colorHeight = 12;
@@ -19,10 +20,6 @@ public final class WindowColors {
                 colors[y * 8 + x] = new Color(window.getRGB(startX + (x * colorWidth), startY + (y * colorHeight)), false);
             }
         }
-    }
-
-    public int count() {
-        return colors.length;
     }
 
     public Color get(int index) {

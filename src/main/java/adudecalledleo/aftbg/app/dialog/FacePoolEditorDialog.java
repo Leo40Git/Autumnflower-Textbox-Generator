@@ -73,7 +73,7 @@ public final class FacePoolEditorDialog extends JDialog {
         setModal(true);
         setResizable(false);
         setContentPane(new ContentPanel());
-        setPreferredSize(new Dimension(768, 72 * 8 + 120));
+        setPreferredSize(new Dimension(768, 72 * 8 + 160));
         pack();
     }
 
@@ -87,6 +87,7 @@ public final class FacePoolEditorDialog extends JDialog {
         private static final String AC_CATEGORY_REMOVE = "category.remove";
         private static final String AC_FACE_REMOVE = "face.remove";
         private static final String AC_FACE_SET_AS_ICON = "face.set_as_icon";
+        private static final String AC_FACE_ADD_FOLDER = "face.add_folder";
         private static final String AC_SAVE = "save";
 
         private final JList<FaceCategory> catList;
@@ -126,6 +127,7 @@ public final class FacePoolEditorDialog extends JDialog {
             btnRemCat = createButton("Remove Category", AC_CATEGORY_REMOVE, false);
             btnRemFace = createButton("Remove Face", AC_FACE_REMOVE, false);
             btnSetIcon = createButton("Set Face as Category Icon", AC_FACE_SET_AS_ICON, false);
+            JButton btnAddFolder = createButton("Add Entire Folder", AC_FACE_ADD_FOLDER, true);
             JButton btnSave = createButton("Save", AC_SAVE, true);
 
             JPanel listsPanel = new JPanel();
@@ -142,14 +144,19 @@ public final class FacePoolEditorDialog extends JDialog {
             c.insets.right = 0;
             listsPanel.add(new JScrollPane(faceList), c);
 
+            JPanel btnGridPanel = new JPanel();
+            btnGridPanel.setLayout(new GridLayout(3, 2));
+            btnGridPanel.add(btnAddCat);
+            btnGridPanel.add(btnAddFace);
+            btnGridPanel.add(btnRemCat);
+            btnGridPanel.add(btnRemFace);
+            btnGridPanel.add(btnSetIcon);
+            btnGridPanel.add(btnAddFolder);
+
             JPanel buttonsPanel = new JPanel();
-            buttonsPanel.setLayout(new GridLayout(3, 2));
-            buttonsPanel.add(btnAddCat);
-            buttonsPanel.add(btnAddFace);
-            buttonsPanel.add(btnRemCat);
-            buttonsPanel.add(btnRemFace);
-            buttonsPanel.add(btnSetIcon);
-            buttonsPanel.add(btnSave);
+            buttonsPanel.setLayout(new BorderLayout());
+            buttonsPanel.add(btnGridPanel, BorderLayout.CENTER);
+            buttonsPanel.add(btnSave, BorderLayout.PAGE_END);
 
             setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
             setLayout(new BorderLayout());
@@ -347,6 +354,68 @@ public final class FacePoolEditorDialog extends JDialog {
                     selectedCat.setIconName(selectedFace.getName());
                     updateCategoriesModel();
                     faceList.setSelectedValue(selectedFace, true);
+                }
+                case AC_FACE_ADD_FOLDER -> {
+                    var fc = new JFileChooser();
+                    fc.setMultiSelectionEnabled(false);
+                    fc.setAcceptAllFileFilterUsed(false);
+                    fc.setCurrentDirectory(new File(System.getProperty("user.dir")));
+                    fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                    fc.setDialogTitle("Set folder to add as category");
+                    if (fc.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
+                        break;
+                    }
+                    File dir = fc.getSelectedFile();
+                    if (dir == null) {
+                        break;
+                    }
+                    File[] files = dir.listFiles();
+                    if (files == null) {
+                        JOptionPane.showMessageDialog(this,
+                                "File \"" + dir + "\" is not a folder!",
+                                "Add Entire Folder",
+                                JOptionPane.ERROR_MESSAGE);
+                        break;
+                    }
+                    String catName = processImageName(dir.getName());
+                    catName = (String) JOptionPane.showInputDialog(this,
+                            "Enter name for new category:",
+                            "Add Entire Folder", JOptionPane.INFORMATION_MESSAGE, null, null, catName);
+                    if (catName.isBlank()) {
+                        JOptionPane.showMessageDialog(this,
+                                "Category name must not be blank!",
+                                "Add Entire Folder", JOptionPane.ERROR_MESSAGE);
+                        break;
+                    }
+                    if (FaceCategory.NONE.getName().equals(catName)) {
+                        JOptionPane.showMessageDialog(this,
+                                "Category name \"" + FaceCategory.NONE.getName() + "\" is reserved!",
+                                "Add Entire Folder", JOptionPane.ERROR_MESSAGE);
+                        break;
+                    }
+                    var newCat = pool.getOrCreateCategory(catName);
+                    for (var file : files) {
+                        Path imagePath = basePath.relativize(file.toPath());
+                        String faceName = imagePath.getFileName().toString();
+                        faceName = processImageName(faceName);
+                        if (newCat.get(faceName) != null) {
+                            JOptionPane.showMessageDialog(this,
+                                    "Face name \"" + faceName + "\" is already taken!",
+                                    "Add Entire Folder", JOptionPane.ERROR_MESSAGE);
+                            continue;
+                        }
+                        var newFace = newCat.add(faceName, imagePath);
+                        try {
+                            newFace.loadImage(basePath);
+                        } catch (FaceLoadException ex) {
+                            JOptionPane.showMessageDialog(this,
+                                    "Failed to load new face \"" + faceName + "\":\n" + ex,
+                                    "Add Entire Folder", JOptionPane.ERROR_MESSAGE);
+                            newCat.remove(newFace);
+                        }
+                    }
+                    updateCategoriesModel();
+                    updateFacesModel();
                 }
                 case AC_SAVE -> {
                     for (var cat : pool.getCategories().values()) {

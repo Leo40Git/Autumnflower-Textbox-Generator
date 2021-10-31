@@ -74,7 +74,6 @@ public final class ListReorderTransferHandler extends TransferHandler {
             final int maxIndex = model.getSize() - 1;
             index = Math.max(0, Math.min(maxIndex, index));
             dropTargetIndex = Math.max(0, Math.min(maxIndex, dropTargetIndex));
-            //model.add(dropTargetIndex, model.remove(index));
             reorderCallback.move(list, index, dropTargetIndex);
             return true;
         }
