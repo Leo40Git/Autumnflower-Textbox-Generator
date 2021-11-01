@@ -41,6 +41,7 @@ public final class TextRenderer {
             throw new InternalError("Failed to read embedded font '" + FONT_PATH + "'?!", e);
         }
 
+        GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(base);
         FONT = base.deriveFont(Font.PLAIN, 28);
     }
     // endregion
