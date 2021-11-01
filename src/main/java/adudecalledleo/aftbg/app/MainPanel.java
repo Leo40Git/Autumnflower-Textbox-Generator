@@ -303,6 +303,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         if (textboxSelector.equals(source)) {
             flushChanges();
             textboxes.add(newIndex, textboxes.remove(oldIndex));
+            updateTextboxEditors();
             updateTextboxSelectorModel();
             textboxSelector.setSelectedIndex(newIndex);
         }
