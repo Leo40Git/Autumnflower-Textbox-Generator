@@ -15,7 +15,7 @@ public final class FaceCategoryListCellRenderer extends BaseListCellRenderer<Fac
     @Override
     public Component getListCellRendererComponent(JList<? extends FaceCategory> list, FaceCategory value, int index,
                                                   boolean isSelected, boolean cellHasFocus) {
-        updateColors(list, isSelected, cellHasFocus);
+        updateColors(list, index, isSelected, cellHasFocus);
         setText(value.getName());
         var icon = value.getIcon();
         if (icon == null) {

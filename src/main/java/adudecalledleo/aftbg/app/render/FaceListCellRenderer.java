@@ -18,7 +18,7 @@ public final class FaceListCellRenderer extends BaseListCellRenderer<Face> {
     @Override
     public Component getListCellRendererComponent(JList<? extends Face> list, Face value, int index,
                                                   boolean isSelected, boolean cellHasFocus) {
-        updateColors(list, isSelected, cellHasFocus);
+        updateColors(list, index, isSelected, cellHasFocus);
         setIcon(value.getIcon());
         if (showImagePath) {
             setText("<html>"

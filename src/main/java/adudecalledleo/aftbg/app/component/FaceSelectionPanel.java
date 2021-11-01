@@ -2,7 +2,7 @@ package adudecalledleo.aftbg.app.component;
 
 import adudecalledleo.aftbg.app.render.FaceCategoryListCellRenderer;
 import adudecalledleo.aftbg.app.render.FaceListCellRenderer;
-import adudecalledleo.aftbg.app.util.AutoCompletion;
+import adudecalledleo.aftbg.app.util.ComboBoxFiltering;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FaceCategory;
 import adudecalledleo.aftbg.face.FacePool;
@@ -33,10 +33,9 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener {
 
         catSel.setModel(catModel);
         catSel.setRenderer(new FaceCategoryListCellRenderer());
-        AutoCompletion.enable(catSel);
         faceSel.setModel(faceModel);
         faceSel.setRenderer(new FaceListCellRenderer(false));
-        AutoCompletion.enable(faceSel);
+        ComboBoxFiltering.install(faceSel);
 
         setLayout(new GridBagLayout());
         var c = new GridBagConstraints();
@@ -106,8 +105,27 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener {
         }
     }
 
+    private Face getSelectedFace() {
+        var selectedItem = faceSel.getSelectedItem();
+        if (selectedItem instanceof Face face) {
+            return face;
+        } else if (selectedItem instanceof String str) {
+            var cat = (FaceCategory) catModel.getSelectedItem();
+            if (cat == null) {
+                return Face.NONE;
+            }
+            var face = cat.get(str);
+            if (face == null) {
+                return Face.NONE;
+            }
+            faceSel.setSelectedItem(face);
+            return face;
+        }
+        return Face.NONE;
+    }
+
     public void flushChanges() {
-        faceUpdateListener.accept((Face) faceSel.getSelectedItem());
+        faceUpdateListener.accept(getSelectedFace());
     }
 
     @Override
@@ -128,12 +146,7 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener {
             if (faceModel.getSize() == 0) {
                 return;
             }
-            var face = (Face) faceModel.getSelectedItem();
-            if (face == null) {
-                faceSel.setSelectedIndex(0);
-                return;
-            }
-            faceUpdateListener.accept(face);
+            faceUpdateListener.accept(getSelectedFace());
         }
     }
 }
