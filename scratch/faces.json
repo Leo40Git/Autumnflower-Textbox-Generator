@@ -10,7 +10,11 @@
       "X-Ray": "faces/mercia/xray.png",
       "Darkened Eyes": "faces/mercia/gimmick.png",
       "Lizardspeak": "faces/mercia/lizardspeak.png",
-      "Undyed": "faces/mercia/undyed.png"
+      "Undyed": "faces/mercia/undyed.png",
+      "Child (Sad)": "faces/mercia/tiny_sad.png",
+      "Child (Happy)": "faces/mercia/tiny_happy.png",
+      "Child (Mallowed)": "faces/mercia/tiny_mallowed.png",
+      "Child (Crying)": "faces/mercia/tiny_crying.png"
     }
   },
   "Kyron": {
@@ -192,10 +196,6 @@
       "Rose": "faces/other/rose.png",
       "Russel": "faces/other/russel.png",
       "Scout": "faces/other/scout.png",
-      "Child Mercia (Sad)": "faces/other/tinymerc_sad.png",
-      "Child Mercia (Happy)": "faces/other/tinymerc_happy.png",
-      "Child Mercia (Mallowed)": "faces/other/tinymerc_mallowed.png",
-      "Child Mercia (Crying)": "faces/other/tinymerc_crying.png",
       "Sir Bearington": "faces/other/sir_bearington.png",
       "Selena": "faces/other/selena.png",
       "Serenity": "faces/other/serenity.png",
