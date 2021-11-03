@@ -67,14 +67,19 @@ public final class TextParser {
                             parser.parse(modStartPos, start + 1, sb.toString(), nodes);
                             sb.setLength(0);
                         }
+                        textStart = pos + 1;
                     } else {
                         if (parser == null) {
                             nodes.add(new ErrorNode(modStartPos, 2, "Unknown modifier key '" + c + "'"));
                         } else {
                             parser.parse(modStartPos, -1, null, nodes);
                         }
+                        if (pos < chars.length) {
+                            sb.append(chars[pos]);
+                            textLength++;
+                        }
+                        textStart = pos;
                     }
-                    textStart = pos + 1;
                 }
             } else {
                 if (c == '\\')

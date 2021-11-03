@@ -3,6 +3,7 @@ package adudecalledleo.aftbg.app.component;
 import adudecalledleo.aftbg.app.WindowContextUpdateListener;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.modifier.ColorModifierNode;
+import adudecalledleo.aftbg.text.modifier.StyleModifierNode;
 import adudecalledleo.aftbg.text.node.ErrorNode;
 import adudecalledleo.aftbg.text.node.Node;
 import adudecalledleo.aftbg.text.node.NodeList;
@@ -33,10 +34,8 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
     private final Map<Rectangle2D, String> errors;
     private final Line2D scratchLine;
     private final SimpleAttributeSet styleNormal, styleMod;
-    private final Map<Color, AttributeSet> coloredStyles;
 
     private WindowContext winCtx;
-    private boolean hasFace;
 
     public TextboxEditorPane(TextParser textParser, Consumer<String> textUpdateConsumer) {
         super();
@@ -44,7 +43,6 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         this.textUpdateConsumer = textUpdateConsumer;
         errors = new HashMap<>();
         scratchLine = new Line2D.Double(0, 0, 0, 0);
-        hasFace = false;
 
         setEditorKit(new EditorKitImpl());
         setDocument(new StyledDocumentImpl());
@@ -64,7 +62,6 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         StyleConstants.setForeground(styleNormal, Color.WHITE);
         styleMod = new SimpleAttributeSet(styleNormal);
         StyleConstants.setForeground(styleMod, Color.GRAY);
-        coloredStyles = new HashMap<>();
 
         Graphics2D g = SCRATCH_IMAGE.createGraphics();
         g.setFont(TextRenderer.FONT);
@@ -124,10 +121,6 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         return null;
     }
 
-    public void setHasFace(boolean hasFace) {
-        this.hasFace = hasFace;
-    }
-
     public void flushChanges(boolean highlight) {
         updateTimer.stop();
         SwingUtilities.invokeLater(() -> {
@@ -155,7 +148,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
 
     private void highlight() {
         if (getDocument() instanceof StyledDocument doc) {
-            AttributeSet style = styleNormal;
+            MutableAttributeSet style = styleNormal;
             doc.setParagraphAttributes(0, doc.getLength(), style, true);
             doc.setCharacterAttributes(0, doc.getLength(), style, true);
 
@@ -177,13 +170,21 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                 if (node instanceof ColorModifierNode modCol) {
                     doc.setCharacterAttributes(modCol.getStart(), modCol.getLength(), styleMod, true);
                     Color c = modCol.getColor(winCtx.getColors());
-                    style = coloredStyles.computeIfAbsent(c, color -> {
-                        var colStyle = new SimpleAttributeSet(styleNormal);
-                        StyleConstants.setForeground(colStyle, c);
-                        return colStyle;
-                    });
+                    style = new SimpleAttributeSet(style);
+                    StyleConstants.setForeground(style, c);
+
+                    var style2 = new SimpleAttributeSet(styleNormal);
+                    StyleConstants.setForeground(style2, c);
                     Span argSpan = modCol.getArgSpans()[0];
-                    doc.setCharacterAttributes(argSpan.start(), argSpan.length(), style, true);
+                    doc.setCharacterAttributes(argSpan.start(), argSpan.length(), style2, true);
+                } else if (node instanceof StyleModifierNode modStyle) {
+                    doc.setCharacterAttributes(modStyle.getStart(), modStyle.getLength(), styleMod, true);
+                    var spec = modStyle.getSpec();
+                    style = new SimpleAttributeSet(style);
+                    StyleConstants.setBold(style, spec.bold());
+                    StyleConstants.setItalic(style, spec.italic());
+                    StyleConstants.setUnderline(style, spec.underline());
+                    StyleConstants.setStrikeThrough(style, spec.strikethrough());
                 } else if (node instanceof ErrorNode err) {
                     doc.setCharacterAttributes(err.getStart(), err.getLength(), styleNormal, true);
 
