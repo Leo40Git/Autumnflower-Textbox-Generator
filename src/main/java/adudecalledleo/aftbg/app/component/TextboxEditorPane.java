@@ -134,7 +134,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
             case DefaultEditorKit.copyAction -> copy();
             case DefaultEditorKit.pasteAction -> paste();
             case AC_ADD_MOD_COLOR -> {
-                var dialog = new ColorModifierDialog((Frame) SwingUtilities.getWindowAncestor(this));
+                var dialog = new ColorModifierDialog((Frame) SwingUtilities.getWindowAncestor(this), winCtx);
                 dialog.setLocationRelativeTo(null);
                 var result = dialog.showDialog();
                 if (result == null) {
