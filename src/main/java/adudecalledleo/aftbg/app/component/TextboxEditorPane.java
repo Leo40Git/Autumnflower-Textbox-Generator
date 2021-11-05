@@ -1,6 +1,8 @@
 package adudecalledleo.aftbg.app.component;
 
 import adudecalledleo.aftbg.app.WindowContextUpdateListener;
+import adudecalledleo.aftbg.app.dialog.ColorModifierDialog;
+import adudecalledleo.aftbg.app.dialog.StyleModifierDialog;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.modifier.ColorModifierNode;
 import adudecalledleo.aftbg.text.modifier.StyleModifierNode;
@@ -15,9 +17,7 @@ import adudecalledleo.aftbg.text.TextRenderer;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -25,8 +25,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public final class TextboxEditorPane extends JEditorPane implements WindowContextUpdateListener {
+public final class TextboxEditorPane extends JEditorPane implements WindowContextUpdateListener, ActionListener {
     private static final BufferedImage SCRATCH_IMAGE = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+
+    private static final String AC_ADD_MOD_COLOR = "add_mod.color";
+    private static final String AC_ADD_MOD_STYLE = "add_mod.style";
 
     private final TextParser textParser;
     private final Consumer<String> textUpdateConsumer;
@@ -47,12 +50,10 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         setEditorKit(new EditorKitImpl());
         setDocument(new StyledDocumentImpl());
 
-        updateTimer = new Timer(250, e -> {
-            SwingUtilities.invokeLater(() -> {
-                textUpdateConsumer.accept(getText());
-                highlight();
-            });
-        });
+        updateTimer = new Timer(250, e -> SwingUtilities.invokeLater(() -> {
+            textUpdateConsumer.accept(getText());
+            highlight();
+        }));
         updateTimer.setRepeats(false);
         updateTimer.setCoalesce(true);
 
@@ -82,8 +83,76 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         setBackground(ColorUtils.TRANSPARENT);
 
         ToolTipManager.sharedInstance().registerComponent(this);
+        setComponentPopupMenu(createPopupMenu());
 
         highlight();
+    }
+
+    private JPopupMenu createPopupMenu() {
+        final var menu = new JPopupMenu();
+        JMenuItem item;
+
+        // TODO add standard copy/paste/cut
+        JMenu modsMenu = new JMenu("Add Modifier...");
+        modsMenu.setMnemonic(KeyEvent.VK_M);
+        item = new JMenuItem("Color");
+        item.setActionCommand(AC_ADD_MOD_COLOR);
+        item.addActionListener(this);
+        item.setMnemonic(KeyEvent.VK_C);
+        modsMenu.add(item);
+        item = new JMenuItem("Style");
+        item.setActionCommand(AC_ADD_MOD_STYLE);
+        item.addActionListener(this);
+        item.setMnemonic(KeyEvent.VK_S);
+        modsMenu.add(item);
+
+        menu.add(modsMenu);
+
+        return menu;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        switch (e.getActionCommand()) {
+            case AC_ADD_MOD_COLOR -> {
+                var dialog = new ColorModifierDialog((Frame) SwingUtilities.getWindowAncestor(this));
+                dialog.setLocationRelativeTo(null);
+                var result = dialog.showDialog();
+                if (result == null) {
+                    break;
+                }
+                String toInsert = null;
+                if (result instanceof ColorModifierDialog.WindowResult winResult) {
+                    toInsert = "\\c[" + winResult.getIndex() + "]";
+                } else if (result instanceof ColorModifierDialog.ConstantResult constResult) {
+                    var col = constResult.getColor();
+                    toInsert = String.format("\\c[#%02X%02X%02X]",
+                            col.getRed(), col.getGreen(), col.getBlue());
+                } else {
+                    throw new InternalError("Unhandled result type " + result + "?!");
+                }
+                try {
+                    getDocument().insertString(getCaretPosition(), toInsert, styleNormal);
+                    updateTimer.restart();
+                } catch (BadLocationException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            case AC_ADD_MOD_STYLE -> {
+                var dialog = new StyleModifierDialog((Frame) SwingUtilities.getWindowAncestor(this));
+                dialog.setLocationRelativeTo(null);
+                var spec = dialog.showDialog();
+                if (spec == null) {
+                    break;
+                }
+                try {
+                    getDocument().insertString(getCaretPosition(), spec.toModifier(), styleNormal);
+                    updateTimer.restart();
+                } catch (BadLocationException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override
@@ -97,7 +166,6 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         g2d.setColor(Color.RED);
         for (var entry : errors.entrySet()) {
             var rect = entry.getKey();
-            var oldClip = g2d.getClip();
             g2d.clip(rect);
             final double y = rect.getY() + rect.getHeight() - 3;
             boolean raised = true;
@@ -106,7 +174,6 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                 g2d.draw(scratchLine);
                 raised = !raised;
             }
-            g2d.clip(oldClip);
         }
     }
 

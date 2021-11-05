@@ -56,7 +56,7 @@ public final class TextRenderer {
 
     private static final Map<StyleModifierNode.StyleSpec, Font> STYLED_FONTS = new HashMap<>();
 
-    private static Font getStyledFont(StyleModifierNode.StyleSpec spec) {
+    public static Font getStyledFont(StyleModifierNode.StyleSpec spec) {
         return STYLED_FONTS.computeIfAbsent(spec, key -> {
             Map<TextAttribute, Object> map = new HashMap<>();
             map.put(TextAttribute.WEIGHT, key.bold() ? TextAttribute.WEIGHT_BOLD : TextAttribute.WEIGHT_REGULAR);
