@@ -92,7 +92,22 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         final var menu = new JPopupMenu();
         JMenuItem item;
 
-        // TODO add standard copy/paste/cut
+        item = new JMenuItem("Cut");
+        item.setActionCommand(DefaultEditorKit.cutAction);
+        item.addActionListener(this);
+        item.setMnemonic(KeyEvent.VK_T);
+        menu.add(item);
+        item = new JMenuItem("Copy");
+        item.setActionCommand(DefaultEditorKit.copyAction);
+        item.addActionListener(this);
+        item.setMnemonic(KeyEvent.VK_C);
+        menu.add(item);
+        item = new JMenuItem("Paste");
+        item.setActionCommand(DefaultEditorKit.pasteAction);
+        item.addActionListener(this);
+        item.setMnemonic(KeyEvent.VK_P);
+        menu.add(item);
+
         JMenu modsMenu = new JMenu("Add Modifier...");
         modsMenu.setMnemonic(KeyEvent.VK_M);
         item = new JMenuItem("Color");
@@ -106,6 +121,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         item.setMnemonic(KeyEvent.VK_S);
         modsMenu.add(item);
 
+        menu.addSeparator();
         menu.add(modsMenu);
 
         return menu;
@@ -114,6 +130,9 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
+            case DefaultEditorKit.cutAction -> cut();
+            case DefaultEditorKit.copyAction -> copy();
+            case DefaultEditorKit.pasteAction -> paste();
             case AC_ADD_MOD_COLOR -> {
                 var dialog = new ColorModifierDialog((Frame) SwingUtilities.getWindowAncestor(this));
                 dialog.setLocationRelativeTo(null);
@@ -121,7 +140,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                 if (result == null) {
                     break;
                 }
-                String toInsert = null;
+                String toInsert;
                 if (result instanceof ColorModifierDialog.WindowResult winResult) {
                     toInsert = "\\c[" + winResult.getIndex() + "]";
                 } else if (result instanceof ColorModifierDialog.ConstantResult constResult) {
