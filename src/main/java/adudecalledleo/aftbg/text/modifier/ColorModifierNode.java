@@ -106,7 +106,7 @@ public sealed abstract class ColorModifierNode extends ModifierNode {
                     g = (rgb >> 8) & 0xFF;
                     b = (rgb >> 16) & 0xFF;
                 }
-                nodes.add(new Constant(start, 2 + hexlen + 2, new Span(argsStart, hexlen + 1),
+                nodes.add(new Constant(start, 2 + hexlen + 3, new Span(argsStart, hexlen + 1),
                         new Color(r | g << 8 | b << 16, false)));
             } else {
                 int index;
@@ -127,7 +127,7 @@ public sealed abstract class ColorModifierNode extends ModifierNode {
                             ERROR_PREFIX + "Window color ID is too high, max is 31"));
                     return;
                 }
-                nodes.add(new Window(start, 2 + args.length() + 2, new Span(argsStart, args.length()), index));
+                nodes.add(new Window(start, 2 + args.length() + 3, new Span(argsStart, args.length()), index));
             }
         }
     }
