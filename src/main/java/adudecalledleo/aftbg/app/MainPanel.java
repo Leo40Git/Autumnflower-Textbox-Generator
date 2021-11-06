@@ -226,7 +226,11 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     dialog.setLocationRelativeTo(null);
                     dialog.setVisible(true);
                 } else {
-                    // TODO
+                    // TODO more detailed error message
+                    JOptionPane.showMessageDialog(this,
+                            "Seems like one or more of your textboxes have errors!\n"
+                                    + "Correct this, then try generating again.",
+                            "Generate textbox(es)", JOptionPane.ERROR_MESSAGE);
                 }
                 break;
             case AC_TEXTBOX_ADD:
