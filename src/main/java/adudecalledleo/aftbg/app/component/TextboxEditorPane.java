@@ -1,7 +1,7 @@
 package adudecalledleo.aftbg.app.component;
 
 import adudecalledleo.aftbg.app.AppResources;
-import adudecalledleo.aftbg.app.WindowContextUpdateListener;
+import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
 import adudecalledleo.aftbg.app.dialog.ColorModifierDialog;
 import adudecalledleo.aftbg.app.dialog.StyleModifierDialog;
 import adudecalledleo.aftbg.text.TextParser;

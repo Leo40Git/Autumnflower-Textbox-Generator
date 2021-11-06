@@ -1,6 +1,6 @@
 package adudecalledleo.aftbg.app.render;
 
-import adudecalledleo.aftbg.app.WindowContextUpdateListener;
+import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.node.NodeUtils;

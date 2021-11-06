@@ -21,6 +21,6 @@ public final class PathAdapter extends TypeAdapter<Path> {
 
     @Override
     public void write(JsonWriter out, Path value) throws IOException {
-        out.value(value.toString());
+        out.value(value.toString().replaceAll("\\\\", "/"));
     }
 }

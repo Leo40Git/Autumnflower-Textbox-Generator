@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.app;
+package adudecalledleo.aftbg.app.util;
 
 import adudecalledleo.aftbg.window.WindowContext;
 

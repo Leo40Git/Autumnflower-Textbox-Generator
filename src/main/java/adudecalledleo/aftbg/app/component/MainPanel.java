@@ -1,8 +1,7 @@
-package adudecalledleo.aftbg.app;
+package adudecalledleo.aftbg.app.component;
 
-import adudecalledleo.aftbg.app.component.FaceSelectionPanel;
-import adudecalledleo.aftbg.app.component.TextboxEditorPane;
-import adudecalledleo.aftbg.app.component.WindowBackgroundScrollPane;
+import adudecalledleo.aftbg.app.AppResources;
+import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.dialog.FacePoolEditorDialog;
 import adudecalledleo.aftbg.app.dialog.PreviewDialog;
@@ -145,10 +144,10 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         }
     }
 
-    public void updateGameDefinition(GameDefinition gameDef, FacePool faces, Path basePath) {
+    public void updateGameDefinition(Path basePath, GameDefinition gameDef, FacePool faces) {
+        this.basePath = basePath;
         this.gameDef = gameDef;
         this.faces = faces;
-        this.basePath = basePath;
         faceSelection.updateFacePool(faces);
     }
 
