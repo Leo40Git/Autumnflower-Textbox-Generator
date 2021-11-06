@@ -15,6 +15,8 @@ import adudecalledleo.aftbg.window.WindowContext;
 import adudecalledleo.aftbg.text.TextRenderer;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -37,8 +39,10 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
     private final Map<Rectangle2D, String> errors;
     private final Line2D scratchLine;
     private final SimpleAttributeSet styleNormal, styleMod;
+    private final JPopupMenu popupMenu;
 
     private WindowContext winCtx;
+    private boolean forceCaretRendering;
 
     public TextboxEditorPane(TextParser textParser, Consumer<String> textUpdateConsumer) {
         super();
@@ -72,10 +76,20 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         setPreferredSize(size);
         g.dispose();
 
-        addKeyListener(new KeyAdapter() {
+        getDocument().addDocumentListener(new DocumentListener() {
             @Override
-            public void keyReleased(KeyEvent e) {
+            public void insertUpdate(DocumentEvent e) {
                 updateTimer.restart();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateTimer.restart();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                // this one is ignored, because we're the only ones updating the attributes
             }
         });
 
@@ -83,7 +97,36 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         setBackground(ColorUtils.TRANSPARENT);
 
         ToolTipManager.sharedInstance().registerComponent(this);
-        setComponentPopupMenu(createPopupMenu());
+        popupMenu = createPopupMenu();
+        addMouseListener(new MouseAdapter() {
+            private final Position.Bias[] biasRet = new Position.Bias[1];
+
+            private void mousePopupTriggered(MouseEvent e) {
+                var point = e.getPoint();
+                int pos = getUI().viewToModel2D(TextboxEditorPane.this, point, biasRet);
+                if (pos >= 0) {
+                    setCaretPosition(pos);
+                }
+                popupMenu.show(TextboxEditorPane.this, point.x, point.y);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    e.consume();
+                    mousePopupTriggered(e);
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    e.consume();
+                    mousePopupTriggered(e);
+                }
+            }
+        });
+        forceCaretRendering = false;
 
         highlight();
     }
@@ -134,9 +177,15 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
             case DefaultEditorKit.copyAction -> copy();
             case DefaultEditorKit.pasteAction -> paste();
             case AC_ADD_MOD_COLOR -> {
-                var dialog = new ColorModifierDialog((Frame) SwingUtilities.getWindowAncestor(this), winCtx);
-                dialog.setLocationRelativeTo(null);
-                var result = dialog.showDialog();
+                ColorModifierDialog.Result result;
+                try {
+                    forceCaretRendering = true;
+                    var dialog = new ColorModifierDialog((Frame) SwingUtilities.getWindowAncestor(this), winCtx);
+                    dialog.setLocationRelativeTo(null);
+                    result = dialog.showDialog();
+                } finally {
+                    forceCaretRendering = false;
+                }
                 if (result == null) {
                     break;
                 }
@@ -158,9 +207,15 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                 }
             }
             case AC_ADD_MOD_STYLE -> {
-                var dialog = new StyleModifierDialog((Frame) SwingUtilities.getWindowAncestor(this));
-                dialog.setLocationRelativeTo(null);
-                var spec = dialog.showDialog();
+                StyleModifierNode.StyleSpec spec;
+                try {
+                    forceCaretRendering = true;
+                    var dialog = new StyleModifierDialog((Frame) SwingUtilities.getWindowAncestor(this));
+                    dialog.setLocationRelativeTo(null);
+                    spec = dialog.showDialog();
+                } finally {
+                    forceCaretRendering = false;
+                }
                 if (spec == null) {
                     break;
                 }
@@ -180,6 +235,12 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         g2d.setBackground(ColorUtils.TRANSPARENT);
         g2d.clearRect(0, 0, getWidth(), getHeight());
         winCtx.drawBackground(g2d, 0, 0, getWidth(), getHeight(), null);
+
+        if (popupMenu.isVisible() || forceCaretRendering) {
+            // force caret to be drawn, so user knows where pasted text/modifiers will be inserted
+            getCaret().setVisible(true);
+        }
+
         super.paintComponent(g);
 
         g2d.setColor(Color.RED);
@@ -250,8 +311,6 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                 return;
             }
 
-            errors.clear();
-
             for (Node node : nodes) {
                 if (node instanceof ColorModifierNode modCol) {
                     doc.setCharacterAttributes(modCol.getStart(), modCol.getLength(), styleMod, true);
@@ -271,23 +330,27 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                     StyleConstants.setItalic(style, spec.italic());
                     StyleConstants.setUnderline(style, spec.underline());
                     StyleConstants.setStrikeThrough(style, spec.strikethrough());
-                } else if (node instanceof ErrorNode err) {
-                    doc.setCharacterAttributes(err.getStart(), err.getLength(), styleNormal, true);
-
-                    Rectangle2D startRect, endRect;
-                    final int end = err.getStart() + err.getLength();
-                    try {
-                        startRect = modelToView2D(err.getStart());
-                        endRect = modelToView2D(end);
-
-                        errors.put(new Rectangle2D.Double(startRect.getX(), startRect.getY(),
-                                endRect.getX() - startRect.getX(), Math.max(startRect.getHeight(), endRect.getHeight())),
-                                err.getMessage());
-                    } catch (BadLocationException e) {
-                        e.printStackTrace();
-                    }
                 } else {
                     doc.setCharacterAttributes(node.getStart(), node.getLength(), style, true);
+                }
+            }
+
+            errors.clear();
+
+            for (ErrorNode err : nodes.getErrors()) {
+                doc.setCharacterAttributes(err.getStart(), err.getLength(), styleNormal, true);
+
+                Rectangle2D startRect, endRect;
+                final int end = err.getStart() + err.getLength();
+                try {
+                    startRect = modelToView2D(err.getStart());
+                    endRect = modelToView2D(end);
+
+                    errors.put(new Rectangle2D.Double(startRect.getX(), startRect.getY(),
+                                    endRect.getX() - startRect.getX(), Math.max(startRect.getHeight(), endRect.getHeight())),
+                            err.getMessage());
+                } catch (BadLocationException e) {
+                    e.printStackTrace();
                 }
             }
         }
