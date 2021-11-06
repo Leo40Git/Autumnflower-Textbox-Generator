@@ -1,5 +1,6 @@
 package adudecalledleo.aftbg.app.component;
 
+import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.WindowContextUpdateListener;
 import adudecalledleo.aftbg.app.dialog.ColorModifierDialog;
 import adudecalledleo.aftbg.app.dialog.StyleModifierDialog;
@@ -62,16 +63,16 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         updateTimer.setCoalesce(true);
 
         styleNormal = new SimpleAttributeSet();
-        StyleConstants.setFontFamily(styleNormal, TextRenderer.FONT.getFamily());
-        StyleConstants.setFontSize(styleNormal, TextRenderer.FONT.getSize());
+        StyleConstants.setFontFamily(styleNormal, TextRenderer.DEFAULT_FONT.getFamily());
+        StyleConstants.setFontSize(styleNormal, TextRenderer.DEFAULT_FONT.getSize());
         StyleConstants.setForeground(styleNormal, Color.WHITE);
         styleMod = new SimpleAttributeSet(styleNormal);
         StyleConstants.setForeground(styleMod, Color.GRAY);
 
         Graphics2D g = SCRATCH_IMAGE.createGraphics();
-        g.setFont(TextRenderer.FONT);
+        g.setFont(TextRenderer.DEFAULT_FONT);
         var fm = g.getFontMetrics();
-        var size = new Dimension(780, fm.getHeight() * 4 + fm.getDescent());
+        var size = new Dimension(816, fm.getHeight() * 4 + fm.getDescent());
         setMinimumSize(size);
         setPreferredSize(size);
         g.dispose();
@@ -135,17 +136,17 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         final var menu = new JPopupMenu();
         JMenuItem item;
 
-        item = new JMenuItem("Cut");
+        item = new JMenuItem("Cut", AppResources.Icons.CUT.get());
         item.setActionCommand(DefaultEditorKit.cutAction);
         item.addActionListener(this);
         item.setMnemonic(KeyEvent.VK_T);
         menu.add(item);
-        item = new JMenuItem("Copy");
+        item = new JMenuItem("Copy", AppResources.Icons.COPY.get());
         item.setActionCommand(DefaultEditorKit.copyAction);
         item.addActionListener(this);
         item.setMnemonic(KeyEvent.VK_C);
         menu.add(item);
-        item = new JMenuItem("Paste");
+        item = new JMenuItem("Paste", AppResources.Icons.PASTE.get());
         item.setActionCommand(DefaultEditorKit.pasteAction);
         item.addActionListener(this);
         item.setMnemonic(KeyEvent.VK_P);
@@ -153,12 +154,12 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
 
         JMenu modsMenu = new JMenu("Add Modifier...");
         modsMenu.setMnemonic(KeyEvent.VK_M);
-        item = new JMenuItem("Color");
+        item = new JMenuItem("Color", AppResources.Icons.MOD_COLOR.get());
         item.setActionCommand(AC_ADD_MOD_COLOR);
         item.addActionListener(this);
         item.setMnemonic(KeyEvent.VK_C);
         modsMenu.add(item);
-        item = new JMenuItem("Style");
+        item = new JMenuItem("Style", AppResources.Icons.MOD_STYLE.get());
         item.setActionCommand(AC_ADD_MOD_STYLE);
         item.addActionListener(this);
         item.setMnemonic(KeyEvent.VK_S);

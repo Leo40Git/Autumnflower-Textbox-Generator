@@ -159,7 +159,7 @@ public final class ColorModifierDialog extends JDialog {
             customPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
             lblPreview = new JLabel("Sample text");
-            lblPreview.setFont(TextRenderer.FONT);
+            lblPreview.setFont(TextRenderer.DEFAULT_FONT);
             updatePreview();
             JPanel previewPanel = new WindowBackgroundPanel(winCtx);
             previewPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.GRAY, 1),

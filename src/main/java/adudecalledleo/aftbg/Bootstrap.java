@@ -1,5 +1,6 @@
 package adudecalledleo.aftbg;
 
+import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.MainPanel;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FaceLoadException;
@@ -30,7 +31,16 @@ public final class Bootstrap {
             e.printStackTrace();
         }
 
-        TextRenderer.loadFont();
+        try {
+            AppResources.load();
+        } catch (IOException e) {
+            // TODO log error
+            JOptionPane.showMessageDialog(null,
+                    "Failed to load app resources!",
+                    "Failed to launch", JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+            return;
+        }
 
         Path basePath = Paths.get("scratch").toAbsolutePath();
 

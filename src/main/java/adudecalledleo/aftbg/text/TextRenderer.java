@@ -1,5 +1,6 @@
 package adudecalledleo.aftbg.text;
 
+import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.text.modifier.ColorModifierNode;
 import adudecalledleo.aftbg.text.modifier.StyleModifierNode;
 import adudecalledleo.aftbg.text.node.LineBreakNode;
@@ -12,9 +13,6 @@ import java.awt.*;
 import java.awt.font.TextAttribute;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,30 +27,9 @@ public final class TextRenderer {
     private static final Stroke OUTLINE2_STROKE = new BasicStroke(OUTLINE2_WIDTH, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND);
     public static final Composite OUTLINE2_COMPOSITE = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, OUTLINE2_OPAQUENESS);
 
-    public static final Font FONT;
-
-    private static final String FONT_PATH = "/font/VL-Gothic-Regular.ttf";
-    // region Font loading stuff
-    static {
-        Font base;
-        try (InputStream in = TextRenderer.class.getResourceAsStream(FONT_PATH)) {
-            if (in == null)
-                throw new FileNotFoundException(FONT_PATH);
-            base = Font.createFont(Font.TRUETYPE_FONT, in);
-        } catch (FileNotFoundException e) {
-            throw new InternalError("Missing embedded resource '" + FONT_PATH + "'?!");
-        } catch (IOException | FontFormatException e) {
-            throw new InternalError("Failed to read embedded font '" + FONT_PATH + "'?!", e);
-        }
-
-        GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(base);
-        FONT = base.deriveFont(Font.PLAIN, 28);
-    }
-    // endregion
+    public static final Font DEFAULT_FONT = AppResources.getFont().deriveFont(Font.PLAIN, 28);
 
     private TextRenderer() { }
-
-    public static void loadFont() { /* <clinit> */ }
 
     private static final Map<StyleModifierNode.StyleSpec, Font> STYLED_FONTS = new HashMap<>();
 
@@ -63,12 +40,12 @@ public final class TextRenderer {
             map.put(TextAttribute.POSTURE, key.italic() ? TextAttribute.POSTURE_OBLIQUE : TextAttribute.POSTURE_REGULAR);
             map.put(TextAttribute.UNDERLINE, key.underline() ? TextAttribute.UNDERLINE_ON : -1);
             map.put(TextAttribute.STRIKETHROUGH, key.strikethrough() ? TextAttribute.STRIKETHROUGH_ON : false);
-            return FONT.deriveFont(map);
+            return DEFAULT_FONT.deriveFont(map);
         });
     }
 
     static {
-        STYLED_FONTS.put(StyleModifierNode.StyleSpec.DEFAULT, FONT);
+        STYLED_FONTS.put(StyleModifierNode.StyleSpec.DEFAULT, DEFAULT_FONT);
     }
 
     public static void draw(Graphics2D g, NodeList nodes, WindowColors colors, int x, int y) {
@@ -80,7 +57,7 @@ public final class TextRenderer {
         final var oldHints = g.getRenderingHints();
         // endregion
 
-        g.setFont(FONT);
+        g.setFont(DEFAULT_FONT);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
