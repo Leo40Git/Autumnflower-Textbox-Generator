@@ -6,10 +6,10 @@ import java.awt.image.ImageObserver;
 
 public final class WindowBorder {
     // in essence, this is a modified "nine patch" renderer
-    // corner pieces are 24x24
-    // the center/middle pieces are longer: 24x48 for center-left/right pieces and 48x24 for top/bottom-middle pieces
-    // (RPG Maker puts some menu-related arrows here, for some reason)
-    // also, a center-middle piece doesn't exist, so technically this is an "eight patch" renderer
+    //  corner pieces are 24x24
+    //  the center/middle pieces are longer: 24x48 for center-left/right pieces; and 48x24 for top/bottom-middle pieces
+    // also, there's no center-middle piece (RPG Maker puts some menu-related arrows where it'd be, for some reason),
+    //  so technically this is an "eight patch" renderer
 
     private static final int PIECE_TL = 0;
     private static final int PIECE_TM = 1;

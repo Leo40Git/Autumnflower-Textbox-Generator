@@ -27,14 +27,17 @@ public final class WindowBackground {
         if (resizeScratchBuf(width, height)) {
             Graphics2D sg = scratchBuf.createGraphics();
 
-            var oldComposite = sg.getComposite();
             // draw stretched and tinted base
             sg.setComposite(new WindowTintComposite(color));
             sg.drawImage(base, 0, 0, width, height, 0, 0, base.getWidth(), base.getHeight(), null);
-            sg.setComposite(oldComposite);
             // draw tiled overlay
-            drawTiled(overlay, sg, width, height);
-
+            sg.setComposite(AlphaComposite.SrcOver);
+            final int tilesWide = width / tileWidth, tilesHigh = height / tileHeight;
+            for (int ty = 0; ty <= tilesHigh; ty++) {
+                for (int tx = 0; tx <= tilesWide; tx++) {
+                    g.drawImage(overlay, tx * tileWidth, ty * tileHeight, null);
+                }
+            }
             // reduce everyone's alpha by 25%
             sg.setComposite(new AlphaMultiplicationComposite(0.75f));
             sg.fillRect(0, 0, width, height);
@@ -51,14 +54,5 @@ public final class WindowBackground {
             return true;
         }
         return false;
-    }
-
-    private void drawTiled(BufferedImage part, Graphics g, int width, int height) {
-        final int tilesWide = width / tileWidth, tilesHigh = height / tileHeight;
-        for (int ty = 0; ty <= tilesHigh; ty++) {
-            for (int tx = 0; tx <= tilesWide; tx++) {
-                g.drawImage(part, tx * tileWidth, ty * tileHeight, null);
-            }
-        }
     }
 }
