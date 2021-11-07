@@ -12,6 +12,12 @@ public final class DialogUtils {
     public static final FileNameExtensionFilter FILTER_JSON_FILES
             = new FileNameExtensionFilter("JSON files", "json");
 
+    public static int showCustomConfirmDialog(Component parentComponent, Object message, String title,
+                                              String[] options, int messageType) {
+        return JOptionPane.showOptionDialog(parentComponent, message, title, JOptionPane.DEFAULT_OPTION, messageType,
+                null, options, null);
+    }
+
     private static final JFileChooser FC_OPEN = createFileChooser(), FC_SAVE = createFileChooser();
 
     private static JFileChooser createFileChooser() {
