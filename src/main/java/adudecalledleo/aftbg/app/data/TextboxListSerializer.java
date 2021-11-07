@@ -21,7 +21,7 @@ public final class TextboxListSerializer {
     }
 
     public static final class ReadCancelledException extends Exception {
-        public ReadCancelledException() {
+        private ReadCancelledException() {
             super();
         }
     }
