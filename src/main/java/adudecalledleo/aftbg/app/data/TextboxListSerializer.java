@@ -89,7 +89,7 @@ public final class TextboxListSerializer {
             out.name("face");
             out.value(textbox.getFace().getPath());
             out.name("text");
-            out.value(textbox.getText());
+            out.value(textbox.getText().replaceAll(System.lineSeparator(), "\n"));
             out.endObject();
         }
         out.endArray();

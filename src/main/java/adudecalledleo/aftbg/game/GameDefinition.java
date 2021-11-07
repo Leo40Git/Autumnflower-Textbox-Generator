@@ -2,14 +2,12 @@ package adudecalledleo.aftbg.game;
 
 import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.util.PathAdapter;
-import adudecalledleo.aftbg.window.WindowTint;
 import adudecalledleo.aftbg.util.WindowTintAdapter;
+import adudecalledleo.aftbg.window.WindowTint;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
 
-import java.io.BufferedReader;
-import java.lang.reflect.Type;
 import java.nio.file.Path;
 
 @SuppressWarnings("ClassCanBeRecord")
@@ -23,10 +21,6 @@ public final class GameDefinition {
             .registerTypeAdapter(WindowTint.class, new WindowTintAdapter())
             .registerTypeAdapter(FacePool.class, new FacePool.Adapter())
             .create();
-
-    public static GameDefinition read(BufferedReader reader) {
-        return GSON.fromJson(reader, GameDefinition.class);
-    }
 
     private final String name;
     private final Path windowPath;

@@ -1,14 +1,17 @@
 package adudecalledleo.aftbg.app.component;
 
+import adudecalledleo.aftbg.Bootstrap;
+import adudecalledleo.aftbg.TextboxResources;
 import adudecalledleo.aftbg.app.AppResources;
-import adudecalledleo.aftbg.app.data.TextboxListSerializer;
-import adudecalledleo.aftbg.app.util.DialogUtils;
-import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
 import adudecalledleo.aftbg.app.data.Textbox;
+import adudecalledleo.aftbg.app.data.TextboxListSerializer;
 import adudecalledleo.aftbg.app.dialog.FacePoolEditorDialog;
 import adudecalledleo.aftbg.app.dialog.PreviewDialog;
 import adudecalledleo.aftbg.app.render.TextboxListCellRenderer;
+import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.ListReorderTransferHandler;
+import adudecalledleo.aftbg.app.util.LoadFrame;
+import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.game.GameDefinition;
@@ -26,7 +29,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -352,7 +358,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             }
         }
         try (FileWriter fw = new FileWriter(currentProject);
-             JsonWriter out = new JsonWriter(fw)) {
+             JsonWriter out = GameDefinition.GSON.newJsonWriter(fw)) {
             projectSerializer.write(textboxes, out);
         }
     }
@@ -371,7 +377,9 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         private static final String AC_LOAD = "file.load";
         private static final String AC_SAVE = "file.save";
         private static final String AC_SAVE_AS = "file.save_as";
+        private static final String AC_RELOAD_DEF = "file.reload_def";
         private static final String AC_FACE_POOL_EDITOR = "tools.face_pool_editor";
+        private static final String AC_ABOUT = "help.about";
 
         public MenuBarImpl() {
             super();
@@ -395,6 +403,11 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             item.setActionCommand(AC_SAVE_AS);
             item.addActionListener(this);
             fileMenu.add(item);
+            fileMenu.addSeparator();
+            item = new JMenuItem("Reload Game Definition");
+            item.setActionCommand(AC_RELOAD_DEF);
+            item.addActionListener(this);
+            fileMenu.add(item);
 
             JMenu toolsMenu = new JMenu("Tools");
             item = new JMenuItem("Face Pool Editor", AppResources.Icons.EDIT_FACE_POOL.get());
@@ -402,15 +415,22 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             item.addActionListener(this);
             toolsMenu.add(item);
 
+            JMenu helpMenu = new JMenu("Help");
+            item = new JMenuItem("About");
+            item.setActionCommand(AC_ABOUT);
+            item.addActionListener(this);
+            helpMenu.add(item);
+
             add(fileMenu);
             add(toolsMenu);
+            add(helpMenu);
         }
 
         private boolean canOverwriteCurrentProject(String title, String description) {
             if (!isProjectEmpty()) {
                 int result = JOptionPane.showConfirmDialog(MainPanel.this,
                         "Do you want to save the current project before " + description + "?\n" +
-                                "Creating a new project will permanently delete all current textboxes!",
+                                "Doing this will irreversibly delete all current textboxes!",
                         "New Project", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
                 if (result == JOptionPane.YES_OPTION) {
                     try {
@@ -452,7 +472,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
                     List<Textbox> newTextboxes;
                     try (FileReader fr = new FileReader(src);
-                         JsonReader in = new JsonReader(fr)) {
+                         JsonReader in = GameDefinition.GSON.newJsonReader(fr)) {
                         newTextboxes = projectSerializer.read(in, faces);
                     } catch (TextboxListSerializer.ReadCancelledException ignored) {
                         break;
@@ -491,11 +511,41 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                                 "Save Project", JOptionPane.ERROR_MESSAGE);
                     }
                 }
+                case AC_RELOAD_DEF -> {
+                    LoadFrame loadFrame = new LoadFrame("Reloading...", false);
+
+                    SwingUtilities.invokeLater(() -> {
+                        TextboxResources rsrc;
+                        try {
+                            rsrc = TextboxResources.load(basePath);
+                        } catch (TextboxResources.LoadException e) {
+                            e.printStackTrace();
+                            JOptionPane.showMessageDialog(MainPanel.this,
+                                    "Failed to reload textbox resources!\n" + e,
+                                    "Reload Game Definition", JOptionPane.ERROR_MESSAGE);
+                            loadFrame.dispose();
+                            MainPanel.this.requestFocus();
+                            return;
+                        }
+
+                        updateGameDefinition(basePath, rsrc.gameDefinition(), rsrc.facePool());
+                        updateWindowContext(rsrc.windowContext());
+                        loadFrame.dispose();
+                        MainPanel.this.requestFocus();
+                    });
+                }
                 case AC_FACE_POOL_EDITOR -> {
                     var fpd = new FacePoolEditorDialog((Frame) SwingUtilities.getWindowAncestor(this), basePath,
                             new FacePool(faces));
                     fpd.setLocationRelativeTo(null);
                     fpd.setVisible(true);
+                }
+                case AC_ABOUT -> {
+                    JOptionPane.showMessageDialog(MainPanel.this,
+                            "<html>" + Bootstrap.NAME + " (" + Bootstrap.NAME_ABBR + ") version " + Bootstrap.VERSION + "<br/>"
+                                    + "Made by ADudeCalledLeo"
+                                    + "</html>",
+                            "About " + Bootstrap.NAME + " v" + Bootstrap.VERSION, JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         }
