@@ -1,6 +1,8 @@
 package adudecalledleo.aftbg.app.component;
 
 import adudecalledleo.aftbg.app.AppResources;
+import adudecalledleo.aftbg.app.data.TextboxListSerializer;
+import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.dialog.FacePoolEditorDialog;
@@ -14,6 +16,8 @@ import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.TextRenderer;
 import adudecalledleo.aftbg.util.ColorUtils;
 import adudecalledleo.aftbg.window.WindowContext;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -22,6 +26,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +46,8 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
     private final List<Textbox> textboxes;
     private int currentTextbox;
+    private final TextboxListSerializer projectSerializer;
+    private File currentProject;
 
     private final JList<Textbox> textboxSelector;
     private final FaceSelectionPanel faceSelection;
@@ -59,6 +66,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         textboxes = new ArrayList<>();
         textboxes.add(new Textbox(Face.NONE, ""));
         currentTextbox = 0;
+        projectSerializer = new TextboxListSerializer(this);
 
         faceSelection = new FaceSelectionPanel(this::onFaceChanged);
         editorPane = new TextboxEditorPane(textParser, this::onTextUpdated);
@@ -312,6 +320,43 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         }
     }
 
+    public boolean isProjectEmpty() {
+        for (Textbox box : textboxes) {
+            if (!box.getText().isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void saveProject(boolean forceChooserDialog) throws IOException {
+        flushChanges();
+        boolean freshlySetProject = false;
+        if (currentProject == null || forceChooserDialog) {
+            File sel = DialogUtils.fileSaveDialog(this, "Save Project", DialogUtils.FILTER_JSON_FILES);
+            if (sel == null) {
+                return;
+            }
+            currentProject = sel;
+            freshlySetProject = true;
+        }
+        if (freshlySetProject && currentProject.exists()) {
+            final int result = JOptionPane.showConfirmDialog(this,
+                    "File \"" + currentProject + "\" already exists.\nOverwrite it?", "Save Project",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (result != JOptionPane.YES_OPTION) {
+                return;
+            }
+            if (!currentProject.delete()) {
+                throw new IOException("Could not delete file \"" + currentProject + "\"!");
+            }
+        }
+        try (FileWriter fw = new FileWriter(currentProject);
+             JsonWriter out = new JsonWriter(fw)) {
+            projectSerializer.write(textboxes, out);
+        }
+    }
+
     private MenuBarImpl menuBar;
 
     public JMenuBar getMenuBar() {
@@ -322,6 +367,10 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     }
 
     private final class MenuBarImpl extends JMenuBar implements ActionListener {
+        private static final String AC_NEW = "file.new";
+        private static final String AC_LOAD = "file.load";
+        private static final String AC_SAVE = "file.save";
+        private static final String AC_SAVE_AS = "file.save_as";
         private static final String AC_FACE_POOL_EDITOR = "tools.face_pool_editor";
 
         public MenuBarImpl() {
@@ -329,18 +378,119 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
             JMenuItem item;
 
+            JMenu fileMenu = new JMenu("File");
+            item = new JMenuItem("New Project");
+            item.setActionCommand(AC_NEW);
+            item.addActionListener(this);
+            fileMenu.add(item);
+            item = new JMenuItem("Load Project");
+            item.setActionCommand(AC_LOAD);
+            item.addActionListener(this);
+            fileMenu.add(item);
+            item = new JMenuItem("Save Project");
+            item.setActionCommand(AC_SAVE);
+            item.addActionListener(this);
+            fileMenu.add(item);
+            item = new JMenuItem("Save Project As...");
+            item.setActionCommand(AC_SAVE_AS);
+            item.addActionListener(this);
+            fileMenu.add(item);
+
             JMenu toolsMenu = new JMenu("Tools");
             item = new JMenuItem("Face Pool Editor", AppResources.Icons.EDIT_FACE_POOL.get());
             item.setActionCommand(AC_FACE_POOL_EDITOR);
             item.addActionListener(this);
             toolsMenu.add(item);
 
+            add(fileMenu);
             add(toolsMenu);
         }
 
+        private boolean canOverwriteCurrentProject(String title, String description) {
+            if (!isProjectEmpty()) {
+                int result = JOptionPane.showConfirmDialog(MainPanel.this,
+                        "Do you want to save the current project before " + description + "?\n" +
+                                "Creating a new project will permanently delete all current textboxes!",
+                        "New Project", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (result == JOptionPane.YES_OPTION) {
+                    try {
+                        saveProject(false);
+                    } catch (IOException | IllegalStateException e) {
+                        JOptionPane.showMessageDialog(MainPanel.this,
+                                "Failed to write project!\n" + e + "\n" +
+                                        "To prevent your work from being lost, the current operation has been cancelled.",
+                                title, JOptionPane.ERROR_MESSAGE);
+                        return false;
+                    }
+                } else return result == JOptionPane.NO_OPTION;
+            }
+            return true;
+        }
+
         @Override
-        public void actionPerformed(ActionEvent e) {
-            switch (e.getActionCommand()) {
+        public void actionPerformed(ActionEvent evt) {
+            switch (evt.getActionCommand()) {
+                case AC_NEW -> {
+                    if (!canOverwriteCurrentProject("New Project", "creating a new project")) {
+                        break;
+                    }
+                    currentProject = null;
+                    currentTextbox = 0;
+                    textboxes.clear();
+                    textboxes.add(new Textbox(Face.NONE, ""));
+                    updateTextboxEditors();
+                    updateTextboxSelectorModel();
+                }
+                case AC_LOAD -> {
+                    if (!canOverwriteCurrentProject("Load Project", "loading another project")) {
+                        break;
+                    }
+                    File src = DialogUtils.fileOpenDialog(MainPanel.this, "Load Project", DialogUtils.FILTER_JSON_FILES);
+                    if (src == null) {
+                        break;
+                    }
+
+                    List<Textbox> newTextboxes;
+                    try (FileReader fr = new FileReader(src);
+                         JsonReader in = new JsonReader(fr)) {
+                        newTextboxes = projectSerializer.read(in, faces);
+                    } catch (TextboxListSerializer.ReadCancelledException ignored) {
+                        break;
+                    } catch (IOException | IllegalStateException e) {
+                        JOptionPane.showMessageDialog(MainPanel.this,
+                                "Failed to read project!\n" + e,
+                                "Load Project", JOptionPane.ERROR_MESSAGE);
+                        break;
+                    }
+
+                    currentProject = src;
+                    currentTextbox = 0;
+                    textboxes.clear();
+                    textboxes.addAll(newTextboxes);
+                    if (textboxes.isEmpty()) {
+                        textboxes.add(new Textbox(Face.NONE, ""));
+                    }
+                    updateTextboxEditors();
+                    updateTextboxSelectorModel();
+                }
+                case AC_SAVE -> {
+                    try {
+                        saveProject(false);
+                    } catch (IOException | IllegalStateException e) {
+                        JOptionPane.showMessageDialog(MainPanel.this,
+                                "Failed to write project!\n" + e,
+                                "Save Project", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+                case AC_SAVE_AS -> {
+                    try {
+                        saveProject(true);
+                    } catch (IOException | IllegalStateException e) {
+                        JOptionPane.showMessageDialog(MainPanel.this,
+                                "Failed to write project!\n" + e,
+                                "Save Project", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
                 case AC_FACE_POOL_EDITOR -> {
                     var fpd = new FacePoolEditorDialog((Frame) SwingUtilities.getWindowAncestor(this), basePath,
                             new FacePool(faces));
