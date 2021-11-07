@@ -29,7 +29,7 @@ public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox>
         setBackground(list.getSelectionBackground());
         setOpaque(isSelected);
         setIcon(value.getFace().getIcon());
-        String contents = NodeUtils.getTruncatedDisplay(textParser.parse(value.getText()), 30);
+        String contents = NodeUtils.getTruncatedDisplay(textParser.parse(value.getText()), 50);
         setText("<html>"
                 + "<b>Textbox " + (index + 1) + "</b><br>"
                 + contents
