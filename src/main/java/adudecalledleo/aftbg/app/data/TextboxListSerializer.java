@@ -77,6 +77,7 @@ public final class TextboxListSerializer {
             in.endObject();
 
             textboxes.add(new Textbox(face, text));
+            textboxIndex++;
         }
         in.endArray();
         return textboxes;
