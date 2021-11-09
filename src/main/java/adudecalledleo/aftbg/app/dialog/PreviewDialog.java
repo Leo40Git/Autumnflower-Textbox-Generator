@@ -2,6 +2,8 @@ package adudecalledleo.aftbg.app.dialog;
 
 import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.TransferableImage;
+import adudecalledleo.aftbg.logging.Level;
+import adudecalledleo.aftbg.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -115,7 +117,7 @@ public final class PreviewDialog extends JDialog {
                     try {
                         cb.setContents(new TransferableImage(imageToCopy), null);
                     } catch (Exception ex) {
-                        //Main.LOGGER.error("Error while copying image to clipboard!", ex);
+                        Logger.log(Level.ERROR, "Error while copying image to clipboard!", ex);
                         JOptionPane.showMessageDialog(this,
                                 "An exception occured while copying the image to the clipboard:\n" + ex,
                                 "Couldn't copy image to clipboard!", JOptionPane.ERROR_MESSAGE);
@@ -143,7 +145,7 @@ public final class PreviewDialog extends JDialog {
                     try {
                         ImageIO.write(image, "png", sel);
                     } catch (IOException ex) {
-                        //Main.LOGGER.error("Error while saving image!", ex);
+                        Logger.log(Level.ERROR, "Error while saving image!", ex);
                         JOptionPane.showMessageDialog(this, "An exception occurred while saving the image:\n" + ex,
                                 "Couldn't save image!", JOptionPane.ERROR_MESSAGE);
                         break;

@@ -15,6 +15,8 @@ import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.game.GameDefinition;
+import adudecalledleo.aftbg.logging.Level;
+import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.TextRenderer;
 import adudecalledleo.aftbg.util.ColorUtils;
@@ -519,7 +521,8 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         try {
                             rsrc = TextboxResources.load(basePath);
                         } catch (TextboxResources.LoadException e) {
-                            e.printStackTrace();
+                            Logger.log(Level.ERROR, "Failed to reload textbox resources!\n" +
+                                    "See \"" + Bootstrap.LOG_NAME + " for more details.");
                             JOptionPane.showMessageDialog(MainPanel.this,
                                     "Failed to reload textbox resources!\n" + e,
                                     "Reload Game Definition", JOptionPane.ERROR_MESSAGE);

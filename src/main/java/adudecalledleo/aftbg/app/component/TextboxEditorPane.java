@@ -4,6 +4,8 @@ import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
 import adudecalledleo.aftbg.app.dialog.ColorModifierDialog;
 import adudecalledleo.aftbg.app.dialog.StyleModifierDialog;
+import adudecalledleo.aftbg.logging.Level;
+import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.modifier.ColorModifierNode;
 import adudecalledleo.aftbg.text.modifier.StyleModifierNode;
@@ -207,7 +209,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                     getDocument().insertString(getCaretPosition(), toInsert, styleNormal);
                     updateTimer.restart();
                 } catch (BadLocationException ex) {
-                    ex.printStackTrace();
+                    Logger.log(Level.ERROR, "Failed to insert color modifier!", ex);
                 }
             }
             case AC_ADD_MOD_STYLE -> {
@@ -227,7 +229,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                     getDocument().insertString(getCaretPosition(), spec.toModifier(), styleNormal);
                     updateTimer.restart();
                 } catch (BadLocationException ex) {
-                    ex.printStackTrace();
+                    Logger.log(Level.ERROR, "Failed to insert style modifier!", ex);
                 }
             }
         }
@@ -311,7 +313,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
             try {
                 nodes = textParser.parse(doc.getText(0, doc.getLength()));
             } catch (BadLocationException e) {
-                e.printStackTrace();
+                Logger.log(Level.ERROR, "Failed to get text to parse!", e);
                 return;
             }
             StyleSpec spec = StyleSpec.DEFAULT;
@@ -358,7 +360,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                                     endRect.getX() - startRect.getX(), Math.max(startRect.getHeight(), endRect.getHeight())),
                             err.getMessage());
                 } catch (BadLocationException e) {
-                    e.printStackTrace();
+                    Logger.log(Level.ERROR, "Failed to generate error node text bounds!", e);
                 }
             }
         }
