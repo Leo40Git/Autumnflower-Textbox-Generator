@@ -6,8 +6,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -19,7 +19,9 @@ public final class Logger {
     private Logger() { }
 
     public static void init() throws IOException {
-        writer = Files.newBufferedWriter(Paths.get(".", Bootstrap.LOG_NAME), StandardOpenOption.WRITE);
+        Path path = Paths.get(".", Bootstrap.LOG_NAME);
+        Files.deleteIfExists(path);
+        writer = Files.newBufferedWriter(path);
         Runtime.getRuntime().addShutdownHook(new Thread(Logger::shutdown));
     }
 
