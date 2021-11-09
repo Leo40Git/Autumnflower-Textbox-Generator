@@ -81,9 +81,12 @@ public final class TextRenderer {
                     continue;
                 }
 
+                // make the text vertically centered
+                int yo = ma / 2 - g.getFontMetrics().getMaxAscent() / 2;
+
                 // generate an outline of the text
                 var layout = new TextLayout(textNode.getContents(), g.getFont(), g.getFontRenderContext());
-                tx.setToTranslation(x, y + ma);
+                tx.setToTranslation(x, y + ma - yo);
                 var outline = layout.getOutline(tx);
 
                 // draw a transparent outline of the text...
