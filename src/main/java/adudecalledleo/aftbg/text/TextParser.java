@@ -74,11 +74,8 @@ public final class TextParser {
                         } else {
                             parser.parse(modStartPos, -1, null, nodes);
                         }
-                        if (pos < chars.length) {
-                            sb.append(chars[pos]);
-                            textLength++;
-                        }
                         textStart = pos;
+                        pos--;
                     }
                 }
             } else {
