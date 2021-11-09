@@ -7,6 +7,7 @@ import adudecalledleo.aftbg.app.dialog.StyleModifierDialog;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.modifier.ColorModifierNode;
 import adudecalledleo.aftbg.text.modifier.StyleModifierNode;
+import adudecalledleo.aftbg.text.modifier.StyleSpec;
 import adudecalledleo.aftbg.text.node.ErrorNode;
 import adudecalledleo.aftbg.text.node.Node;
 import adudecalledleo.aftbg.text.node.NodeList;
@@ -159,11 +160,13 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         item.addActionListener(this);
         item.setMnemonic(KeyEvent.VK_C);
         modsMenu.add(item);
+        // TODO redesign style dialog?
+        /*
         item = new JMenuItem("Style", AppResources.Icons.MOD_STYLE.get());
         item.setActionCommand(AC_ADD_MOD_STYLE);
         item.addActionListener(this);
         item.setMnemonic(KeyEvent.VK_S);
-        modsMenu.add(item);
+        modsMenu.add(item);*/
 
         menu.addSeparator();
         menu.add(modsMenu);
@@ -208,7 +211,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                 }
             }
             case AC_ADD_MOD_STYLE -> {
-                StyleModifierNode.StyleSpec spec;
+                StyleSpec spec;
                 try {
                     forceCaretRendering = true;
                     var dialog = new StyleModifierDialog((Frame) SwingUtilities.getWindowAncestor(this));
@@ -311,6 +314,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                 e.printStackTrace();
                 return;
             }
+            StyleSpec spec = StyleSpec.DEFAULT;
 
             for (Node node : nodes) {
                 if (node instanceof ColorModifierNode modCol) {
@@ -325,14 +329,14 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                     doc.setCharacterAttributes(argSpan.start(), argSpan.length(), style2, true);
                 } else if (node instanceof StyleModifierNode modStyle) {
                     doc.setCharacterAttributes(modStyle.getStart(), modStyle.getLength(), styleMod, true);
-                    var spec = modStyle.getSpec();
+                    spec = spec.add(modStyle.getSpec());
                     style = new SimpleAttributeSet(style);
-                    StyleConstants.setBold(style, spec.bold());
-                    StyleConstants.setItalic(style, spec.italic());
-                    StyleConstants.setUnderline(style, spec.underline());
-                    StyleConstants.setStrikeThrough(style, spec.strikethrough());
-                    StyleConstants.setSuperscript(style, spec.superscript() == StyleModifierNode.SuperscriptSpec.SUPER);
-                    StyleConstants.setSubscript(style, spec.superscript() == StyleModifierNode.SuperscriptSpec.SUB);
+                    StyleConstants.setBold(style, spec.bold().toBoolean(false));
+                    StyleConstants.setItalic(style, spec.italic().toBoolean(false));
+                    StyleConstants.setUnderline(style, spec.underline().toBoolean(false));
+                    StyleConstants.setStrikeThrough(style, spec.strikethrough().toBoolean(false));
+                    StyleConstants.setSuperscript(style, spec.superscript() == StyleSpec.Superscript.SUPER);
+                    StyleConstants.setSubscript(style, spec.superscript() == StyleSpec.Superscript.SUB);
                 } else {
                     doc.setCharacterAttributes(node.getStart(), node.getLength(), style, true);
                 }

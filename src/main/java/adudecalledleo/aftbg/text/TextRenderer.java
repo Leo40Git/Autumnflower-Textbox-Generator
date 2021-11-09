@@ -3,6 +3,7 @@ package adudecalledleo.aftbg.text;
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.text.modifier.ColorModifierNode;
 import adudecalledleo.aftbg.text.modifier.StyleModifierNode;
+import adudecalledleo.aftbg.text.modifier.StyleSpec;
 import adudecalledleo.aftbg.text.node.LineBreakNode;
 import adudecalledleo.aftbg.text.node.Node;
 import adudecalledleo.aftbg.text.node.NodeList;
@@ -31,17 +32,17 @@ public final class TextRenderer {
 
     private TextRenderer() { }
 
-    private static final Map<StyleModifierNode.StyleSpec, Font> STYLED_FONTS = new HashMap<>();
+    private static final Map<StyleSpec, Font> STYLED_FONTS = new HashMap<>();
 
-    public static Font getStyledFont(StyleModifierNode.StyleSpec spec) {
+    public static Font getStyledFont(StyleSpec spec) {
         return STYLED_FONTS.computeIfAbsent(spec, key -> {
             Map<TextAttribute, Object> map = new HashMap<>();
-            map.put(TextAttribute.WEIGHT, key.bold() ? TextAttribute.WEIGHT_BOLD : TextAttribute.WEIGHT_REGULAR);
-            map.put(TextAttribute.POSTURE, key.italic() ? TextAttribute.POSTURE_OBLIQUE : TextAttribute.POSTURE_REGULAR);
-            map.put(TextAttribute.UNDERLINE, key.underline() ? TextAttribute.UNDERLINE_ON : -1);
-            map.put(TextAttribute.STRIKETHROUGH, key.strikethrough() ? TextAttribute.STRIKETHROUGH_ON : false);
+            map.put(TextAttribute.WEIGHT, key.bold().toBoolean(false) ? TextAttribute.WEIGHT_BOLD : TextAttribute.WEIGHT_REGULAR);
+            map.put(TextAttribute.POSTURE, key.italic().toBoolean(false) ? TextAttribute.POSTURE_OBLIQUE : TextAttribute.POSTURE_REGULAR);
+            map.put(TextAttribute.UNDERLINE, key.underline().toBoolean(false) ? TextAttribute.UNDERLINE_ON : -1);
+            map.put(TextAttribute.STRIKETHROUGH, key.strikethrough().toBoolean(false) ? TextAttribute.STRIKETHROUGH_ON : false);
             map.put(TextAttribute.SUPERSCRIPT, switch (key.superscript()) {
-                case NONE -> 0;
+                case DEFAULT -> 0;
                 case SUPER -> TextAttribute.SUPERSCRIPT_SUPER;
                 case SUB -> TextAttribute.SUPERSCRIPT_SUB;
             });
@@ -50,7 +51,7 @@ public final class TextRenderer {
     }
 
     static {
-        STYLED_FONTS.put(StyleModifierNode.StyleSpec.DEFAULT, DEFAULT_FONT);
+        STYLED_FONTS.put(StyleSpec.DEFAULT, DEFAULT_FONT);
     }
 
     public static void draw(Graphics2D g, NodeList nodes, WindowColors colors, int x, int y) {
@@ -71,6 +72,7 @@ public final class TextRenderer {
         final int ma = g.getFontMetrics().getMaxAscent();
         final int startX = x;
         final var tx = new AffineTransform();
+        StyleSpec style = StyleSpec.DEFAULT;
 
         for (Node node : nodes) {
             if (node instanceof TextNode textNode) {
@@ -102,7 +104,8 @@ public final class TextRenderer {
             } else if (node instanceof ColorModifierNode colorModNode) {
                 g.setColor(colorModNode.getColor(colors));
             } else if (node instanceof StyleModifierNode styleModNode) {
-                g.setFont(getStyledFont(styleModNode.getSpec()));
+                style = style.add(styleModNode.getSpec());
+                g.setFont(getStyledFont(style));
             } else if (node instanceof LineBreakNode) {
                 x = startX;
                 y += 36;

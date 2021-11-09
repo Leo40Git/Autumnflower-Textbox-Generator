@@ -1,7 +1,7 @@
 package adudecalledleo.aftbg.app.dialog;
 
 import adudecalledleo.aftbg.text.TextRenderer;
-import adudecalledleo.aftbg.text.modifier.StyleModifierNode;
+import adudecalledleo.aftbg.text.modifier.StyleSpec;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+// TODO redesign style dialog?
 public final class StyleModifierDialog extends JDialog {
     private final ContentPanel panel;
     
@@ -30,7 +31,7 @@ public final class StyleModifierDialog extends JDialog {
         getRootPane().setDefaultButton(panel.btnAdd);
     }
 
-    public StyleModifierNode.StyleSpec showDialog() {
+    public StyleSpec showDialog() {
         setVisible(true);
         return panel.spec;
     }
@@ -40,7 +41,7 @@ public final class StyleModifierDialog extends JDialog {
         final JCheckBox cbBold, cbItalic, cbUnderline, cbStrikethrough, cbSuperscript, cbSubscript;
         final JLabel lblPreview;
         final JButton btnCancel, btnAdd;
-        StyleModifierNode.StyleSpec spec;
+        StyleSpec spec;
 
         public ContentPanel(StyleModifierDialog dialog) {
             this.dialog = dialog;
@@ -86,7 +87,7 @@ public final class StyleModifierDialog extends JDialog {
             add(mainBox, BorderLayout.CENTER);
             add(btnsPanel, BorderLayout.PAGE_END);
             
-            spec = StyleModifierNode.StyleSpec.DEFAULT;
+            spec = StyleSpec.DEFAULT;
             updatePreviewFont();
         }
         
@@ -122,19 +123,20 @@ public final class StyleModifierDialog extends JDialog {
                 } else if (cbSubscript.equals(src) && cbSubscript.isSelected()) {
                     cbSuperscript.setSelected(false);
                 }
-                StyleModifierNode.SuperscriptSpec superSpec = StyleModifierNode.SuperscriptSpec.NONE;
+                StyleSpec.Superscript superSpec = StyleSpec.Superscript.DEFAULT;
                 if (cbSuperscript.isSelected()) {
-                    superSpec = StyleModifierNode.SuperscriptSpec.SUPER;
+                    superSpec = StyleSpec.Superscript.SUPER;
                 } else if (cbSubscript.isSelected()) {
-                    superSpec = StyleModifierNode.SuperscriptSpec.SUB;
+                    superSpec = StyleSpec.Superscript.SUB;
                 }
-                spec = new StyleModifierNode.StyleSpec(
+                /*
+                spec = new StyleSpec(
                         cbBold.isSelected(),
                         cbItalic.isSelected(),
                         cbUnderline.isSelected(),
                         cbStrikethrough.isSelected(),
                         superSpec
-                );
+                );*/
                 SwingUtilities.invokeLater(this::updatePreviewFont);
             }
         }
