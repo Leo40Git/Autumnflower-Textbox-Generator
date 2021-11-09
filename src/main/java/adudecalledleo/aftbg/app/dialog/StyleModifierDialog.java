@@ -37,7 +37,7 @@ public final class StyleModifierDialog extends JDialog {
 
     private static final class ContentPanel extends JPanel implements ActionListener {
         private final StyleModifierDialog dialog;
-        final JCheckBox cbBold, cbItalic, cbUnderline, cbStrikethrough;
+        final JCheckBox cbBold, cbItalic, cbUnderline, cbStrikethrough, cbSuperscript, cbSubscript;
         final JLabel lblPreview;
         final JButton btnCancel, btnAdd;
         StyleModifierNode.StyleSpec spec;
@@ -49,22 +49,26 @@ public final class StyleModifierDialog extends JDialog {
             cbItalic = createCB("Italic");
             cbUnderline = createCB("Underline");
             cbStrikethrough = createCB("Strikethrough");
+            cbSuperscript = createCB("Superscript");
+            cbSubscript = createCB("Subscript");
             lblPreview = new JLabel("Sample text");
             btnCancel = createBtn("Cancel");
             btnAdd = createBtn("Add");
 
             JPanel cbsPanel = new JPanel();
-            cbsPanel.setLayout(new GridLayout(4, 1));
+            cbsPanel.setLayout(new GridLayout(6, 1));
             cbsPanel.add(cbBold);
             cbsPanel.add(cbItalic);
             cbsPanel.add(cbUnderline);
             cbsPanel.add(cbStrikethrough);
+            cbsPanel.add(cbSuperscript);
+            cbsPanel.add(cbSubscript);
 
             JPanel previewPanel = new JPanel();
             previewPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.GRAY, 1),
                     BorderFactory.createEmptyBorder(2, 2, 2, 2)));
             previewPanel.add(lblPreview);
-            previewPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            previewPanel.setAlignmentX(CENTER_ALIGNMENT);
 
             Box mainBox = new Box(BoxLayout.PAGE_AXIS);
             mainBox.add(cbsPanel);
@@ -113,11 +117,23 @@ public final class StyleModifierDialog extends JDialog {
                 dialog.setVisible(false);
                 dialog.dispose();
             } else {
+                if (cbSuperscript.equals(src) && cbSuperscript.isSelected()) {
+                    cbSubscript.setSelected(false);
+                } else if (cbSubscript.equals(src) && cbSubscript.isSelected()) {
+                    cbSuperscript.setSelected(false);
+                }
+                StyleModifierNode.SuperscriptSpec superSpec = StyleModifierNode.SuperscriptSpec.NONE;
+                if (cbSuperscript.isSelected()) {
+                    superSpec = StyleModifierNode.SuperscriptSpec.SUPER;
+                } else if (cbSubscript.isSelected()) {
+                    superSpec = StyleModifierNode.SuperscriptSpec.SUB;
+                }
                 spec = new StyleModifierNode.StyleSpec(
                         cbBold.isSelected(),
                         cbItalic.isSelected(),
                         cbUnderline.isSelected(),
-                        cbStrikethrough.isSelected()
+                        cbStrikethrough.isSelected(),
+                        superSpec
                 );
                 SwingUtilities.invokeLater(this::updatePreviewFont);
             }

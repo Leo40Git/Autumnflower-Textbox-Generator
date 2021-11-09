@@ -6,8 +6,14 @@ import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.text.node.Span;
 
 public final class StyleModifierNode extends ModifierNode {
-    public record StyleSpec(boolean bold, boolean italic, boolean underline, boolean strikethrough) {
-        public static final StyleSpec DEFAULT = new StyleSpec(false, false, false, false);
+    public enum SuperscriptSpec {
+        NONE, SUPER, SUB
+    }
+
+    public record StyleSpec(boolean bold, boolean italic, boolean underline, boolean strikethrough,
+                            SuperscriptSpec superscript) {
+        public static final StyleSpec DEFAULT = new StyleSpec(false, false, false, false,
+                SuperscriptSpec.NONE);
 
         public String toModifier() {
             if (DEFAULT.equals(this)) {
@@ -25,6 +31,11 @@ public final class StyleModifierNode extends ModifierNode {
             }
             if (strikethrough) {
                 sb.append('s');
+            }
+            switch (superscript) {
+                case SUPER -> sb.append('^');
+                case SUB -> sb.append('v');
+                case NONE -> { }
             }
             sb.append(']');
             return sb.toString();
@@ -56,6 +67,7 @@ public final class StyleModifierNode extends ModifierNode {
             boolean italic = false;
             boolean underline = false;
             boolean strikethrough = false;
+            SuperscriptSpec superscript = SuperscriptSpec.NONE;
 
             char[] chars = args.toCharArray();
             for (int i = 0; i < chars.length; i++) {
@@ -64,13 +76,16 @@ public final class StyleModifierNode extends ModifierNode {
                     case 'I', 'i' -> italic = true;
                     case 'U', 'u' -> underline = true;
                     case 'S', 's' -> strikethrough = true;
+                    case '^' -> superscript = SuperscriptSpec.SUPER;
+                    case 'v' -> superscript = SuperscriptSpec.SUB;
                     default -> nodes.add(new ErrorNode(argsStart + i, 1,
                             ERROR_PREFIX + "Unknown style specifier '" + chars[i] + "'"));
                 }
             }
 
             nodes.add(new StyleModifierNode(start, 2 + args.length() + 2,
-                    new StyleSpec(bold, italic, underline, strikethrough), new Span(argsStart, args.length())));
+                    new StyleSpec(bold, italic, underline, strikethrough, superscript),
+                    new Span(argsStart, args.length())));
         }
     }
 }

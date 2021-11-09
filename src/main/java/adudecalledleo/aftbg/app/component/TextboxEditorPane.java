@@ -331,6 +331,8 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                     StyleConstants.setItalic(style, spec.italic());
                     StyleConstants.setUnderline(style, spec.underline());
                     StyleConstants.setStrikeThrough(style, spec.strikethrough());
+                    StyleConstants.setSuperscript(style, spec.superscript() == StyleModifierNode.SuperscriptSpec.SUPER);
+                    StyleConstants.setSubscript(style, spec.superscript() == StyleModifierNode.SuperscriptSpec.SUB);
                 } else {
                     doc.setCharacterAttributes(node.getStart(), node.getLength(), style, true);
                 }

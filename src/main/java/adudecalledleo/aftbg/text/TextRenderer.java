@@ -40,6 +40,11 @@ public final class TextRenderer {
             map.put(TextAttribute.POSTURE, key.italic() ? TextAttribute.POSTURE_OBLIQUE : TextAttribute.POSTURE_REGULAR);
             map.put(TextAttribute.UNDERLINE, key.underline() ? TextAttribute.UNDERLINE_ON : -1);
             map.put(TextAttribute.STRIKETHROUGH, key.strikethrough() ? TextAttribute.STRIKETHROUGH_ON : false);
+            map.put(TextAttribute.SUPERSCRIPT, switch (key.superscript()) {
+                case NONE -> 0;
+                case SUPER -> TextAttribute.SUPERSCRIPT_SUPER;
+                case SUB -> TextAttribute.SUPERSCRIPT_SUB;
+            });
             return DEFAULT_FONT.deriveFont(map);
         });
     }
