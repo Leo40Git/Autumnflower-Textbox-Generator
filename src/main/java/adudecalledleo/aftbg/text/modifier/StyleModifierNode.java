@@ -35,6 +35,7 @@ public final class StyleModifierNode extends ModifierNode {
             TriState underline = TriState.DEFAULT;
             TriState strikethrough = TriState.DEFAULT;
             StyleSpec.Superscript superscript = StyleSpec.Superscript.DEFAULT;
+            int sizeAdjust = 0;
 
             char[] chars = args.toCharArray();
             for (int i = 0; i < chars.length; i++) {
@@ -66,6 +67,8 @@ public final class StyleModifierNode extends ModifierNode {
                     }
                     case '^' -> superscript = StyleSpec.Superscript.SUPER;
                     case 'v' -> superscript = StyleSpec.Superscript.SUB;
+                    case '>' -> sizeAdjust++;
+                    case '<' -> sizeAdjust--;
                     default -> nodes.add(new ErrorNode(argsStart + i, 1,
                             ERROR_PREFIX + "Unknown style specifier '" + chars[i] + "'"));
                 }
@@ -76,7 +79,7 @@ public final class StyleModifierNode extends ModifierNode {
                         ERROR_PREFIX + "Invert? Invert what?"));
             }
             nodes.add(new StyleModifierNode(start, 2 + args.length() + 2,
-                    new StyleSpec(reset, bold, italic, underline, strikethrough, superscript),
+                    new StyleSpec(reset, bold, italic, underline, strikethrough, superscript, sizeAdjust),
                     new Span(argsStart, args.length())));
         }
     }

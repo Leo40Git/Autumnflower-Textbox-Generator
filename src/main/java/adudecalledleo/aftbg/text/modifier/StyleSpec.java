@@ -4,14 +4,14 @@ import adudecalledleo.aftbg.util.TriState;
 
 public record StyleSpec(boolean reset,
                         TriState bold, TriState italic, TriState underline, TriState strikethrough,
-                        Superscript superscript) {
+                        Superscript superscript, int sizeAdjust) {
     public enum Superscript {
         DEFAULT, SUPER, SUB
     }
 
     public static final StyleSpec DEFAULT = new StyleSpec(true,
             TriState.DEFAULT, TriState.DEFAULT, TriState.DEFAULT, TriState.DEFAULT,
-            Superscript.DEFAULT);
+            Superscript.DEFAULT, 0);
 
     public StyleSpec add(StyleSpec other) {
         if (other.reset()) {
@@ -24,7 +24,7 @@ public record StyleSpec(boolean reset,
             return new StyleSpec(false,
                     this.bold.and(other.bold), this.italic.and(other.italic),
                     this.underline.and(other.underline), this.strikethrough.and(other.strikethrough),
-                    ss);
+                    ss, this.sizeAdjust + other.sizeAdjust);
         }
     }
 
