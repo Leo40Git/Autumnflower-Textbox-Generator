@@ -47,6 +47,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
 
     private WindowContext winCtx;
     private boolean forceCaretRendering;
+    private NodeList nodes;
 
     public TextboxEditorPane(TextParser textParser, Consumer<String> textUpdateConsumer) {
         super();
@@ -162,13 +163,11 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         item.addActionListener(this);
         item.setMnemonic(KeyEvent.VK_C);
         modsMenu.add(item);
-        // TODO redesign style dialog?
-        /*
         item = new JMenuItem("Style", AppResources.Icons.MOD_STYLE.get());
         item.setActionCommand(AC_ADD_MOD_STYLE);
         item.addActionListener(this);
         item.setMnemonic(KeyEvent.VK_S);
-        modsMenu.add(item);*/
+        modsMenu.add(item);
 
         menu.addSeparator();
         menu.add(modsMenu);
@@ -213,10 +212,17 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                 }
             }
             case AC_ADD_MOD_STYLE -> {
-                StyleSpec spec;
+                StyleSpec spec = StyleSpec.DEFAULT;
+                if (nodes != null) {
+                    for (var node : nodes) {
+                        if (node instanceof StyleModifierNode styleModNote) {
+                            spec = styleModNote.getSpec();
+                        }
+                    }
+                }
                 try {
                     forceCaretRendering = true;
-                    var dialog = new StyleModifierDialog((Frame) SwingUtilities.getWindowAncestor(this));
+                    var dialog = new StyleModifierDialog((Frame) SwingUtilities.getWindowAncestor(this), spec);
                     dialog.setLocationRelativeTo(null);
                     spec = dialog.showDialog();
                 } finally {
@@ -309,7 +315,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                 return;
             }
 
-            NodeList nodes;
+            nodes = null;
             try {
                 nodes = textParser.parse(doc.getText(0, doc.getLength()));
             } catch (BadLocationException e) {
