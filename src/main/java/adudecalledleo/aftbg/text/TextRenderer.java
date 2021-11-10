@@ -37,16 +37,16 @@ public final class TextRenderer {
     public static Font getStyledFont(StyleSpec spec) {
         return STYLED_FONTS.computeIfAbsent(spec, key -> {
             Map<TextAttribute, Object> map = new HashMap<>();
-            map.put(TextAttribute.WEIGHT, key.bold().toBoolean(false) ? TextAttribute.WEIGHT_BOLD : TextAttribute.WEIGHT_REGULAR);
-            map.put(TextAttribute.POSTURE, key.italic().toBoolean(false) ? TextAttribute.POSTURE_OBLIQUE : TextAttribute.POSTURE_REGULAR);
-            map.put(TextAttribute.UNDERLINE, key.underline().toBoolean(false) ? TextAttribute.UNDERLINE_ON : -1);
-            map.put(TextAttribute.STRIKETHROUGH, key.strikethrough().toBoolean(false) ? TextAttribute.STRIKETHROUGH_ON : false);
+            map.put(TextAttribute.WEIGHT, key.isBold() ? TextAttribute.WEIGHT_BOLD : TextAttribute.WEIGHT_REGULAR);
+            map.put(TextAttribute.POSTURE, key.isItalic() ? TextAttribute.POSTURE_OBLIQUE : TextAttribute.POSTURE_REGULAR);
+            map.put(TextAttribute.UNDERLINE, key.isUnderline() ? TextAttribute.UNDERLINE_ON : -1);
+            map.put(TextAttribute.STRIKETHROUGH, key.isUnderline() ? TextAttribute.STRIKETHROUGH_ON : false);
             map.put(TextAttribute.SUPERSCRIPT, switch (key.superscript()) {
                 case DEFAULT -> 0;
                 case SUPER -> TextAttribute.SUPERSCRIPT_SUPER;
                 case SUB -> TextAttribute.SUPERSCRIPT_SUB;
             });
-            map.put(TextAttribute.SIZE, DEFAULT_FONT.getSize() + key.sizeAdjust() * 4);
+            map.put(TextAttribute.SIZE, DEFAULT_FONT.getSize() + key.getTrueSizeAdjust());
             return DEFAULT_FONT.deriveFont(map);
         });
     }

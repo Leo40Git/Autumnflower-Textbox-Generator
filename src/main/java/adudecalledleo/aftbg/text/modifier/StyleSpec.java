@@ -13,6 +13,26 @@ public record StyleSpec(boolean reset,
             TriState.DEFAULT, TriState.DEFAULT, TriState.DEFAULT, TriState.DEFAULT,
             Superscript.DEFAULT, 0);
 
+    public boolean isBold() {
+        return bold.toBoolean(false);
+    }
+
+    public boolean isItalic() {
+        return italic.toBoolean(false);
+    }
+
+    public boolean isUnderline() {
+        return underline.toBoolean(false);
+    }
+
+    public boolean isStrikethrough() {
+        return strikethrough.toBoolean(false);
+    }
+
+    public int getTrueSizeAdjust() {
+        return sizeAdjust * 4;
+    }
+
     public StyleSpec add(StyleSpec other) {
         if (other.reset()) {
             return other;
@@ -52,7 +72,7 @@ public record StyleSpec(boolean reset,
     private void appendLetter(TriState state, char c, StringBuilder sb) {
         if (state == TriState.TRUE) {
             sb.append(c);
-        } else if (state == TriState.DEFAULT && !reset) {
+        } else if (state == TriState.FALSE && !reset) {
             sb.append('!').append(c);
         }
     }
