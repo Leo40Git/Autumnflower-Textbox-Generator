@@ -6,7 +6,7 @@ public record StyleSpec(boolean reset,
                         TriState bold, TriState italic, TriState underline, TriState strikethrough,
                         Superscript superscript, int sizeAdjust) {
     public enum Superscript {
-        DEFAULT, SUPER, SUB
+        DEFAULT, SUPER, MID, SUB
     }
 
     public static final StyleSpec DEFAULT = new StyleSpec(true,
@@ -63,7 +63,11 @@ public record StyleSpec(boolean reset,
         switch (superscript) {
             case SUPER -> sb.append('^');
             case SUB -> sb.append('v');
-            case DEFAULT -> { }
+            case MID -> {
+                if (!reset) {
+                    sb.append('-');
+                }
+            }
         }
         sb.append(']');
         return sb.toString();

@@ -42,7 +42,7 @@ public final class TextRenderer {
             map.put(TextAttribute.UNDERLINE, key.isUnderline() ? TextAttribute.UNDERLINE_ON : -1);
             map.put(TextAttribute.STRIKETHROUGH, key.isUnderline() ? TextAttribute.STRIKETHROUGH_ON : false);
             map.put(TextAttribute.SUPERSCRIPT, switch (key.superscript()) {
-                case DEFAULT -> 0;
+                case DEFAULT, MID -> 0;
                 case SUPER -> TextAttribute.SUPERSCRIPT_SUPER;
                 case SUB -> TextAttribute.SUPERSCRIPT_SUB;
             });

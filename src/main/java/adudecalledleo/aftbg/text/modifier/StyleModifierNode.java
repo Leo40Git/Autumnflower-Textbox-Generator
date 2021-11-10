@@ -73,6 +73,14 @@ public final class StyleModifierNode extends ModifierNode {
                         }
                         superscript = StyleSpec.Superscript.SUPER;
                     }
+                    case '-' -> {
+                        if (invert) {
+                            nodes.add(new ErrorNode(argsStart + i - 1, 1,
+                                    ERROR_PREFIX + "Invert not supported for mid script '-'"));
+                            invert = false;
+                        }
+                        superscript = StyleSpec.Superscript.MID;
+                    }
                     case 'v' -> {
                         if (invert) {
                             nodes.add(new ErrorNode(argsStart + i - 1, 1,
