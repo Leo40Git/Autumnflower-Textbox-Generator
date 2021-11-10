@@ -65,10 +65,38 @@ public final class StyleModifierNode extends ModifierNode {
                         strikethrough = invert ? TriState.FALSE : TriState.TRUE;
                         invert = false;
                     }
-                    case '^' -> superscript = StyleSpec.Superscript.SUPER;
-                    case 'v' -> superscript = StyleSpec.Superscript.SUB;
-                    case '>' -> sizeAdjust++;
-                    case '<' -> sizeAdjust--;
+                    case '^' -> {
+                        if (invert) {
+                            nodes.add(new ErrorNode(argsStart + i - 1, 1,
+                                    ERROR_PREFIX + "Invert not supported for superscript '^' (did you mean subscript 'v'?)"));
+                            invert = false;
+                        }
+                        superscript = StyleSpec.Superscript.SUPER;
+                    }
+                    case 'v' -> {
+                        if (invert) {
+                            nodes.add(new ErrorNode(argsStart + i - 1, 1,
+                                    ERROR_PREFIX + "Invert not supported for subscript 'v' (did you mean superscript '^'?)"));
+                            invert = false;
+                        }
+                        superscript = StyleSpec.Superscript.SUB;
+                    }
+                    case '>' -> {
+                        if (invert) {
+                            nodes.add(new ErrorNode(argsStart + i - 1, 1,
+                                    ERROR_PREFIX + "Invert not supported for font size up '>' (did you mean font size down '<'?)"));
+                            invert = false;
+                        }
+                        sizeAdjust++;
+                    }
+                    case '<' -> {
+                        if (invert) {
+                            nodes.add(new ErrorNode(argsStart + i - 1, 1,
+                                    ERROR_PREFIX + "Invert not supported for font size down '<' (did you mean font size up '>'?)"));
+                            invert = false;
+                        }
+                        sizeAdjust--;
+                    }
                     default -> nodes.add(new ErrorNode(argsStart + i, 1,
                             ERROR_PREFIX + "Unknown style specifier '" + chars[i] + "'"));
                 }
