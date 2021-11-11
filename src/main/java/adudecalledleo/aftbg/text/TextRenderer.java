@@ -40,7 +40,7 @@ public final class TextRenderer {
             map.put(TextAttribute.WEIGHT, key.isBold() ? TextAttribute.WEIGHT_BOLD : TextAttribute.WEIGHT_REGULAR);
             map.put(TextAttribute.POSTURE, key.isItalic() ? TextAttribute.POSTURE_OBLIQUE : TextAttribute.POSTURE_REGULAR);
             map.put(TextAttribute.UNDERLINE, key.isUnderline() ? TextAttribute.UNDERLINE_ON : -1);
-            map.put(TextAttribute.STRIKETHROUGH, key.isUnderline() ? TextAttribute.STRIKETHROUGH_ON : false);
+            map.put(TextAttribute.STRIKETHROUGH, key.isStrikethrough() ? TextAttribute.STRIKETHROUGH_ON : false);
             map.put(TextAttribute.SUPERSCRIPT, switch (key.superscript()) {
                 case DEFAULT, MID -> 0;
                 case SUPER -> TextAttribute.SUPERSCRIPT_SUPER;
