@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class ColorModifierDialog extends JDialog {
+    private static Result lastResult = null;
+
     public sealed static class Result { }
 
     public static final class WindowResult extends Result {
@@ -78,7 +80,7 @@ public final class ColorModifierDialog extends JDialog {
         return panel.result;
     }
 
-    private static final class WindowColorButtonModel extends DefaultButtonModel {
+    private static final class WindowColorButtonModel extends JToggleButton.ToggleButtonModel {
         private final int colorIndex;
 
         public WindowColorButtonModel(int colorIndex) {
@@ -112,12 +114,20 @@ public final class ColorModifierDialog extends JDialog {
             JPanel winPanel = new JPanel();
             winPanel.setLayout(new GridLayout(4, 8));
 
+            int selectedI = 0;
+            if (lastResult instanceof WindowResult wr) {
+                result = lastResult;
+                selectedI = wr.getIndex();
+            } else if (lastResult instanceof ConstantResult) {
+                selectedI = -1;
+            }
+
             for (int i = 0; i < WindowColors.COUNT; i++) {
                 JRadioButton rb = new JRadioButton();
                 rb.setModel(new WindowColorButtonModel(i));
                 rb.addActionListener(this);
                 bgColors.add(rb);
-                if (i == 0) {
+                if (i == selectedI) {
                     bgColors.setSelected(rb.getModel(), true);
                 }
                 JLabel lbl = new JLabel(ColorIconCache.get(winCtx.getColor(i)));
@@ -140,6 +150,13 @@ public final class ColorModifierDialog extends JDialog {
             rbCustom = new JRadioButton("");
             rbCustom.addActionListener(this);
             bgColors.add(rbCustom);
+
+            if (lastResult instanceof ConstantResult cr) {
+                result = lastResult;
+                customColor = cr.getColor();
+                bgColors.setSelected(rbCustom.getModel(), true);
+            }
+
             lblCustomPreview = new JLabel();
             lblCustomPreview.addMouseListener(new MouseAdapter() {
                 @Override
@@ -221,6 +238,7 @@ public final class ColorModifierDialog extends JDialog {
                 result = new ConstantResult(customColor);
                 updatePreview();
             } if (btnAdd.equals(src)) {
+                lastResult = result;
                 dialog.setVisible(false);
                 dialog.dispose();
             } else if (btnCancel.equals(src)) {
