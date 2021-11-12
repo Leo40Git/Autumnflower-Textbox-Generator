@@ -188,7 +188,6 @@ public final class StyleModifierDialog extends JDialog {
         }
 
         private void updateSpec() {
-            System.out.println(spnSizeAdjust.getValue());
             spec = new StyleSpec(
                     cbReset.isSelected(),
                     TriState.fromBoolean(cbBold.isSelected()),

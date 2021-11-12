@@ -3,6 +3,7 @@ package adudecalledleo.aftbg;
 import adudecalledleo.aftbg.face.FaceLoadException;
 import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.game.GameDefinition;
+import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.window.WindowContext;
 
 import javax.imageio.ImageIO;
@@ -22,7 +23,7 @@ public record TextboxResources(GameDefinition gameDefinition, WindowContext wind
         } catch (IOException | IllegalStateException e) {
             throw new LoadException("Failed to read game definition", e);
         }
-        System.out.println("Using " + gameDef.getName() + " game definition");
+        Logger.debug("Using " + gameDef.getName() + " game definition");
 
         Path windowPath = basePath.resolve(gameDef.getWindowPath());
         BufferedImage window;

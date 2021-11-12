@@ -2,6 +2,7 @@ package adudecalledleo.aftbg;
 
 import adudecalledleo.aftbg.app.AppFrame;
 import adudecalledleo.aftbg.app.AppResources;
+import adudecalledleo.aftbg.app.UncaughtExceptionHandler;
 import adudecalledleo.aftbg.app.util.LoadFrame;
 import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.text.TextParser;
@@ -20,15 +21,14 @@ public final class Bootstrap {
     public static final String LOG_NAME = NAME_ABBR.toLowerCase(Locale.ROOT) + ".log";
 
     public static void main(String[] args) {
-        if (args.length == 0)
-            throw new RuntimeException("A");
-
         try {
             Logger.init();
         } catch (IOException e) {
             e.printStackTrace();
             return;
         }
+
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
