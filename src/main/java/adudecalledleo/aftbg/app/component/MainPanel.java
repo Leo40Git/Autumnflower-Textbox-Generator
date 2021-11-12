@@ -15,7 +15,6 @@ import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.game.GameDefinition;
-import adudecalledleo.aftbg.logging.Level;
 import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.TextRenderer;
@@ -438,9 +437,11 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     try {
                         saveProject(false);
                     } catch (IOException | IllegalStateException e) {
+                        Logger.error("Failed to write project!", e);
                         JOptionPane.showMessageDialog(MainPanel.this,
-                                "Failed to write project!\n" + e + "\n" +
-                                        "To prevent your work from being lost, the current operation has been cancelled.",
+                                "Failed to write project!\n" + e + "\n"
+                                        + "See \"" + Bootstrap.LOG_NAME + " for more details.\n"
+                                        + "To prevent your work from being lost, the current operation has been cancelled.",
                                 title, JOptionPane.ERROR_MESSAGE);
                         return false;
                     }
@@ -479,8 +480,10 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     } catch (TextboxListSerializer.ReadCancelledException ignored) {
                         break;
                     } catch (IOException | IllegalStateException e) {
+                        Logger.error("Failed to read project!", e);
                         JOptionPane.showMessageDialog(MainPanel.this,
-                                "Failed to read project!\n" + e,
+                                "Failed to read project!\n" + e + "\n" 
+                                        + "See \"" + Bootstrap.LOG_NAME + " for more details.",
                                 "Load Project", JOptionPane.ERROR_MESSAGE);
                         break;
                     }
@@ -499,8 +502,10 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     try {
                         saveProject(false);
                     } catch (IOException | IllegalStateException e) {
+                        Logger.error("Failed to write project!", e);
                         JOptionPane.showMessageDialog(MainPanel.this,
-                                "Failed to write project!\n" + e,
+                                "Failed to write project!\n" + e + "\n" 
+                                        + "See \"" + Bootstrap.LOG_NAME + " for more details.",
                                 "Save Project", JOptionPane.ERROR_MESSAGE);
                     }
                 }
@@ -508,8 +513,10 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     try {
                         saveProject(true);
                     } catch (IOException | IllegalStateException e) {
+                        Logger.error("Failed to write project!", e);
                         JOptionPane.showMessageDialog(MainPanel.this,
-                                "Failed to write project!\n" + e,
+                                "Failed to write project!\n" + e + "\n" 
+                                        + "See \"" + Bootstrap.LOG_NAME + " for more details.",
                                 "Save Project", JOptionPane.ERROR_MESSAGE);
                     }
                 }
@@ -521,10 +528,10 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         try {
                             rsrc = TextboxResources.load(basePath);
                         } catch (TextboxResources.LoadException e) {
-                            Logger.log(Level.ERROR, "Failed to reload textbox resources!\n" +
-                                    "See \"" + Bootstrap.LOG_NAME + " for more details.");
+                            Logger.error("Failed to reload textbox resources!", e);
                             JOptionPane.showMessageDialog(MainPanel.this,
-                                    "Failed to reload textbox resources!\n" + e,
+                                    "Failed to reload textbox resources!\n" + e + "\n" 
+                                            + "See \"" + Bootstrap.LOG_NAME + " for more details.",
                                     "Reload Game Definition", JOptionPane.ERROR_MESSAGE);
                             loadFrame.dispose();
                             MainPanel.this.requestFocus();

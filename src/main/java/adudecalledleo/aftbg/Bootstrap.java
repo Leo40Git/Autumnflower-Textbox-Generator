@@ -3,7 +3,6 @@ package adudecalledleo.aftbg;
 import adudecalledleo.aftbg.app.AppFrame;
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.util.LoadFrame;
-import adudecalledleo.aftbg.logging.Level;
 import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.text.TextParser;
 
@@ -21,6 +20,9 @@ public final class Bootstrap {
     public static final String LOG_NAME = NAME_ABBR.toLowerCase(Locale.ROOT) + ".log";
 
     public static void main(String[] args) {
+        if (args.length == 0)
+            throw new RuntimeException("A");
+
         try {
             Logger.init();
         } catch (IOException e) {
@@ -31,7 +33,7 @@ public final class Bootstrap {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
-            Logger.log(Level.ERROR, "Failed to set system L&F", e);
+            Logger.error("Failed to set system L&F", e);
         }
 
         LoadFrame loadFrame = new LoadFrame("Loading...", true);
@@ -40,7 +42,7 @@ public final class Bootstrap {
             try {
                 AppResources.load();
             } catch (IOException e) {
-                Logger.log(Level.ERROR, "Failed to load app resources!", e);
+                Logger.error("Failed to load app resources!", e);
                 JOptionPane.showMessageDialog(null,
                         "Failed to load app resources!\nSee \"" + LOG_NAME + " for more details.",
                         "Failed to launch", JOptionPane.ERROR_MESSAGE);
@@ -54,7 +56,7 @@ public final class Bootstrap {
             try {
                 rsrc = TextboxResources.load(basePath);
             } catch (TextboxResources.LoadException e) {
-                Logger.log(Level.ERROR, "Failed to load textbox resources!", e);
+                Logger.error("Failed to load textbox resources!", e);
                 JOptionPane.showMessageDialog(null,
                         "Failed to load textbox resources!\nSee \"" + LOG_NAME + " for more details.",
                         "Failed to launch", JOptionPane.ERROR_MESSAGE);

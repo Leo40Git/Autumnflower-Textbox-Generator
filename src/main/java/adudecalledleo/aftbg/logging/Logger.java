@@ -2,9 +2,7 @@ package adudecalledleo.aftbg.logging;
 
 import adudecalledleo.aftbg.Bootstrap;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,9 +36,13 @@ public final class Logger {
         LocalDateTime now = LocalDateTime.now();
         StringBuilder sb = new StringBuilder().append(TIME_FORMAT.format(now)).append(" [").append(level).append("] ").append(message);
         if (cause != null) {
-            sb.append(System.lineSeparator()).append('\t').append(cause);
-            for (StackTraceElement elem : cause.getStackTrace()) {
-                sb.append(System.lineSeparator()).append("\t\tat ").append(elem);
+            StringWriter sw = new StringWriter();
+            try (PrintWriter pw = new PrintWriter(sw)) {
+                cause.printStackTrace(pw);
+            }
+            String[] lines = sw.toString().split(System.lineSeparator());
+            for (String line : lines) {
+                sb.append(System.lineSeparator()).append('\t').append(line);
             }
         }
         String msg = sb.toString();
@@ -60,7 +62,55 @@ public final class Logger {
         }
     }
 
+    public static void trace(String message, Throwable cause) {
+        log(Level.TRACE, message, cause);
+    }
+
+    public static void debug(String message, Throwable cause) {
+        log(Level.DEBUG, message, cause);
+    }
+
+    public static void info(String message, Throwable cause) {
+        log(Level.INFO, message, cause);
+    }
+
+    public static void warn(String message, Throwable cause) {
+        log(Level.WARN, message, cause);
+    }
+
+    public static void error(String message, Throwable cause) {
+        log(Level.ERROR, message, cause);
+    }
+
+    public static void fatal(String message, Throwable cause) {
+        log(Level.FATAL, message, cause);
+    }
+
     public static void log(Level level, String message) {
         log(level, message, null);
+    }
+
+    public static void trace(String message) {
+        log(Level.TRACE, message);
+    }
+
+    public static void debug(String message) {
+        log(Level.DEBUG, message);
+    }
+
+    public static void info(String message) {
+        log(Level.INFO, message);
+    }
+
+    public static void warn(String message) {
+        log(Level.WARN, message);
+    }
+
+    public static void error(String message) {
+        log(Level.ERROR, message);
+    }
+
+    public static void fatal(String message) {
+        log(Level.FATAL, message);
     }
 }

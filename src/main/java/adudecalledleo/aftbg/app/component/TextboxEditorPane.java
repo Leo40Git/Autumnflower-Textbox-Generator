@@ -1,12 +1,12 @@
 package adudecalledleo.aftbg.app.component;
 
 import adudecalledleo.aftbg.app.AppResources;
-import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
 import adudecalledleo.aftbg.app.dialog.ColorModifierDialog;
 import adudecalledleo.aftbg.app.dialog.StyleModifierDialog;
-import adudecalledleo.aftbg.logging.Level;
+import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
 import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.text.TextParser;
+import adudecalledleo.aftbg.text.TextRenderer;
 import adudecalledleo.aftbg.text.modifier.ColorModifierNode;
 import adudecalledleo.aftbg.text.modifier.StyleModifierNode;
 import adudecalledleo.aftbg.text.modifier.StyleSpec;
@@ -16,7 +16,6 @@ import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.text.node.Span;
 import adudecalledleo.aftbg.util.ColorUtils;
 import adudecalledleo.aftbg.window.WindowContext;
-import adudecalledleo.aftbg.text.TextRenderer;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -209,7 +208,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                     getDocument().insertString(getCaretPosition(), toInsert, styleNormal);
                     updateTimer.restart();
                 } catch (BadLocationException ex) {
-                    Logger.log(Level.ERROR, "Failed to insert color modifier!", ex);
+                    Logger.error("Failed to insert color modifier!", ex);
                 } finally {
                     requestFocus();
                 }
@@ -241,7 +240,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                     getDocument().insertString(getCaretPosition(), newSpec.toModifier(), styleNormal);
                     updateTimer.restart();
                 } catch (BadLocationException ex) {
-                    Logger.log(Level.ERROR, "Failed to insert style modifier!", ex);
+                    Logger.error("Failed to insert style modifier!", ex);
                 } finally {
                     requestFocus();
                 }
@@ -327,7 +326,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
             try {
                 nodes = textParser.parse(doc.getText(0, doc.getLength()));
             } catch (BadLocationException e) {
-                Logger.log(Level.ERROR, "Failed to get text to parse!", e);
+                Logger.error("Failed to get text to parse!", e);
                 return;
             }
             StyleSpec spec = StyleSpec.DEFAULT;
@@ -374,7 +373,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                                     endRect.getX() - startRect.getX(), Math.max(startRect.getHeight(), endRect.getHeight())),
                             err.getMessage());
                 } catch (BadLocationException e) {
-                    Logger.log(Level.ERROR, "Failed to generate error node text bounds!", e);
+                    Logger.error("Failed to generate error node text bounds!", e);
                 }
             }
         }
