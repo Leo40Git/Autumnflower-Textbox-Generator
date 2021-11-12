@@ -192,6 +192,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                     forceCaretRendering = false;
                 }
                 if (result == null) {
+                    requestFocus();
                     break;
                 }
                 String toInsert;
@@ -209,6 +210,8 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                     updateTimer.restart();
                 } catch (BadLocationException ex) {
                     Logger.log(Level.ERROR, "Failed to insert color modifier!", ex);
+                } finally {
+                    requestFocus();
                 }
             }
             case AC_ADD_MOD_STYLE -> {
@@ -216,26 +219,31 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                 if (nodes != null) {
                     for (var node : nodes) {
                         if (node instanceof StyleModifierNode styleModNote) {
-                            spec = styleModNote.getSpec();
+                            spec = spec.add(styleModNote.getSpec());
                         }
                     }
                 }
+                StyleSpec newSpec;
                 try {
                     forceCaretRendering = true;
                     var dialog = new StyleModifierDialog((Frame) SwingUtilities.getWindowAncestor(this), spec);
                     dialog.setLocationRelativeTo(null);
-                    spec = dialog.showDialog();
+                    newSpec = dialog.showDialog();
                 } finally {
                     forceCaretRendering = false;
                 }
-                if (spec == null) {
+                if (newSpec == null) {
+                    requestFocus();
                     break;
                 }
+                newSpec = spec.difference(newSpec);
                 try {
-                    getDocument().insertString(getCaretPosition(), spec.toModifier(), styleNormal);
+                    getDocument().insertString(getCaretPosition(), newSpec.toModifier(), styleNormal);
                     updateTimer.restart();
                 } catch (BadLocationException ex) {
                     Logger.log(Level.ERROR, "Failed to insert style modifier!", ex);
+                } finally {
+                    requestFocus();
                 }
             }
         }

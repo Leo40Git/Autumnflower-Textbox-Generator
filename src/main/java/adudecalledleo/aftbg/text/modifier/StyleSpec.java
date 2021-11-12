@@ -6,7 +6,16 @@ public record StyleSpec(boolean reset,
                         TriState bold, TriState italic, TriState underline, TriState strikethrough,
                         Superscript superscript, int sizeAdjust) {
     public enum Superscript {
-        DEFAULT, SUPER, MID, SUB
+        DEFAULT, SUPER, MID, SUB;
+
+        public boolean sameAs(Superscript other) {
+            if (this == DEFAULT) {
+                return other == DEFAULT || other == MID;
+            } else if (other == DEFAULT) {
+                return this == MID;
+            }
+            return this == other;
+        }
     }
 
     public static final StyleSpec DEFAULT = new StyleSpec(true,
@@ -34,7 +43,7 @@ public record StyleSpec(boolean reset,
     }
 
     public StyleSpec add(StyleSpec other) {
-        if (other.reset()) {
+        if (other.reset) {
             return other;
         } else {
             Superscript ss = other.superscript;
@@ -42,10 +51,34 @@ public record StyleSpec(boolean reset,
                 ss = this.superscript;
             }
             return new StyleSpec(false,
-                    this.bold.and(other.bold), this.italic.and(other.italic),
-                    this.underline.and(other.underline), this.strikethrough.and(other.strikethrough),
+                    this.bold.orElse(other.bold), this.italic.orElse(other.italic),
+                    this.underline.orElse(other.underline), this.strikethrough.orElse(other.strikethrough),
                     ss, this.sizeAdjust + other.sizeAdjust);
         }
+    }
+
+    public StyleSpec difference(StyleSpec other) {
+        if (other.reset) {
+            return other;
+        } else {
+            TriState sBold = diffTri(this.bold, other.bold);
+            TriState sItalic = diffTri(this.italic, other.italic);
+            TriState sUnderline = diffTri(this.underline, other.underline);
+            TriState sStrikethrough = diffTri(this.strikethrough, other.strikethrough);
+            Superscript sSuperscript = Superscript.DEFAULT;
+            if (!other.superscript.sameAs(this.superscript)) {
+                sSuperscript = other.superscript;
+            }
+            int sSizeAdjust = other.sizeAdjust - this.sizeAdjust;
+            return new StyleSpec(false, sBold, sItalic, sUnderline, sStrikethrough, sSuperscript, sSizeAdjust);
+        }
+    }
+
+    private TriState diffTri(TriState current, TriState target) {
+        if (current.toBoolean(false) == target.toBoolean(false)) {
+            return TriState.DEFAULT;
+        }
+        return target;
     }
 
     public String toModifier() {
@@ -67,6 +100,13 @@ public record StyleSpec(boolean reset,
                 if (!reset) {
                     sb.append('-');
                 }
+            }
+        }
+        if (sizeAdjust != 0) {
+            if (sizeAdjust > 0) {
+                sb.append(">".repeat(sizeAdjust));
+            } else {
+                sb.append("<".repeat(-sizeAdjust));
             }
         }
         sb.append(']');
