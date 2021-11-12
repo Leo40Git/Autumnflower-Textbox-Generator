@@ -37,13 +37,12 @@ public final class Logger {
         StringBuilder sb = new StringBuilder().append(TIME_FORMAT.format(now)).append(" [").append(level).append("] ").append(message);
         if (cause != null) {
             StringWriter sw = new StringWriter();
-            try (PrintWriter pw = new PrintWriter(sw)) {
+            try (PrefixPrintWriter pw = new PrefixPrintWriter(sw, "\t")) {
                 cause.printStackTrace(pw);
             }
-            String[] lines = sw.toString().split(System.lineSeparator());
-            for (String line : lines) {
-                sb.append(System.lineSeparator()).append('\t').append(line);
-            }
+            sb.append(System.lineSeparator()).append(sw.getBuffer());
+            // remove last newline
+            sb.setLength(sb.length() - System.lineSeparator().length());
         }
         String msg = sb.toString();
 
