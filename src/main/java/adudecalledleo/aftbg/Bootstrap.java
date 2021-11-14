@@ -44,7 +44,7 @@ public final class Bootstrap {
             } catch (IOException e) {
                 Logger.error("Failed to load app resources!", e);
                 JOptionPane.showMessageDialog(null,
-                        "Failed to load app resources!\nSee \"" + LOG_NAME + " for more details.",
+                        "Failed to load app resources!\nSee \"" + LOG_NAME + "\" for more details.",
                         "Failed to launch", JOptionPane.ERROR_MESSAGE);
                 System.exit(1);
                 return;
@@ -58,7 +58,7 @@ public final class Bootstrap {
             } catch (TextboxResources.LoadException e) {
                 Logger.error("Failed to load textbox resources!", e);
                 JOptionPane.showMessageDialog(null,
-                        "Failed to load textbox resources!\nSee \"" + LOG_NAME + " for more details.",
+                        "Failed to load textbox resources!\nSee \"" + LOG_NAME + "\" for more details.",
                         "Failed to launch", JOptionPane.ERROR_MESSAGE);
                 System.exit(1);
                 return;

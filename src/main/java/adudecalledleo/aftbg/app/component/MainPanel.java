@@ -343,15 +343,15 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             if (sel == null) {
                 return;
             }
-            if (currentProject.exists()) {
+            if (sel.exists()) {
                 final int result = JOptionPane.showConfirmDialog(this,
-                        "File \"" + currentProject + "\" already exists.\nOverwrite it?", "Save Project",
+                        "File \"" + sel + "\" already exists.\nOverwrite it?", "Save Project",
                         JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
                 if (result != JOptionPane.YES_OPTION) {
                     return;
                 }
-                if (!currentProject.delete()) {
-                    throw new IOException("Could not delete file \"" + currentProject + "\"!");
+                if (!sel.delete()) {
+                    throw new IOException("Could not delete file \"" + sel + "\"!");
                 }
             }
             currentProject = sel;
@@ -438,7 +438,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         Logger.error("Failed to write project!", e);
                         JOptionPane.showMessageDialog(MainPanel.this,
                                 "Failed to write project!\n" + e + "\n"
-                                        + "See \"" + Bootstrap.LOG_NAME + " for more details.\n"
+                                        + "See \"" + Bootstrap.LOG_NAME + "\" for more details.\n"
                                         + "To prevent your work from being lost, the current operation has been cancelled.",
                                 title, JOptionPane.ERROR_MESSAGE);
                         return false;
@@ -481,7 +481,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         Logger.error("Failed to read project!", e);
                         JOptionPane.showMessageDialog(MainPanel.this,
                                 "Failed to read project!\n" + e + "\n" 
-                                        + "See \"" + Bootstrap.LOG_NAME + " for more details.",
+                                        + "See \"" + Bootstrap.LOG_NAME + "\" for more details.",
                                 "Load Project", JOptionPane.ERROR_MESSAGE);
                         break;
                     }
@@ -503,7 +503,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         Logger.error("Failed to write project!", e);
                         JOptionPane.showMessageDialog(MainPanel.this,
                                 "Failed to write project!\n" + e + "\n" 
-                                        + "See \"" + Bootstrap.LOG_NAME + " for more details.",
+                                        + "See \"" + Bootstrap.LOG_NAME + "\" for more details.",
                                 "Save Project", JOptionPane.ERROR_MESSAGE);
                     }
                 }
@@ -514,7 +514,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         Logger.error("Failed to write project!", e);
                         JOptionPane.showMessageDialog(MainPanel.this,
                                 "Failed to write project!\n" + e + "\n" 
-                                        + "See \"" + Bootstrap.LOG_NAME + " for more details.",
+                                        + "See \"" + Bootstrap.LOG_NAME + "\" for more details.",
                                 "Save Project", JOptionPane.ERROR_MESSAGE);
                     }
                 }
@@ -529,7 +529,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                             Logger.error("Failed to reload textbox resources!", e);
                             JOptionPane.showMessageDialog(MainPanel.this,
                                     "Failed to reload textbox resources!\n" + e + "\n" 
-                                            + "See \"" + Bootstrap.LOG_NAME + " for more details.",
+                                            + "See \"" + Bootstrap.LOG_NAME + "\" for more details.",
                                     "Reload Game Definition", JOptionPane.ERROR_MESSAGE);
                             loadFrame.dispose();
                             MainPanel.this.requestFocus();

@@ -10,7 +10,7 @@ public final class UncaughtExceptionHandler implements Thread.UncaughtExceptionH
     public void uncaughtException(Thread t, Throwable e) {
         Logger.error("Uncaught exception in thread \"" + t.getName() + "\"", e);
         JOptionPane.showMessageDialog(null,
-                "An uncaught exception has occurred!\nSee \"" + Bootstrap.LOG_NAME + " for more details.",
+                "An uncaught exception has occurred!\nSee \"" + Bootstrap.LOG_NAME + "\" for more details.",
                 "Uncaught Exception!", JOptionPane.ERROR_MESSAGE);
         System.exit(1);
     }
