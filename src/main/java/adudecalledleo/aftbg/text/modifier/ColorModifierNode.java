@@ -10,8 +10,10 @@ import java.awt.*;
 import java.util.Arrays;
 
 public sealed abstract class ColorModifierNode extends ModifierNode {
+    public static final char KEY = 'c';
+
     protected ColorModifierNode(int start, int length, Span... argSpans) {
-        super(start, length, 'c', argSpans);
+        super(start, length, KEY, argSpans);
     }
 
     public abstract Color getColor(WindowColors windowColors);

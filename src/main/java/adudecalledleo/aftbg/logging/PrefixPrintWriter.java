@@ -35,7 +35,7 @@ final class PrefixPrintWriter extends PrintWriter {
 
     @Override
     public void println() {
-        newLine = true;
         super.println();
+        newLine = true;
     }
 }

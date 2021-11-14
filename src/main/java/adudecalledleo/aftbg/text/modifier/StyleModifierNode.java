@@ -7,10 +7,12 @@ import adudecalledleo.aftbg.text.node.Span;
 import adudecalledleo.aftbg.util.TriState;
 
 public final class StyleModifierNode extends ModifierNode {
+    public static final char KEY = 's';
+
     private final StyleSpec spec;
 
     public StyleModifierNode(int start, int length, StyleSpec spec, Span... argSpans) {
-        super(start, length, 's', argSpans);
+        super(start, length, KEY, argSpans);
         this.spec = spec;
     }
 

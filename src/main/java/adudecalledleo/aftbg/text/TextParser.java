@@ -30,6 +30,7 @@ public final class TextParser {
         textLength = 0;
 
         boolean backslash = false;
+        boolean slashR = false;
         int pos;
         for (pos = 0; pos < chars.length; pos++) {
             char c = chars[pos];
@@ -79,9 +80,9 @@ public final class TextParser {
                     }
                 }
             } else {
-                if (c == '\\')
+                if (c == '\\') {
                     backslash = true;
-                else if (c == '\n') {
+                } else if (c == '\n') {
                     flushTextNode();
                     nodes.add(new LineBreakNode(pos));
                     textStart = pos + 1;

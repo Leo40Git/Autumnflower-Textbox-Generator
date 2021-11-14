@@ -9,8 +9,8 @@ public final class ModifierRegistry {
     public ModifierRegistry() {
         map = new HashMap<>();
 
-        register('c', new ColorModifierNode.Parser());
-        register('s', new StyleModifierNode.Parser());
+        register(ColorModifierNode.KEY, new ColorModifierNode.Parser());
+        register(StyleModifierNode.KEY, new StyleModifierNode.Parser());
     }
 
     public void register(char c, ModifierParser parser) {

@@ -10,10 +10,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public final class TextboxListSerializer {
+    private static final String[] OPTIONS = { "Abort", "Ignore", "Ignore All" };
+    private static final int ABORT_OPTION = 0;
+    private static final int IGNORE_OPTION = 1;
+    private static final int IGNORE_ALL_OPTION = 2;
+
     private final Component parent;
 
     public TextboxListSerializer(Component parent) {
@@ -55,20 +59,19 @@ public final class TextboxListSerializer {
                 } else {
                     int result = DialogUtils.showCustomConfirmDialog(parent, "Textbox " + textboxIndex
                                     + " specifies a face that isn't currently loaded: \"" + facePath + "\"\n"
-                                    + "Press \"Abort\" (or close this dialog box) to stop loading this project file,\n" +
+                                    + "Select \"Abort\" (or close this dialog box) to stop loading this project file,\n" +
                                     "\"Ignore\" to ignore this error,\n"
                                     + "or \"Ignore All\" to ignore this error and all future errors of this type.\n"
                                     + "Please note that ignoring textboxes with this error will remove their face.",
-                            "Missing face", new String[]{"Abort", "Ignore", "Ignore All"},
-                            JOptionPane.ERROR_MESSAGE);
+                            "Missing face", OPTIONS, JOptionPane.ERROR_MESSAGE);
                     switch (result) {
                         case JOptionPane.CLOSED_OPTION:
-                        case 0: // Abort
+                        case ABORT_OPTION:
                         default:
                             throw new ReadCancelledException();
-                        case 2: // Ignore All
+                        case IGNORE_ALL_OPTION:
                             ignoreFaceErrors = true;
-                        case 1: // Ignore
+                        case IGNORE_OPTION:
                             face = Face.NONE;
                             break;
                     }

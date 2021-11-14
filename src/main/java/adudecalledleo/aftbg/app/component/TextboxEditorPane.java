@@ -36,6 +36,8 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
     private static final String AC_ADD_MOD_COLOR = "add_mod.color";
     private static final String AC_ADD_MOD_STYLE = "add_mod.style";
 
+    private static final boolean REPLACE_LINE_SEPARATOR = !"\n".equals(System.lineSeparator());
+
     private final TextParser textParser;
     private final Consumer<String> textUpdateConsumer;
     private final Timer updateTimer;
@@ -324,7 +326,11 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
 
             nodes = null;
             try {
-                nodes = textParser.parse(doc.getText(0, doc.getLength()));
+                String text = doc.getText(0, doc.getLength());
+                if (REPLACE_LINE_SEPARATOR) {
+                    text = text.replaceAll(System.lineSeparator(), "\n");
+                }
+                nodes = textParser.parse(text);
             } catch (BadLocationException e) {
                 Logger.error("Failed to get text to parse!", e);
                 return;

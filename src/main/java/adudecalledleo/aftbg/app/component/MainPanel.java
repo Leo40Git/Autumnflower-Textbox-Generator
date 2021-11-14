@@ -338,25 +338,23 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
     public void saveProject(boolean forceChooserDialog) throws IOException {
         flushChanges();
-        boolean freshlySetProject = false;
         if (currentProject == null || forceChooserDialog) {
             File sel = DialogUtils.fileSaveDialog(this, "Save Project", DialogUtils.FILTER_JSON_FILES);
             if (sel == null) {
                 return;
             }
+            if (currentProject.exists()) {
+                final int result = JOptionPane.showConfirmDialog(this,
+                        "File \"" + currentProject + "\" already exists.\nOverwrite it?", "Save Project",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (result != JOptionPane.YES_OPTION) {
+                    return;
+                }
+                if (!currentProject.delete()) {
+                    throw new IOException("Could not delete file \"" + currentProject + "\"!");
+                }
+            }
             currentProject = sel;
-            freshlySetProject = true;
-        }
-        if (freshlySetProject && currentProject.exists()) {
-            final int result = JOptionPane.showConfirmDialog(this,
-                    "File \"" + currentProject + "\" already exists.\nOverwrite it?", "Save Project",
-                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-            if (result != JOptionPane.YES_OPTION) {
-                return;
-            }
-            if (!currentProject.delete()) {
-                throw new IOException("Could not delete file \"" + currentProject + "\"!");
-            }
         }
         try (FileWriter fw = new FileWriter(currentProject);
              JsonWriter out = GameDefinition.GSON.newJsonWriter(fw)) {

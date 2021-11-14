@@ -83,9 +83,9 @@ public record StyleSpec(boolean reset,
 
     public String toModifier() {
         if (DEFAULT.equals(this)) {
-            return "\\s";
+            return "\\" + StyleModifierNode.KEY;
         }
-        StringBuilder sb = new StringBuilder("\\s[");
+        StringBuilder sb = new StringBuilder("\\" + StyleModifierNode.KEY + "[");
         if (reset) {
             sb.append('r');
         }
