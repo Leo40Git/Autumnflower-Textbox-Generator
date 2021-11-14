@@ -1,0 +1,23 @@
+{
+  "Mercia": {
+    "entries": {
+      "Awkward": "faces/mercia/awkward.png",
+      "Blep": "faces/mercia/blep.png",
+      "Confident": "faces/mercia/confident.png",
+      "Pog": "faces/mercia/pog.png"
+    }
+  },
+  "Bailey": {
+    "entries": {
+      "Horny": "faces/bailey/horny.png"
+    }
+  },
+  "Lif": {
+    "entries": {
+      "Flirty": "faces/lif/flirty.png",
+      "High": "faces/lif/high.png",
+      "Shocked": "faces/lif/shocked.png",
+      "Rehydrated": "faces/lif/fixed.png"
+    }
+  }
+}

@@ -48,6 +48,25 @@ public record TextboxResources(GameDefinition gameDefinition, WindowContext wind
             throw new LoadException("Failed to load images for face pool", e);
         }
 
+        // region FACE POOL ADDITION TESTING - REMOVE BEFORE RELEASE!!!
+        Path baseExPath = basePath.resolveSibling("scratch_ex");
+        FacePool facesEx;
+        Path facesExPath = baseExPath.resolve("faces.json");
+        try (BufferedReader reader = Files.newBufferedReader(facesExPath)) {
+            facesEx = GameDefinition.GSON.fromJson(reader, FacePool.class);
+        } catch (Exception e) {
+            throw new LoadException("Failed to read extra face pool", e);
+        }
+
+        try {
+            facesEx.loadAll(baseExPath);
+        } catch (FaceLoadException e) {
+            throw new LoadException("Failed to load images for extra face pool", e);
+        }
+
+        faces.addFrom(facesEx);
+        // endregion
+
         return new TextboxResources(gameDef, winCtx, faces);
     }
 
