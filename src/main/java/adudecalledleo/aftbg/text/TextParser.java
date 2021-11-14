@@ -30,7 +30,6 @@ public final class TextParser {
         textLength = 0;
 
         boolean backslash = false;
-        boolean slashR = false;
         int pos;
         for (pos = 0; pos < chars.length; pos++) {
             char c = chars[pos];
@@ -63,7 +62,7 @@ public final class TextParser {
                             continue;
                         }
                         if (parser == null) {
-                            nodes.add(new ErrorNode(modStartPos, pos - modStartPos, "Unknown modifier key '" + c + "'"));
+                            nodes.add(new ErrorNode(modStartPos, pos - modStartPos + 1, "Unknown modifier key '" + c + "'"));
                         } else {
                             parser.parse(modStartPos, start + 1, sb.toString(), nodes);
                             sb.setLength(0);

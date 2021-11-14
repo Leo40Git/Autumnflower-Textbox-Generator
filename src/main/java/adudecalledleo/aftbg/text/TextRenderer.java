@@ -6,13 +6,13 @@ import adudecalledleo.aftbg.text.node.LineBreakNode;
 import adudecalledleo.aftbg.text.node.Node;
 import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.text.node.TextNode;
+import adudecalledleo.aftbg.util.RainbowPaint;
 import adudecalledleo.aftbg.window.WindowColors;
 
 import java.awt.*;
 import java.awt.font.TextAttribute;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,23 +26,6 @@ public final class TextRenderer {
     public static final float OUTLINE2_OPAQUENESS = 0.275f;
     private static final Stroke OUTLINE2_STROKE = new BasicStroke(OUTLINE2_WIDTH, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND);
     public static final Composite OUTLINE2_COMPOSITE = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, OUTLINE2_OPAQUENESS);
-
-    public static final Paint RAINBOW_PAINT = createRainbowPaint();
-
-    private static Paint createRainbowPaint() {
-        Color[] colors = new Color[36];
-        float[] fractions = new float[colors.length];
-
-        float f = 1 / (float) (colors.length - 1);
-
-        for (int i = 0; i < colors.length; i++) {
-            colors[i] = new Color(Color.HSBtoRGB(i * f, 1, 1));
-            fractions[i] = i * f;
-        }
-
-        return new LinearGradientPaint(new Point2D.Double(0, 0), new Point2D.Double(50, 50),
-                fractions, colors, MultipleGradientPaint.CycleMethod.REPEAT);
-    }
 
     public static final Font DEFAULT_FONT = AppResources.getFont().deriveFont(Font.PLAIN, 28);
 
@@ -143,7 +126,7 @@ public final class TextRenderer {
                 g.draw(outline);
 
                 if (gimmicks.isRainbow()) {
-                    g.setPaint(RAINBOW_PAINT);
+                    g.setPaint(RainbowPaint.get());
                 } else {
                     g.setColor(c);
                     // ...then draw a secondary outline...
