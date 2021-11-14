@@ -1,9 +1,7 @@
 package adudecalledleo.aftbg.text;
 
 import adudecalledleo.aftbg.app.AppResources;
-import adudecalledleo.aftbg.text.modifier.ColorModifierNode;
-import adudecalledleo.aftbg.text.modifier.StyleModifierNode;
-import adudecalledleo.aftbg.text.modifier.StyleSpec;
+import adudecalledleo.aftbg.text.modifier.*;
 import adudecalledleo.aftbg.text.node.LineBreakNode;
 import adudecalledleo.aftbg.text.node.Node;
 import adudecalledleo.aftbg.text.node.NodeList;
@@ -14,6 +12,7 @@ import java.awt.*;
 import java.awt.font.TextAttribute;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +26,23 @@ public final class TextRenderer {
     public static final float OUTLINE2_OPAQUENESS = 0.275f;
     private static final Stroke OUTLINE2_STROKE = new BasicStroke(OUTLINE2_WIDTH, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND);
     public static final Composite OUTLINE2_COMPOSITE = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, OUTLINE2_OPAQUENESS);
+
+    public static final Paint RAINBOW_PAINT = createRainbowPaint();
+
+    private static Paint createRainbowPaint() {
+        Color[] colors = new Color[36];
+        float[] fractions = new float[colors.length];
+
+        float f = 1 / (float) (colors.length - 1);
+
+        for (int i = 0; i < colors.length; i++) {
+            colors[i] = new Color(Color.HSBtoRGB(i * f, 1, 1));
+            fractions[i] = i * f;
+        }
+
+        return new LinearGradientPaint(new Point2D.Double(0, 0), new Point2D.Double(50, 50),
+                fractions, colors, MultipleGradientPaint.CycleMethod.REPEAT);
+    }
 
     public static final Font DEFAULT_FONT = AppResources.getFont().deriveFont(Font.PLAIN, 28);
 
@@ -72,12 +88,13 @@ public final class TextRenderer {
 
         final int ma = g.getFontMetrics().getMaxAscent();
         final int startX = x;
-        final var tx = new AffineTransform();
+        final AffineTransform tx = new AffineTransform(), tx2 = new AffineTransform();
         StyleSpec style = StyleSpec.DEFAULT;
+        GimmickSpec gimmicks = GimmickSpec.DEFAULT;
 
         for (Node node : nodes) {
-            if (node instanceof TextNode textNode) {
-                if (textNode.getContents().isEmpty()) {
+            if (node instanceof TextNode text) {
+                if (text.getContents().isEmpty()) {
                     continue;
                 }
 
@@ -85,9 +102,39 @@ public final class TextRenderer {
                 int yo = ma / 2 - g.getFontMetrics().getMaxAscent() / 2;
 
                 // generate an outline of the text
-                var layout = new TextLayout(textNode.getContents(), g.getFont(), g.getFontRenderContext());
+                var layout = new TextLayout(text.getContents(), g.getFont(), g.getFontRenderContext());
                 tx.setToTranslation(x, y + ma - yo);
-                var outline = layout.getOutline(tx);
+
+                boolean flipH = false, flipV = false;
+                switch (gimmicks.flip()) {
+                    case HORIZONTAL -> flipH = true;
+                    case VERTICAL -> flipV = true;
+                    case BOTH -> {
+                        flipH = true;
+                        flipV = true;
+                    }
+                }
+
+                Shape outline;
+
+                if (flipH || flipV) {
+                    var bounds = layout.getBounds();
+                    if (flipH && flipV) {
+                        tx2.setToScale(-1, -1);
+                        tx.setToTranslation(x + bounds.getWidth(), y + ma - yo - bounds.getHeight());
+                    } else if (flipH) {
+                        tx2.setToScale(-1, 1);
+                        tx.setToTranslation(x + bounds.getWidth(), y + ma - yo);
+                    } else /* if (flipV) */ {
+                        tx2.setToScale(1, -1);
+                        tx.setToTranslation(x, y + ma - yo - bounds.getHeight());
+                    }
+                    outline = layout.getOutline(tx2);
+                    outline = tx.createTransformedShape(outline);
+                } else {
+                    tx.setToTranslation(x, y + ma - yo);
+                    outline = layout.getOutline(tx);
+                }
 
                 // draw a transparent outline of the text...
                 var c = g.getColor(); // (save the actual text color for later)
@@ -95,21 +142,28 @@ public final class TextRenderer {
                 g.setColor(OUTLINE_COLOR);
                 g.draw(outline);
 
-                g.setColor(c);
-                // ...then draw a secondary outline...
-                g.setComposite(OUTLINE2_COMPOSITE);
-                g.setStroke(OUTLINE2_STROKE);
-                g.draw(outline);
-                // ...and then, fill in the text!
-                g.setComposite(oldComposite);
+                if (gimmicks.isRainbow()) {
+                    g.setPaint(RAINBOW_PAINT);
+                } else {
+                    g.setColor(c);
+                    // ...then draw a secondary outline...
+                    g.setComposite(OUTLINE2_COMPOSITE);
+                    g.setStroke(OUTLINE2_STROKE);
+                    g.draw(outline);
+                    // ...and then, fill in the text!
+                    g.setComposite(oldComposite);
+                }
                 g.fill(outline);
+
                 // advance X by "advance" (text width + padding, I think?)
                 x += layout.getAdvance();
-            } else if (node instanceof ColorModifierNode colorModNode) {
-                g.setColor(colorModNode.getColor(colors));
-            } else if (node instanceof StyleModifierNode styleModNode) {
-                style = style.add(styleModNode.getSpec());
+            } else if (node instanceof ColorModifierNode modColor) {
+                g.setColor(modColor.getColor(colors));
+            } else if (node instanceof StyleModifierNode modStyle) {
+                style = style.add(modStyle.getSpec());
                 g.setFont(getStyledFont(style));
+            } else if (node instanceof GimmickModifierNode modGimmick) {
+                gimmicks = gimmicks.add(modGimmick.getSpec());
             } else if (node instanceof LineBreakNode) {
                 x = startX;
                 y += 36;

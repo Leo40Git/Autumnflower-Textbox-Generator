@@ -7,9 +7,7 @@ import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
 import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.TextRenderer;
-import adudecalledleo.aftbg.text.modifier.ColorModifierNode;
-import adudecalledleo.aftbg.text.modifier.StyleModifierNode;
-import adudecalledleo.aftbg.text.modifier.StyleSpec;
+import adudecalledleo.aftbg.text.modifier.*;
 import adudecalledleo.aftbg.text.node.*;
 import adudecalledleo.aftbg.util.ColorUtils;
 import adudecalledleo.aftbg.window.WindowContext;
@@ -332,7 +330,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                 Logger.error("Failed to get text to parse!", e);
                 return;
             }
-            StyleSpec spec = StyleSpec.DEFAULT;
+            StyleSpec styleSpec = StyleSpec.DEFAULT;
 
             for (Node node : nodes) {
                 if (node instanceof ColorModifierNode modCol) {
@@ -347,15 +345,15 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                     doc.setCharacterAttributes(argSpan.start(), argSpan.length(), style2, true);
                 } else if (node instanceof StyleModifierNode modStyle) {
                     doc.setCharacterAttributes(modStyle.getStart(), modStyle.getLength(), styleMod, true);
-                    spec = spec.add(modStyle.getSpec());
+                    styleSpec = styleSpec.add(modStyle.getSpec());
                     style = new SimpleAttributeSet(style);
-                    StyleConstants.setBold(style, spec.isBold());
-                    StyleConstants.setItalic(style, spec.isItalic());
-                    StyleConstants.setUnderline(style, spec.isUnderline());
-                    StyleConstants.setStrikeThrough(style, spec.isStrikethrough());
-                    StyleConstants.setSuperscript(style, spec.superscript() == StyleSpec.Superscript.SUPER);
-                    StyleConstants.setSubscript(style, spec.superscript() == StyleSpec.Superscript.SUB);
-                    StyleConstants.setFontSize(style, StyleConstants.getFontSize(styleNormal) + spec.getTrueSizeAdjust());
+                    StyleConstants.setBold(style, styleSpec.isBold());
+                    StyleConstants.setItalic(style, styleSpec.isItalic());
+                    StyleConstants.setUnderline(style, styleSpec.isUnderline());
+                    StyleConstants.setStrikeThrough(style, styleSpec.isStrikethrough());
+                    StyleConstants.setSuperscript(style, styleSpec.superscript() == StyleSpec.Superscript.SUPER);
+                    StyleConstants.setSubscript(style, styleSpec.superscript() == StyleSpec.Superscript.SUB);
+                    StyleConstants.setFontSize(style, StyleConstants.getFontSize(styleNormal) + styleSpec.getTrueSizeAdjust());
                 } else if (node instanceof ModifierNode) {
                     doc.setCharacterAttributes(node.getStart(), node.getLength(), styleMod, true);
                 } else {
