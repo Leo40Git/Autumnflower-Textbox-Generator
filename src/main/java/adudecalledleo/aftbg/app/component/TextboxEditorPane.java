@@ -38,6 +38,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
     private final TextParser textParser;
     private final Consumer<String> textUpdateConsumer;
     private final Timer updateTimer;
+    private final Map<Object, Action> actions;
     private final Map<Rectangle2D, String> errors;
     private final Line2D scratchLine;
     private final SimpleAttributeSet styleNormal, styleMod;
@@ -63,6 +64,8 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         }));
         updateTimer.setRepeats(false);
         updateTimer.setCoalesce(true);
+
+        actions = createActionTable();
 
         styleNormal = new SimpleAttributeSet();
         StyleConstants.setFontFamily(styleNormal, TextRenderer.DEFAULT_FONT.getFamily());
@@ -106,9 +109,11 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
 
             private void mousePopupTriggered(MouseEvent e) {
                 var point = e.getPoint();
-                int pos = getUI().viewToModel2D(TextboxEditorPane.this, point, biasRet);
-                if (pos >= 0) {
-                    setCaretPosition(pos);
+                if (getCaret().getMark() < 0) /* if there are no selected characters */ {
+                    int pos = getUI().viewToModel2D(TextboxEditorPane.this, point, biasRet);
+                    if (pos >= 0) {
+                        setCaretPosition(pos);
+                    }
                 }
                 popupMenu.show(TextboxEditorPane.this, point.x, point.y);
             }
@@ -134,24 +139,30 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         highlight();
     }
 
+    private Map<Object, Action> createActionTable() {
+        HashMap<Object, Action> actions = new HashMap<>();
+        Action[] actionsArray = getActions();
+        for (Action a : actionsArray) {
+            actions.put(a.getValue(Action.NAME), a);
+        }
+        return actions;
+    }
+
     private JPopupMenu createPopupMenu() {
         final var menu = new JPopupMenu();
         JMenuItem item;
 
-        item = new JMenuItem("Cut", AppResources.Icons.CUT.get());
-        item.setActionCommand(DefaultEditorKit.cutAction);
-        item.addActionListener(this);
-        item.setMnemonic(KeyEvent.VK_T);
+        item = new JMenuItem(actions.get(DefaultEditorKit.cutAction));
+        item.setText("Cut");
+        item.setIcon(AppResources.Icons.CUT.get());
         menu.add(item);
-        item = new JMenuItem("Copy", AppResources.Icons.COPY.get());
-        item.setActionCommand(DefaultEditorKit.copyAction);
-        item.addActionListener(this);
-        item.setMnemonic(KeyEvent.VK_C);
+        item = new JMenuItem(actions.get(DefaultEditorKit.copyAction));
+        item.setText("Copy");
+        item.setIcon(AppResources.Icons.COPY.get());
         menu.add(item);
-        item = new JMenuItem("Paste", AppResources.Icons.PASTE.get());
-        item.setActionCommand(DefaultEditorKit.pasteAction);
-        item.addActionListener(this);
-        item.setMnemonic(KeyEvent.VK_P);
+        item = new JMenuItem(actions.get(DefaultEditorKit.pasteAction));
+        item.setText("Paste");
+        item.setIcon(AppResources.Icons.PASTE.get());
         menu.add(item);
 
         JMenu modsMenu = new JMenu("Add Modifier...");
@@ -176,9 +187,6 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
-            case DefaultEditorKit.cutAction -> cut();
-            case DefaultEditorKit.copyAction -> copy();
-            case DefaultEditorKit.pasteAction -> paste();
             case AC_ADD_MOD_COLOR -> {
                 ColorModifierDialog.Result result;
                 try {
@@ -204,10 +212,8 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                     throw new InternalError("Unhandled result type " + result + "?!");
                 }
                 try {
-                    getDocument().insertString(getCaretPosition(), toInsert, styleNormal);
+                    replaceSelection(toInsert);
                     updateTimer.restart();
-                } catch (BadLocationException ex) {
-                    Logger.error("Failed to insert color modifier!", ex);
                 } finally {
                     requestFocus();
                 }
@@ -236,10 +242,8 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                 }
                 newSpec = spec.difference(newSpec);
                 try {
-                    getDocument().insertString(getCaretPosition(), newSpec.toModifier(), styleNormal);
+                    replaceSelection(newSpec.toModifier());
                     updateTimer.restart();
-                } catch (BadLocationException ex) {
-                    Logger.error("Failed to insert style modifier!", ex);
                 } finally {
                     requestFocus();
                 }
@@ -394,7 +398,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         }
     }
 
-    private static final class EditorKitImpl extends DefaultEditorKit {
+    private static final class EditorKitImpl extends StyledEditorKit {
         @Override
         public ViewFactory getViewFactory() {
             return new ViewFactoryImpl();
