@@ -28,6 +28,10 @@ tasks.jpackageImage.doLast {
         from('scratch')
         into("$buildDir/jpackage/${project.name}/scratch")
     }
+    copy {
+        from('scratch_ex')
+        into("$buildDir/jpackage/${project.name}/scratch_ex")
+    }
 }
 
 group 'adudecalledleo'

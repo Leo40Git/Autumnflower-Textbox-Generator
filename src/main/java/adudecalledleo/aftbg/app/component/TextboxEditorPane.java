@@ -3,6 +3,7 @@ package adudecalledleo.aftbg.app.component;
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.dialog.ColorModifierDialog;
 import adudecalledleo.aftbg.app.dialog.StyleModifierDialog;
+import adudecalledleo.aftbg.app.util.ImmutableAttributeSet;
 import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
 import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.text.TextParser;
@@ -55,8 +56,15 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         errors = new HashMap<>();
         scratchLine = new Line2D.Double(0, 0, 0, 0);
 
-        setEditorKit(new EditorKitImpl());
+        styleNormal = new SimpleAttributeSet();
+        StyleConstants.setFontFamily(styleNormal, TextRenderer.DEFAULT_FONT.getFamily());
+        StyleConstants.setFontSize(styleNormal, TextRenderer.DEFAULT_FONT.getSize());
+        StyleConstants.setForeground(styleNormal, Color.WHITE);
+        styleMod = new SimpleAttributeSet(styleNormal);
+        StyleConstants.setForeground(styleMod, Color.GRAY);
+
         setDocument(new StyledDocumentImpl());
+        setEditorKit(new EditorKitImpl(new ImmutableAttributeSet(styleNormal)));
 
         updateTimer = new Timer(250, e -> SwingUtilities.invokeLater(() -> {
             textUpdateConsumer.accept(getText());
@@ -66,13 +74,6 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         updateTimer.setCoalesce(true);
 
         actions = createActionTable();
-
-        styleNormal = new SimpleAttributeSet();
-        StyleConstants.setFontFamily(styleNormal, TextRenderer.DEFAULT_FONT.getFamily());
-        StyleConstants.setFontSize(styleNormal, TextRenderer.DEFAULT_FONT.getSize());
-        StyleConstants.setForeground(styleNormal, Color.WHITE);
-        styleMod = new SimpleAttributeSet(styleNormal);
-        StyleConstants.setForeground(styleMod, Color.GRAY);
 
         Graphics2D g = SCRATCH_IMAGE.createGraphics();
         g.setFont(TextRenderer.DEFAULT_FONT);
@@ -399,6 +400,17 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
     }
 
     private static final class EditorKitImpl extends StyledEditorKit {
+        private final ImmutableAttributeSet inputAttributes;
+
+        public EditorKitImpl(ImmutableAttributeSet inputAttributes) {
+            this.inputAttributes = inputAttributes;
+        }
+
+        @Override
+        public ImmutableAttributeSet getInputAttributes() {
+            return inputAttributes;
+        }
+
         @Override
         public ViewFactory getViewFactory() {
             return new ViewFactoryImpl();
