@@ -88,30 +88,22 @@ public final class TextRenderer {
                 var layout = new TextLayout(text.getContents(), g.getFont(), g.getFontRenderContext());
                 tx.setToTranslation(x, y + ma - yo);
 
-                boolean flipH = false, flipV = false;
-                switch (gimmicks.flip()) {
-                    case HORIZONTAL -> flipH = true;
-                    case VERTICAL -> flipV = true;
-                    case BOTH -> {
-                        flipH = true;
-                        flipV = true;
-                    }
-                }
+                boolean flipH = gimmicks.flip().isHorizontal(), flipV = gimmicks.flip().isVertical();
 
                 Shape outline;
 
                 if (flipH || flipV) {
                     var bounds = layout.getBounds();
-                    if (flipH && flipV) {
-                        tx2.setToScale(-1, -1);
-                        tx.setToTranslation(x + bounds.getWidth(), y + ma - yo - bounds.getHeight());
-                    } else if (flipH) {
-                        tx2.setToScale(-1, 1);
-                        tx.setToTranslation(x + bounds.getWidth(), y + ma - yo);
-                    } else /* if (flipV) */ {
-                        tx2.setToScale(1, -1);
-                        tx.setToTranslation(x, y + ma - yo - bounds.getHeight());
+                    double t2x = x;
+                    if (flipH) {
+                        t2x += bounds.getWidth();
                     }
+                    double t2y = y + ma - yo;
+                    if (flipV) {
+                        t2y -= bounds.getHeight();
+                    }
+                    tx2.setToScale(flipH ? -1 : 1, flipV ? -1 : 1);
+                    tx.setToTranslation(t2x, t2y);
                     outline = layout.getOutline(tx2);
                     outline = tx.createTransformedShape(outline);
                 } else {

@@ -5,15 +5,29 @@ import adudecalledleo.aftbg.util.TriState;
 public record GimmickSpec(boolean reset,
                           TriState rainbow, Flip flip) {
     public enum Flip {
-        DEFAULT, NONE, HORIZONTAL, VERTICAL, BOTH;
+        DEFAULT(false, false),
+        NONE(false, false),
+        HORIZONTAL(true, false),
+        VERTICAL(false, true),
+        BOTH(true, true);
+
+        private final boolean horizontal, vertical;
+
+        Flip(boolean horizontal, boolean vertical) {
+            this.horizontal = horizontal;
+            this.vertical = vertical;
+        }
+
+        public boolean isHorizontal() {
+            return horizontal;
+        }
+
+        public boolean isVertical() {
+            return vertical;
+        }
 
         public boolean sameAs(Flip other) {
-            if (this == DEFAULT) {
-                return other == DEFAULT || other == NONE;
-            } else if (other == DEFAULT) {
-                return this == NONE;
-            }
-            return this == other;
+            return this == other || (this.horizontal == other.horizontal && this.vertical == other.vertical);
         }
     }
 
