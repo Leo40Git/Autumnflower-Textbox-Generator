@@ -1,5 +1,7 @@
 package adudecalledleo.aftbg.text.node;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -42,6 +44,10 @@ public final class NodeList implements Iterable<Node> {
         }
     }
 
+    public List<Node> asList() {
+        return wrapped;
+    }
+
     public boolean hasErrors() {
         return !errors.isEmpty();
     }
@@ -51,7 +57,7 @@ public final class NodeList implements Iterable<Node> {
     }
 
     @Override
-    public Iterator<Node> iterator() {
+    public @NotNull Iterator<Node> iterator() {
         return wrapped.iterator();
     }
 
