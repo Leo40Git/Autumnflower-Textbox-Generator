@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 
 public final class Logger {
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss,SSS");
+    private static final ExceptionWriter EXCEPTION_WRITER = new ExceptionWriter("\t");
 
     private static BufferedWriter writer;
 
@@ -36,11 +37,9 @@ public final class Logger {
         LocalDateTime now = LocalDateTime.now();
         StringBuilder sb = new StringBuilder().append(TIME_FORMAT.format(now)).append(" [").append(level).append("] ").append(message);
         if (cause != null) {
-            StringWriter sw = new StringWriter();
-            try (PrefixPrintWriter pw = new PrefixPrintWriter(sw, "\t")) {
-                cause.printStackTrace(pw);
-            }
-            sb.append(System.lineSeparator()).append(sw.getBuffer());
+            EXCEPTION_WRITER.reset();
+            cause.printStackTrace(EXCEPTION_WRITER);
+            sb.append(System.lineSeparator()).append(EXCEPTION_WRITER.getBuffer());
             // remove last newline
             sb.setLength(sb.length() - System.lineSeparator().length());
         }
