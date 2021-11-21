@@ -6,8 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 
-public final class FilesUtil {
-    private FilesUtil() { }
+public final class PathUtils {
+    private PathUtils() { }
 
     /**
      * Deletes a directory by recursively deleting its contents.
