@@ -8,6 +8,8 @@ import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.text.node.TextNode;
 
 public final class TextParser {
+    private static final boolean REPLACE_LINE_SEPARATOR = !"\n".equals(System.lineSeparator());
+
     private final ModifierRegistry modifierRegistry;
     private final StringBuilder sb;
     private int textStart, textLength;
@@ -23,6 +25,10 @@ public final class TextParser {
     }
 
     public NodeList parse(String text) {
+        if (REPLACE_LINE_SEPARATOR) {
+            text = text.replaceAll(System.lineSeparator(), "\n");
+        }
+
         char[] chars = text.toCharArray();
         sb.setLength(0);
         nodes = new NodeList();
