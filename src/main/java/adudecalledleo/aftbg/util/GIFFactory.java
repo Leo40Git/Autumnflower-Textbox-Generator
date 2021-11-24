@@ -24,22 +24,7 @@ public final class GIFFactory {
                     writer.getDefaultWriteParam());
             String metaFormatName = meta.getNativeMetadataFormatName();
             IIOMetadataNode root = (IIOMetadataNode) meta.getAsTree(metaFormatName);
-            IIOMetadataNode graphicsControl = getNode(root, "GraphicControlExtension");
-            graphicsControl.setAttribute("disposalMethod", "none");
-            graphicsControl.setAttribute("userInputFlag", "FALSE");
-            graphicsControl.setAttribute("transparentColorFlag", "FALSE");
-            graphicsControl.setAttribute("transparentColorIndex", "0");
-            graphicsControl.setAttribute("delayTime", Integer.toString(delayTime));
-            if (comment != null) {
-                IIOMetadataNode comments = getNode(root, "CommentExtensions");
-                comments.setAttribute("CommentExtension", comment);
-            }
-            IIOMetadataNode application = getNode(root, "ApplicationExtensions");
-            IIOMetadataNode child = new IIOMetadataNode("ApplicationExtension");
-            child.setAttribute("applicationID", "NETSCAPE");
-            child.setAttribute("authenticationCode", "2.0");
-            child.setUserObject(new byte[] { 1, 0, 0 });
-            application.appendChild(child);
+            fillMetadata(delayTime, comment, root);
             meta.setFromTree(metaFormatName, root);
             writer.setOutput(ios);
             writer.prepareWriteSequence(null);
@@ -56,13 +41,45 @@ public final class GIFFactory {
         return create(frames, delayTime, null);
     }
 
-    private static IIOMetadataNode getNode(IIOMetadataNode rootNode, String nodeName) {
-        int nNodes = rootNode.getLength();
-        for (int i = 0; i < nNodes; i++)
-            if (rootNode.item(i).getNodeName().compareToIgnoreCase(nodeName) == 0)
+    // region Metadata stuff
+    private static void fillMetadata(int delayTime, String comment, IIOMetadataNode root) {
+        IIOMetadataNode graphicsControl = getOrCreateNode(root, "GraphicControlExtension");
+        fillGraphicsControlExtension(delayTime, graphicsControl);
+        if (comment != null) {
+            IIOMetadataNode comments = getOrCreateNode(root, "CommentExtensions");
+            comments.setAttribute("CommentExtension", comment);
+        }
+        IIOMetadataNode applications = getOrCreateNode(root, "ApplicationExtensions");
+        IIOMetadataNode application = new IIOMetadataNode("ApplicationExtension");
+        fillApplicationExtension(application);
+        applications.appendChild(application);
+    }
+
+    private static void fillGraphicsControlExtension(int delayTime, IIOMetadataNode graphicsControl) {
+        graphicsControl.setAttribute("disposalMethod", "none");
+        graphicsControl.setAttribute("userInputFlag", "FALSE");
+        graphicsControl.setAttribute("transparentColorFlag", "FALSE");
+        graphicsControl.setAttribute("transparentColorIndex", "0");
+        graphicsControl.setAttribute("delayTime", Integer.toString(delayTime));
+    }
+
+    private static final byte[] APPLICATION_EXTENSION_USER_OBJECT = new byte[] { 1, 0, 0 };
+
+    private static void fillApplicationExtension(IIOMetadataNode child) {
+        child.setAttribute("applicationID", "NETSCAPE");
+        child.setAttribute("authenticationCode", "2.0");
+        child.setUserObject(APPLICATION_EXTENSION_USER_OBJECT);
+    }
+
+    private static IIOMetadataNode getOrCreateNode(IIOMetadataNode rootNode, String nodeName) {
+        for (int i = 0, length = rootNode.getLength(); i < length; i++) {
+            if (rootNode.item(i).getNodeName().compareToIgnoreCase(nodeName) == 0) {
                 return (IIOMetadataNode) rootNode.item(i);
+            }
+        }
         IIOMetadataNode node = new IIOMetadataNode(nodeName);
         rootNode.appendChild(node);
         return node;
     }
+    // endregion
 }
