@@ -3,7 +3,7 @@ package adudecalledleo.aftbg.app.component;
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.dialog.ColorModifierDialog;
 import adudecalledleo.aftbg.app.dialog.StyleModifierDialog;
-import adudecalledleo.aftbg.app.util.ImmutableAttributeSet;
+import adudecalledleo.aftbg.app.util.UnmodifiableAttributeSetView;
 import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
 import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.text.TextParser;
@@ -62,7 +62,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         StyleConstants.setForeground(styleMod, Color.GRAY);
 
         setDocument(new StyledDocumentImpl());
-        setEditorKit(new EditorKitImpl(new ImmutableAttributeSet(styleNormal)));
+        setEditorKit(new EditorKitImpl(styleNormal));
 
         updateTimer = new Timer(250, e -> SwingUtilities.invokeLater(() -> {
             textUpdateConsumer.accept(getText());
@@ -77,9 +77,10 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         g.setFont(TextRenderer.DEFAULT_FONT);
         var fm = g.getFontMetrics();
         var size = new Dimension(816, fm.getHeight() * 4 + fm.getDescent());
+        g.dispose();
+
         setMinimumSize(size);
         setPreferredSize(size);
-        g.dispose();
 
         getDocument().addDocumentListener(new DocumentListener() {
             @Override
