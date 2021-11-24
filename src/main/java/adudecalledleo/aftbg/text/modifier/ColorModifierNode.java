@@ -75,6 +75,10 @@ public sealed abstract class ColorModifierNode extends ModifierNode {
                 nodes.add(new ErrorNode(start, 2,
                         ERROR_PREFIX + "1 argument required, either window color ID or hex color"));
                 return;
+            } else if (args.isBlank()) {
+                nodes.add(new ErrorNode(start, 2 + args.length() + 2,
+                        ERROR_PREFIX + "1 argument required, either window color ID or hex color"));
+                return;
             }
 
             if (args.startsWith("#")) {
