@@ -6,13 +6,23 @@ import javax.swing.*;
 import java.awt.*;
 
 public final class FaceListCellRenderer extends BaseListCellRenderer<Face> {
-    private final boolean showImagePath;
+    public enum Mode {
+        GRID, LIST_SIMPLE, LIST_DETAILED
+    }
 
-    public FaceListCellRenderer(boolean showImagePath) {
+    private final Mode mode;
+
+    public FaceListCellRenderer(Mode mode) {
         super();
-        this.showImagePath = showImagePath;
-        setPreferredSize(new Dimension(72 * 4 + 4, 72));
-        setMinimumSize(new Dimension(72 * 4 + 4, 72));
+        this.mode = mode;
+        Dimension size;
+        if (mode == Mode.GRID) {
+            size = new Dimension(72, 72);
+        } else {
+            size = new Dimension(72 * 4 + 4, 72);
+        }
+        setPreferredSize(size);
+        setMinimumSize(size);
     }
 
     @Override
@@ -20,13 +30,13 @@ public final class FaceListCellRenderer extends BaseListCellRenderer<Face> {
                                                   boolean isSelected, boolean cellHasFocus) {
         updateColors(list, index, isSelected, cellHasFocus);
         setIcon(value.getIcon());
-        if (showImagePath) {
-            setText("<html>"
-                    + value.getName() + "<br>"
-                    + "<i>" + value.getImagePath() + "</i>"
-                    + "</html>");
-        } else {
-            setText(value.getName());
+        switch (mode) {
+            case GRID -> {
+                setText("");
+                setToolTipText(value.getName());
+            }
+            case LIST_SIMPLE -> setText(value.getName());
+            case LIST_DETAILED -> setText("<html>%s<br><i>%s</i></html>".formatted(value.getName(), value.getImagePath()));
         }
         return this;
     }

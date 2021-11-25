@@ -2,6 +2,7 @@ package adudecalledleo.aftbg.app.component;
 
 import adudecalledleo.aftbg.app.render.FaceCategoryListCellRenderer;
 import adudecalledleo.aftbg.app.render.FaceListCellRenderer;
+import adudecalledleo.aftbg.app.util.ComboBoxUtils;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FaceCategory;
 import adudecalledleo.aftbg.face.FacePool;
@@ -33,7 +34,10 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener {
         catSel.setModel(catModel);
         catSel.setRenderer(new FaceCategoryListCellRenderer());
         faceSel.setModel(faceModel);
-        faceSel.setRenderer(new FaceListCellRenderer(false));
+        faceSel.setRenderer(new FaceListCellRenderer(FaceListCellRenderer.Mode.LIST_SIMPLE));
+
+        ComboBoxUtils.setupGridSelectionPopup(faceSel, new FaceListCellRenderer(FaceListCellRenderer.Mode.GRID),
+                Face.NONE, 5, 8);
 
         setLayout(new GridBagLayout());
         var c = new GridBagConstraints();

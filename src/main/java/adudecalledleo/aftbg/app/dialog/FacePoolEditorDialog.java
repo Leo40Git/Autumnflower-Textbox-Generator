@@ -117,7 +117,7 @@ public final class FacePoolEditorDialog extends JDialog {
             faceList = new JList<>();
             faceList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             faceList.setModel(faceModel);
-            faceList.setCellRenderer(new FaceListCellRenderer(true));
+            faceList.setCellRenderer(new FaceListCellRenderer(FaceListCellRenderer.Mode.LIST_DETAILED));
             ListReorderTransferHandler.install(faceList, this);
             faceList.setEnabled(false);
             faceList.addListSelectionListener(this);
