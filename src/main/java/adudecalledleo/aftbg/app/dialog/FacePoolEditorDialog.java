@@ -81,7 +81,11 @@ public final class FacePoolEditorDialog extends JDialog {
                         return;
                     }
                     filePath = file.toPath();
-                    pool.clear();
+                    if (pool == null) {
+                        pool = new FacePool();
+                    } else {
+                        pool.clear();
+                    }
                     contentPane.enableButtonsOnLoad();
                     contentPane.updateCategoriesModel();
                 }
