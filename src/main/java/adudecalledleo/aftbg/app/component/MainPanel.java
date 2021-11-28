@@ -543,8 +543,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     });
                 }
                 case AC_FACE_POOL_EDITOR -> {
-                    var fpd = new FacePoolEditorDialog((Frame) SwingUtilities.getWindowAncestor(this), basePath,
-                            new FacePool(faces));
+                    var fpd = new FacePoolEditorDialog((Frame) SwingUtilities.getWindowAncestor(this));
                     fpd.setLocationRelativeTo(null);
                     fpd.setVisible(true);
                 }

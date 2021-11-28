@@ -19,6 +19,7 @@ public final class DialogUtils {
     }
 
     private static final JFileChooser FC_OPEN = createFileChooser(), FC_SAVE = createFileChooser();
+    private static final JFileChooser FC_OPEN_FOLDER = createFolderChooser();
 
     private static JFileChooser createFileChooser() {
         var fc = new JFileChooser();
@@ -28,12 +29,22 @@ public final class DialogUtils {
         return fc;
     }
 
+    private static JFileChooser createFolderChooser() {
+        var fc = new JFileChooser();
+        fc.setMultiSelectionEnabled(false);
+        fc.setAcceptAllFileFilterUsed(false);
+        fc.setCurrentDirectory(new File(System.getProperty("user.dir")));
+        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        return fc;
+    }
+
     public static File fileOpenDialog(Component parent, String title, FileNameExtensionFilter filter) {
         FC_OPEN.setDialogTitle(title);
         FC_OPEN.setFileFilter(filter);
         final int ret = FC_OPEN.showOpenDialog(parent);
-        if (ret == JFileChooser.APPROVE_OPTION)
+        if (ret == JFileChooser.APPROVE_OPTION) {
             return FC_OPEN.getSelectedFile();
+        }
         return null;
     }
 
@@ -55,5 +66,13 @@ public final class DialogUtils {
         return null;
     }
 
+    public static File folderOpenDialog(Component parent, String title) {
+        FC_OPEN_FOLDER.setDialogTitle(title);
+        final int ret = FC_OPEN_FOLDER.showOpenDialog(parent);
+        if (ret == JFileChooser.APPROVE_OPTION) {
+            return FC_OPEN_FOLDER.getSelectedFile();
+        }
+        return null;
+    }
 }
 

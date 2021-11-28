@@ -124,10 +124,6 @@ public final class FacePool {
             in.beginObject();
             while (in.hasNext()) {
                 String name = in.nextName();
-                if (cat.getIconName() == null) {
-                    // default icon is first entry
-                    cat.setIconName(name);
-                }
                 Path imagePath = Paths.get(in.nextString());
                 cat.add(name, imagePath);
             }
