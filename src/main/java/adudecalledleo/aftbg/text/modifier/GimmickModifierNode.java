@@ -4,9 +4,9 @@ import adudecalledleo.aftbg.text.node.ErrorNode;
 import adudecalledleo.aftbg.text.node.ModifierNode;
 import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.text.node.Span;
-import adudecalledleo.aftbg.util.TriState;
 
 import java.util.Locale;
+import java.util.function.Supplier;
 
 public final class GimmickModifierNode extends ModifierNode {
     public static final char KEY = 'g';
@@ -33,7 +33,7 @@ public final class GimmickModifierNode extends ModifierNode {
             }
 
             boolean reset = false;
-            TriState rainbow = TriState.DEFAULT;
+            GimmickSpec.Fill fill = GimmickSpec.Fill.DEFAULT;
             GimmickSpec.Flip flip = GimmickSpec.Flip.DEFAULT;
 
             String[] parts = args.split(",");
@@ -57,17 +57,21 @@ public final class GimmickModifierNode extends ModifierNode {
                     ao += l + 1;
                     continue;
                 }
-                String key = part.substring(0, eIndex);
+                String gKey = part.substring(0, eIndex);
                 String value = part.substring(eIndex + 1);
-                int prefixLen = key.length() + 1;
+                int prefixLen = gKey.length() + 1;
                 int valueLen = value.length();
-                switch (key.toLowerCase(Locale.ROOT)) {
-                    case "rainbow" -> {
+
+                final int aoF = ao;
+                Supplier<ErrorNode> unkValEF = () -> new ErrorNode(argsStart + aoF + prefixLen, valueLen,
+                        ERROR_PREFIX + "Unknown value!");
+
+                switch (gKey.toLowerCase(Locale.ROOT)) {
+                    case "fill" -> {
                         switch (value.toLowerCase(Locale.ROOT)) {
-                            case "true", "on", "yes" -> rainbow = TriState.TRUE;
-                            case "false", "off", "no" -> rainbow = TriState.FALSE;
-                            default -> nodes.add(new ErrorNode(argsStart + ao + prefixLen, valueLen,
-                                    ERROR_PREFIX + "Is that a yes or a no?"));
+                            case "default", "color" -> fill = GimmickSpec.Fill.COLOR;
+                            case "rainbow" -> fill = GimmickSpec.Fill.RAINBOW;
+                            default -> nodes.add(unkValEF.get());
                         }
                     }
                     case "flip" -> {
@@ -76,17 +80,18 @@ public final class GimmickModifierNode extends ModifierNode {
                             case "h", "horz", "horiz", "horizontal" -> flip = GimmickSpec.Flip.HORIZONTAL;
                             case "v", "vert", "vertical" -> flip = GimmickSpec.Flip.VERTICAL;
                             case "both" -> flip = GimmickSpec.Flip.BOTH;
-                            default -> nodes.add(new ErrorNode(argsStart + ao + prefixLen, valueLen,
-                                    ERROR_PREFIX + "Unknown value!"));
+                            default -> nodes.add(unkValEF.get());
                         }
                     }
+                    default -> nodes.add(new ErrorNode(argsStart + ao, prefixLen + valueLen,
+                            ERROR_PREFIX + "Unknown gimmick key '" + gKey + "'!"));
                 }
                 spans[i] = new Span(argsStart + ao, prefixLen + valueLen);
                 ao += prefixLen + valueLen + 1;
             }
 
             nodes.add(new GimmickModifierNode(start, 2 + args.length() + 2,
-                    new GimmickSpec(reset, rainbow, flip),
+                    new GimmickSpec(reset, fill, flip),
                     spans));
         }
     }

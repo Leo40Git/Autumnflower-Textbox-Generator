@@ -268,7 +268,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         g2d.setColor(Color.RED);
         for (var entry : errors.entrySet()) {
             var rect = entry.getKey();
-            g2d.clip(rect);
+            g2d.setClip(rect);
             final double y = rect.getY() + rect.getHeight() - 3;
             boolean raised = true;
             for (double x = rect.getX(); x <= rect.getX() + rect.getWidth() + 2; x += 2) {

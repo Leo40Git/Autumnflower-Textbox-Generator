@@ -94,18 +94,18 @@ public final class TextRenderer {
 
                 if (flipH || flipV) {
                     var bounds = layout.getBounds();
-                    double t2x = x;
+                    double moveX = x;
                     if (flipH) {
-                        t2x += bounds.getWidth();
+                        moveX += bounds.getWidth();
                     }
-                    double t2y = y + ma - yo;
+                    double moveY = y + ma - yo;
                     if (flipV) {
-                        t2y -= bounds.getHeight();
+                        moveY -= bounds.getHeight();
                     }
-                    tx2.setToScale(flipH ? -1 : 1, flipV ? -1 : 1);
-                    tx.setToTranslation(t2x, t2y);
-                    outline = layout.getOutline(tx2);
-                    outline = tx.createTransformedShape(outline);
+                    tx.setToScale(flipH ? -1 : 1, flipV ? -1 : 1);
+                    tx2.setToTranslation(moveX, moveY);
+                    outline = layout.getOutline(tx);
+                    outline = tx2.createTransformedShape(outline);
                 } else {
                     tx.setToTranslation(x, y + ma - yo);
                     outline = layout.getOutline(tx);
@@ -117,17 +117,20 @@ public final class TextRenderer {
                 g.setColor(OUTLINE_COLOR);
                 g.draw(outline);
 
-                if (gimmicks.isRainbow()) {
-                    g.setPaint(RainbowPaint.get());
-                } else {
-                    g.setColor(c);
-                    // ...then draw a secondary outline...
-                    g.setComposite(OUTLINE2_COMPOSITE);
-                    g.setStroke(OUTLINE2_STROKE);
-                    g.draw(outline);
-                    // ...and then, fill in the text!
-                    g.setComposite(oldComposite);
+                switch (gimmicks.fill()) {
+                    case DEFAULT, COLOR -> {
+                        g.setColor(c);
+                        // ...then draw a secondary outline...
+                        g.setComposite(OUTLINE2_COMPOSITE);
+                        g.setStroke(OUTLINE2_STROKE);
+                        g.draw(outline);
+                        // ...and then, fill in the text!
+                        g.setComposite(oldComposite);
+                    }
+                    case RAINBOW -> g.setPaint(RainbowPaint.get());
+                    default -> throw new IllegalStateException("Unsupported fill type " + gimmicks.fill() + "!");
                 }
+
                 g.fill(outline);
 
                 // advance X by "advance" (text width + padding, I think?)
