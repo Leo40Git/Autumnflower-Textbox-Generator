@@ -47,8 +47,7 @@
       "Suffering": "faces/lif/suffering.png",
       "In Dress": "faces/lif/dress.png",
       "In Underwear": "faces/lif/scandalous.png",
-      "Neutral (Undisguised)": "faces/lif/neutral_undisguised.png",
-      "Angry (Undisguised)": "faces/lif/angry_undisguised.png"
+      "Neutral (Undisguised)": "faces/lif/neutral_undisguised.png"
     }
   },
   "Sixty": {
@@ -81,6 +80,8 @@
       "Slayer": "faces/dhunters/slayer.png",
       "Knight": "faces/dhunters/knight.png",
       "Blackguard": "faces/dhunters/blackguard.png",
+      "Blackguard (No Helmet)": "faces/dhunters/blackguard_nohelm.png",
+      "Doormaster": "faces/dhunters/doormaster.png",
       "Tyra": "faces/dhunters/tyra.png",
       "Revna": "faces/dhunters/revna.png",
       "Revna (Talking)": "faces/dhunters/revna_squawk.png",
@@ -92,6 +93,8 @@
       "Silencer": "faces/dhunters/rk_silencer.png",
       "Necromancer": "faces/dhunters/rk_necromancer.png",
       "Embla": "faces/dhunters/rk_embla.png",
+      "Embla (Wet)": "faces/dhunters/rk_embla_wet.png",
+      "Embla (Demonform)": "faces/dhunters/rk_embla_demon.png",
       "Arbalist": "faces/dhunters/arbalist.png",
       "Unnamed Scryer": "faces/dhunters/scryer_cronch.png",
       "Annikka": "faces/dhunters/annikka.png",
@@ -104,6 +107,7 @@
     "entries": {
       "Sirtu": "faces/lizards/sirtu.png",
       "Sirtu (Dressed Up)": "faces/lizards/sirtu_date.png",
+      "Alzuzi": "faces/lizards/alzuzi.png",
       "Dhex": "faces/lizards/dhex.png",
       "Dhex (Naked)": "faces/lizards/dhex_naked.png",
       "Ataci": "faces/lizards/ataci.png",
@@ -132,10 +136,10 @@
       "Arcadius": "faces/other/arcadius.png",
       "Arcadius (as Bramble)": "faces/other/arcadius_bramble.png",
       "Arcadius (as Dan)": "faces/other/arcadius_dan.png",
-      "Arcadius (as Fencer)": "faces/other/arcadius_fencer.png",
-      "Arcadius (as Guard)": "faces/other/arcadius_guard.png",
       "Arcadius (as Heats)": "faces/other/arcadius_heats.png",
+      "Arcadius (as Guard)": "faces/other/arcadius_guard.png",
       "Arcadius (as Soupmaster)": "faces/other/arcadius_soupmaster.png",
+      "Arcadius (as Fencer)": "faces/other/arcadius_fencer.png",
       "Artemis": "faces/other/artemis.png",
       "Astra": "faces/other/astra.png",
       "Bagel": "faces/other/bagel.png",
@@ -165,6 +169,7 @@
       "Fir": "faces/other/fir.png",
       "King Gideon": "faces/other/gideon.png",
       "Goldenrod": "faces/other/goldenrod.png",
+      "Glasshoof": "faces/other/glasshoof.png",
       "Janes": "faces/other/janes.png",
       "Jasper": "faces/other/jasper.png",
       "Khaki": "faces/other/khaki.png",
@@ -222,7 +227,6 @@
       "Aristocrat Fox": "faces/unused/aristocrat_fox.png",
       "Lizard (Brown)": "faces/unused/lizard_brown.png",
       "Lizard (Green)": "faces/unused/lizard_green.png",
-      "Lizard (Purple)": "faces/unused/lizard_purple.png",
       "Shirtless Guy": "faces/unused/shirtless_guy.png"
     }
   }
