@@ -45,7 +45,7 @@ public final class TextRenderer {
                 case SUPER -> TextAttribute.SUPERSCRIPT_SUPER;
                 case SUB -> TextAttribute.SUPERSCRIPT_SUB;
             });
-            map.put(TextAttribute.SIZE, DEFAULT_FONT.getSize() + key.getTrueSizeAdjust());
+            map.put(TextAttribute.SIZE, DEFAULT_FONT.getSize() + key.getRealSizeAdjust());
             return DEFAULT_FONT.deriveFont(map);
         });
     }

@@ -56,10 +56,13 @@ public final class UnmodifiableAttributeSetView implements MutableAttributeSet {
     public AttributeSet getResolveParent() {
         // don't allow resolve parent to be modified, either
         var resolveParent = delegate.getResolveParent();
+        if (resolveParent == null) {
+            return null;
+        }
         if (resolveParentView == null || resolveParentView.delegate != resolveParent) {
             resolveParentView = new UnmodifiableAttributeSetView(resolveParent);
         }
-        return resolveParent;
+        return resolveParentView;
     }
 
     // region MutableAttributeSet methods (no-ops)

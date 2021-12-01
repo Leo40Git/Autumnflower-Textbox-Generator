@@ -38,7 +38,7 @@ public record StyleSpec(boolean reset,
         return strikethrough.toBoolean(false);
     }
 
-    public int getTrueSizeAdjust() {
+    public int getRealSizeAdjust() {
         return sizeAdjust * 4;
     }
 

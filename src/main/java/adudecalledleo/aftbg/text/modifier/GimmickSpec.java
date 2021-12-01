@@ -7,10 +7,10 @@ public record GimmickSpec(boolean reset,
         COLOR,
         RAINBOW;
 
-        public boolean sameAs(Fill fill) {
-            return this == DEFAULT && fill == COLOR
-                    || this == COLOR && fill == DEFAULT
-                    || this == fill;
+        public boolean sameAs(Fill other) {
+            return this == DEFAULT && other == COLOR
+                    || this == COLOR && other == DEFAULT
+                    || this == other;
         }
     }
 
