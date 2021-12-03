@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.text;
+package adudecalledleo.aftbg.text.animate;
 
 import adudecalledleo.aftbg.text.node.Node;
 import adudecalledleo.aftbg.text.node.NodeList;
@@ -15,6 +15,7 @@ public final class TextAnimator {
     private TextNode currentTextNode;
     private String currentTextNodeContents;
     private int currentTextNodeChar;
+    private boolean firstFrame;
 
     public TextAnimator(NodeList sourceNodes) {
         workingNodes = new NodeList();
@@ -27,13 +28,22 @@ public final class TextAnimator {
         currentNodeIdx = -1;
         currentTextNode = null;
         currentTextNodeContents = "";
-        currentTextNodeChar = -1;
+        currentTextNodeChar = 0;
+        firstFrame = true;
     }
 
     /**
-     * @return {@code true} if finished animating this node list, {@code false} otherwise
+     * Evaluates the next command.<br>
+     * See {@code AnimationCommand} and its subtypes for more information.
+     *
+     * @return an {@code AnimationCommand}
      */
-    public boolean nextChar() {
+    public AnimationCommand nextCommand() {
+        if (firstFrame) {
+            firstFrame = false;
+            return AnimationCommand.drawFrame();
+        }
+
         List<Node> srcNodes = sourceNodes.asList();
         while (currentTextNode == null) {
             if (currentNodeIdx >= srcNodes.size() - 1) {
@@ -43,15 +53,19 @@ public final class TextAnimator {
             if (node instanceof TextNode textNode) {
                 currentTextNode = textNode;
                 currentTextNodeContents = textNode.getContents();
-                currentTextNodeChar = -1;
+                currentTextNodeChar = 0;
                 break;
+            } else if (node instanceof AnimationCommandNode acNode) {
+                workingNodes.add(node);
+                return acNode.getAnimationCommand();
             } else {
                 workingNodes.add(node);
             }
         }
         if (currentTextNode == null) {
-            return true;
+            return AnimationCommand.endOfTextbox();
         }
+
         List<Node> nodes = workingNodes.asList();
         int lastNode = nodes.size() - 1;
         if (lastNode >= 0) {
@@ -59,6 +73,7 @@ public final class TextAnimator {
                 nodes.remove(lastNode);
             }
         }
+
         currentTextNodeChar++;
         if (currentTextNodeContents.length() == currentTextNodeChar) {
             nodes.add(currentTextNode);
@@ -67,7 +82,8 @@ public final class TextAnimator {
             workingTextNode.setContents(currentTextNodeContents.substring(0, currentTextNodeChar));
             nodes.add(workingTextNode);
         }
-        return false;
+
+        return AnimationCommand.drawFrame();
     }
 
     public NodeList getNodes() {

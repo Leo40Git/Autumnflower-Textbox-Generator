@@ -10,49 +10,54 @@ import javax.imageio.stream.ImageOutputStream;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
-public final class GIFFactory {
-    private GIFFactory() { }
+public final class GifFactory {
+    public static final int REPEAT_INFINITELY = 0xFFFF;
 
-    public static byte[] create(List<BufferedImage> frames, int delayTime, String comment) throws IOException {
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-             ImageOutputStream ios = ImageIO.createImageOutputStream(baos)) {
+    private GifFactory() { }
+
+    public static void write(List<BufferedImage> frames, int delayTime, String comment, OutputStream out) throws IOException {
+        try (ImageOutputStream ios = ImageIO.createImageOutputStream(out)) {
             ImageWriter writer = ImageIO.getImageWritersByFormatName("gif").next();
-            IIOMetadata meta = writer.getDefaultImageMetadata(
+
+            IIOMetadata imageMeta = writer.getDefaultImageMetadata(
                     ImageTypeSpecifier.createFromBufferedImageType(frames.get(0).getType()),
                     writer.getDefaultWriteParam());
-            String metaFormatName = meta.getNativeMetadataFormatName();
-            IIOMetadataNode root = (IIOMetadataNode) meta.getAsTree(metaFormatName);
-            fillMetadata(delayTime, comment, root);
-            meta.setFromTree(metaFormatName, root);
+            String imageMetaFormatName = imageMeta.getNativeMetadataFormatName();
+            IIOMetadataNode imageRoot = (IIOMetadataNode) imageMeta.getAsTree(imageMetaFormatName);
+            fillImageMetadata(imageRoot, delayTime, comment);
+            imageMeta.setFromTree(imageMetaFormatName, imageRoot);
+
             writer.setOutput(ios);
             writer.prepareWriteSequence(null);
             for (BufferedImage frame : frames) {
-                writer.writeToSequence(new IIOImage(frame, null, meta), writer.getDefaultWriteParam());
+                writer.writeToSequence(new IIOImage(frame, null, imageMeta), writer.getDefaultWriteParam());
             }
             writer.endWriteSequence();
             ios.flush();
+        }
+    }
+
+    public static byte[] create(List<BufferedImage> frames, int delayTime, String comment) throws IOException {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            write(frames, delayTime, comment, baos);
             return baos.toByteArray();
         }
     }
 
-    public static byte[] create(List<BufferedImage> frames, int delayTime) throws IOException {
-        return create(frames, delayTime, null);
-    }
-
-    // region Metadata stuff
-    private static void fillMetadata(int delayTime, String comment, IIOMetadataNode root) {
+    private static void fillImageMetadata(IIOMetadataNode root, int delayTime, String comment) {
         IIOMetadataNode graphicsControl = getOrCreateNode(root, "GraphicControlExtension");
         fillGraphicsControlExtension(delayTime, graphicsControl);
-        if (comment != null) {
-            IIOMetadataNode comments = getOrCreateNode(root, "CommentExtensions");
-            comments.setAttribute("CommentExtension", comment);
-        }
         IIOMetadataNode applications = getOrCreateNode(root, "ApplicationExtensions");
         IIOMetadataNode application = new IIOMetadataNode("ApplicationExtension");
         fillApplicationExtension(application);
         applications.appendChild(application);
+        if (comment != null) {
+            IIOMetadataNode comments = getOrCreateNode(root, "CommentExtensions");
+            comments.setAttribute("CommentExtension", comment);
+        }
     }
 
     private static void fillGraphicsControlExtension(int delayTime, IIOMetadataNode graphicsControl) {
@@ -63,12 +68,10 @@ public final class GIFFactory {
         graphicsControl.setAttribute("delayTime", Integer.toString(delayTime));
     }
 
-    private static final byte[] APPLICATION_EXTENSION_USER_OBJECT = new byte[] { 1, 0, 0 };
-
     private static void fillApplicationExtension(IIOMetadataNode child) {
         child.setAttribute("applicationID", "NETSCAPE");
         child.setAttribute("authenticationCode", "2.0");
-        child.setUserObject(APPLICATION_EXTENSION_USER_OBJECT);
+        child.setUserObject(new byte[] { 0x01, 0x00, 0x00 });
     }
 
     private static IIOMetadataNode getOrCreateNode(IIOMetadataNode rootNode, String nodeName) {
