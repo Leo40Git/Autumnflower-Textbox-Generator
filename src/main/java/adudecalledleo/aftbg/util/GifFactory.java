@@ -14,8 +14,6 @@ import java.io.OutputStream;
 import java.util.List;
 
 public final class GifFactory {
-    public static final int REPEAT_INFINITELY = 0xFFFF;
-
     private GifFactory() { }
 
     public static void write(List<BufferedImage> frames, int delayTime, String comment, OutputStream out) throws IOException {
