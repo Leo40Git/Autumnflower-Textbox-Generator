@@ -150,9 +150,11 @@ public final class Bootstrap {
             return;
         }
 
-        // repeat last frame 45 times
+        // repeat last frame for 2 seconds
+        final int repeatCount = GifFactory.toFrames(2, 5);
+        Logger.debug("Repeating last frame %d times".formatted(repeatCount));
         BufferedImage lastFrame = frames.get(frames.size() - 1);
-        for (int i = 0; i < 45; i++) {
+        for (int i = 0; i < repeatCount; i++) {
             frames.add(lastFrame);
         }
 

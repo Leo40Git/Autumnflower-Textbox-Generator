@@ -16,6 +16,10 @@ import java.util.List;
 public final class GifFactory {
     private GifFactory() { }
 
+    public static int toFrames(double seconds, int delayTime) {
+        return (int) (seconds / (delayTime * 0.01));
+    }
+
     public static void write(List<BufferedImage> frames, int delayTime, String comment, OutputStream out) throws IOException {
         try (ImageOutputStream ios = ImageIO.createImageOutputStream(out)) {
             ImageWriter writer = ImageIO.getImageWritersByFormatName("gif").next();
@@ -31,6 +35,7 @@ public final class GifFactory {
             writer.setOutput(ios);
             writer.prepareWriteSequence(null);
             for (BufferedImage frame : frames) {
+                // TODO optimize for duplicate frames?
                 writer.writeToSequence(new IIOImage(frame, null, imageMeta), writer.getDefaultWriteParam());
             }
             writer.endWriteSequence();
