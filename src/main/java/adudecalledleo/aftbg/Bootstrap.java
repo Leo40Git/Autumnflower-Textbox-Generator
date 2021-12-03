@@ -107,7 +107,7 @@ public final class Bootstrap {
         }
 
         TextParser parser = new TextParser();
-        NodeList nodes = parser.parse("Mercia:\n\\c[25]Hold on.\n\\g[flip=horizontal,fill=rainbow]This probably looks funky.");
+        NodeList nodes = parser.parse("Mercia:\n\\c[25]Hold on.\n\\d[5]\\@[Mercia/Awkward]I need to pee.");
         TextAnimator animator = new TextAnimator(nodes);
 
         WindowContext winCtx = rsrc.windowContext();
