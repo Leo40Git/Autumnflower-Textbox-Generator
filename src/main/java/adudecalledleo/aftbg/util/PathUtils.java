@@ -23,6 +23,6 @@ public final class PathUtils {
                 }
             }
         }
-        Files.delete(dir);
+        Files.deleteIfExists(dir);
     }
 }

@@ -8,13 +8,17 @@ import java.util.List;
 
 public final class TextAnimator {
     private final NodeList workingNodes;
+    private final TextNode.Mutable workingTextNode;
+
     private NodeList sourceNodes;
     private int currentNodeIdx;
     private TextNode currentTextNode;
+    private String currentTextNodeContents;
     private int currentTextNodeChar;
 
     public TextAnimator(NodeList sourceNodes) {
         workingNodes = new NodeList();
+        workingTextNode = new TextNode.Mutable("");
         reset(sourceNodes);
     }
 
@@ -22,6 +26,7 @@ public final class TextAnimator {
         this.sourceNodes = sourceNodes;
         currentNodeIdx = -1;
         currentTextNode = null;
+        currentTextNodeContents = "";
         currentTextNodeChar = -1;
     }
 
@@ -37,6 +42,7 @@ public final class TextAnimator {
             Node node = srcNodes.get(++currentNodeIdx);
             if (node instanceof TextNode textNode) {
                 currentTextNode = textNode;
+                currentTextNodeContents = textNode.getContents();
                 currentTextNodeChar = -1;
                 break;
             } else {
@@ -54,11 +60,12 @@ public final class TextAnimator {
             }
         }
         currentTextNodeChar++;
-        if (currentTextNode.getContents().length() == currentTextNodeChar) {
+        if (currentTextNodeContents.length() == currentTextNodeChar) {
             nodes.add(currentTextNode);
             currentTextNode = null;
         } else {
-            nodes.add(new TextNode(0, 0, currentTextNode.getContents().substring(0, currentTextNodeChar)));
+            workingTextNode.setContents(currentTextNodeContents.substring(0, currentTextNodeChar));
+            nodes.add(workingTextNode);
         }
         return false;
     }

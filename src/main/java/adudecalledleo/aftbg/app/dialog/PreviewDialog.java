@@ -3,6 +3,7 @@ package adudecalledleo.aftbg.app.dialog;
 import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.TransferableImage;
 import adudecalledleo.aftbg.logging.Logger;
+import adudecalledleo.aftbg.util.OperatingSystem;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -14,7 +15,6 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Locale;
 
 public final class PreviewDialog extends JDialog {
     private final BufferedImage image;
@@ -103,8 +103,8 @@ public final class PreviewDialog extends JDialog {
                     }
 
                     BufferedImage imageToCopy = image;
-                    if (System.getProperty("os.name", "").toLowerCase(Locale.ROOT).startsWith("windows")) {
-                        // thanks to both Windows and Java being a shits, transparent images aren't supported on the clipboard
+                    if (OperatingSystem.isWindows()) {
+                        // in Windows, transparent images aren't supported on the clipboard
                         imageToCopy = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
                         Graphics2D g = imageToCopy.createGraphics();
                         g.setBackground(backgroundColor);
@@ -122,8 +122,8 @@ public final class PreviewDialog extends JDialog {
                                 "Couldn't copy image to clipboard!", JOptionPane.ERROR_MESSAGE);
                         break;
                     }
-                    JOptionPane.showMessageDialog(this, "Successfully copied the image to the clipboard.", "Success!",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Successfully copied the image to the clipboard.",
+                            "Success!", JOptionPane.INFORMATION_MESSAGE);
                 }
                 case AC_SAVE -> {
                     File sel = DialogUtils.fileSaveDialog(this, "Save textbox(es) image",
@@ -132,12 +132,14 @@ public final class PreviewDialog extends JDialog {
                         return;
                     if (sel.exists()) {
                         final int confirm = JOptionPane.showConfirmDialog(this,
-                                "File \"" + sel.getName() + "\" already exists?\nOverwrite it?", "Overwrite existing file?",
+                                "File \"" + sel.getName() + "\" already exists?\nOverwrite it?",
+                                "Overwrite existing file?",
                                 JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
                         if (confirm != JOptionPane.YES_OPTION)
                             return;
                         if (!sel.delete()) {
-                            JOptionPane.showMessageDialog(this, "Could not delete file.", "Could not overwrite file", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(this, "Could not delete file.",
+                                    "Could not overwrite file", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
                     }
