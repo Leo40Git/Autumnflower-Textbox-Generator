@@ -34,9 +34,27 @@ public final class GifFactory {
 
             writer.setOutput(ios);
             writer.prepareWriteSequence(null);
+            BufferedImage lastFrame = null;
+            boolean wroteLastFrame = false;
+            int thisDelayTime = delayTime;
             for (BufferedImage frame : frames) {
-                // TODO optimize for duplicate frames?
-                writer.writeToSequence(new IIOImage(frame, null, imageMeta), writer.getDefaultWriteParam());
+                if (frame == lastFrame) {
+                    thisDelayTime += delayTime;
+                    wroteLastFrame = false;
+                } else {
+                    fillDelayTimeOnly(imageRoot, thisDelayTime);
+                    imageMeta.mergeTree(imageMetaFormatName, imageRoot);
+                    writer.writeToSequence(new IIOImage(lastFrame == null ? frame : lastFrame,
+                            null, imageMeta), writer.getDefaultWriteParam());
+                    thisDelayTime = delayTime;
+                    wroteLastFrame = true;
+                    lastFrame = frame;
+                }
+            }
+            if (lastFrame != null && !wroteLastFrame) {
+                fillDelayTimeOnly(imageRoot, thisDelayTime);
+                imageMeta.mergeTree(imageMetaFormatName, imageRoot);
+                writer.writeToSequence(new IIOImage(lastFrame, null, imageMeta), writer.getDefaultWriteParam());
             }
             writer.endWriteSequence();
             ios.flush();
@@ -52,7 +70,7 @@ public final class GifFactory {
 
     private static void fillImageMetadata(IIOMetadataNode root, int delayTime, String comment) {
         IIOMetadataNode graphicsControl = getOrCreateNode(root, "GraphicControlExtension");
-        fillGraphicsControlExtension(delayTime, graphicsControl);
+        fillGraphicsControlExtension(graphicsControl, delayTime);
         IIOMetadataNode applications = getOrCreateNode(root, "ApplicationExtensions");
         IIOMetadataNode application = new IIOMetadataNode("ApplicationExtension");
         fillApplicationExtension(application);
@@ -63,18 +81,23 @@ public final class GifFactory {
         }
     }
 
-    private static void fillGraphicsControlExtension(int delayTime, IIOMetadataNode graphicsControl) {
-        graphicsControl.setAttribute("disposalMethod", "none");
-        graphicsControl.setAttribute("userInputFlag", "FALSE");
-        graphicsControl.setAttribute("transparentColorFlag", "FALSE");
-        graphicsControl.setAttribute("transparentColorIndex", "0");
-        graphicsControl.setAttribute("delayTime", Integer.toString(delayTime));
+    private static void fillGraphicsControlExtension(IIOMetadataNode node, int delayTime) {
+        node.setAttribute("disposalMethod", "none");
+        node.setAttribute("userInputFlag", "FALSE");
+        node.setAttribute("transparentColorFlag", "FALSE");
+        node.setAttribute("transparentColorIndex", "0");
+        node.setAttribute("delayTime", Integer.toString(delayTime));
     }
 
-    private static void fillApplicationExtension(IIOMetadataNode child) {
-        child.setAttribute("applicationID", "NETSCAPE");
-        child.setAttribute("authenticationCode", "2.0");
-        child.setUserObject(new byte[] { 0x01, 0x00, 0x00 });
+    private static void fillApplicationExtension(IIOMetadataNode node) {
+        node.setAttribute("applicationID", "NETSCAPE");
+        node.setAttribute("authenticationCode", "2.0");
+        node.setUserObject(new byte[] { 0x01, 0x00, 0x00 });
+    }
+
+    private static void fillDelayTimeOnly(IIOMetadataNode root, int delayTime) {
+        IIOMetadataNode graphicsControl = getOrCreateNode(root, "GraphicControlExtension");
+        graphicsControl.setAttribute("delayTime", Integer.toString(delayTime));
     }
 
     private static IIOMetadataNode getOrCreateNode(IIOMetadataNode rootNode, String nodeName) {

@@ -6,10 +6,10 @@ import adudecalledleo.aftbg.app.UncaughtExceptionHandler;
 import adudecalledleo.aftbg.app.util.LoadFrame;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.logging.Logger;
-import adudecalledleo.aftbg.text.animate.AnimationCommand;
-import adudecalledleo.aftbg.text.animate.TextAnimator;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.TextRenderer;
+import adudecalledleo.aftbg.text.animate.AnimationCommand;
+import adudecalledleo.aftbg.text.animate.TextAnimator;
 import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.util.GifFactory;
 import adudecalledleo.aftbg.window.WindowContext;
@@ -113,9 +113,34 @@ public final class Bootstrap {
         WindowContext winCtx = rsrc.windowContext();
         List<BufferedImage> frames = new ArrayList<>();
 
+        int frame = 0;
         AnimationCommand command;
+        boolean drawFrame = false;
         while ((command = animator.nextCommand()) != AnimationCommand.endOfTextbox()) {
             if (command == AnimationCommand.drawFrame()) {
+                drawFrame = true;
+            } else if (command instanceof AnimationCommand.SetFace setFaceCmd) {
+                Logger.trace("Setting face to %s".formatted(setFaceCmd.getFacePath()));
+                Face newFace = setFaceCmd.getFace(rsrc.facePool());
+                if (newFace == null) {
+                    Logger.error("Face \"%s\" was not found!".formatted(setFaceCmd.getFacePath()));
+                } else {
+                    face = newFace;
+                    drawFrame = true;
+                }
+            } else if (command instanceof AnimationCommand.AddDelay addDelayCmd) {
+                // repeat last frame X times
+                Logger.trace("Repeating last frame %d times".formatted(addDelayCmd.getLength()));
+                BufferedImage lastFrame = frames.get(frames.size() - 1);
+                for (int i = 0; i < addDelayCmd.getLength(); i++) {
+                    frames.add(lastFrame);
+                }
+            }
+
+            if (drawFrame) {
+                drawFrame = false;
+                Logger.trace("Drawing frame %d".formatted(++frame));
+
                 BufferedImage img = new BufferedImage(816, 180, BufferedImage.TYPE_INT_RGB);
                 Graphics2D g = img.createGraphics();
                 g.setBackground(Color.BLACK);
@@ -126,19 +151,6 @@ public final class Bootstrap {
                 winCtx.drawBorder(g, 0, 0, 816, 180, null);
                 g.dispose();
                 frames.add(img);
-            } else if (command instanceof AnimationCommand.SetFace setFaceCmd) {
-                Face newFace = setFaceCmd.getFace(rsrc.facePool());
-                if (newFace == null) {
-                    Logger.error("Face \"%s\" was not found!".formatted(setFaceCmd.getFacePath()));
-                } else {
-                    face = newFace;
-                }
-            } else if (command instanceof AnimationCommand.AddDelay addDelayCmd) {
-                // repeat last frame X times
-                BufferedImage lastFrame = frames.get(frames.size() - 1);
-                for (int i = 0; i < addDelayCmd.getLength(); i++) {
-                    frames.add(lastFrame);
-                }
             }
         }
 
@@ -152,7 +164,7 @@ public final class Bootstrap {
 
         // repeat last frame for 2 seconds
         final int repeatCount = GifFactory.toFrames(2, 5);
-        Logger.debug("Repeating last frame %d times".formatted(repeatCount));
+        Logger.trace("Repeating last frame %d times".formatted(repeatCount));
         BufferedImage lastFrame = frames.get(frames.size() - 1);
         for (int i = 0; i < repeatCount; i++) {
             frames.add(lastFrame);

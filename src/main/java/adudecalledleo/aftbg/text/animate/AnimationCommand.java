@@ -55,7 +55,7 @@ public sealed abstract class AnimationCommand {
 
     // TODO error handling
     /**
-     * Set the face image.
+     * Set the face image and draw a new frame.
      */
     public static final class SetFace extends AnimationCommand {
         private final String facePath;
