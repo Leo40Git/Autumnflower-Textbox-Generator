@@ -169,6 +169,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         this.gameDef = gameDef;
         this.faces = faces;
         faceSelection.updateFacePool(faces);
+        editorPane.setFacePool(faces);
     }
 
     private void updateTextboxSelectorModel() {
@@ -181,6 +182,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
     public void onFaceChanged(Face newFace) {
         textboxes.get(currentTextbox).setFace(newFace);
+        editorPane.setTextboxFace(newFace);
         textboxSelector.repaint();
     }
 
@@ -198,6 +200,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     public void updateTextboxEditors() {
         var box = textboxes.get(currentTextbox);
         faceSelection.setFace(box.getFace());
+        editorPane.setTextboxFace(box.getFace());
         editorPane.setText(box.getText());
     }
 

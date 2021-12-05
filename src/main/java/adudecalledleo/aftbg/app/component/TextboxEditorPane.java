@@ -1,10 +1,27 @@
 package adudecalledleo.aftbg.app.component;
 
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.*;
+
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.dialog.ColorModifierDialog;
+import adudecalledleo.aftbg.app.dialog.FaceModifierDialog;
 import adudecalledleo.aftbg.app.dialog.StyleModifierDialog;
 import adudecalledleo.aftbg.app.util.UnmodifiableAttributeSetView;
 import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
+import adudecalledleo.aftbg.face.Face;
+import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.TextRenderer;
@@ -15,24 +32,12 @@ import adudecalledleo.aftbg.text.node.*;
 import adudecalledleo.aftbg.util.ColorUtils;
 import adudecalledleo.aftbg.window.WindowContext;
 
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
-
 public final class TextboxEditorPane extends JEditorPane implements WindowContextUpdateListener, ActionListener {
     private static final BufferedImage SCRATCH_IMAGE = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 
     private static final String AC_ADD_MOD_COLOR = "add_mod.color";
     private static final String AC_ADD_MOD_STYLE = "add_mod.style";
+    private static final String AC_ADD_MOD_FACE = "add_mod.face";
 
     private final TextParser textParser;
     private final Consumer<String> textUpdateConsumer;
@@ -44,7 +49,9 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
     private final JPopupMenu popupMenu;
 
     private WindowContext winCtx;
+    private FacePool facePool;
     private boolean forceCaretRendering;
+    private Face textboxFace;
     private NodeList nodes;
 
     public TextboxEditorPane(TextParser textParser, Consumer<String> textUpdateConsumer) {
@@ -178,6 +185,14 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         item.setMnemonic(KeyEvent.VK_S);
         modsMenu.add(item);
 
+        modsMenu.addSeparator();
+
+        item = new JMenuItem("Face");
+        item.setActionCommand(AC_ADD_MOD_FACE);
+        item.addActionListener(this);
+        item.setMnemonic(KeyEvent.VK_F);
+        modsMenu.add(item);
+
         menu.addSeparator();
         menu.add(modsMenu);
 
@@ -187,67 +202,92 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
-            case AC_ADD_MOD_COLOR -> {
-                ColorModifierDialog.Result result;
-                try {
-                    forceCaretRendering = true;
-                    var dialog = new ColorModifierDialog((Frame) SwingUtilities.getWindowAncestor(this), winCtx);
-                    dialog.setLocationRelativeTo(null);
-                    result = dialog.showDialog();
-                } finally {
-                    forceCaretRendering = false;
-                }
-                if (result == null) {
-                    requestFocus();
-                    break;
-                }
-                String toInsert;
-                if (result instanceof ColorModifierDialog.WindowResult winResult) {
-                    toInsert = "\\c[" + winResult.getIndex() + "]";
-                } else if (result instanceof ColorModifierDialog.ConstantResult constResult) {
-                    var col = constResult.getColor();
-                    toInsert = String.format("\\c[#%02X%02X%02X]",
-                            col.getRed(), col.getGreen(), col.getBlue());
-                } else {
-                    throw new InternalError("Unhandled result type " + result + "?!");
-                }
-                try {
-                    replaceSelection(toInsert);
-                    updateTimer.restart();
-                } finally {
-                    requestFocus();
-                }
+        case AC_ADD_MOD_COLOR -> {
+            ColorModifierDialog.Result result;
+            try {
+                forceCaretRendering = true;
+                var dialog = new ColorModifierDialog((Frame) SwingUtilities.getWindowAncestor(this), winCtx);
+                dialog.setLocationRelativeTo(null);
+                result = dialog.showDialog();
+            } finally {
+                forceCaretRendering = false;
             }
-            case AC_ADD_MOD_STYLE -> {
-                StyleSpec spec = StyleSpec.DEFAULT;
-                if (nodes != null) {
-                    for (var node : nodes) {
-                        if (node instanceof StyleModifierNode styleModNote) {
-                            spec = spec.add(styleModNote.getSpec());
-                        }
+            if (result == null) {
+                requestFocus();
+                break;
+            }
+            String toInsert;
+            if (result instanceof ColorModifierDialog.WindowResult winResult) {
+                toInsert = "\\c[" + winResult.getIndex() + "]";
+            } else if (result instanceof ColorModifierDialog.ConstantResult constResult) {
+                var col = constResult.getColor();
+                toInsert = String.format("\\c[#%02X%02X%02X]",
+                        col.getRed(), col.getGreen(), col.getBlue());
+            } else {
+                throw new InternalError("Unhandled result type " + result + "?!");
+            }
+            try {
+                replaceSelection(toInsert);
+                updateTimer.restart();
+            } finally {
+                requestFocus();
+            }
+        }
+        case AC_ADD_MOD_STYLE -> {
+            StyleSpec spec = StyleSpec.DEFAULT;
+            if (nodes != null) {
+                for (var node : nodes) {
+                    if (node instanceof StyleModifierNode styleModNote) {
+                        spec = spec.add(styleModNote.getSpec());
                     }
                 }
-                StyleSpec newSpec;
-                try {
-                    forceCaretRendering = true;
-                    var dialog = new StyleModifierDialog((Frame) SwingUtilities.getWindowAncestor(this), spec);
-                    dialog.setLocationRelativeTo(null);
-                    newSpec = dialog.showDialog();
-                } finally {
-                    forceCaretRendering = false;
-                }
-                if (newSpec == null) {
-                    requestFocus();
-                    break;
-                }
-                newSpec = spec.difference(newSpec);
-                try {
-                    replaceSelection(newSpec.toModifier());
-                    updateTimer.restart();
-                } finally {
-                    requestFocus();
-                }
             }
+            StyleSpec newSpec;
+            try {
+                forceCaretRendering = true;
+                var dialog = new StyleModifierDialog((Frame) SwingUtilities.getWindowAncestor(this), spec);
+                dialog.setLocationRelativeTo(null);
+                newSpec = dialog.showDialog();
+            } finally {
+                forceCaretRendering = false;
+            }
+            if (newSpec == null) {
+                requestFocus();
+                break;
+            }
+            newSpec = spec.difference(newSpec);
+            try {
+                replaceSelection(newSpec.toModifier());
+                updateTimer.restart();
+            } finally {
+                requestFocus();
+            }
+        }
+        case AC_ADD_MOD_FACE -> {
+            Face newFace;
+            try {
+                forceCaretRendering = true;
+                var dialog = new FaceModifierDialog((Frame) SwingUtilities.getWindowAncestor(this), facePool, textboxFace);
+                dialog.setLocationRelativeTo(null);
+                newFace = dialog.showDialog();
+            } finally {
+                forceCaretRendering = false;
+            }
+            if (newFace == null) {
+                requestFocus();
+                break;
+            }
+            String mod = "\\@";
+            if (newFace != Face.NONE) {
+                mod = "\\@[%s]".formatted(newFace.getPath());
+            }
+            try {
+                replaceSelection(mod);
+                updateTimer.restart();
+            } finally {
+                requestFocus();
+            }
+        }
         }
     }
 
@@ -307,12 +347,20 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         SwingUtilities.invokeLater(this::highlight);
     }
 
+    public void setTextboxFace(Face textboxFace) {
+        this.textboxFace = textboxFace;
+    }
+
     @Override
     public void updateWindowContext(WindowContext winCtx) {
         this.winCtx = winCtx;
         setCaretColor(winCtx.getColor(0));
         StyleConstants.setForeground(styleNormal, winCtx.getColor(0));
         flushChanges(true);
+    }
+
+    public void setFacePool(FacePool facePool) {
+        this.facePool = facePool;
     }
 
     private void highlight() {
@@ -416,18 +464,18 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
             public View create(final Element elem) {
                 final String kind = elem.getName();
                 switch (kind) {
-                    case AbstractDocument.ContentElementName:
-                        return new LabelView(elem);
-                    case AbstractDocument.ParagraphElementName:
-                        return new ParagraphViewImpl(elem);
-                    case AbstractDocument.SectionElementName:
-                        return new BoxView(elem, View.Y_AXIS);
-                    case StyleConstants.ComponentElementName:
-                        return new ComponentView(elem);
-                    case StyleConstants.IconElementName:
-                        return new IconView(elem);
-                    default:
-                        break;
+                case AbstractDocument.ContentElementName:
+                    return new LabelView(elem);
+                case AbstractDocument.ParagraphElementName:
+                    return new ParagraphViewImpl(elem);
+                case AbstractDocument.SectionElementName:
+                    return new BoxView(elem, View.Y_AXIS);
+                case StyleConstants.ComponentElementName:
+                    return new ComponentView(elem);
+                case StyleConstants.IconElementName:
+                    return new IconView(elem);
+                default:
+                    break;
                 }
                 return new LabelView(elem);
             }
