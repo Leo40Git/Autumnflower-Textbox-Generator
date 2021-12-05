@@ -204,7 +204,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
-            case AC_GENERATE:
+            case AC_GENERATE -> {
                 if (winCtx == null) {
                     JOptionPane.showMessageDialog(this,
                             "Window context hasn't been loaded yet (somehow)!",
@@ -222,11 +222,17 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
                 var worker = new TextboxGenerator(this, loadFrame, textParser, winCtx, textboxesCopy);
                 worker.execute();
-                break;
-            case AC_GENERATE_ANIMATION:
+            }
+            case AC_GENERATE_ANIMATION -> {
                 if (winCtx == null) {
                     JOptionPane.showMessageDialog(this,
                             "Window context hasn't been loaded yet (somehow)!",
+                            "Generate Animated", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                if (faces == null) {
+                    JOptionPane.showMessageDialog(this,
+                            "Face pool hasn't been loaded yet (somehow)!",
                             "Generate Animated", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -234,15 +240,15 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                 editorPane.flushChanges(false);
                 faceSelection.flushChanges();
 
-                LoadFrame loadFrame2 = new LoadFrame("Generating...", false);
-                loadFrame2.setAlwaysOnTop(true);
-                loadFrame2.setVisible(true);
-                List<Textbox> textboxesCopy2 = new ArrayList<>(textboxes);
+                LoadFrame loadFrame = new LoadFrame("Generating...", false);
+                loadFrame.setAlwaysOnTop(true);
+                loadFrame.setVisible(true);
+                List<Textbox> textboxesCopy = new ArrayList<>(textboxes);
 
-                var worker2 = new TextboxAnimator(this, loadFrame2, textParser, winCtx, faces, textboxesCopy2);
-                worker2.execute();
-                break;
-            case AC_TEXTBOX_ADD:
+                var worker = new TextboxAnimator(this, loadFrame, textParser, winCtx, faces, textboxesCopy);
+                worker.execute();
+            }
+            case AC_TEXTBOX_ADD -> {
                 flushChanges();
                 var copyBox = textboxes.get(textboxes.size() - 1);
                 var box = new Textbox(copyBox.getFace(), "");
@@ -250,40 +256,41 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                 currentTextbox = textboxes.size() - 1;
                 updateTextboxEditors();
                 updateTextboxSelectorModel();
-                break;
-            case AC_TEXTBOX_CLONE:
+            }
+            case AC_TEXTBOX_CLONE -> {
                 flushChanges();
-                box = new Textbox(textboxes.get(currentTextbox));
+                Textbox box = new Textbox(textboxes.get(currentTextbox));
                 textboxes.add(currentTextbox, box);
                 currentTextbox = textboxes.size() - 1;
                 updateTextboxEditors();
                 updateTextboxSelectorModel();
-                break;
-            case AC_TEXTBOX_INSERT_BEFORE:
+            }
+            case AC_TEXTBOX_INSERT_BEFORE -> {
                 flushChanges();
-                copyBox = textboxes.get(currentTextbox);
-                box = new Textbox(copyBox.getFace(), "");
+                Textbox copyBox = textboxes.get(currentTextbox);
+                Textbox box = new Textbox(copyBox.getFace(), "");
                 textboxes.add(currentTextbox, box);
                 updateTextboxEditors();
                 updateTextboxSelectorModel();
-                break;
-            case AC_TEXTBOX_INSERT_AFTER:
+            }
+            case AC_TEXTBOX_INSERT_AFTER -> {
                 flushChanges();
-                copyBox = textboxes.get(currentTextbox);
-                box = new Textbox(copyBox.getFace(), "");
+                Textbox copyBox = textboxes.get(currentTextbox);
+                Textbox box = new Textbox(copyBox.getFace(), "");
                 textboxes.add(++currentTextbox, box);
                 updateTextboxEditors();
                 updateTextboxSelectorModel();
-                break;
-            case AC_TEXTBOX_REMOVE:
+            }
+            case AC_TEXTBOX_REMOVE -> {
                 flushChanges();
-                box = textboxes.get(currentTextbox);
+                Textbox box = textboxes.get(currentTextbox);
                 if (!box.getText().isEmpty()) {
                     final int result = JOptionPane.showConfirmDialog(this,
                             "Are you sure you want to delete textbox " + (currentTextbox + 1) + "?", "Confirm deleting textbox",
                             JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-                    if (result != JOptionPane.YES_OPTION)
-                        break;
+                    if (result != JOptionPane.YES_OPTION) {
+                        return;
+                    }
                 }
                 textboxes.remove(box);
                 if (textboxes.size() == 0)
@@ -294,7 +301,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     currentTextbox = 0;
                 updateTextboxEditors();
                 updateTextboxSelectorModel();
-                break;
+            }
         }
     }
 
