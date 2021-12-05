@@ -3,6 +3,7 @@ package adudecalledleo.aftbg.app.component;
 import adudecalledleo.aftbg.Main;
 import adudecalledleo.aftbg.TextboxResources;
 import adudecalledleo.aftbg.app.AppResources;
+import adudecalledleo.aftbg.app.worker.TextboxAnimator;
 import adudecalledleo.aftbg.app.worker.TextboxGenerator;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.data.TextboxListSerializer;
@@ -43,6 +44,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     private static final String AC_TEXTBOX_REMOVE = "textbox.remove";
 
     private static final String AC_GENERATE = "generate";
+    private static final String AC_GENERATE_ANIMATION = "generate_animation";
 
     private final TextParser textParser;
 
@@ -133,13 +135,19 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
     private JPanel createTextboxEditorPanel() {
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(1, 1));
+        buttonPanel.setLayout(new GridLayout(1, 2));
         JButton btnGenerate = new JButton("Generate");
         btnGenerate.setActionCommand(AC_GENERATE);
         btnGenerate.addActionListener(this);
         btnGenerate.setEnabled(false);
         winCtxUpdateListeners.add(winCtx1 -> btnGenerate.setEnabled(true));
         buttonPanel.add(btnGenerate);
+        JButton btnGenerateAnim = new JButton("Generate Animation");
+        btnGenerateAnim.setActionCommand(AC_GENERATE_ANIMATION);
+        btnGenerateAnim.addActionListener(this);
+        btnGenerateAnim.setEnabled(false);
+        winCtxUpdateListeners.add(winCtx1 -> btnGenerateAnim.setEnabled(true));
+        buttonPanel.add(btnGenerateAnim);
 
         JPanel textboxPanel = new JPanel();
         textboxPanel.setLayout(new BorderLayout());
@@ -200,7 +208,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                 if (winCtx == null) {
                     JOptionPane.showMessageDialog(this,
                             "Window context hasn't been loaded yet (somehow)!",
-                            "Generate Textbox(es)", JOptionPane.ERROR_MESSAGE);
+                            "Generate", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -214,6 +222,25 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
                 var worker = new TextboxGenerator(this, loadFrame, textParser, winCtx, textboxesCopy);
                 worker.execute();
+                break;
+            case AC_GENERATE_ANIMATION:
+                if (winCtx == null) {
+                    JOptionPane.showMessageDialog(this,
+                            "Window context hasn't been loaded yet (somehow)!",
+                            "Generate Animated", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                editorPane.flushChanges(false);
+                faceSelection.flushChanges();
+
+                LoadFrame loadFrame2 = new LoadFrame("Generating...", false);
+                loadFrame2.setAlwaysOnTop(true);
+                loadFrame2.setVisible(true);
+                List<Textbox> textboxesCopy2 = new ArrayList<>(textboxes);
+
+                var worker2 = new TextboxAnimator(this, loadFrame2, textParser, winCtx, faces, textboxesCopy2);
+                worker2.execute();
                 break;
             case AC_TEXTBOX_ADD:
                 flushChanges();

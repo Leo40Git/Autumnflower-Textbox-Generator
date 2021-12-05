@@ -30,8 +30,7 @@ public final class FaceModifierNode extends ModifierNode implements AnimationCom
         @Override
         public void parse(int start, int argsStart, String args, NodeList nodes) {
             if (args == null) {
-                nodes.add(new ErrorNode(start, 2,
-                        ERROR_PREFIX + "1 argument required, face path (category/name)"));
+                nodes.add(new FaceModifierNode(start, 2, null));
                 return;
             } else if (args.isBlank()) {
                 nodes.add(new ErrorNode(start, 2 + args.length() + 2,

@@ -52,7 +52,6 @@ public sealed abstract class AnimationCommand {
         }
     }
 
-    // TODO error handling
     /**
      * Set the face image and draw a new frame.
      */
@@ -64,11 +63,15 @@ public sealed abstract class AnimationCommand {
         }
 
         public String getFacePath() {
-            return facePath;
+            return facePath == null ? "(none)" : facePath;
         }
 
         public Face getFace(FacePool from) {
-            return from.getByPath(facePath);
+            if (facePath == null) {
+                return Face.NONE;
+            } else {
+                return from.getByPath(facePath);
+            }
         }
     }
 

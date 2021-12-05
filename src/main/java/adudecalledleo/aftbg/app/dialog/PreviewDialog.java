@@ -1,5 +1,6 @@
 package adudecalledleo.aftbg.app.dialog;
 
+import adudecalledleo.aftbg.Main;
 import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.TransferableImage;
 import adudecalledleo.aftbg.logging.Logger;
@@ -56,7 +57,6 @@ public final class PreviewDialog extends JDialog {
             previewPanel.add(previewLabel);
             previewPanel.setMinimumSize(new Dimension(icon.getIconWidth(), 0));
             JScrollPane previewScroll = new JScrollPane(previewPanel);
-            add(previewScroll, BorderLayout.CENTER);
 
             JPanel buttonPanel = new JPanel();
             buttonPanel.setLayout(new GridLayout(1, 3));
@@ -79,6 +79,8 @@ public final class PreviewDialog extends JDialog {
                     "This image will have transparency</html>");
             saveButton.setPreferredSize(copyButton.getPreferredSize());
             buttonPanel.add(saveButton);
+
+            add(previewScroll, BorderLayout.CENTER);
             add(buttonPanel, BorderLayout.PAGE_END);
         }
 
@@ -147,11 +149,13 @@ public final class PreviewDialog extends JDialog {
                         ImageIO.write(image, "png", sel);
                     } catch (IOException ex) {
                         Logger.error("Error while saving image!", ex);
-                        JOptionPane.showMessageDialog(this, "An exception occurred while saving the image:\n" + ex,
+                        JOptionPane.showMessageDialog(this,
+                                "An exception occurred while saving the image:\nSee \"" + Main.LOG_NAME + "\" for more details.",
                                 "Couldn't save image!", JOptionPane.ERROR_MESSAGE);
                         break;
                     }
-                    JOptionPane.showMessageDialog(this, "Successfully saved the image to:\n" + sel.getAbsolutePath(),
+                    JOptionPane.showMessageDialog(this,
+                            "Successfully saved the image to:\n" + sel.getAbsolutePath(),
                             "Success!", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
