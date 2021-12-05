@@ -6,7 +6,7 @@ import adudecalledleo.aftbg.window.WindowContext;
 import javax.swing.*;
 import java.awt.*;
 
-public class WindowBackgroundPanel extends JPanel {
+public final class WindowBackgroundPanel extends JPanel {
     private final WindowContext winCtx;
 
     public WindowBackgroundPanel(WindowContext winCtx) {
@@ -17,10 +17,10 @@ public class WindowBackgroundPanel extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         g2d.setBackground(ColorUtils.TRANSPARENT);
         g2d.clearRect(0, 0, getWidth(), getHeight());
         winCtx.drawBackground(g2d, 0, 0, getWidth(), getHeight(), null);
-        super.paintComponent(g);
     }
 }

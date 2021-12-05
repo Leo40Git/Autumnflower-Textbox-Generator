@@ -31,13 +31,13 @@ public final class WindowBackgroundScrollPane extends JScrollPane implements Win
 
         @Override
         protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
             if (winCtx != null) {
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setBackground(ColorUtils.TRANSPARENT);
                 g2d.clearRect(0, 0, getWidth(), getHeight());
                 winCtx.drawBackground(g2d, 0, 0, getWidth(), getHeight(), null);
             }
-            super.paintComponent(g);
         }
     }
 }
