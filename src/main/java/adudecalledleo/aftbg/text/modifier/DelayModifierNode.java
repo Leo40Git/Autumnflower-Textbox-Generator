@@ -7,6 +7,8 @@ import adudecalledleo.aftbg.text.node.ModifierNode;
 import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.text.node.Span;
 
+import java.util.Arrays;
+
 public final class DelayModifierNode extends ModifierNode implements AnimationCommandNode {
     public static final char KEY = 'd';
 
@@ -48,5 +50,15 @@ public final class DelayModifierNode extends ModifierNode implements AnimationCo
 
             nodes.add(new DelayModifierNode(start, 2 + args.length() + 2, delayLength, new Span(argsStart, args.length())));
         }
+    }
+
+    @Override
+    public String toString() {
+        return "DelayModifierNode{" +
+                "delayLength=" + animCmd.getLength() +
+                ", start=" + start +
+                ", length=" + length +
+                ", argSpans=" + Arrays.toString(argSpans) +
+                '}';
     }
 }

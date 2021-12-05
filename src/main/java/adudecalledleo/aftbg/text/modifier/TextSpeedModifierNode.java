@@ -7,6 +7,8 @@ import adudecalledleo.aftbg.text.node.ModifierNode;
 import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.text.node.Span;
 
+import java.util.Arrays;
+
 public final class TextSpeedModifierNode extends ModifierNode implements AnimationCommandNode {
     public static final char KEY = 't'; // TODO find better key for this...
                                         //  maybe rename style to formatting to free up 's'?
@@ -54,5 +56,15 @@ public final class TextSpeedModifierNode extends ModifierNode implements Animati
 
             nodes.add(new TextSpeedModifierNode(start, 2 + args.length() + 2, newSpeed, new Span(argsStart, args.length())));
         }
+    }
+
+    @Override
+    public String toString() {
+        return "TextSpeedModifierNode{" +
+                "newSpeed=" + animCmd.getNewSpeed() +
+                ", start=" + start +
+                ", length=" + length +
+                ", argSpans=" + Arrays.toString(argSpans) +
+                '}';
     }
 }

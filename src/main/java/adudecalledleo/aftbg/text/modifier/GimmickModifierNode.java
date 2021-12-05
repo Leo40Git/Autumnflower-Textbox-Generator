@@ -5,6 +5,7 @@ import adudecalledleo.aftbg.text.node.ModifierNode;
 import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.text.node.Span;
 
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.function.Supplier;
 
@@ -69,7 +70,7 @@ public final class GimmickModifierNode extends ModifierNode {
                 switch (gKey.toLowerCase(Locale.ROOT)) {
                     case "fill" -> {
                         switch (value.toLowerCase(Locale.ROOT)) {
-                            case "default", "color" -> fill = GimmickSpec.Fill.COLOR;
+                            case "default", "color", "colour" -> fill = GimmickSpec.Fill.COLOR;
                             case "rainbow" -> fill = GimmickSpec.Fill.RAINBOW;
                             default -> nodes.add(unkValEF.get());
                         }
@@ -94,5 +95,15 @@ public final class GimmickModifierNode extends ModifierNode {
                     new GimmickSpec(reset, fill, flip),
                     spans));
         }
+    }
+
+    @Override
+    public String toString() {
+        return "GimmickModifierNode{" +
+                "spec=" + spec +
+                ", start=" + start +
+                ", length=" + length +
+                ", argSpans=" + Arrays.toString(argSpans) +
+                '}';
     }
 }

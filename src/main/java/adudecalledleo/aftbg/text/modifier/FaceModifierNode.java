@@ -7,6 +7,8 @@ import adudecalledleo.aftbg.text.node.ModifierNode;
 import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.text.node.Span;
 
+import java.util.Arrays;
+
 public final class FaceModifierNode extends ModifierNode implements AnimationCommandNode {
     public static final char KEY = '@';
 
@@ -43,5 +45,15 @@ public final class FaceModifierNode extends ModifierNode implements AnimationCom
 
             nodes.add(new FaceModifierNode(start, 2 + args.length() + 2, args, new Span(argsStart, args.length())));
         }
+    }
+
+    @Override
+    public String toString() {
+        return "FaceModifierNode{" +
+                "facePath=" + animCmd.getFacePath() +
+                ", start=" + start +
+                ", length=" + length +
+                ", argSpans=" + Arrays.toString(argSpans) +
+                '}';
     }
 }

@@ -6,6 +6,8 @@ import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.text.node.Span;
 import adudecalledleo.aftbg.util.TriState;
 
+import java.util.Arrays;
+
 public final class StyleModifierNode extends ModifierNode {
     public static final char KEY = 's';
 
@@ -120,5 +122,15 @@ public final class StyleModifierNode extends ModifierNode {
                     new StyleSpec(reset, bold, italic, underline, strikethrough, superscript, sizeAdjust),
                     new Span(argsStart, args.length())));
         }
+    }
+
+    @Override
+    public String toString() {
+        return "StyleModifierNode{" +
+                "spec=" + spec +
+                ", start=" + start +
+                ", length=" + length +
+                ", argSpans=" + Arrays.toString(argSpans) +
+                '}';
     }
 }
