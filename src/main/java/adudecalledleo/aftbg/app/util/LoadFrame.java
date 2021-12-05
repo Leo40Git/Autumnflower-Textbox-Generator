@@ -1,6 +1,6 @@
 package adudecalledleo.aftbg.app.util;
 
-import adudecalledleo.aftbg.Bootstrap;
+import adudecalledleo.aftbg.Main;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -25,7 +25,7 @@ public final class LoadFrame extends JFrame {
         loadLabel.setFont(loadLabel.getFont().deriveFont(Font.BOLD, 20));
         loadLabel.setHorizontalAlignment(SwingConstants.CENTER);
         loadLabel.setVerticalAlignment(SwingConstants.CENTER);
-        JLabel brandLabel = new JLabel(Bootstrap.NAME + " v" + Bootstrap.VERSION);
+        JLabel brandLabel = new JLabel(Main.NAME + " v" + Main.VERSION);
         brandLabel.setFont(brandLabel.getFont().deriveFont(Font.PLAIN, 10));
         Color brandFg = brandLabel.getForeground();
         brandLabel.setForeground(new Color(brandFg.getRed(), brandFg.getGreen(), brandFg.getBlue(), 158));

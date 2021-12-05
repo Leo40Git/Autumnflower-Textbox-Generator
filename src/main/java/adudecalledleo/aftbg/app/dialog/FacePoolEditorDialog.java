@@ -1,6 +1,6 @@
 package adudecalledleo.aftbg.app.dialog;
 
-import adudecalledleo.aftbg.Bootstrap;
+import adudecalledleo.aftbg.Main;
 import adudecalledleo.aftbg.app.render.FaceCategoryListCellRenderer;
 import adudecalledleo.aftbg.app.render.FaceListCellRenderer;
 import adudecalledleo.aftbg.app.util.DialogUtils;
@@ -104,7 +104,7 @@ public final class FacePoolEditorDialog extends JDialog {
                         Logger.error("Failed to read face pool for editing", e);
                         JOptionPane.showMessageDialog(this,
                                 "Failed to read face pool for editing!\n" + e + "\n"
-                                        + "See \"" + Bootstrap.LOG_NAME + "\" for more details.",
+                                        + "See \"" + Main.LOG_NAME + "\" for more details.",
                                 "Load Pool", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
@@ -130,7 +130,7 @@ public final class FacePoolEditorDialog extends JDialog {
                         Logger.error("Failed to write face pool", e);
                         JOptionPane.showMessageDialog(this,
                                 "Failed to write face pool!\n" + e + "\n"
-                                        + "See \"" + Bootstrap.LOG_NAME + "\" for more details.",
+                                        + "See \"" + Main.LOG_NAME + "\" for more details.",
                                 "Save Pool", JOptionPane.ERROR_MESSAGE);
                     }
                 }

@@ -1,6 +1,6 @@
 package adudecalledleo.aftbg.app;
 
-import adudecalledleo.aftbg.Bootstrap;
+import adudecalledleo.aftbg.Main;
 import adudecalledleo.aftbg.app.component.MainPanel;
 import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.game.GameDefinition;
@@ -19,7 +19,7 @@ public final class AppFrame extends JFrame {
         panel.updateGameDefinition(basePath, gameDef, faces);
         panel.updateWindowContext(winCtx);
 
-        setTitle(Bootstrap.NAME);
+        setTitle(Main.NAME);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override

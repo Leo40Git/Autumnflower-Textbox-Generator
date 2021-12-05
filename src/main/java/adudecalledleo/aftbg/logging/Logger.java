@@ -1,6 +1,6 @@
 package adudecalledleo.aftbg.logging;
 
-import adudecalledleo.aftbg.Bootstrap;
+import adudecalledleo.aftbg.Main;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -18,7 +18,7 @@ public final class Logger {
     private Logger() { }
 
     public static void init() throws IOException {
-        Path path = Paths.get(".", Bootstrap.LOG_NAME);
+        Path path = Paths.get(".", Main.LOG_NAME);
         Files.deleteIfExists(path);
         writer = Files.newBufferedWriter(path);
         Runtime.getRuntime().addShutdownHook(new Thread(Logger::shutdown));
@@ -35,7 +35,10 @@ public final class Logger {
 
     public static void log(Level level, String message, Throwable cause) {
         LocalDateTime now = LocalDateTime.now();
-        StringBuilder sb = new StringBuilder().append(TIME_FORMAT.format(now)).append(" [").append(level).append("] ").append(message);
+        StringBuilder sb = new StringBuilder().append(TIME_FORMAT.format(now)).append(' ')
+                .append("[%-20s] ".formatted(Thread.currentThread().getName()))
+                .append("[%-5s] ".formatted(level))
+                .append(message);
         if (cause != null) {
             EXCEPTION_WRITER.reset();
             cause.printStackTrace(EXCEPTION_WRITER);

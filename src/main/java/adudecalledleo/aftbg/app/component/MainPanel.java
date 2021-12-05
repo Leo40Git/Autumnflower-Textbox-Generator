@@ -1,6 +1,6 @@
 package adudecalledleo.aftbg.app.component;
 
-import adudecalledleo.aftbg.Bootstrap;
+import adudecalledleo.aftbg.Main;
 import adudecalledleo.aftbg.TextboxResources;
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.data.Textbox;
@@ -438,7 +438,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         Logger.error("Failed to write project!", e);
                         JOptionPane.showMessageDialog(MainPanel.this,
                                 "Failed to write project!\n" + e + "\n"
-                                        + "See \"" + Bootstrap.LOG_NAME + "\" for more details.\n"
+                                        + "See \"" + Main.LOG_NAME + "\" for more details.\n"
                                         + "To prevent your work from being lost, the current operation has been cancelled.",
                                 title, JOptionPane.ERROR_MESSAGE);
                         return false;
@@ -481,7 +481,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         Logger.error("Failed to read project!", e);
                         JOptionPane.showMessageDialog(MainPanel.this,
                                 "Failed to read project!\n" + e + "\n" 
-                                        + "See \"" + Bootstrap.LOG_NAME + "\" for more details.",
+                                        + "See \"" + Main.LOG_NAME + "\" for more details.",
                                 "Load Project", JOptionPane.ERROR_MESSAGE);
                         break;
                     }
@@ -503,7 +503,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         Logger.error("Failed to write project!", e);
                         JOptionPane.showMessageDialog(MainPanel.this,
                                 "Failed to write project!\n" + e + "\n" 
-                                        + "See \"" + Bootstrap.LOG_NAME + "\" for more details.",
+                                        + "See \"" + Main.LOG_NAME + "\" for more details.",
                                 "Save Project", JOptionPane.ERROR_MESSAGE);
                     }
                 }
@@ -514,7 +514,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         Logger.error("Failed to write project!", e);
                         JOptionPane.showMessageDialog(MainPanel.this,
                                 "Failed to write project!\n" + e + "\n" 
-                                        + "See \"" + Bootstrap.LOG_NAME + "\" for more details.",
+                                        + "See \"" + Main.LOG_NAME + "\" for more details.",
                                 "Save Project", JOptionPane.ERROR_MESSAGE);
                     }
                 }
@@ -529,7 +529,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                             Logger.error("Failed to reload textbox resources!", e);
                             JOptionPane.showMessageDialog(MainPanel.this,
                                     "Failed to reload textbox resources!\n" + e + "\n" 
-                                            + "See \"" + Bootstrap.LOG_NAME + "\" for more details.",
+                                            + "See \"" + Main.LOG_NAME + "\" for more details.",
                                     "Reload Game Definition", JOptionPane.ERROR_MESSAGE);
                             loadFrame.dispose();
                             MainPanel.this.requestFocus();
@@ -549,10 +549,10 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                 }
                 case AC_ABOUT -> {
                     JOptionPane.showMessageDialog(MainPanel.this,
-                            "<html>" + Bootstrap.NAME + " (" + Bootstrap.NAME_ABBR + ") version " + Bootstrap.VERSION + "<br/>"
+                            "<html>" + Main.NAME + " (" + Main.NAME_ABBR + ") version " + Main.VERSION + "<br/>"
                                     + "Made by ADudeCalledLeo"
                                     + "</html>",
-                            "About " + Bootstrap.NAME + " v" + Bootstrap.VERSION, JOptionPane.INFORMATION_MESSAGE);
+                            "About " + Main.NAME + " v" + Main.VERSION, JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         }
