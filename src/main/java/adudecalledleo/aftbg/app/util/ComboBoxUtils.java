@@ -1,10 +1,11 @@
 package adudecalledleo.aftbg.app.util;
 
-import javax.swing.*;
-import javax.swing.plaf.basic.BasicComboPopup;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
+import javax.swing.*;
+import javax.swing.plaf.basic.BasicComboPopup;
 
 public final class ComboBoxUtils {
     private ComboBoxUtils() { }
@@ -67,6 +68,20 @@ public final class ComboBoxUtils {
                 if (popupWindow != mainFrame) {
                     // for heavyweight popups, you need to pack the window
                     popupWindow.pack();
+
+                    // also reposition popup
+                    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                    Dimension newSize = popupWindow.getSize();
+                    Insets insets = popupWindow.getInsets();
+                    Point curLoc = popupWindow.getLocationOnScreen();
+                    Point boxLoc = box.getLocationOnScreen();
+
+                    Point newLoc = new Point(curLoc.x, boxLoc.y + box.getHeight() + insets.top);
+                    if (newLoc.y + newSize.height > screenSize.height) {
+                        newLoc.y = boxLoc.y - newSize.height - insets.bottom;
+                    }
+
+                    popupWindow.setLocation(newLoc);
                 }
             }
         }

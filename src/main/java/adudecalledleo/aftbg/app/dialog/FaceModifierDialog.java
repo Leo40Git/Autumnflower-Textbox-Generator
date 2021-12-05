@@ -1,6 +1,7 @@
 package adudecalledleo.aftbg.app.dialog;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -30,6 +31,8 @@ public final class FaceModifierDialog extends JDialog {
         setResizable(false);
         setContentPane(pane = new ContentPane(this, facePool, face));
         pack();
+        // HACK to get shit to display properly agh
+        setSize(new Dimension(72 * 10 + 48, 72 + 80));
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
