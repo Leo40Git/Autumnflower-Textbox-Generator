@@ -3,10 +3,10 @@ package adudecalledleo.aftbg.app.component;
 import adudecalledleo.aftbg.Main;
 import adudecalledleo.aftbg.TextboxResources;
 import adudecalledleo.aftbg.app.AppResources;
+import adudecalledleo.aftbg.app.worker.TextboxGenerator;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.data.TextboxListSerializer;
 import adudecalledleo.aftbg.app.dialog.FacePoolEditorDialog;
-import adudecalledleo.aftbg.app.dialog.PreviewDialog;
 import adudecalledleo.aftbg.app.render.TextboxListCellRenderer;
 import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.ListReorderTransferHandler;
@@ -17,8 +17,6 @@ import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.game.GameDefinition;
 import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.text.TextParser;
-import adudecalledleo.aftbg.text.TextRenderer;
-import adudecalledleo.aftbg.util.ColorUtils;
 import adudecalledleo.aftbg.window.WindowContext;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -29,7 +27,6 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -200,52 +197,23 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
             case AC_GENERATE:
+                if (winCtx == null) {
+                    JOptionPane.showMessageDialog(this,
+                            "Window context hasn't been loaded yet (somehow)!",
+                            "Generate Textbox(es)", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 editorPane.flushChanges(false);
                 faceSelection.flushChanges();
 
-                final int textboxCount = textboxes.size();
-                var image = new BufferedImage(816, 180 * textboxCount + 2 * (textboxCount - 1), BufferedImage.TYPE_INT_ARGB);
+                LoadFrame loadFrame = new LoadFrame("Generating...", false);
+                loadFrame.setAlwaysOnTop(true);
+                loadFrame.setVisible(true);
+                List<Textbox> textboxesCopy = new ArrayList<>(textboxes);
 
-                var g = image.createGraphics();
-                g.setBackground(ColorUtils.TRANSPARENT);
-                g.clearRect(0, 0, image.getWidth(), image.getHeight());
-
-                var oldClip = g.getClip();
-                boolean success = true;
-                for (int i = 0; i < textboxCount; i++) {
-                    var textbox = textboxes.get(i);
-                    var nodes = textParser.parse(textbox.getText());
-                    if (nodes.hasErrors()) {
-                        success = false;
-                        break;
-                    }
-
-                    g.setClip(0, 182 * i, 816, 180);
-                    winCtx.drawBackground(g, 4, 4 + 182 * i, 808, 172, null);
-                    g.drawImage(textbox.getFace().getImage(), 18, 18 + 182 * i, null);
-                    TextRenderer.draw(g, nodes, winCtx.getColors(),
-                            textbox.getFace().isBlank() ? 18 : 186,
-                            21 + 182 * i);
-                    winCtx.drawBorder(g, 0, 182 * i, 816, 180, null);
-                    if (i < textboxCount - 1) {
-                        winCtx.drawArrow(g, 0, 182 * i, 816, 180, 0, null);
-                    }
-                }
-                g.setClip(oldClip);
-
-                g.dispose();
-
-                if (success) {
-                    var dialog = new PreviewDialog((Frame) SwingUtilities.getWindowAncestor(this), image);
-                    dialog.setLocationRelativeTo(null);
-                    dialog.setVisible(true);
-                } else {
-                    // TODO more detailed error message
-                    JOptionPane.showMessageDialog(this,
-                            "Seems like one or more of your textboxes have errors!\n"
-                                    + "Correct this, then try generating again.",
-                            "Generate textbox(es)", JOptionPane.ERROR_MESSAGE);
-                }
+                var worker = new TextboxGenerator(this, loadFrame, textParser, winCtx, textboxesCopy);
+                worker.execute();
                 break;
             case AC_TEXTBOX_ADD:
                 flushChanges();
