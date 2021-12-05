@@ -17,7 +17,7 @@ public final class RainbowPaint {
 
     public static Paint get() {
         if (identityPaint == null) {
-            identityPaint = createIdentity();
+            identityPaint = create(new AffineTransform());
         }
         return identityPaint;
     }
@@ -26,20 +26,10 @@ public final class RainbowPaint {
         if (gradientTransform.isIdentity()) {
             return get();
         }
-        generateParams();
-        return new LinearGradientPaint(new Point2D.Double(0, 0), new Point2D.Double(50, 50),
-                fractions, colors, MultipleGradientPaint.CycleMethod.REPEAT, MultipleGradientPaint.ColorSpaceType.SRGB,
-                gradientTransform);
+        return create(gradientTransform);
     }
 
-    private static Paint createIdentity() {
-        generateParams();
-        return new LinearGradientPaint(new Point2D.Double(0, 0), new Point2D.Double(50, 50),
-                fractions, colors, MultipleGradientPaint.CycleMethod.REPEAT, MultipleGradientPaint.ColorSpaceType.SRGB,
-                new AffineTransform());
-    }
-
-    private static void generateParams() {
+    private static Paint create(AffineTransform transform) {
         if (!paramsGenerated) {
             colors = new Color[COLOR_STOPS];
             fractions = new float[COLOR_STOPS];
@@ -53,5 +43,9 @@ public final class RainbowPaint {
 
             paramsGenerated = true;
         }
+
+        return new LinearGradientPaint(new Point2D.Double(0, 0), new Point2D.Double(50, 50),
+                fractions, colors, MultipleGradientPaint.CycleMethod.REPEAT, MultipleGradientPaint.ColorSpaceType.SRGB,
+                transform);
     }
 }
