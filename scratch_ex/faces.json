@@ -29,7 +29,8 @@
   },
   "Sixty": {
     "entries": {
-      "Angry": "faces/sixty/angry.png"
+      "Angry": "faces/sixty/angry.png",
+      "Seriously?": "faces/sixty/srsly.png"
     }
   }
 }
