@@ -37,7 +37,6 @@ public sealed abstract class AnimationCommand {
         }
     }
 
-    // TODO implement this
     /**
      * Set the text speed - every N frames, the next character will be appended.
      */

@@ -10,6 +10,7 @@ import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.TextRenderer;
 import adudecalledleo.aftbg.text.animate.AnimationCommand;
 import adudecalledleo.aftbg.text.animate.TextAnimator;
+import adudecalledleo.aftbg.text.node.ErrorNode;
 import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.util.GifFactory;
 import adudecalledleo.aftbg.window.WindowContext;
@@ -105,9 +106,24 @@ public final class Bootstrap {
             System.exit(1);
             return;
         }
+        int textSpeed = 5;
 
         TextParser parser = new TextParser();
-        NodeList nodes = parser.parse("Mercia:\n\\c[25]Hold on.\n\\d[5]\\@[Mercia/Awkward]I need to pee.");
+        NodeList nodes = parser.parse("Mercia:\n\\c[25]Hold on.\n\\t[20]What?");
+        if (nodes.hasErrors()) {
+            StringBuilder errBuilder = new StringBuilder("Got ").append(nodes.getErrors().size()).append(" error(s):");
+            for (ErrorNode node : nodes.getErrors()) {
+                errBuilder.append("- ").append(node).append(System.lineSeparator());
+            }
+            errBuilder.append("...oops?");
+            Logger.error(errBuilder.toString());
+            System.exit(1);
+            loadFrame.setAlwaysOnTop(false);
+            JOptionPane.showMessageDialog(null,
+                    "Failed to parse text into nodes!\nSee \"" + LOG_NAME + "\" for more details.",
+                    "Animation Test", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         TextAnimator animator = new TextAnimator(nodes);
 
         WindowContext winCtx = rsrc.windowContext();
@@ -135,6 +151,9 @@ public final class Bootstrap {
                 for (int i = 0; i < addDelayCmd.getLength(); i++) {
                     frames.add(lastFrame);
                 }
+            } else if (command instanceof AnimationCommand.SetSpeed setSpeedCmd) {
+                Logger.trace("Changing speed from %d to %d".formatted(textSpeed, setSpeedCmd.getNewSpeed()));
+                textSpeed = setSpeedCmd.getNewSpeed();
             }
 
             if (drawFrame) {
@@ -150,7 +169,9 @@ public final class Bootstrap {
                 TextRenderer.draw(g, animator.getNodes(), winCtx.getColors(), 186, 21);
                 winCtx.drawBorder(g, 0, 0, 816, 180, null);
                 g.dispose();
-                frames.add(img);
+                for (int i = 0; i <= textSpeed; i++) {
+                    frames.add(img);
+                }
             }
         }
 
@@ -163,7 +184,7 @@ public final class Bootstrap {
         }
 
         // repeat last frame for 2 seconds
-        final int repeatCount = GifFactory.toFrames(2, 5);
+        final int repeatCount = GifFactory.toFrames(2, 1);
         Logger.trace("Repeating last frame %d times".formatted(repeatCount));
         BufferedImage lastFrame = frames.get(frames.size() - 1);
         for (int i = 0; i < repeatCount; i++) {
@@ -172,7 +193,7 @@ public final class Bootstrap {
 
         Path gifPath = outPath.resolve("output.gif");
         try (OutputStream out = Files.newOutputStream(gifPath)) {
-            GifFactory.write(frames, 5, "Created using Autumnflower Textbox Generator", out);
+            GifFactory.write(frames, 1, "Created using Autumnflower Textbox Generator", out);
         } catch (IOException e) {
             Logger.error("Failed to write GIF", e);
             loadFrame.setAlwaysOnTop(false);

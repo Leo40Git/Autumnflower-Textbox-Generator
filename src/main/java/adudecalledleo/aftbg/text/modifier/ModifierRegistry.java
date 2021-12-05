@@ -14,6 +14,7 @@ public final class ModifierRegistry {
         register(GimmickModifierNode.KEY, new GimmickModifierNode.Parser());
         register(FaceModifierNode.KEY, new FaceModifierNode.Parser());
         register(DelayModifierNode.KEY, new DelayModifierNode.Parser());
+        register(TextSpeedModifierNode.KEY, new TextSpeedModifierNode.Parser());
     }
 
     public void register(char c, ModifierParser parser) {
