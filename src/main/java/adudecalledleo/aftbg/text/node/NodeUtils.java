@@ -13,15 +13,16 @@ public final class NodeUtils {
         StringBuilder sb = new StringBuilder();
         for (var node : nodes) {
             if (node instanceof TextNode textNode) {
-                sb.append(textNode.getContents());
-                len += textNode.getLength();
+                String contents = textNode.getContents();
+                sb.append(contents);
+                len += contents.length();
             } else if (node instanceof LineBreakNode) {
                 sb.append(' ');
                 len++;
             }
             if (len >= maxLength) {
-                sb.setLength(maxLength - 3);
-                sb.append("...");
+                sb.setLength(maxLength - 1);
+                sb.append('\u2026' /* "..." but one character */);
                 break;
             }
         }
