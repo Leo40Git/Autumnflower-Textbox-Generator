@@ -10,13 +10,7 @@ java {
 }
 
 application {
-    mainClass = 'adudecalledleo.aftbg.Bootstrap'
-}
-
-jar {
-    manifest {
-        attributes 'Main-Class': 'adudecalledleo.aftbg.Bootstrap'
-    }
+    mainClass = 'adudecalledleo.aftbg.Main'
 }
 
 runtime {
@@ -35,7 +29,6 @@ tasks.jpackageImage.doLast {
 }
 
 group 'adudecalledleo'
-version '0.1.0'
 
 repositories {
     mavenCentral()
@@ -44,9 +37,18 @@ repositories {
 dependencies {
     compileOnly 'org.jetbrains:annotations:22.0.0'
     implementation "com.google.code.gson:gson:${project.gson_version}"
+    implementation "de.skuzzle:semantic-version:${project.semver_version}"
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("build_info.json") {
+        expand "version": project.version
+    }
 }
 
 test {

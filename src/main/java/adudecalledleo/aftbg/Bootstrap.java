@@ -22,8 +22,18 @@ public record Bootstrap(LoadFrame loadFrame, Path basePath, TextboxResources tex
         }
 
         try {
+            BuildInfo.load();
+        } catch (Exception e) {
+            System.err.println("failed to load build info! this build is probably hosed");
+            e.printStackTrace();
+            System.exit(1);
+            return null;
+        }
+
+        try {
             Logger.init();
-        } catch (IOException e) {
+        } catch (Exception e) {
+            System.err.println("failed to initialize logger!");
             e.printStackTrace();
             System.exit(1);
             return null;
@@ -45,7 +55,7 @@ public record Bootstrap(LoadFrame loadFrame, Path basePath, TextboxResources tex
             Logger.error("Failed to load app resources!", e);
             loadFrame.setAlwaysOnTop(false);
             JOptionPane.showMessageDialog(null,
-                    "Failed to load app resources!\nSee \"" + Main.LOG_NAME + "\" for more details.",
+                    "Failed to load app resources!\nSee \"" + Logger.logFile() + "\" for more details.",
                     "Failed to launch", JOptionPane.ERROR_MESSAGE);
             System.exit(1);
             return null;
@@ -60,7 +70,7 @@ public record Bootstrap(LoadFrame loadFrame, Path basePath, TextboxResources tex
             Logger.error("Failed to load textbox resources!", e);
             loadFrame.setAlwaysOnTop(false);
             JOptionPane.showMessageDialog(null,
-                    "Failed to load textbox resources!\nSee \"" + Main.LOG_NAME + "\" for more details.",
+                    "Failed to load textbox resources!\nSee \"" + Logger.logFile() + "\" for more details.",
                     "Failed to launch", JOptionPane.ERROR_MESSAGE);
             System.exit(1);
             return null;

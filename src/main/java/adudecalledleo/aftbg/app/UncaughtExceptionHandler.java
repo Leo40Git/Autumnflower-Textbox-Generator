@@ -1,10 +1,9 @@
 package adudecalledleo.aftbg.app;
 
-import adudecalledleo.aftbg.Main;
+import javax.swing.*;
+
 import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.logging.Logger;
-
-import javax.swing.*;
 
 public final class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
     private static final String[] OPTIONS = { "Continue", "Abort" };
@@ -15,7 +14,7 @@ public final class UncaughtExceptionHandler implements Thread.UncaughtExceptionH
     public void uncaughtException(Thread t, Throwable e) {
         Logger.error("Uncaught exception in thread \"" + t.getName() + "\"", e);
         int option = DialogUtils.showCustomConfirmDialog(null,
-                "An uncaught exception has occurred!\nSee \"" + Main.LOG_NAME + "\" for more details.",
+                "An uncaught exception has occurred!\nSee \"" + Logger.logFile() + "\" for more details.",
                 "Uncaught Exception!", OPTIONS, JOptionPane.ERROR_MESSAGE);
         switch (option) {
         default:

@@ -13,7 +13,7 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.event.*;
 
-import adudecalledleo.aftbg.Main;
+import adudecalledleo.aftbg.BuildInfo;
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.data.TextboxListSerializer;
@@ -442,7 +442,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         Logger.error("Failed to write project!", e);
                         JOptionPane.showMessageDialog(MainPanel.this,
                                 "Failed to write project!\n" + e + "\n"
-                                        + "See \"" + Main.LOG_NAME + "\" for more details.\n"
+                                        + "See \"" + Logger.logFile() + "\" for more details.\n"
                                         + "To prevent your work from being lost, the current operation has been cancelled.",
                                 title, JOptionPane.ERROR_MESSAGE);
                         return false;
@@ -485,7 +485,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         Logger.error("Failed to read project!", e);
                         JOptionPane.showMessageDialog(MainPanel.this,
                                 "Failed to read project!\n" + e + "\n" 
-                                        + "See \"" + Main.LOG_NAME + "\" for more details.",
+                                        + "See \"" + Logger.logFile() + "\" for more details.",
                                 "Load Project", JOptionPane.ERROR_MESSAGE);
                         break;
                     }
@@ -507,7 +507,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         Logger.error("Failed to write project!", e);
                         JOptionPane.showMessageDialog(MainPanel.this,
                                 "Failed to write project!\n" + e + "\n" 
-                                        + "See \"" + Main.LOG_NAME + "\" for more details.",
+                                        + "See \"" + Logger.logFile() + "\" for more details.",
                                 "Save Project", JOptionPane.ERROR_MESSAGE);
                     }
                 }
@@ -518,7 +518,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         Logger.error("Failed to write project!", e);
                         JOptionPane.showMessageDialog(MainPanel.this,
                                 "Failed to write project!\n" + e + "\n" 
-                                        + "See \"" + Main.LOG_NAME + "\" for more details.",
+                                        + "See \"" + Logger.logFile() + "\" for more details.",
                                 "Save Project", JOptionPane.ERROR_MESSAGE);
                     }
                 }
@@ -535,10 +535,11 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                 }
                 case AC_ABOUT -> {
                     JOptionPane.showMessageDialog(MainPanel.this,
-                            "<html>" + Main.NAME + " (" + Main.NAME_ABBR + ") version " + Main.VERSION + "<br/>"
-                                    + Main.CREDITS_HTML
-                                    + "</html>",
-                            "About " + Main.NAME + " v" + Main.VERSION, JOptionPane.INFORMATION_MESSAGE);
+                            "<html>" + BuildInfo.name() + " (" + BuildInfo.abbreviatedName() + ") "
+                            + "version " + BuildInfo.version() + "<br/>"
+                            + String.join("<br/>", BuildInfo.credits())
+                            + "</html>",
+                            "About " + BuildInfo.name() + " v" + BuildInfo.version(), JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         }

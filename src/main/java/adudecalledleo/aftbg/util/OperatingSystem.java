@@ -42,8 +42,8 @@ public enum OperatingSystem {
             Logger.error("System property \"os.name\" has no value! Something is seriously wrong with this JVM!");
             return UNKNOWN;
         }
-        osName = osName.toLowerCase(Locale.ROOT);
 
+        osName = osName.toLowerCase(Locale.ROOT);
         if (osName.contains("mac") || osName.contains("darwin")) {
             return MAC;
         } else if (osName.contains("win")) {
@@ -53,6 +53,7 @@ public enum OperatingSystem {
         } else if (osName.contains("sunos")) {
             return SOLARIS;
         }
+
         Logger.warn("Unknown (and possibly unsupported) operating system, os.name is \"%s\""
                 .formatted(System.getProperty("os.name")));
         return UNKNOWN;

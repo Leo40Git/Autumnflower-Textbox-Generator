@@ -1,39 +1,16 @@
 package adudecalledleo.aftbg.app.dialog;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JColorChooser;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.WindowConstants;
-import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.*;
+import javax.swing.filechooser.*;
 
-import adudecalledleo.aftbg.Main;
 import adudecalledleo.aftbg.app.util.DialogUtils;
-import adudecalledleo.aftbg.app.util.TransferableImage;
 import adudecalledleo.aftbg.logging.Logger;
-import adudecalledleo.aftbg.util.OperatingSystem;
 
 public final class AnimatedPreviewDialog extends JDialog {
     private final byte[] imageData;
@@ -109,7 +86,7 @@ public final class AnimatedPreviewDialog extends JDialog {
                 } catch (IOException ex) {
                     Logger.error("Error while saving animation!", ex);
                     JOptionPane.showMessageDialog(this,
-                            "An exception occurred while saving the animation:\nSee \"" + Main.LOG_NAME + "\" for more details.",
+                            "An exception occurred while saving the animation:\nSee \"" + Logger.logFile() + "\" for more details.",
                             "Couldn't save image!", JOptionPane.ERROR_MESSAGE);
                     return;
                 }

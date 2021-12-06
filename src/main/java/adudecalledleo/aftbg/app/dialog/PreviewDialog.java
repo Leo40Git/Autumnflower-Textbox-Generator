@@ -150,7 +150,7 @@ public final class PreviewDialog extends JDialog {
                     } catch (IOException ex) {
                         Logger.error("Error while saving image!", ex);
                         JOptionPane.showMessageDialog(this,
-                                "An exception occurred while saving the image:\nSee \"" + Main.LOG_NAME + "\" for more details.",
+                                "An exception occurred while saving the image:\nSee \"" + Logger.logFile() + "\" for more details.",
                                 "Couldn't save image!", JOptionPane.ERROR_MESSAGE);
                         break;
                     }

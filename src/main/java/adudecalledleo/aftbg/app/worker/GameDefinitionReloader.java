@@ -2,11 +2,8 @@ package adudecalledleo.aftbg.app.worker;
 
 import java.nio.file.Path;
 
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 
-import adudecalledleo.aftbg.Main;
 import adudecalledleo.aftbg.TextboxResources;
 import adudecalledleo.aftbg.app.component.MainPanel;
 import adudecalledleo.aftbg.app.util.LoadFrame;
@@ -33,7 +30,7 @@ public final class GameDefinitionReloader extends SwingWorker<Void, Void> {
             loadFrame.setAlwaysOnTop(false);
             JOptionPane.showMessageDialog(panel,
                     "Failed to reload textbox resources!\n" + e + "\n"
-                            + "See \"" + Main.LOG_NAME + "\" for more details.",
+                            + "See \"" + Logger.logFile() + "\" for more details.",
                     "Reload Game Definition", JOptionPane.ERROR_MESSAGE);
             loadFrame.dispose();
             panel.requestFocus();

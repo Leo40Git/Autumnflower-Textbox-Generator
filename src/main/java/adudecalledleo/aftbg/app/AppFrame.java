@@ -1,17 +1,17 @@
 package adudecalledleo.aftbg.app;
 
-import adudecalledleo.aftbg.Main;
+import java.awt.event.*;
+import java.io.IOException;
+import java.nio.file.Path;
+
+import javax.swing.*;
+
+import adudecalledleo.aftbg.BuildInfo;
 import adudecalledleo.aftbg.app.component.MainPanel;
 import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.game.GameDefinition;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.window.WindowContext;
-
-import javax.swing.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.IOException;
-import java.nio.file.Path;
 
 public final class AppFrame extends JFrame {
     public AppFrame(Path basePath, GameDefinition gameDef, WindowContext winCtx, FacePool faces, TextParser parser) {
@@ -19,7 +19,7 @@ public final class AppFrame extends JFrame {
         panel.updateGameDefinition(basePath, gameDef, faces);
         panel.updateWindowContext(winCtx);
 
-        setTitle(Main.NAME);
+        setTitle(BuildInfo.name());
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override

@@ -1,6 +1,6 @@
 package adudecalledleo.aftbg.logging;
 
-import adudecalledleo.aftbg.Main;
+import adudecalledleo.aftbg.BuildInfo;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -8,17 +8,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public final class Logger {
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss,SSS");
     private static final ExceptionWriter EXCEPTION_WRITER = new ExceptionWriter("\t");
 
+    private static String logFile;
     private static BufferedWriter writer;
 
     private Logger() { }
 
     public static void init() throws IOException {
-        Path path = Paths.get(".", Main.LOG_NAME);
+        logFile = BuildInfo.abbreviatedName().toLowerCase(Locale.ROOT) + ".log";
+        Path path = Paths.get(".", logFile);
         Files.deleteIfExists(path);
         writer = Files.newBufferedWriter(path);
         Runtime.getRuntime().addShutdownHook(new Thread(Logger::shutdown));
@@ -31,6 +34,10 @@ public final class Logger {
             } catch (IOException ignored) { }
             writer = null;
         }
+    }
+
+    public static String logFile() {
+        return logFile;
     }
 
     public static void log(Level level, String message, Throwable cause) {

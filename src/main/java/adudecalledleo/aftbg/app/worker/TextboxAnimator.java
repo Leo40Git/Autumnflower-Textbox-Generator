@@ -1,18 +1,14 @@
 package adudecalledleo.aftbg.app.worker;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Frame;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
+import java.awt.*;
+import java.awt.image.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
-import adudecalledleo.aftbg.Main;
+import adudecalledleo.aftbg.BuildInfo;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.dialog.AnimatedPreviewDialog;
 import adudecalledleo.aftbg.app.util.LoadFrame;
@@ -27,7 +23,6 @@ import adudecalledleo.aftbg.util.GifFactory;
 import adudecalledleo.aftbg.window.WindowContext;
 
 public final class TextboxAnimator extends AbstractTextboxWorker {
-    private static final String COMMENT = "Created using %s v%s".formatted(Main.NAME, Main.VERSION);
     private static final int LAST_FRAME_REPEAT = GifFactory.toFrames(2, 1);
 
     private final FacePool facePool;
@@ -131,12 +126,13 @@ public final class TextboxAnimator extends AbstractTextboxWorker {
             Logger.trace("Creating GIF data");
             byte[] imageData;
             try {
-                imageData = GifFactory.create(frames, 1, COMMENT);
+                imageData = GifFactory.create(frames, 1,
+                        "Created using %s v%s".formatted(BuildInfo.name(), BuildInfo.version()));
             } catch (IOException e) {
                 Logger.error("Failed to generate GIF data", e);
                 loadFrame.setAlwaysOnTop(false);
                 JOptionPane.showMessageDialog(null,
-                        "Failed to generate GIF data!\nSee \"" + Main.LOG_NAME + "\" for more details.",
+                        "Failed to generate GIF data!\nSee \"" + Logger.logFile() + "\" for more details.",
                         "Animation Test", JOptionPane.ERROR_MESSAGE);
                 loadFrame.dispose();
                 return null;

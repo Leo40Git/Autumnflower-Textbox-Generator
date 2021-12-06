@@ -1,12 +1,12 @@
 package adudecalledleo.aftbg.app.util;
 
-import adudecalledleo.aftbg.Main;
+import java.awt.*;
+import java.awt.event.*;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.border.*;
+
+import adudecalledleo.aftbg.BuildInfo;
 
 public final class LoadFrame extends JFrame {
     private static final class AnimHandler implements ActionListener {
@@ -66,7 +66,7 @@ public final class LoadFrame extends JFrame {
         animLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
         animLabel.setHorizontalAlignment(SwingConstants.CENTER);
         animLabel.setVerticalAlignment(SwingConstants.CENTER);
-        JLabel brandLabel = new JLabel(Main.NAME + " v" + Main.VERSION);
+        JLabel brandLabel = new JLabel(BuildInfo.name() + " v" + BuildInfo.version());
         brandLabel.setFont(brandLabel.getFont().deriveFont(Font.PLAIN, 10));
         Color brandFg = brandLabel.getForeground();
         brandLabel.setForeground(new Color(brandFg.getRed(), brandFg.getGreen(), brandFg.getBlue(), 158));

@@ -4,11 +4,12 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
+import adudecalledleo.aftbg.util.ResourceUtils;
 
 public final class AppResources {
     public enum Icons {
@@ -33,16 +34,8 @@ public final class AppResources {
         loadIcons();
     }
 
-    private static InputStream getResource(String path) throws IOException {
-        var in = AppResources.class.getResourceAsStream(path);
-        if (in == null) {
-            throw new FileNotFoundException(path);
-        }
-        return in;
-    }
-
     private static void loadFont() throws IOException {
-        try (InputStream in = getResource("/font/VL-Gothic-Regular.ttf")) {
+        try (InputStream in = ResourceUtils.getResourceAsStream(AppResources.class, "/font/VL-Gothic-Regular.ttf")) {
             font = Font.createFont(Font.TRUETYPE_FONT, in);
         } catch (FontFormatException e) {
             throw new IOException("Embedded font is invalid", e);
@@ -53,7 +46,7 @@ public final class AppResources {
 
     private static void loadIcons() throws IOException {
         BufferedImage iconSheet;
-        try (InputStream in = getResource("/icons.png")) {
+        try (InputStream in = ResourceUtils.getResourceAsStream(AppResources.class, "/icons.png")) {
             iconSheet = ImageIO.read(in);
         }
         icons = new HashMap<>();
