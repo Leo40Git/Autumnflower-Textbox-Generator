@@ -14,7 +14,13 @@ import adudecalledleo.aftbg.app.util.LoadFrame;
 import adudecalledleo.aftbg.logging.Logger;
 
 public record Bootstrap(LoadFrame loadFrame, Path basePath, TextboxResources textboxResources) {
+    private static boolean done = false;
+
     public static Bootstrap perform() {
+        if (done) {
+            throw new IllegalStateException("Tried to perform bootstrap after it was already performed!");
+        }
+
         try {
             Logger.init();
         } catch (IOException e) {
@@ -60,6 +66,7 @@ public record Bootstrap(LoadFrame loadFrame, Path basePath, TextboxResources tex
             return null;
         }
 
+        done = true;
         return new Bootstrap(loadFrame, basePath, rsrc);
     }
 }

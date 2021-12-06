@@ -3,7 +3,7 @@ package adudecalledleo.aftbg;
 import java.nio.file.Path;
 import java.util.Locale;
 
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 import adudecalledleo.aftbg.app.AppFrame;
 import adudecalledleo.aftbg.app.util.LoadFrame;
@@ -13,6 +13,9 @@ public final class Main {
     public static final String NAME = "Autumnflower Textbox Generator";
     public static final String NAME_ABBR = "AFTBG";
     public static final String VERSION = "0.1.0"; // TODO replace with comparable type
+    public static final String CREDITS_HTML = "Made by ADudeCalledLeo<br/>" +
+                                              "Autumnflower by Kazerad<br/>" +
+                                              "Face images by DPronin";
 
     public static final String LOG_NAME = NAME_ABBR.toLowerCase(Locale.ROOT) + ".log";
 

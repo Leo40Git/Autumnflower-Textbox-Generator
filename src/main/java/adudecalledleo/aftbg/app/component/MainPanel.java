@@ -1,10 +1,20 @@
 package adudecalledleo.aftbg.app.component;
 
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.*;
+import javax.swing.event.*;
+
 import adudecalledleo.aftbg.Main;
-import adudecalledleo.aftbg.TextboxResources;
 import adudecalledleo.aftbg.app.AppResources;
-import adudecalledleo.aftbg.app.worker.TextboxAnimator;
-import adudecalledleo.aftbg.app.worker.TextboxGenerator;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.data.TextboxListSerializer;
 import adudecalledleo.aftbg.app.dialog.FacePoolEditorDialog;
@@ -13,6 +23,9 @@ import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.ListReorderTransferHandler;
 import adudecalledleo.aftbg.app.util.LoadFrame;
 import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
+import adudecalledleo.aftbg.app.worker.GameDefinitionReloader;
+import adudecalledleo.aftbg.app.worker.TextboxAnimator;
+import adudecalledleo.aftbg.app.worker.TextboxGenerator;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.game.GameDefinition;
@@ -21,20 +34,6 @@ import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.window.WindowContext;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 
 public final class MainPanel extends JPanel implements ActionListener, ListSelectionListener, ListReorderTransferHandler.ReorderCallback {
     private static final String AC_TEXTBOX_ADD = "textbox.add";
@@ -526,26 +525,8 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                 case AC_RELOAD_DEF -> {
                     LoadFrame loadFrame = new LoadFrame("Reloading...", false);
 
-                    SwingUtilities.invokeLater(() -> {
-                        TextboxResources rsrc;
-                        try {
-                            rsrc = TextboxResources.load(basePath);
-                        } catch (TextboxResources.LoadException e) {
-                            Logger.error("Failed to reload textbox resources!", e);
-                            JOptionPane.showMessageDialog(MainPanel.this,
-                                    "Failed to reload textbox resources!\n" + e + "\n" 
-                                            + "See \"" + Main.LOG_NAME + "\" for more details.",
-                                    "Reload Game Definition", JOptionPane.ERROR_MESSAGE);
-                            loadFrame.dispose();
-                            MainPanel.this.requestFocus();
-                            return;
-                        }
-
-                        updateGameDefinition(basePath, rsrc.gameDefinition(), rsrc.facePool());
-                        updateWindowContext(rsrc.windowContext());
-                        loadFrame.dispose();
-                        MainPanel.this.requestFocus();
-                    });
+                    var worker = new GameDefinitionReloader(MainPanel.this, loadFrame, basePath);
+                    worker.execute();
                 }
                 case AC_FACE_POOL_EDITOR -> {
                     var fpd = new FacePoolEditorDialog((Frame) SwingUtilities.getWindowAncestor(this));
@@ -555,7 +536,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                 case AC_ABOUT -> {
                     JOptionPane.showMessageDialog(MainPanel.this,
                             "<html>" + Main.NAME + " (" + Main.NAME_ABBR + ") version " + Main.VERSION + "<br/>"
-                                    + "Made by ADudeCalledLeo"
+                                    + Main.CREDITS_HTML
                                     + "</html>",
                             "About " + Main.NAME + " v" + Main.VERSION, JOptionPane.INFORMATION_MESSAGE);
                 }
