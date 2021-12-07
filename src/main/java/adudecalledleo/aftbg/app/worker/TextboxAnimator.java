@@ -23,6 +23,7 @@ import adudecalledleo.aftbg.util.GifFactory;
 import adudecalledleo.aftbg.window.WindowContext;
 
 public final class TextboxAnimator extends AbstractTextboxWorker {
+    private static final int TEMP_BOX_BARRIER_LENGTH = GifFactory.toFrames(1, 1);
     private static final int LAST_FRAME_REPEAT = GifFactory.toFrames(2, 1);
 
     private final FacePool facePool;
@@ -104,6 +105,16 @@ public final class TextboxAnimator extends AbstractTextboxWorker {
 
             if (i < textboxCount - 1) {
                 // TODO add arrow animation between textboxes
+                // for now we'll do this
+                BufferedImage img = new BufferedImage(816, 180, BufferedImage.TYPE_INT_RGB);
+                Graphics2D g = img.createGraphics();
+                g.setBackground(Color.BLACK);
+                g.clearRect(0, 0, 816, 180);
+                drawTextbox(g, 0, 0, face, sourceNodes, 0);
+                g.dispose();
+                for (int j = 0; j <= TEMP_BOX_BARRIER_LENGTH; j++) {
+                    frames.add(img);
+                }
             }
         }
 
