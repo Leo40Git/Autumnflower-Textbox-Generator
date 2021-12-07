@@ -9,6 +9,7 @@ import java.io.IOException;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 
+import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.logging.Logger;
 
@@ -20,6 +21,7 @@ public final class AnimatedPreviewDialog extends JDialog {
         super(owner);
         this.imageData = imageData;
         image = Toolkit.getDefaultToolkit().createImage(imageData);
+        setIconImage(AppResources.Icons.PREVIEW.getAsImage());
         setTitle("Preview generated animation");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);

@@ -16,6 +16,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.component.FaceSelectionPanel;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FacePool;
@@ -25,6 +26,7 @@ public final class FaceModifierDialog extends JDialog {
 
     public FaceModifierDialog(Frame owner, FacePool facePool, Face face) {
         super(owner);
+        setIconImage(AppResources.Icons.MOD_FACE.getAsImage());
         setTitle("Add face modifier");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);

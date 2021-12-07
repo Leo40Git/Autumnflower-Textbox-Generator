@@ -6,11 +6,14 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import adudecalledleo.aftbg.app.AppResources;
+
 public final class DelayModifierDialog extends JDialog {
     private final ContentPane pane;
 
     public DelayModifierDialog(Frame owner) {
         super(owner);
+        setIconImage(AppResources.Icons.MOD_DELAY.getAsImage());
         setTitle("Add face modifier");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);

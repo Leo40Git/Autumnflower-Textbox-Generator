@@ -14,7 +14,7 @@ import adudecalledleo.aftbg.util.ResourceUtils;
 public final class AppResources {
     public enum Icons {
         TEXTBOX_ADD, TEXTBOX_REMOVE, TEXTBOX_INSERT_BEFORE, TEXTBOX_INSERT_AFTER, TEXTBOX_CLONE, EDIT_FACE_POOL,
-        MOD_STYLE, MOD_COLOR, CUT, COPY, PASTE, MOD_FACE, MOD_DELAY, MOD_TEXT_SPEED, MOD_GIMMICK;
+        MOD_STYLE, MOD_COLOR, CUT, COPY, PASTE, MOD_FACE, MOD_DELAY, MOD_TEXT_SPEED, MOD_GIMMICK, PREVIEW;
 
         public ImageIcon get() {
             if (icons == null) {
@@ -22,9 +22,17 @@ public final class AppResources {
             }
             return icons.get(this);
         }
+
+        public Image getAsImage() {
+            if (iconImages == null) {
+                throw new IllegalStateException("Icons haven't been loaded!");
+            }
+            return iconImages.get(this);
+        }
     }
 
     private static Font font;
+    private static Map<Icons, Image> iconImages;
     private static Map<Icons, ImageIcon> icons;
 
     private AppResources() { }
@@ -49,10 +57,13 @@ public final class AppResources {
         try (InputStream in = ResourceUtils.getResourceAsStream(AppResources.class, "/icons.png")) {
             iconSheet = ImageIO.read(in);
         }
+        iconImages = new HashMap<>();
         icons = new HashMap<>();
         int ix = 0, iy = 0;
         for (Icons icon : Icons.values()) {
-            icons.put(icon, new ImageIcon(iconSheet.getSubimage(ix, iy, 16, 16), icon.name()));
+            Image image = iconSheet.getSubimage(ix, iy, 16, 16);
+            iconImages.put(icon, image);
+            icons.put(icon, new ImageIcon(image, icon.name()));
             ix += 16;
             if (ix == iconSheet.getWidth()) {
                 ix = 0;

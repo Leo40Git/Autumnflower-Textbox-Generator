@@ -1,6 +1,7 @@
 package adudecalledleo.aftbg.app.dialog;
 
 import adudecalledleo.aftbg.Main;
+import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.render.FaceCategoryListCellRenderer;
 import adudecalledleo.aftbg.app.render.FaceListCellRenderer;
 import adudecalledleo.aftbg.app.util.DialogUtils;
@@ -34,6 +35,7 @@ public final class FacePoolEditorDialog extends JDialog {
         super(owner);
         filePath = null;
         pool = null;
+        setIconImage(AppResources.Icons.EDIT_FACE_POOL.getAsImage());
         setTitle("Edit face pool");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);

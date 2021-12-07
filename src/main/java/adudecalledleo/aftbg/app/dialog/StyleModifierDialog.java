@@ -1,5 +1,6 @@
 package adudecalledleo.aftbg.app.dialog;
 
+import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.text.TextRenderer;
 import adudecalledleo.aftbg.text.modifier.StyleSpec;
 import adudecalledleo.aftbg.util.TriState;
@@ -18,6 +19,7 @@ public final class StyleModifierDialog extends JDialog {
     
     public StyleModifierDialog(Frame owner, StyleSpec spec) {
         super(owner);
+        setIconImage(AppResources.Icons.MOD_STYLE.getAsImage());
         setTitle("Add style modifier");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);

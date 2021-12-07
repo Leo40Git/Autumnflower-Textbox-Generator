@@ -1,5 +1,6 @@
 package adudecalledleo.aftbg.app.dialog;
 
+import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.component.WindowBackgroundPanel;
 import adudecalledleo.aftbg.text.TextRenderer;
 import adudecalledleo.aftbg.window.WindowColors;
@@ -60,6 +61,7 @@ public final class ColorModifierDialog extends JDialog {
 
     public ColorModifierDialog(Frame owner, WindowContext winCtx) {
         super(owner);
+        setIconImage(AppResources.Icons.MOD_COLOR.getAsImage());
         setTitle("Add color modifier");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);

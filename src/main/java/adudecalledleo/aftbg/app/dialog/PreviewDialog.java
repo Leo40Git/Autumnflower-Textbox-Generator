@@ -1,6 +1,7 @@
 package adudecalledleo.aftbg.app.dialog;
 
 import adudecalledleo.aftbg.Main;
+import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.TransferableImage;
 import adudecalledleo.aftbg.logging.Logger;
@@ -23,6 +24,7 @@ public final class PreviewDialog extends JDialog {
     public PreviewDialog(Frame owner, BufferedImage image) {
         super(owner);
         this.image = image;
+        setIconImage(AppResources.Icons.PREVIEW.getAsImage());
         setTitle("Preview generated textbox(es)");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);
