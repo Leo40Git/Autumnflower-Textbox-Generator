@@ -118,6 +118,9 @@ public final class StyleModifierNode extends ModifierNode {
                 nodes.add(new ErrorNode(argsStart + args.length() - 1, 1,
                         ERROR_PREFIX + "Invert? Invert what?"));
             }
+
+            sizeAdjust = Math.max(-4, Math.min(4, sizeAdjust));
+
             nodes.add(new StyleModifierNode(start, 2 + args.length() + 2,
                     new StyleSpec(reset, bold, italic, underline, strikethrough, superscript, sizeAdjust),
                     new Span(argsStart, args.length())));

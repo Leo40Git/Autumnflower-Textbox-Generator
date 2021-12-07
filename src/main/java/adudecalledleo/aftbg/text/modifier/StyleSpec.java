@@ -53,7 +53,7 @@ public record StyleSpec(boolean reset,
             return new StyleSpec(false,
                     this.bold.orElse(other.bold), this.italic.orElse(other.italic),
                     this.underline.orElse(other.underline), this.strikethrough.orElse(other.strikethrough),
-                    ss, this.sizeAdjust + other.sizeAdjust);
+                    ss, Math.max(-4, Math.max(4, this.sizeAdjust + other.sizeAdjust)));
         }
     }
 
