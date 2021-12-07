@@ -1,5 +1,7 @@
 package adudecalledleo.aftbg.text.modifier;
 
+import adudecalledleo.aftbg.text.node.ErrorNode;
+import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.util.TriState;
 
 public record StyleSpec(boolean reset,
@@ -21,6 +23,99 @@ public record StyleSpec(boolean reset,
     public static final StyleSpec DEFAULT = new StyleSpec(true,
             TriState.DEFAULT, TriState.DEFAULT, TriState.DEFAULT, TriState.DEFAULT,
             Superscript.DEFAULT, 0);
+
+    public static StyleSpec fromModArgs(String errorPrefix, int argsStart, String args, NodeList nodes) {
+        boolean reset = false;
+        boolean invert = false;
+        TriState bold = TriState.DEFAULT;
+        TriState italic = TriState.DEFAULT;
+        TriState underline = TriState.DEFAULT;
+        TriState strikethrough = TriState.DEFAULT;
+        Superscript superscript = Superscript.DEFAULT;
+        int sizeAdjust = 0;
+
+        char[] chars = args.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            switch (chars[i]) {
+            case 'R', 'r' -> reset = true;
+            case '!' -> {
+                if (reset) {
+                    nodes.add(new ErrorNode(argsStart + i, 1,
+                            errorPrefix + "Invert not supported when resetting"));
+                } else {
+                    invert = true;
+                }
+            }
+            case 'B', 'b' -> {
+                bold = invert ? TriState.FALSE : TriState.TRUE;
+                invert = false;
+            }
+            case 'I', 'i' -> {
+                italic = invert ? TriState.FALSE : TriState.TRUE;
+                invert = false;
+            }
+            case 'U', 'u' -> {
+                underline = invert ? TriState.FALSE : TriState.TRUE;
+                invert = false;
+            }
+            case 'S', 's' -> {
+                strikethrough = invert ? TriState.FALSE : TriState.TRUE;
+                invert = false;
+            }
+            case '^' -> {
+                if (invert) {
+                    nodes.add(new ErrorNode(argsStart + i - 1, 1,
+                            errorPrefix + "Invert not supported for superscript '^' (did you mean subscript 'v'?)"));
+                    invert = false;
+                }
+                superscript = Superscript.SUPER;
+            }
+            case '-' -> {
+                if (invert) {
+                    nodes.add(new ErrorNode(argsStart + i - 1, 1,
+                            errorPrefix + "Invert not supported for mid script '-'"));
+                    invert = false;
+                }
+                superscript = Superscript.MID;
+            }
+            case 'v' -> {
+                if (invert) {
+                    nodes.add(new ErrorNode(argsStart + i - 1, 1,
+                            errorPrefix + "Invert not supported for subscript 'v' (did you mean superscript '^'?)"));
+                    invert = false;
+                }
+                superscript = Superscript.SUB;
+            }
+            case '>' -> {
+                if (invert) {
+                    nodes.add(new ErrorNode(argsStart + i - 1, 1,
+                            errorPrefix + "Invert not supported for font size up '>' (did you mean font size down '<'?)"));
+                    invert = false;
+                }
+                sizeAdjust++;
+            }
+            case '<' -> {
+                if (invert) {
+                    nodes.add(new ErrorNode(argsStart + i - 1, 1,
+                            errorPrefix + "Invert not supported for font size down '<' (did you mean font size up '>'?)"));
+                    invert = false;
+                }
+                sizeAdjust--;
+            }
+            default -> nodes.add(new ErrorNode(argsStart + i, 1,
+                    errorPrefix + "Unknown style specifier '" + chars[i] + "'"));
+            }
+        }
+
+        if (invert) {
+            nodes.add(new ErrorNode(argsStart + args.length() - 1, 1,
+                    errorPrefix + "Invert? Invert what?"));
+        }
+
+        sizeAdjust = Math.max(-4, Math.min(4, sizeAdjust));
+
+        return new StyleSpec(reset, bold, italic, underline, strikethrough, superscript, sizeAdjust);
+    }
 
     public boolean isBold() {
         return bold.toBoolean(false);
