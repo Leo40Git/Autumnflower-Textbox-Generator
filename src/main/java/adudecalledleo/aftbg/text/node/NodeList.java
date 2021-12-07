@@ -26,7 +26,12 @@ public final class NodeList implements Iterable<Node> {
             errors.add(err);
         wrapped.add(node);
     }
-    
+
+    public void clear() {
+        wrapped.clear();
+        errors.clear();
+    }
+
     public void optimize() {
         for (int i = 0; i < wrapped.size() - 1; i++) {
             Node node = wrapped.get(i);

@@ -25,6 +25,7 @@ public final class TextAnimator {
 
     public void reset(NodeList sourceNodes) {
         this.sourceNodes = sourceNodes;
+        workingNodes.clear();
         currentNodeIdx = -1;
         currentTextNode = null;
         currentTextNodeContents = "";
