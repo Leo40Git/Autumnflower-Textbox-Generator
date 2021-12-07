@@ -187,18 +187,20 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
 
         modsMenu.addSeparator();
 
-        // animation-only modifiers
-        item = new JMenuItem("Face");
+        item = new JMenuItem("Animation Only!");
+        item.setEnabled(false);
+        modsMenu.add(item);
+        item = new JMenuItem("Face", AppResources.Icons.MOD_FACE.get());
         item.setActionCommand(AC_ADD_MOD_FACE);
         item.addActionListener(this);
         item.setMnemonic(KeyEvent.VK_F);
         modsMenu.add(item);
-        item = new JMenuItem("Delay");
+        item = new JMenuItem("Delay", AppResources.Icons.MOD_DELAY.get());
         item.setActionCommand(AC_ADD_MOD_DELAY);
         item.addActionListener(this);
         item.setMnemonic(KeyEvent.VK_D);
         modsMenu.add(item);
-        item = new JMenuItem("Text Speed");
+        item = new JMenuItem("Text Speed", AppResources.Icons.MOD_TEXT_SPEED.get());
         item.setActionCommand(AC_ADD_MOD_TEXT_SPEED);
         item.addActionListener(this);
         item.setMnemonic(KeyEvent.VK_T);

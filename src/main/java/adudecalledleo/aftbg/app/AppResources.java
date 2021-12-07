@@ -14,7 +14,7 @@ import adudecalledleo.aftbg.util.ResourceUtils;
 public final class AppResources {
     public enum Icons {
         TEXTBOX_ADD, TEXTBOX_REMOVE, TEXTBOX_INSERT_BEFORE, TEXTBOX_INSERT_AFTER, TEXTBOX_CLONE, EDIT_FACE_POOL,
-        MOD_STYLE, MOD_COLOR, CUT, COPY, PASTE;
+        MOD_STYLE, MOD_COLOR, CUT, COPY, PASTE, MOD_FACE, MOD_DELAY, MOD_TEXT_SPEED, MOD_GIMMICK;
 
         public ImageIcon get() {
             if (icons == null) {
