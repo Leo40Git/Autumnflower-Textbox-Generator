@@ -23,6 +23,8 @@ import adudecalledleo.aftbg.util.GifFactory;
 import adudecalledleo.aftbg.window.WindowContext;
 
 public final class TextboxAnimator extends AbstractTextboxWorker {
+    public static final int DEFAULT_TEXT_SPEED = 5;
+
     private static final int TEMP_BOX_BARRIER_LENGTH = GifFactory.toFrames(1, 1);
     private static final int LAST_FRAME_REPEAT = GifFactory.toFrames(2, 1);
 
@@ -56,7 +58,7 @@ public final class TextboxAnimator extends AbstractTextboxWorker {
                 animator.reset(sourceNodes);
             }
 
-            int textSpeed = 5;
+            int textSpeed = DEFAULT_TEXT_SPEED;
 
             Face face = textbox.getFace();
             int frame = 0;

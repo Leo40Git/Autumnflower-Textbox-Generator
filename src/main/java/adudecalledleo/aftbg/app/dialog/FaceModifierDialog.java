@@ -48,9 +48,9 @@ public final class FaceModifierDialog extends JDialog {
     }
 
     private static final class ContentPane extends JPanel implements Consumer<Face>, ActionListener {
-        final JButton btnCancel, btnAdd;
         final FaceModifierDialog dialog;
         final FacePool facePool;
+        final JButton btnCancel, btnAdd;
         Face face;
 
         public ContentPane(FaceModifierDialog dialog, FacePool facePool, Face face) {
