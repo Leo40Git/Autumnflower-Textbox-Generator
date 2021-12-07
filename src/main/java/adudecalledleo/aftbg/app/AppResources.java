@@ -24,15 +24,11 @@ public final class AppResources {
         }
 
         public Image getAsImage() {
-            if (iconImages == null) {
-                throw new IllegalStateException("Icons haven't been loaded!");
-            }
-            return iconImages.get(this);
+            return get().getImage();
         }
     }
 
     private static Font font;
-    private static Map<Icons, Image> iconImages;
     private static Map<Icons, ImageIcon> icons;
 
     private AppResources() { }
@@ -57,13 +53,10 @@ public final class AppResources {
         try (InputStream in = ResourceUtils.getResourceAsStream(AppResources.class, "/icons.png")) {
             iconSheet = ImageIO.read(in);
         }
-        iconImages = new HashMap<>();
         icons = new HashMap<>();
         int ix = 0, iy = 0;
         for (Icons icon : Icons.values()) {
-            Image image = iconSheet.getSubimage(ix, iy, 16, 16);
-            iconImages.put(icon, image);
-            icons.put(icon, new ImageIcon(image, icon.name()));
+            icons.put(icon, new ImageIcon(iconSheet.getSubimage(ix, iy, 16, 16), icon.name()));
             ix += 16;
             if (ix == iconSheet.getWidth()) {
                 ix = 0;
