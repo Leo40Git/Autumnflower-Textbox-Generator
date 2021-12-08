@@ -390,9 +390,9 @@ public final class FacePoolEditorDialog extends JDialog {
                     }
                     selectedCat.remove(selectedFace);
                     updateFacesModel();
-                    if (selectedCat.getIconName().equals(selectedFace.getName())) {
-                        // default icon is first face
-                        selectedCat.setIconName(selectedCat.getFaces().values().iterator().next().getName());
+                    String iconName = selectedCat.getIconName();
+                    if (iconName != null && iconName.equals(selectedFace.getName())) {
+                        selectedCat.setIconName(null);
                     }
                     updateCategoriesModel();
                     catList.setSelectedValue(selectedCat, true);
