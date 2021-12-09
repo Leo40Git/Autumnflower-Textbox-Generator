@@ -11,6 +11,7 @@ import java.awt.*;
 
 public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox> implements WindowContextUpdateListener {
     private final TextParser textParser;
+    private WindowContext winCtx;
 
     public TextboxListCellRenderer(TextParser textParser) {
         super();
@@ -21,13 +22,19 @@ public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox>
 
     @Override
     public void updateWindowContext(WindowContext winCtx) {
-        setForeground(winCtx.getColor(0));
+        this.winCtx = winCtx;
     }
 
     @Override
     public Component getListCellRendererComponent(JList<? extends Textbox> list, Textbox value, int index, boolean isSelected, boolean cellHasFocus) {
-        setBackground(list.getSelectionBackground());
-        setOpaque(isSelected);
+        if (isSelected) {
+            setOpaque(true);
+            setBackground(list.getSelectionBackground());
+            setForeground(list.getSelectionForeground());
+        } else {
+            setOpaque(false);
+            setForeground(winCtx == null ? Color.WHITE : winCtx.getColor(0));
+        }
         setIcon(value.getFace().getIcon());
         String contents = NodeUtils.getTruncatedDisplay(textParser.parse(value.getText()), 50);
         setText("<html>"
