@@ -4,6 +4,12 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 
+/**
+ * <b>NOTE:</b> This class is <em>not safe</em> for multithreading.
+ *
+ * <p>If you need to render the window on multiple threads, use the {@link #copy()} method to get a copy to
+ * pass to another thread.
+ */
 public final class WindowContext {
     private final WindowBackground background;
     private final WindowBorder border;
@@ -15,6 +21,17 @@ public final class WindowContext {
         border = new WindowBorder(window);
         arrow = new WindowArrow(window);
         colors = new WindowColors(window);
+    }
+
+    private WindowContext(WindowBackground background, WindowBorder border, WindowColors colors, WindowArrow arrow) {
+        this.background = background;
+        this.border = border;
+        this.colors = colors;
+        this.arrow = arrow;
+    }
+
+    public WindowContext copy() {
+        return new WindowContext(background.copy(), border, colors, arrow);
     }
 
     public void drawBackground(Graphics2D g, int x, int y, int width, int height, ImageObserver observer) {

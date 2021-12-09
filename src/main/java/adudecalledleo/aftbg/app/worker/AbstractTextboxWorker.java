@@ -24,8 +24,8 @@ public abstract class AbstractTextboxWorker extends SwingWorker<Void, Void> {
     public AbstractTextboxWorker(Component parent, LoadFrame loadFrame, TextParser parser, WindowContext winCtx, List<Textbox> textboxes) {
         this.parent = parent;
         this.loadFrame = loadFrame;
-        this.parser = parser;
-        this.winCtx = winCtx;
+        this.parser = parser.copy();
+        this.winCtx = winCtx.copy();
         this.textboxes = textboxes;
     }
 

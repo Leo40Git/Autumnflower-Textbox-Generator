@@ -10,15 +10,29 @@ import adudecalledleo.aftbg.text.node.TextNode;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 
+/**
+ * <b>NOTE:</b> This class is <em>not safe</em> for multithreading.
+ *
+ * <p>If you need to parse text on multiple threads, use the {@link #copy()} method to get a copy to
+ * pass to another thread.
+ */
 public final class TextParser {
     private final ModifierRegistry modifierRegistry;
     private final StringBuilder sb;
     private int textStart, textLength;
     private NodeList nodes;
 
+    public TextParser(ModifierRegistry modifierRegistry) {
+        this.modifierRegistry = modifierRegistry;
+        this.sb = new StringBuilder();
+    }
+
     public TextParser() {
-        modifierRegistry = new ModifierRegistry();
-        sb = new StringBuilder();
+        this(new ModifierRegistry());
+    }
+
+    public TextParser copy() {
+        return new TextParser(modifierRegistry);
     }
 
     public void registerModifier(char c, ModifierParser parser) {
