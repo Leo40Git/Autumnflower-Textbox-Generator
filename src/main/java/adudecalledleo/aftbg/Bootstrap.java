@@ -12,6 +12,7 @@ import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.UncaughtExceptionHandler;
 import adudecalledleo.aftbg.app.util.LoadFrame;
 import adudecalledleo.aftbg.logging.Logger;
+import adudecalledleo.aftbg.text.modifier.ModifierRegistry;
 
 public record Bootstrap(LoadFrame loadFrame, Path basePath, TextboxResources textboxResources) {
     private static boolean done = false;
@@ -40,6 +41,8 @@ public record Bootstrap(LoadFrame loadFrame, Path basePath, TextboxResources tex
         }
 
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
+
+        ModifierRegistry.init();
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

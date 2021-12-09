@@ -17,7 +17,7 @@ import adudecalledleo.aftbg.window.WindowContext;
 
 public final class TextboxGenerator extends AbstractTextboxWorker {
     public TextboxGenerator(Component parent, LoadFrame loadFrame, TextParser parser, WindowContext winCtx, List<Textbox> textboxes) {
-        super(parent, loadFrame, parser, winCtx, textboxes);
+        super(parent, loadFrame, winCtx, textboxes);
     }
 
     @Override

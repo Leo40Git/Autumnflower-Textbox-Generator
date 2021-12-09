@@ -1,42 +1,24 @@
 package adudecalledleo.aftbg.text;
 
-import adudecalledleo.aftbg.text.modifier.ModifierParser;
 import adudecalledleo.aftbg.text.modifier.ModifierRegistry;
 import adudecalledleo.aftbg.text.node.ErrorNode;
 import adudecalledleo.aftbg.text.node.LineBreakNode;
 import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.text.node.TextNode;
 
-import java.util.function.UnaryOperator;
-import java.util.regex.Pattern;
-
 /**
  * <b>NOTE:</b> This class is <em>not safe</em> for multithreading.
  *
- * <p>If you need to parse text on multiple threads, use the {@link #copy()} method to get a copy to
+ * <p>If you need to parse text on multiple threads, create a new instance to
  * pass to another thread.
  */
 public final class TextParser {
-    private final ModifierRegistry modifierRegistry;
     private final StringBuilder sb;
     private int textStart, textLength;
     private NodeList nodes;
 
-    public TextParser(ModifierRegistry modifierRegistry) {
-        this.modifierRegistry = modifierRegistry;
-        this.sb = new StringBuilder();
-    }
-
     public TextParser() {
-        this(new ModifierRegistry());
-    }
-
-    public TextParser copy() {
-        return new TextParser(modifierRegistry);
-    }
-
-    public void registerModifier(char c, ModifierParser parser) {
-        modifierRegistry.register(c, parser);
+        sb = new StringBuilder();
     }
 
     public NodeList parse(String text) {
@@ -60,7 +42,7 @@ public final class TextParser {
                 } else {
                     flushTextNode();
                     int modStartPos = pos++ - 1;
-                    var parser = modifierRegistry.get(c);
+                    var parser = ModifierRegistry.get(c);
                     if (pos < chars.length && chars[pos] == '[') {
                         final int start = pos++;
                         boolean end = false;

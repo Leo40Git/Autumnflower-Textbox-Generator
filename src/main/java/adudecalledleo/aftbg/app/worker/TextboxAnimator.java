@@ -31,7 +31,7 @@ public final class TextboxAnimator extends AbstractTextboxWorker {
     private final FacePool facePool;
 
     public TextboxAnimator(Component parent, LoadFrame loadFrame, TextParser parser, WindowContext winCtx, FacePool facePool, List<Textbox> textboxes) {
-        super(parent, loadFrame, parser, winCtx, textboxes);
+        super(parent, loadFrame, winCtx, textboxes);
         this.facePool = facePool;
     }
 
