@@ -132,6 +132,7 @@ public final class TextRenderer {
                 }
 
                 g.fill(outline);
+                g.setColor(c);
 
                 // advance X by "advance" (text width + padding, I think?)
                 x += layout.getAdvance();
