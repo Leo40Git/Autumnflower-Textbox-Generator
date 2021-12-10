@@ -9,8 +9,14 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
+jar {
+    manifest {
+        attributes("Main-Class": project.main_class)
+    }
+}
+
 application {
-    mainClass = 'adudecalledleo.aftbg.Main'
+    mainClass = project.main_class
 }
 
 runtime {
@@ -18,6 +24,8 @@ runtime {
 }
 
 tasks.jpackageImage.doLast {
+    delete("$buildDir/jpackage/${project.name}/scratch")
+    delete("$buildDir/jpackage/${project.name}/scratch_ex")
     copy {
         from('scratch')
         into("$buildDir/jpackage/${project.name}/scratch")
