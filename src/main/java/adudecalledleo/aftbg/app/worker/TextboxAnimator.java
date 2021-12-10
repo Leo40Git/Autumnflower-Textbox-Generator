@@ -26,7 +26,8 @@ import adudecalledleo.aftbg.window.WindowContext;
 public final class TextboxAnimator extends AbstractTextboxWorker {
     public static final int DEFAULT_TEXT_SPEED = 5;
 
-    private static final int TEMP_BOX_BARRIER_LENGTH = GifFactory.toFrames(1, 1);
+    private static final int ARROW_FRAME_LENGTH = GifFactory.toFrames(0.25, 1);
+    private static final int ARROW_MAX_LOOPS = 2;
     private static final int LAST_FRAME_REPEAT = GifFactory.toFrames(2, 1);
 
     private final FacePool facePool;
@@ -120,16 +121,23 @@ public final class TextboxAnimator extends AbstractTextboxWorker {
 
             if (i < textboxCount - 1) {
                 if (!(sourceNodes.asList().get(sourceNodes.asList().size() - 1) instanceof InterruptModifierNode)) {
-                    // TODO add arrow animation between textboxes
-                    // for now we'll do this
-                    BufferedImage img = new BufferedImage(816, 180, BufferedImage.TYPE_INT_RGB);
-                    Graphics2D g = img.createGraphics();
-                    g.setBackground(Color.BLACK);
-                    g.clearRect(0, 0, 816, 180);
-                    drawTextbox(g, 0, 0, face, sourceNodes, 0);
-                    g.dispose();
-                    for (int j = 0; j <= TEMP_BOX_BARRIER_LENGTH; j++) {
-                        frames.add(img);
+                    int arrowLoops = 0, arrowFrame = 0;
+                    while (arrowLoops < ARROW_MAX_LOOPS) {
+                        Logger.trace("loop %d, frame %d".formatted(arrowLoops, arrowFrame));
+                        BufferedImage img = new BufferedImage(816, 180, BufferedImage.TYPE_INT_RGB);
+                        Graphics2D g = img.createGraphics();
+                        g.setBackground(Color.BLACK);
+                        g.clearRect(0, 0, 816, 180);
+                        drawTextbox(g, 0, 0, face, sourceNodes, arrowFrame++);
+                        g.dispose();
+                        for (int j = 0; j <= ARROW_FRAME_LENGTH; j++) {
+                            frames.add(img);
+                        }
+                        if (arrowFrame >= 4) {
+                            Logger.trace("NEXT LOOP");
+                            arrowFrame = 0;
+                            arrowLoops++;
+                        }
                     }
                 }
             } else {
