@@ -40,7 +40,7 @@ public final class WindowBackground {
         if (scratchBuf != null) {
             ColorModel cm = scratchBuf.getColorModel();
             boolean isAlphaPremul = scratchBuf.isAlphaPremultiplied();
-            WritableRaster raster = scratchBuf.copyData(null);
+            WritableRaster raster = scratchBuf.copyData(scratchBuf.getRaster().createCompatibleWritableRaster());
             scratchBufCopy = new BufferedImage(cm, raster, isAlphaPremul, null);
         }
         return new WindowBackground(base, overlay, color, scratchBufCopy);
