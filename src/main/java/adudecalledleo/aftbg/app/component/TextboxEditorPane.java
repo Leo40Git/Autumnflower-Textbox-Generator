@@ -23,9 +23,7 @@ import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.TextRenderer;
-import adudecalledleo.aftbg.text.modifier.ColorModifierNode;
-import adudecalledleo.aftbg.text.modifier.StyleModifierNode;
-import adudecalledleo.aftbg.text.modifier.StyleSpec;
+import adudecalledleo.aftbg.text.modifier.*;
 import adudecalledleo.aftbg.text.node.*;
 import adudecalledleo.aftbg.util.ColorUtils;
 import adudecalledleo.aftbg.window.WindowContext;
@@ -38,6 +36,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
     private static final String AC_ADD_MOD_FACE = "add_mod.face";
     private static final String AC_ADD_MOD_DELAY = "add_mod.delay";
     private static final String AC_ADD_MOD_TEXT_SPEED = "add_mod.text_speed";
+    private static final String AC_ADD_MOD_INTERRUPT = "add_mod.interrupt";
 
     private final TextParser textParser;
     private final Consumer<String> textUpdateConsumer;
@@ -205,6 +204,11 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         item.addActionListener(this);
         item.setMnemonic(KeyEvent.VK_T);
         modsMenu.add(item);
+        item = new JMenuItem("Interrupt");
+        item.setActionCommand(AC_ADD_MOD_INTERRUPT);
+        item.addActionListener(this);
+        item.setMnemonic(KeyEvent.VK_I);
+        modsMenu.add(item);
 
         menu.addSeparator();
         menu.add(modsMenu);
@@ -231,11 +235,11 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
             }
             String toInsert;
             if (result instanceof ColorModifierDialog.WindowResult winResult) {
-                toInsert = "\\c[" + winResult.getIndex() + "]";
+                toInsert = "\\" + ColorModifierNode.KEY + "[" + winResult.getIndex() + "]";
             } else if (result instanceof ColorModifierDialog.ConstantResult constResult) {
                 var col = constResult.getColor();
-                toInsert = String.format("\\c[#%02X%02X%02X]",
-                        col.getRed(), col.getGreen(), col.getBlue());
+                toInsert = "\\%c[#%02X%02X%02X]".formatted(
+                        ColorModifierNode.KEY, col.getRed(), col.getGreen(), col.getBlue());
             } else {
                 throw new InternalError("Unhandled result type " + result + "?!");
             }
@@ -290,9 +294,9 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                 requestFocus();
                 break;
             }
-            String mod = "\\@";
+            String mod = "\\" + FaceModifierNode.KEY;
             if (newFace != Face.NONE) {
-                mod = "\\@[%s]".formatted(newFace.getPath());
+                mod = "\\%c[%s]".formatted(FaceModifierNode.KEY, newFace.getPath());
             }
             try {
                 replaceSelection(mod);
@@ -316,7 +320,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                 break;
             }
             try {
-                replaceSelection("\\d[%d]".formatted(delayLength));
+                replaceSelection("\\%c[%d]".formatted(DelayModifierNode.KEY, delayLength));
                 updateTimer.restart();
             } finally {
                 requestFocus();
@@ -337,7 +341,15 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
                 break;
             }
             try {
-                replaceSelection("\\t[%d]".formatted(newTextSpeed));
+                replaceSelection("\\%c[%d]".formatted(TextSpeedModifierNode.KEY, newTextSpeed));
+                updateTimer.restart();
+            } finally {
+                requestFocus();
+            }
+        }
+        case AC_ADD_MOD_INTERRUPT -> {
+            try {
+                replaceSelection("\\" + InterruptModifierNode.KEY);
                 updateTimer.restart();
             } finally {
                 requestFocus();

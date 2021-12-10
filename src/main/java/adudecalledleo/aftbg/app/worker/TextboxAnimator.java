@@ -18,6 +18,7 @@ import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.animate.AnimationCommand;
 import adudecalledleo.aftbg.text.animate.TextAnimator;
+import adudecalledleo.aftbg.text.modifier.InterruptModifierNode;
 import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.util.GifFactory;
 import adudecalledleo.aftbg.window.WindowContext;
@@ -66,7 +67,7 @@ public final class TextboxAnimator extends AbstractTextboxWorker {
             boolean drawFrame = false;
             while ((command = animator.nextCommand()) != AnimationCommand.endOfTextbox()) {
                 if (command == AnimationCommand.drawFrame()) {
-                    drawFrame = true;
+                    drawFrame = textSpeed > 0;
                 } else if (command instanceof AnimationCommand.SetFace setFaceCmd) {
                     Logger.trace("Setting face to %s".formatted(setFaceCmd.getFacePath()));
                     Face newFace = setFaceCmd.getFace(facePool);
@@ -80,7 +81,19 @@ public final class TextboxAnimator extends AbstractTextboxWorker {
                 } else if (command instanceof AnimationCommand.AddDelay addDelayCmd) {
                     // repeat last frame X times
                     Logger.trace("Repeating last frame %d times".formatted(addDelayCmd.getLength()));
-                    BufferedImage lastFrame = frames.get(frames.size() - 1);
+                    BufferedImage lastFrame;
+                    if (textSpeed > 0) {
+                        lastFrame = frames.get(frames.size() - 1);
+                    } else {
+                        // need to create new frame to repeat
+                        lastFrame = new BufferedImage(816, 180, BufferedImage.TYPE_INT_RGB);
+                        Graphics2D g = lastFrame.createGraphics();
+                        g.setBackground(Color.BLACK);
+                        g.clearRect(0, 0, 816, 180);
+                        drawTextbox(g, 0, 0, face, animator.getNodes(), -1);
+                        g.dispose();
+                        frames.add(lastFrame);
+                    }
                     for (int j = 0; j < addDelayCmd.getLength(); j++) {
                         frames.add(lastFrame);
                     }
@@ -106,15 +119,27 @@ public final class TextboxAnimator extends AbstractTextboxWorker {
             }
 
             if (i < textboxCount - 1) {
-                // TODO add arrow animation between textboxes
-                // for now we'll do this
+                if (!(sourceNodes.asList().get(sourceNodes.asList().size() - 1) instanceof InterruptModifierNode)) {
+                    // TODO add arrow animation between textboxes
+                    // for now we'll do this
+                    BufferedImage img = new BufferedImage(816, 180, BufferedImage.TYPE_INT_RGB);
+                    Graphics2D g = img.createGraphics();
+                    g.setBackground(Color.BLACK);
+                    g.clearRect(0, 0, 816, 180);
+                    drawTextbox(g, 0, 0, face, sourceNodes, 0);
+                    g.dispose();
+                    for (int j = 0; j <= TEMP_BOX_BARRIER_LENGTH; j++) {
+                        frames.add(img);
+                    }
+                }
+            } else {
                 BufferedImage img = new BufferedImage(816, 180, BufferedImage.TYPE_INT_RGB);
                 Graphics2D g = img.createGraphics();
                 g.setBackground(Color.BLACK);
                 g.clearRect(0, 0, 816, 180);
-                drawTextbox(g, 0, 0, face, sourceNodes, 0);
+                drawTextbox(g, 0, 0, face, sourceNodes, -1);
                 g.dispose();
-                for (int j = 0; j <= TEMP_BOX_BARRIER_LENGTH; j++) {
+                for (int j = 0; j < LAST_FRAME_REPEAT; j++) {
                     frames.add(img);
                 }
             }
@@ -127,12 +152,6 @@ public final class TextboxAnimator extends AbstractTextboxWorker {
                     "Generate animated textbox(es)", JOptionPane.ERROR_MESSAGE);
             loadFrame.dispose();
             return null;
-        }
-
-        Logger.trace("Repeating last frame %d times".formatted(LAST_FRAME_REPEAT));
-        BufferedImage lastFrame = frames.get(frames.size() - 1);
-        for (int i = 0; i < LAST_FRAME_REPEAT; i++) {
-            frames.add(lastFrame);
         }
 
         if (success) {

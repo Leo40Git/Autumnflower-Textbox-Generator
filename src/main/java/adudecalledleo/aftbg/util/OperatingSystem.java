@@ -5,7 +5,7 @@ import adudecalledleo.aftbg.logging.Logger;
 import java.util.Locale;
 
 public enum OperatingSystem {
-    WINDOWS, MAC, LINUX, SOLARIS, UNKNOWN;
+    WINDOWS, MAC, LINUX, UNKNOWN;
 
     private static OperatingSystem current;
 
@@ -28,10 +28,6 @@ public enum OperatingSystem {
         return get() == LINUX;
     }
 
-    public static boolean isSolaris() {
-        return get() == SOLARIS;
-    }
-
     public static boolean isUnknown() {
         return get() == UNKNOWN;
     }
@@ -50,8 +46,6 @@ public enum OperatingSystem {
             return WINDOWS;
         } else if (osName.contains("nix") || osName.contains("nux") || osName.contains("aix")) {
             return LINUX;
-        } else if (osName.contains("sunos")) {
-            return SOLARIS;
         }
 
         Logger.warn("Unknown (and possibly unsupported) operating system, os.name is \"%s\""

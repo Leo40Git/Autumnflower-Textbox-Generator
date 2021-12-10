@@ -49,7 +49,7 @@ public final class TextSpeedModifierDialog extends JDialog {
 
             textSpeed = lastTextSpeed;
 
-            spnTextSpeed = new JSpinner(new SpinnerNumberModel(textSpeed, 1, null, 1));
+            spnTextSpeed = new JSpinner(new SpinnerNumberModel(textSpeed, 0, null, 1));
             spnTextSpeed.addChangeListener(this);
             btnCancel = createBtn("Cancel");
             btnAdd = createBtn("Add");

@@ -47,6 +47,11 @@ public final class DelayModifierNode extends ModifierNode implements AnimationCo
                         ERROR_PREFIX + "Couldn't parse delay length"));
                 return;
             }
+            if (delayLength == 0) {
+                nodes.add(new ErrorNode(argsStart, args.length(),
+                        ERROR_PREFIX + "0-length delay is pointless"));
+                return;
+            }
 
             nodes.add(new DelayModifierNode(start, 2 + args.length() + 2, delayLength, new Span(argsStart, args.length())));
         }

@@ -48,11 +48,6 @@ public final class TextSpeedModifierNode extends ModifierNode implements Animati
                         ERROR_PREFIX + "Couldn't parse new speed"));
                 return;
             }
-            if (newSpeed == 0) {
-                nodes.add(new ErrorNode(argsStart, args.length(),
-                        ERROR_PREFIX + "Speed cannot be 0"));
-                return;
-            }
 
             nodes.add(new TextSpeedModifierNode(start, 2 + args.length() + 2, newSpeed, new Span(argsStart, args.length())));
         }
