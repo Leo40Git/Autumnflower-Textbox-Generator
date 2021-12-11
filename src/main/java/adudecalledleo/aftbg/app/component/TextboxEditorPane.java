@@ -44,6 +44,7 @@ public final class TextboxEditorPane extends JEditorPane
     private static final String AC_ADD_MOD_INTERRUPT = "add_mod.interrupt";
 
     private final TextParser textParser;
+    private final TextParser.Context textParserCtx;
     private final Consumer<String> textUpdateConsumer;
     private final Timer updateTimer;
     private final Map<Object, Action> actions;
@@ -63,6 +64,7 @@ public final class TextboxEditorPane extends JEditorPane
         this.textUpdateConsumer = textUpdateConsumer;
 
         textParser = new TextParser();
+        textParserCtx = new TextParser.Context();
         errors = new HashMap<>();
         scratchLine = new Line2D.Double(0, 0, 0, 0);
 
@@ -429,12 +431,14 @@ public final class TextboxEditorPane extends JEditorPane
         this.winCtx = winCtx;
         setCaretColor(winCtx.getColor(0));
         StyleConstants.setForeground(styleNormal, winCtx.getColor(0));
+        textParserCtx.put(WindowColors.class, winCtx.getColors());
         flushChanges(true);
     }
 
     @Override
     public void updateGameDefinition(Path basePath, GameDefinition gameDef, FacePool facePool) {
         this.facePool = facePool;
+        textParserCtx.put(FacePool.class, facePool);
         flushChanges(true);
     }
 
@@ -450,10 +454,7 @@ public final class TextboxEditorPane extends JEditorPane
 
             nodes = null;
             try {
-                TextParser.Context ctx = new TextParser.Context()
-                        .put(WindowColors.class, winCtx.getColors())
-                        .put(FacePool.class, facePool);
-                nodes = textParser.parse(ctx, doc.getText(0, doc.getLength()));
+                nodes = textParser.parse(textParserCtx, doc.getText(0, doc.getLength()));
             } catch (BadLocationException e) {
                 Logger.error("Failed to get text to parse!", e);
                 return;
