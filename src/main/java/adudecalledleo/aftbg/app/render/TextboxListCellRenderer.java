@@ -20,9 +20,9 @@ public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox>
     private final TextParser.Context textParserCtx;
     private WindowContext winCtx;
 
-    public TextboxListCellRenderer(TextParser textParser) {
+    public TextboxListCellRenderer() {
         super();
-        this.textParser = textParser;
+        textParser = new TextParser();
         textParserCtx = new TextParser.Context();
         setPreferredSize(new Dimension(72 * 4 + 4, 72));
         setMinimumSize(new Dimension(72 * 4 + 4, 72));

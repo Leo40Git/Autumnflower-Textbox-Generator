@@ -58,10 +58,11 @@ public final class TextboxEditorPane extends JEditorPane
     private Face textboxFace;
     private NodeList nodes;
 
-    public TextboxEditorPane(TextParser textParser, Consumer<String> textUpdateConsumer) {
+    public TextboxEditorPane(Consumer<String> textUpdateConsumer) {
         super();
-        this.textParser = textParser;
         this.textUpdateConsumer = textUpdateConsumer;
+
+        textParser = new TextParser();
         errors = new HashMap<>();
         scratchLine = new Line2D.Double(0, 0, 0, 0);
 

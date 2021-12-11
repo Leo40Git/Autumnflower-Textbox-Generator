@@ -10,12 +10,11 @@ import adudecalledleo.aftbg.BuildInfo;
 import adudecalledleo.aftbg.app.component.MainPanel;
 import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.game.GameDefinition;
-import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.window.WindowContext;
 
 public final class AppFrame extends JFrame {
-    public AppFrame(Path basePath, GameDefinition gameDef, WindowContext winCtx, FacePool faces, TextParser parser) {
-        var panel = new MainPanel(parser);
+    public AppFrame(Path basePath, GameDefinition gameDef, WindowContext winCtx, FacePool faces) {
+        var panel = new MainPanel();
         panel.updateGameDefinition(basePath, gameDef, faces);
         panel.updateWindowContext(winCtx);
 

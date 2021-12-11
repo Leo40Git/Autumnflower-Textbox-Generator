@@ -39,7 +39,7 @@ public final class ListReorderTransferHandler extends TransferHandler {
         return false;
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
     public boolean importData(TransferHandler.TransferSupport support) {
         if (!canImport(support)) {
             return false;

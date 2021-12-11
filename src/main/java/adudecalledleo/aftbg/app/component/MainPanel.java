@@ -27,7 +27,6 @@ import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.game.GameDefinition;
 import adudecalledleo.aftbg.logging.Logger;
-import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.window.WindowContext;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -41,8 +40,6 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
     private static final String AC_GENERATE = "generate";
     private static final String AC_GENERATE_ANIMATION = "generate_animation";
-
-    private final TextParser textParser;
 
     private final List<WindowContextUpdateListener> winCtxUpdateListeners;
     private final List<GameDefinitionUpdateListener> gameDefUpdateListeners;
@@ -61,9 +58,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     private FacePool faces;
     private Path basePath;
 
-    public MainPanel(TextParser textParser) {
-        this.textParser = textParser;
-
+    public MainPanel() {
         winCtxUpdateListeners = new ArrayList<>();
         gameDefUpdateListeners = new ArrayList<>();
 
@@ -74,7 +69,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
         faceSelection = new FaceSelectionPanel(this::onFaceChanged);
         gameDefUpdateListeners.add(faceSelection);
-        editorPane = new TextboxEditorPane(textParser, this::onTextUpdated);
+        editorPane = new TextboxEditorPane(this::onTextUpdated);
         winCtxUpdateListeners.add(editorPane);
         gameDefUpdateListeners.add(editorPane);
 
@@ -82,7 +77,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         textboxSelector.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         updateTextboxSelectorModel();
         textboxSelector.addListSelectionListener(this);
-        var renderer = new TextboxListCellRenderer(textParser);
+        var renderer = new TextboxListCellRenderer();
         winCtxUpdateListeners.add(renderer);
         gameDefUpdateListeners.add(renderer);
         textboxSelector.setCellRenderer(renderer);

@@ -6,7 +6,6 @@ import javax.swing.*;
 
 import adudecalledleo.aftbg.app.AppFrame;
 import adudecalledleo.aftbg.app.util.LoadFrame;
-import adudecalledleo.aftbg.text.TextParser;
 
 public final class Main {
     public static void main(String[] args) {
@@ -19,7 +18,7 @@ public final class Main {
     }
 
     private static void launchApp(LoadFrame loadFrame, Path basePath, TextboxResources rsrc) {
-        AppFrame frame = new AppFrame(basePath, rsrc.gameDefinition(), rsrc.windowContext(), rsrc.facePool(), new TextParser());
+        AppFrame frame = new AppFrame(basePath, rsrc.gameDefinition(), rsrc.windowContext(), rsrc.facePool());
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         loadFrame.setVisible(false);
