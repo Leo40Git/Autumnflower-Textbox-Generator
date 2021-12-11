@@ -26,8 +26,8 @@ import adudecalledleo.aftbg.window.WindowContext;
 public final class TextboxAnimator extends AbstractTextboxWorker {
     public static final int DEFAULT_TEXT_SPEED = 5;
 
-    private static final int ARROW_FRAME_LENGTH = GifFactory.toFrames(0.25, 1);
-    private static final int ARROW_MAX_LOOPS = 2;
+    private static final int ARROW_FRAME_LENGTH = GifFactory.toFrames(0.1, 1);
+    private static final int ARROW_MAX_LOOPS = 4;
     private static final int LAST_FRAME_REPEAT = GifFactory.toFrames(2, 1);
 
     private final FacePool facePool;
