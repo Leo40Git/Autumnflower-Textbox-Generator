@@ -1,7 +1,6 @@
 package adudecalledleo.aftbg.text.animate;
 
 import adudecalledleo.aftbg.face.Face;
-import adudecalledleo.aftbg.face.FacePool;
 
 public sealed abstract class AnimationCommand {
     /**
@@ -56,22 +55,14 @@ public sealed abstract class AnimationCommand {
      * Set the face image and draw a new frame.
      */
     public static final class SetFace extends AnimationCommand {
-        private final String facePath;
+        private final Face face;
 
-        public SetFace(String facePath) {
-            this.facePath = facePath;
+        public SetFace(Face face) {
+            this.face = face;
         }
 
-        public String getFacePath() {
-            return facePath == null ? "(none)" : facePath;
-        }
-
-        public Face getFace(FacePool from) {
-            if (facePath == null) {
-                return Face.NONE;
-            } else {
-                return from.getByPath(facePath);
-            }
+        public Face getFace() {
+            return face;
         }
     }
 

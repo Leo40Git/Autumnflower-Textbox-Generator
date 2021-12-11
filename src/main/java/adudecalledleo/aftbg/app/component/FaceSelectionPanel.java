@@ -4,6 +4,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.nio.file.Path;
 import java.util.function.Consumer;
 
 import javax.swing.DefaultComboBoxModel;
@@ -13,11 +14,13 @@ import javax.swing.JPanel;
 import adudecalledleo.aftbg.app.render.FaceCategoryListCellRenderer;
 import adudecalledleo.aftbg.app.render.FaceListCellRenderer;
 import adudecalledleo.aftbg.app.util.ComboBoxUtils;
+import adudecalledleo.aftbg.app.util.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FaceCategory;
 import adudecalledleo.aftbg.face.FacePool;
+import adudecalledleo.aftbg.game.GameDefinition;
 
-public final class FaceSelectionPanel extends JPanel implements ItemListener {
+public final class FaceSelectionPanel extends JPanel implements ItemListener, GameDefinitionUpdateListener {
     private final Consumer<Face> faceUpdateListener;
     private final JComboBox<FaceCategory> catSel;
     private final JComboBox<Face> faceSel;
@@ -68,6 +71,11 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener {
     public void updateFacePool(FacePool pool) {
         this.facePool = pool;
         updateCategoriesModel(pool);
+    }
+
+    @Override
+    public void updateGameDefinition(Path basePath, GameDefinition gameDef, FacePool facePool) {
+        updateFacePool(facePool);
     }
 
     private static int getSelectedIndex(DefaultComboBoxModel<?> model) {

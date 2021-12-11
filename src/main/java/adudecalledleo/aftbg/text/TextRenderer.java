@@ -54,7 +54,7 @@ public final class TextRenderer {
         STYLED_FONTS.put(StyleSpec.DEFAULT, DEFAULT_FONT);
     }
 
-    public static void draw(Graphics2D g, NodeList nodes, WindowColors colors, int x, int y) {
+    public static void draw(Graphics2D g, NodeList nodes, int x, int y) {
         // region Save current state
         final var oldColor = g.getColor();
         final var oldStroke = g.getStroke();
@@ -137,7 +137,7 @@ public final class TextRenderer {
                 // advance X by "advance" (text width + padding, I think?)
                 x += layout.getAdvance();
             } else if (node instanceof ColorModifierNode modColor) {
-                g.setColor(modColor.getColor(colors));
+                g.setColor(modColor.getColor());
             } else if (node instanceof StyleModifierNode modStyle) {
                 style = style.add(modStyle.getSpec());
                 g.setFont(getStyledFont(style));

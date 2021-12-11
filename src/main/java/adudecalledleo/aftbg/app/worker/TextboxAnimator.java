@@ -21,6 +21,7 @@ import adudecalledleo.aftbg.text.animate.TextAnimator;
 import adudecalledleo.aftbg.text.modifier.InterruptModifierNode;
 import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.util.GifFactory;
+import adudecalledleo.aftbg.window.WindowColors;
 import adudecalledleo.aftbg.window.WindowContext;
 
 public final class TextboxAnimator extends AbstractTextboxWorker {
@@ -32,13 +33,17 @@ public final class TextboxAnimator extends AbstractTextboxWorker {
 
     private final FacePool facePool;
 
-    public TextboxAnimator(Component parent, LoadFrame loadFrame, TextParser parser, WindowContext winCtx, FacePool facePool, List<Textbox> textboxes) {
+    public TextboxAnimator(Component parent, LoadFrame loadFrame, WindowContext winCtx, FacePool facePool, List<Textbox> textboxes) {
         super(parent, loadFrame, winCtx, textboxes);
         this.facePool = facePool;
     }
 
     @Override
     protected Void doInBackground() {
+        TextParser.Context ctx = new TextParser.Context()
+                .put(WindowColors.class, winCtx.getColors())
+                .put(FacePool.class, facePool);
+
         final int textboxCount = textboxes.size();
 
         TextAnimator animator = null;
@@ -48,7 +53,7 @@ public final class TextboxAnimator extends AbstractTextboxWorker {
         for (int i = 0; i < textboxes.size(); i++) {
             Textbox textbox = textboxes.get(i);
 
-            NodeList sourceNodes = parser.parse(textbox.getText());
+            NodeList sourceNodes = parser.parse(ctx, textbox.getText());
             if (sourceNodes.hasErrors()) {
                 success = false;
                 break;
@@ -70,15 +75,9 @@ public final class TextboxAnimator extends AbstractTextboxWorker {
                 if (command == AnimationCommand.drawFrame()) {
                     drawFrame = textSpeed > 0;
                 } else if (command instanceof AnimationCommand.SetFace setFaceCmd) {
-                    Logger.trace("Setting face to %s".formatted(setFaceCmd.getFacePath()));
-                    Face newFace = setFaceCmd.getFace(facePool);
-                    if (newFace == null) {
-                        // TODO report error
-                        Logger.error("Face \"%s\" was not found!".formatted(setFaceCmd.getFacePath()));
-                    } else {
-                        face = newFace;
-                        drawFrame = true;
-                    }
+                    face = setFaceCmd.getFace();
+                    drawFrame = true;
+                    Logger.trace("Setting face to %s".formatted(face.getPath()));
                 } else if (command instanceof AnimationCommand.AddDelay addDelayCmd) {
                     // repeat last frame X times
                     Logger.trace("Repeating last frame %d times".formatted(addDelayCmd.getLength()));

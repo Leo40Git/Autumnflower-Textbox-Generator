@@ -1,5 +1,6 @@
 package adudecalledleo.aftbg.text.modifier;
 
+import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.node.ErrorNode;
 import adudecalledleo.aftbg.text.node.ModifierNode;
 import adudecalledleo.aftbg.text.node.NodeList;
@@ -7,70 +8,33 @@ import adudecalledleo.aftbg.text.node.Span;
 import adudecalledleo.aftbg.window.WindowColors;
 
 import java.awt.*;
-import java.util.Arrays;
 
-public sealed abstract class ColorModifierNode extends ModifierNode {
+public final class ColorModifierNode extends ModifierNode {
     public static final char KEY = 'c';
 
-    protected ColorModifierNode(int start, int length, Span... argSpans) {
+    private final Color color;
+
+    public ColorModifierNode(int start, int length, Color color, Span... argSpans) {
         super(start, length, KEY, argSpans);
+        this.color = color;
     }
 
-    public abstract Color getColor(WindowColors windowColors);
-
-    public static final class Window extends ColorModifierNode {
-        private final int index;
-
-        public Window(int start, int length, Span argSpan, int index) {
-            super(start, length, argSpan);
-            this.index = index;
-        }
-
-        @Override
-        public Color getColor(WindowColors windowColors) {
-            return windowColors.get(index);
-        }
-
-        @Override
-        public String toString() {
-            return "ColorModifierNode.Window{" +
-                    "index=" + index +
-                    ", start=" + start +
-                    ", length=" + length +
-                    ", argSpans=" + Arrays.toString(argSpans) +
-                    '}';
-        }
-    }
-
-    public static final class Constant extends ColorModifierNode {
-        private final Color color;
-
-        public Constant(int start, int length, Span argSpan, Color color) {
-            super(start, length, argSpan);
-            this.color = color;
-        }
-
-        @Override
-        public Color getColor(WindowColors windowColors) {
-            return color;
-        }
-
-        @Override
-        public String toString() {
-            return "ColorModifierNode.Constant{" +
-                    "color=" + color +
-                    ", start=" + start +
-                    ", length=" + length +
-                    ", argSpans=" + Arrays.toString(argSpans) +
-                    '}';
-        }
+    public Color getColor() {
+        return color;
     }
 
     public static final class Parser implements ModifierParser {
         private static final String ERROR_PREFIX = "Color modifier: ";
 
         @Override
-        public void parse(int start, int argsStart, String args, NodeList nodes) {
+        public void parse(TextParser.Context ctx, int start, int argsStart, String args, NodeList nodes) {
+            WindowColors winCols = ctx.get(WindowColors.class);
+            if (winCols == null) {
+                nodes.add(new ErrorNode(start, ModifierParser.modLen(args),
+                        ERROR_PREFIX + "Missing window colors in context!"));
+                return;
+            }
+
             if (args == null) {
                 nodes.add(new ErrorNode(start, 2,
                         ERROR_PREFIX + "1 argument required, either window color ID or hex color"));
@@ -83,9 +47,9 @@ public sealed abstract class ColorModifierNode extends ModifierNode {
 
             if (args.startsWith("#")) {
                 String hex = args.substring(1);
-                int hexlen = hex.length();
-                if (hexlen != 3 && hexlen != 6) {
-                    nodes.add(new ErrorNode(argsStart, hexlen + 1,
+                int hexLen = hex.length();
+                if (hexLen != 3 && hexLen != 6) {
+                    nodes.add(new ErrorNode(argsStart, hexLen + 1,
                             ERROR_PREFIX + "Invalid hex color, should be either 6 or 3 characters long"));
                     return;
                 }
@@ -93,12 +57,12 @@ public sealed abstract class ColorModifierNode extends ModifierNode {
                 try {
                     rgb = Integer.parseUnsignedInt(hex, 16);
                 } catch (NumberFormatException e) {
-                    nodes.add(new ErrorNode(argsStart, hexlen + 1,
+                    nodes.add(new ErrorNode(argsStart, hexLen + 1,
                             ERROR_PREFIX + "Couldn't parse hex color value"));
                     return;
                 }
                 int r, g, b;
-                if (hexlen == 3) {
+                if (hexLen == 3) {
                     // CSS-style
                     r = rgb & 0xF;
                     r += r << 4;
@@ -112,8 +76,9 @@ public sealed abstract class ColorModifierNode extends ModifierNode {
                     g = (rgb >> 8) & 0xFF;
                     b = (rgb >> 16) & 0xFF;
                 }
-                nodes.add(new Constant(start, 2 + hexlen + 3, new Span(argsStart, hexlen + 1),
-                        new Color(r | g << 8 | b << 16, false)));
+                nodes.add(new ColorModifierNode(start, 2 + hexLen + 3,
+                        new Color(r | g << 8 | b << 16, false),
+                        new Span(argsStart, hexLen + 1)));
             } else {
                 int index;
                 try {
@@ -128,7 +93,9 @@ public sealed abstract class ColorModifierNode extends ModifierNode {
                             ERROR_PREFIX + "Window color ID is too high, max is 31"));
                     return;
                 }
-                nodes.add(new Window(start, 2 + args.length() + 3, new Span(argsStart, args.length()), index));
+                nodes.add(new ColorModifierNode(start, 2 + args.length() + 3,
+                        winCols.get(index),
+                        new Span(argsStart, args.length())));
             }
         }
     }

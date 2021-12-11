@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -16,19 +17,23 @@ import javax.swing.text.*;
 
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.dialog.*;
+import adudecalledleo.aftbg.app.util.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.app.util.UnmodifiableAttributeSetView;
 import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FacePool;
+import adudecalledleo.aftbg.game.GameDefinition;
 import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.TextRenderer;
 import adudecalledleo.aftbg.text.modifier.*;
 import adudecalledleo.aftbg.text.node.*;
 import adudecalledleo.aftbg.util.ColorUtils;
+import adudecalledleo.aftbg.window.WindowColors;
 import adudecalledleo.aftbg.window.WindowContext;
 
-public final class TextboxEditorPane extends JEditorPane implements WindowContextUpdateListener, ActionListener {
+public final class TextboxEditorPane extends JEditorPane
+        implements WindowContextUpdateListener, GameDefinitionUpdateListener, ActionListener {
     private static final BufferedImage SCRATCH_IMAGE = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 
     private static final String AC_ADD_MOD_COLOR = "add_mod.color";
@@ -426,8 +431,10 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
         flushChanges(true);
     }
 
-    public void setFacePool(FacePool facePool) {
+    @Override
+    public void updateGameDefinition(Path basePath, GameDefinition gameDef, FacePool facePool) {
         this.facePool = facePool;
+        flushChanges(true);
     }
 
     private void highlight() {
@@ -442,7 +449,10 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
 
             nodes = null;
             try {
-                nodes = textParser.parse(doc.getText(0, doc.getLength()));
+                TextParser.Context ctx = new TextParser.Context()
+                        .put(WindowColors.class, winCtx.getColors())
+                        .put(FacePool.class, facePool);
+                nodes = textParser.parse(ctx, doc.getText(0, doc.getLength()));
             } catch (BadLocationException e) {
                 Logger.error("Failed to get text to parse!", e);
                 return;
@@ -452,7 +462,7 @@ public final class TextboxEditorPane extends JEditorPane implements WindowContex
             for (Node node : nodes) {
                 if (node instanceof ColorModifierNode modCol) {
                     doc.setCharacterAttributes(modCol.getStart(), modCol.getLength(), styleMod, true);
-                    Color c = modCol.getColor(winCtx.getColors());
+                    Color c = modCol.getColor();
                     style = new SimpleAttributeSet(style);
                     StyleConstants.setForeground(style, c);
 

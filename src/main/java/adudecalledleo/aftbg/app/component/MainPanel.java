@@ -19,10 +19,7 @@ import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.data.TextboxListSerializer;
 import adudecalledleo.aftbg.app.dialog.FacePoolEditorDialog;
 import adudecalledleo.aftbg.app.render.TextboxListCellRenderer;
-import adudecalledleo.aftbg.app.util.DialogUtils;
-import adudecalledleo.aftbg.app.util.ListReorderTransferHandler;
-import adudecalledleo.aftbg.app.util.LoadFrame;
-import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
+import adudecalledleo.aftbg.app.util.*;
 import adudecalledleo.aftbg.app.worker.GameDefinitionReloader;
 import adudecalledleo.aftbg.app.worker.TextboxAnimator;
 import adudecalledleo.aftbg.app.worker.TextboxGenerator;
@@ -48,6 +45,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     private final TextParser textParser;
 
     private final List<WindowContextUpdateListener> winCtxUpdateListeners;
+    private final List<GameDefinitionUpdateListener> gameDefUpdateListeners;
 
     private final List<Textbox> textboxes;
     private int currentTextbox;
@@ -67,6 +65,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         this.textParser = textParser;
 
         winCtxUpdateListeners = new ArrayList<>();
+        gameDefUpdateListeners = new ArrayList<>();
 
         textboxes = new ArrayList<>();
         textboxes.add(new Textbox(Face.NONE, ""));
@@ -74,8 +73,10 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         projectSerializer = new TextboxListSerializer(this);
 
         faceSelection = new FaceSelectionPanel(this::onFaceChanged);
+        gameDefUpdateListeners.add(faceSelection);
         editorPane = new TextboxEditorPane(textParser, this::onTextUpdated);
         winCtxUpdateListeners.add(editorPane);
+        gameDefUpdateListeners.add(editorPane);
 
         textboxSelector = new JList<>();
         textboxSelector.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -83,6 +84,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         textboxSelector.addListSelectionListener(this);
         var renderer = new TextboxListCellRenderer(textParser);
         winCtxUpdateListeners.add(renderer);
+        gameDefUpdateListeners.add(renderer);
         textboxSelector.setCellRenderer(renderer);
         textboxSelector.setOpaque(false);
         ListReorderTransferHandler.install(textboxSelector, this);
@@ -167,8 +169,9 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         this.basePath = basePath;
         this.gameDef = gameDef;
         this.faces = faces;
-        faceSelection.updateFacePool(faces);
-        editorPane.setFacePool(faces);
+        for (var listener : gameDefUpdateListeners) {
+            listener.updateGameDefinition(basePath, gameDef, faces);
+        }
     }
 
     private void updateTextboxSelectorModel() {
@@ -222,7 +225,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                 loadFrame.setVisible(true);
                 List<Textbox> textboxesCopy = new ArrayList<>(textboxes);
 
-                var worker = new TextboxGenerator(this, loadFrame, textParser, winCtx, textboxesCopy);
+                var worker = new TextboxGenerator(this, loadFrame, winCtx, textboxesCopy);
                 worker.execute();
             }
             case AC_GENERATE_ANIMATION -> {
@@ -247,7 +250,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                 loadFrame.setVisible(true);
                 List<Textbox> textboxesCopy = new ArrayList<>(textboxes);
 
-                var worker = new TextboxAnimator(this, loadFrame, textParser, winCtx, faces, textboxesCopy);
+                var worker = new TextboxAnimator(this, loadFrame, winCtx, faces, textboxesCopy);
                 worker.execute();
             }
             case AC_TEXTBOX_ADD -> {

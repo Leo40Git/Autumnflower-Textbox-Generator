@@ -1,5 +1,6 @@
 package adudecalledleo.aftbg.text.modifier;
 
+import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.node.ModifierNode;
 import adudecalledleo.aftbg.text.node.NodeList;
 
@@ -19,7 +20,7 @@ public final class InterruptModifierNode extends ModifierNode {
         }
 
         @Override
-        void addNodes(int start, NodeList nodes) {
+        void addNodes(TextParser.Context ctx, int start, NodeList nodes) {
             nodes.add(new InterruptModifierNode(start));
         }
     }

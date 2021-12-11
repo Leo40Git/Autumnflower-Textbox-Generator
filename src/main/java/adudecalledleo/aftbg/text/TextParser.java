@@ -1,5 +1,9 @@
 package adudecalledleo.aftbg.text;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 import adudecalledleo.aftbg.text.modifier.ModifierRegistry;
 import adudecalledleo.aftbg.text.node.ErrorNode;
 import adudecalledleo.aftbg.text.node.LineBreakNode;
@@ -13,6 +17,23 @@ import adudecalledleo.aftbg.text.node.TextNode;
  * pass to another thread.
  */
 public final class TextParser {
+    public static final class Context {
+        private final Map<Class<?>, Object> map;
+
+        public Context() {
+            map = new HashMap<>();
+        }
+
+        public <V> V get(Class<V> type) {
+            return type.cast(map.get(type));
+        }
+
+        public <V> Context put(Class<V> type, V value) {
+            map.put(type, value);
+            return this;
+        }
+    }
+
     private final StringBuilder sb;
     private int textStart, textLength;
     private NodeList nodes;
@@ -21,7 +42,7 @@ public final class TextParser {
         sb = new StringBuilder();
     }
 
-    public NodeList parse(String text) {
+    public NodeList parse(Context ctx, String text) {
         text = TextSanitizer.apply(text);
 
         char[] chars = text.toCharArray();
@@ -65,7 +86,7 @@ public final class TextParser {
                         if (parser == null) {
                             nodes.add(new ErrorNode(modStartPos, pos - modStartPos + 1, "Unknown modifier key '" + c + "'"));
                         } else {
-                            parser.parse(modStartPos, start + 1, sb.toString(), nodes);
+                            parser.parse(ctx, modStartPos, start + 1, sb.toString(), nodes);
                             sb.setLength(0);
                         }
                         textStart = pos + 1;
@@ -73,7 +94,7 @@ public final class TextParser {
                         if (parser == null) {
                             nodes.add(new ErrorNode(modStartPos, 2, "Unknown modifier key '" + c + "'"));
                         } else {
-                            parser.parse(modStartPos, -1, null, nodes);
+                            parser.parse(ctx, modStartPos, -1, null, nodes);
                         }
                         textStart = pos;
                         pos--;

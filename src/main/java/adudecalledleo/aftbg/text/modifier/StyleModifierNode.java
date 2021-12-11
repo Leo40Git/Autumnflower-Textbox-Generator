@@ -2,6 +2,7 @@ package adudecalledleo.aftbg.text.modifier;
 
 import java.util.Arrays;
 
+import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.node.ModifierNode;
 import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.text.node.Span;
@@ -24,7 +25,7 @@ public final class StyleModifierNode extends ModifierNode {
         private static final String ERROR_PREFIX = "Style modifier: ";
 
         @Override
-        public void parse(int start, int argsStart, String args, NodeList nodes) {
+        public void parse(TextParser.Context ctx, int start, int argsStart, String args, NodeList nodes) {
             if (args == null) {
                 nodes.add(new StyleModifierNode(start, 2, StyleSpec.DEFAULT));
                 return;

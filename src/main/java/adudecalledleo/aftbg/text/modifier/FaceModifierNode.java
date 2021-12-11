@@ -1,5 +1,10 @@
 package adudecalledleo.aftbg.text.modifier;
 
+import java.util.Arrays;
+
+import adudecalledleo.aftbg.face.Face;
+import adudecalledleo.aftbg.face.FacePool;
+import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.animate.AnimationCommand;
 import adudecalledleo.aftbg.text.animate.AnimationCommandNode;
 import adudecalledleo.aftbg.text.node.ErrorNode;
@@ -7,16 +12,14 @@ import adudecalledleo.aftbg.text.node.ModifierNode;
 import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.text.node.Span;
 
-import java.util.Arrays;
-
 public final class FaceModifierNode extends ModifierNode implements AnimationCommandNode {
     public static final char KEY = '@';
 
     private final AnimationCommand.SetFace animCmd;
 
-    public FaceModifierNode(int start, int length, String facePath, Span... argSpans) {
+    public FaceModifierNode(int start, int length, Face face, Span... argSpans) {
         super(start, length, KEY, argSpans);
-        animCmd = new AnimationCommand.SetFace(facePath);
+        animCmd = new AnimationCommand.SetFace(face);
     }
 
     @Override
@@ -28,7 +31,14 @@ public final class FaceModifierNode extends ModifierNode implements AnimationCom
         private static final String ERROR_PREFIX = "Face modifier: ";
 
         @Override
-        public void parse(int start, int argsStart, String args, NodeList nodes) {
+        public void parse(TextParser.Context ctx, int start, int argsStart, String args, NodeList nodes) {
+            FacePool facePool = ctx.get(FacePool.class);
+            if (facePool == null) {
+                nodes.add(new ErrorNode(start, ModifierParser.modLen(args),
+                        ERROR_PREFIX + "Missing face pool in context!"));
+                return;
+            }
+
             if (args == null) {
                 nodes.add(new FaceModifierNode(start, 2, null));
                 return;
@@ -36,20 +46,29 @@ public final class FaceModifierNode extends ModifierNode implements AnimationCom
                 nodes.add(new ErrorNode(start, 2 + args.length() + 2,
                         ERROR_PREFIX + "1 argument required, face path (category/name)"));
                 return;
-            } else if (!args.contains("/")) {
-                nodes.add(new ErrorNode(start, 2 + args.length() + 2,
+            }
+
+            if (!args.contains("/")) {
+                nodes.add(new ErrorNode(argsStart, args.length(),
                         ERROR_PREFIX + "Invalid argument, should be face path (category/name)"));
                 return;
             }
 
-            nodes.add(new FaceModifierNode(start, 2 + args.length() + 2, args, new Span(argsStart, args.length())));
+            Face face = facePool.getByPath(args);
+            if (face == null) {
+                nodes.add(new ErrorNode(argsStart, args.length(),
+                        ERROR_PREFIX + "Invalid argument, face with that path doesn't exist"));
+                return;
+            }
+
+            nodes.add(new FaceModifierNode(start, 2 + args.length() + 2, face, new Span(argsStart, args.length())));
         }
     }
 
     @Override
     public String toString() {
         return "FaceModifierNode{" +
-                "facePath=" + animCmd.getFacePath() +
+                "face=" + animCmd.getFace().getPath() +
                 ", start=" + start +
                 ", length=" + length +
                 ", argSpans=" + Arrays.toString(argSpans) +

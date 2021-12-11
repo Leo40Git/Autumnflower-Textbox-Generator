@@ -1,5 +1,6 @@
 package adudecalledleo.aftbg.text.modifier;
 
+import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.animate.AnimationCommand;
 import adudecalledleo.aftbg.text.animate.AnimationCommandNode;
 import adudecalledleo.aftbg.text.node.ErrorNode;
@@ -29,7 +30,7 @@ public final class TextSpeedModifierNode extends ModifierNode implements Animati
         private static final String ERROR_PREFIX = "Text speed modifier: ";
 
         @Override
-        public void parse(int start, int argsStart, String args, NodeList nodes) {
+        public void parse(TextParser.Context ctx, int start, int argsStart, String args, NodeList nodes) {
             if (args == null) {
                 nodes.add(new ErrorNode(start, 2,
                         ERROR_PREFIX + "1 argument required, new speed"));

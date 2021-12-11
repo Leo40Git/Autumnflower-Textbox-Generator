@@ -32,7 +32,7 @@ public abstract class AbstractTextboxWorker extends SwingWorker<Void, Void> {
     protected void drawTextbox(Graphics2D g, int x, int y, Face face, NodeList nodes, int arrowFrame) {
         winCtx.drawBackground(g, x + 4, y + 4, 808, 172, null);
         g.drawImage(face.getImage(), x + 18, y + 18, null);
-        TextRenderer.draw(g, nodes, winCtx.getColors(),
+        TextRenderer.draw(g, nodes,
                 x + (face.isBlank() ? 18 : 186),
                 y + 21);
         winCtx.drawBorder(g, x, y, 816, 180, null);
