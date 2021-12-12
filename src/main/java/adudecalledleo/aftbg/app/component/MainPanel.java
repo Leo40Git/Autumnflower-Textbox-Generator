@@ -430,8 +430,8 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         private boolean canOverwriteCurrentProject(String title, String description) {
             if (!isProjectEmpty()) {
                 int result = JOptionPane.showConfirmDialog(MainPanel.this,
-                        "Do you want to save the current project before " + description + "?\n" +
-                                "Doing this will irreversibly delete all current textboxes!",
+                        "<html>Do you want to save the current project before " + description + "?<br/>" +
+                                "<b>Doing this will irreversibly delete all current textboxes!</b></html>",
                         "New Project", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
                 if (result == JOptionPane.YES_OPTION) {
                     try {
