@@ -338,19 +338,19 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         return true;
     }
 
-    public void saveProject(boolean forceChooserDialog) throws IOException {
+    public boolean saveProject(boolean forceChooserDialog) throws IOException {
         flushChanges();
         if (currentProject == null || forceChooserDialog) {
             File sel = DialogUtils.fileSaveDialog(this, "Save Project", DialogUtils.FILTER_JSON_FILES);
             if (sel == null) {
-                return;
+                return false;
             }
             if (sel.exists()) {
                 final int result = JOptionPane.showConfirmDialog(this,
                         "File \"" + sel + "\" already exists.\nOverwrite it?", "Save Project",
                         JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
                 if (result != JOptionPane.YES_OPTION) {
-                    return;
+                    return false;
                 }
                 if (!sel.delete()) {
                     throw new IOException("Could not delete file \"" + sel + "\"!");
@@ -362,6 +362,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
              JsonWriter out = GameDefinition.GSON.newJsonWriter(fw)) {
             projectSerializer.write(textboxes, out);
         }
+        return true;
     }
 
     private MenuBarImpl menuBar;
@@ -435,7 +436,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         "New Project", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
                 if (result == JOptionPane.YES_OPTION) {
                     try {
-                        saveProject(false);
+                        return saveProject(false);
                     } catch (IOException | IllegalStateException e) {
                         Logger.error("Failed to write project!", e);
                         JOptionPane.showMessageDialog(MainPanel.this,
