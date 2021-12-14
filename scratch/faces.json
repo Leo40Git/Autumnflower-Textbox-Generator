@@ -35,6 +35,7 @@
       "Neutral": "faces/bailey/neutral.png",
       "Sad": "faces/bailey/sad.png",
       "Happy": "faces/bailey/happy.png",
+      "Masked": "faces/bailey/masked.png",
       "Demonform (Twelve)": "faces/bailey/demonform_twelve.png"
     }
   },
