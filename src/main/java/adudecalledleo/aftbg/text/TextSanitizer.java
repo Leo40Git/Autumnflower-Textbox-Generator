@@ -14,7 +14,7 @@ public final class TextSanitizer {
         UnaryOperator<String> f;
 
         if ("\n".equals(System.lineSeparator())) {
-            f = input -> input;
+            f = UnaryOperator.identity();
         } else {
             f = new UnaryOperator<>() {
                 private final Pattern pattern = Pattern.compile(System.lineSeparator(), Pattern.LITERAL);
