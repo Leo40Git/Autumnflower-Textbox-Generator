@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import adudecalledleo.aftbg.app.AppPrefs;
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.UncaughtExceptionHandler;
 import adudecalledleo.aftbg.app.util.LoadFrame;
@@ -43,6 +44,8 @@ public record Bootstrap(LoadFrame loadFrame, Path basePath, TextboxResources tex
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
 
         ModifierRegistry.init();
+
+        AppPrefs.init();
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
