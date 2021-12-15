@@ -66,7 +66,7 @@ public final class ColorModifierDialog extends JDialog {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);
         setResizable(false);
-        setContentPane(panel = new ContentPanel(this, winCtx));
+        setContentPane(panel = new ContentPanel(winCtx));
         pack();
         addWindowListener(new WindowAdapter() {
             @Override
@@ -94,8 +94,7 @@ public final class ColorModifierDialog extends JDialog {
         }
     }
 
-    private static final class ContentPanel extends JPanel implements ActionListener {
-        private final ColorModifierDialog dialog;
+    private final class ContentPanel extends JPanel implements ActionListener {
         private final WindowContext winCtx;
         final ButtonGroup bgColors;
         final JRadioButton rbCustom;
@@ -104,8 +103,7 @@ public final class ColorModifierDialog extends JDialog {
         Color customColor;
         Result result;
 
-        private ContentPanel(ColorModifierDialog dialog, WindowContext winCtx) {
-            this.dialog = dialog;
+        private ContentPanel(WindowContext winCtx) {
             this.winCtx = winCtx;
 
             customColor = winCtx.getColor(0);
@@ -241,12 +239,12 @@ public final class ColorModifierDialog extends JDialog {
                 updatePreview();
             } if (btnAdd.equals(src)) {
                 lastResult = result;
-                dialog.setVisible(false);
-                dialog.dispose();
+                ColorModifierDialog.this.setVisible(false);
+                ColorModifierDialog.this.dispose();
             } else if (btnCancel.equals(src)) {
                 result = null;
-                dialog.setVisible(false);
-                dialog.dispose();
+                ColorModifierDialog.this.setVisible(false);
+                ColorModifierDialog.this.dispose();
             } else {
                 var mdl = bgColors.getSelection();
                 if (mdl == rbCustom.getModel()) {

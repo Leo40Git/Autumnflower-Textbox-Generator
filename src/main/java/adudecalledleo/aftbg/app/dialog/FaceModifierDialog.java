@@ -31,7 +31,7 @@ public final class FaceModifierDialog extends JDialog {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);
         setResizable(false);
-        setContentPane(pane = new ContentPane(this, facePool, face));
+        setContentPane(pane = new ContentPane(facePool, face));
         pack();
         // HACK to get shit to display properly agh
         setSize(new Dimension(72 * 10 + 48, 72 + 80));
@@ -49,14 +49,12 @@ public final class FaceModifierDialog extends JDialog {
         return pane.face;
     }
 
-    private static final class ContentPane extends JPanel implements Consumer<Face>, ActionListener {
-        final FaceModifierDialog dialog;
+    private final class ContentPane extends JPanel implements Consumer<Face>, ActionListener {
         final FacePool facePool;
         final JButton btnCancel, btnAdd;
         Face face;
 
-        public ContentPane(FaceModifierDialog dialog, FacePool facePool, Face face) {
-            this.dialog = dialog;
+        public ContentPane(FacePool facePool, Face face) {
             this.facePool = facePool;
             this.face = face;
 
@@ -93,12 +91,12 @@ public final class FaceModifierDialog extends JDialog {
         public void actionPerformed(ActionEvent e) {
             Object src = e.getSource();
             if (btnAdd.equals(src)) {
-                dialog.setVisible(false);
-                dialog.dispose();
+                FaceModifierDialog.this.setVisible(false);
+                FaceModifierDialog.this.dispose();
             } else if (btnCancel.equals(src)) {
                 face = null;
-                dialog.setVisible(false);
-                dialog.dispose();
+                FaceModifierDialog.this.setVisible(false);
+                FaceModifierDialog.this.dispose();
             }
         }
     }

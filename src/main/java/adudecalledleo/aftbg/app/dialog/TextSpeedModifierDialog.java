@@ -21,7 +21,7 @@ public final class TextSpeedModifierDialog extends JDialog {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);
         setResizable(false);
-        setContentPane(pane = new ContentPane(this));
+        setContentPane(pane = new ContentPane());
         pack();
         addWindowListener(new WindowAdapter() {
             @Override
@@ -37,16 +37,13 @@ public final class TextSpeedModifierDialog extends JDialog {
         return pane.textSpeed;
     }
 
-    private static final class ContentPane extends JPanel implements ActionListener, ChangeListener {
-        final TextSpeedModifierDialog dialog;
+    private final class ContentPane extends JPanel implements ActionListener, ChangeListener {
         final JSpinner spnTextSpeed;
         final JButton btnCancel, btnAdd;
         final JLabel previewLabel;
         Integer textSpeed;
 
-        public ContentPane(TextSpeedModifierDialog dialog) {
-            this.dialog = dialog;
-
+        public ContentPane() {
             textSpeed = lastTextSpeed;
 
             spnTextSpeed = new JSpinner(new SpinnerNumberModel(textSpeed, 0, null, 1));
@@ -93,12 +90,12 @@ public final class TextSpeedModifierDialog extends JDialog {
             Object src = e.getSource();
             if (btnAdd.equals(src)) {
                 lastTextSpeed = textSpeed;
-                dialog.setVisible(false);
-                dialog.dispose();
+                TextSpeedModifierDialog.this.setVisible(false);
+                TextSpeedModifierDialog.this.dispose();
             } else if (btnCancel.equals(src)) {
                 textSpeed = null;
-                dialog.setVisible(false);
-                dialog.dispose();
+                TextSpeedModifierDialog.this.setVisible(false);
+                TextSpeedModifierDialog.this.dispose();
             }
         }
 

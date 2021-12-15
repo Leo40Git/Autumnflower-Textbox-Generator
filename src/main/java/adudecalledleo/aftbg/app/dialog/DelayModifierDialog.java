@@ -18,7 +18,7 @@ public final class DelayModifierDialog extends JDialog {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);
         setResizable(false);
-        setContentPane(pane = new ContentPane(this));
+        setContentPane(pane = new ContentPane());
         pack();
         addWindowListener(new WindowAdapter() {
             @Override
@@ -34,16 +34,13 @@ public final class DelayModifierDialog extends JDialog {
         return pane.delayLength;
     }
 
-    private static final class ContentPane extends JPanel implements ActionListener, ChangeListener {
-        final DelayModifierDialog dialog;
+    private final class ContentPane extends JPanel implements ActionListener, ChangeListener {
         final JSpinner spnDelayLength;
         final JButton btnCancel, btnAdd;
         final JLabel previewLabel;
         Integer delayLength;
 
-        public ContentPane(DelayModifierDialog dialog) {
-            this.dialog = dialog;
-
+        public ContentPane() {
             delayLength = 1;
 
             spnDelayLength = new JSpinner(new SpinnerNumberModel(delayLength, 1, null, 1));
@@ -86,12 +83,12 @@ public final class DelayModifierDialog extends JDialog {
         public void actionPerformed(ActionEvent e) {
             Object src = e.getSource();
             if (btnAdd.equals(src)) {
-                dialog.setVisible(false);
-                dialog.dispose();
+                DelayModifierDialog.this.setVisible(false);
+                DelayModifierDialog.this.dispose();
             } else if (btnCancel.equals(src)) {
                 delayLength = null;
-                dialog.setVisible(false);
-                dialog.dispose();
+                DelayModifierDialog.this.setVisible(false);
+                DelayModifierDialog.this.dispose();
             }
         }
 
