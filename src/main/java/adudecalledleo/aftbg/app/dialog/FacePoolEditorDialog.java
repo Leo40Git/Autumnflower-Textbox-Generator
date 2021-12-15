@@ -1,6 +1,5 @@
 package adudecalledleo.aftbg.app.dialog;
 
-import adudecalledleo.aftbg.Main;
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.render.FaceCategoryListCellRenderer;
 import adudecalledleo.aftbg.app.render.FaceListCellRenderer;
@@ -17,8 +16,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,13 +35,57 @@ public final class FacePoolEditorDialog extends JDialog {
         pool = null;
         setIconImage(AppResources.Icons.EDIT_FACE_POOL.getAsImage());
         setTitle("Edit face pool");
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent evt) {
+                switch (JOptionPane.showConfirmDialog(FacePoolEditorDialog.this,
+                        "Do you want to save your face pool before exiting?", "Close dialog",
+                        JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE)) {
+                case JOptionPane.YES_OPTION:
+                    if (!saveFacePool()) {
+                        break;
+                    }
+                case JOptionPane.NO_OPTION:
+                    FacePoolEditorDialog.this.setVisible(false);
+                    FacePoolEditorDialog.this.dispose();
+                default:
+                case JOptionPane.CANCEL_OPTION:
+                    break;
+                }
+            }
+        });
         setModal(true);
         setResizable(false);
         setContentPane(contentPane = new ContentPane());
         setJMenuBar(new MenuBar());
         setPreferredSize(new Dimension(768, 72 * 8 + 160));
         pack();
+    }
+
+    private boolean saveFacePool() {
+        for (var cat : pool.getCategories().values()) {
+            if (cat.getFaces().isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Category \"" + cat.getName() + "\" is empty!\n" +
+                                "Either add a face to it or remove the category.",
+                        "Save Pool", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+        }
+
+        try (BufferedWriter writer = Files.newBufferedWriter(filePath)) {
+            GameDefinition.GSON.toJson(pool, writer);
+        } catch (Exception e) {
+            Logger.error("Failed to write face pool", e);
+            JOptionPane.showMessageDialog(this,
+                    "Failed to write face pool!\n" + e + "\n"
+                            + "See \"" + Logger.logFile() + "\" for more details.",
+                    "Save Pool", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        return true;
     }
     
     private final class MenuBar extends JMenuBar implements ActionListener {
@@ -116,25 +158,7 @@ public final class FacePoolEditorDialog extends JDialog {
                     contentPane.updateCategoriesModel();
                 }
                 case AC_SAVE -> {
-                    for (var cat : pool.getCategories().values()) {
-                        if (cat.getFaces().isEmpty()) {
-                            JOptionPane.showMessageDialog(this,
-                                    "Category \"" + cat.getName() + "\" is empty!\n" +
-                                            "Either add a face to it or remove the category.",
-                                    "Save Pool", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                    }
-
-                    try (BufferedWriter writer = Files.newBufferedWriter(filePath)) {
-                        GameDefinition.GSON.toJson(pool, writer);
-                    } catch (Exception e) {
-                        Logger.error("Failed to write face pool", e);
-                        JOptionPane.showMessageDialog(this,
-                                "Failed to write face pool!\n" + e + "\n"
-                                        + "See \"" + Logger.logFile() + "\" for more details.",
-                                "Save Pool", JOptionPane.ERROR_MESSAGE);
-                    }
+                    saveFacePool();
                 }
             }
         }
