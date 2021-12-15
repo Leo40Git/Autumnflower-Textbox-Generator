@@ -391,19 +391,19 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             JMenuItem item;
 
             JMenu fileMenu = new JMenu("File");
-            item = new JMenuItem("New Project");
+            item = new JMenuItem("New Project", AppResources.Icons.PROJECT_NEW.get());
             item.setActionCommand(AC_NEW);
             item.addActionListener(this);
             fileMenu.add(item);
-            item = new JMenuItem("Load Project");
+            item = new JMenuItem("Load Project", AppResources.Icons.PROJECT_LOAD.get());
             item.setActionCommand(AC_LOAD);
             item.addActionListener(this);
             fileMenu.add(item);
-            item = new JMenuItem("Save Project");
+            item = new JMenuItem("Save Project", AppResources.Icons.PROJECT_SAVE.get());
             item.setActionCommand(AC_SAVE);
             item.addActionListener(this);
             fileMenu.add(item);
-            item = new JMenuItem("Save Project As...");
+            item = new JMenuItem("Save Project As...", AppResources.Icons.PROJECT_SAVE_AS.get());
             item.setActionCommand(AC_SAVE_AS);
             item.addActionListener(this);
             fileMenu.add(item);
@@ -413,7 +413,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             item.addActionListener(this);
             fileMenu.add(item);
             fileMenu.addSeparator();
-            item = new JMenuItem("Preferences...");
+            item = new JMenuItem("Preferences...", AppResources.Icons.PREFS.get());
             item.setActionCommand(AC_PREFS);
             item.addActionListener(this);
             fileMenu.add(item);
@@ -425,7 +425,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             toolsMenu.add(item);
 
             JMenu helpMenu = new JMenu("Help");
-            item = new JMenuItem("About");
+            item = new JMenuItem("About", AppResources.Icons.ABOUT.get());
             item.setActionCommand(AC_ABOUT);
             item.addActionListener(this);
             helpMenu.add(item);

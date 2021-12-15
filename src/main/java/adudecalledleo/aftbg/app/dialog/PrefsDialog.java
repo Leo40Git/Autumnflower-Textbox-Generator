@@ -6,13 +6,14 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import adudecalledleo.aftbg.app.AppPrefs;
+import adudecalledleo.aftbg.app.AppResources;
 
 public final class PrefsDialog extends JDialog {
     private ContentPane pane;
 
     public PrefsDialog(Frame owner) {
         super(owner);
-        //setIconImage(AppResources.Icons.MOD_TEXT_SPEED.getAsImage());
+        setIconImage(AppResources.Icons.PREFS.getAsImage());
         setTitle("Edit preferences");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);
