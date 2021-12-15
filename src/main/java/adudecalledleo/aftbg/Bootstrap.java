@@ -10,6 +10,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import adudecalledleo.aftbg.app.AppPrefs;
 import adudecalledleo.aftbg.app.AppResources;
+import adudecalledleo.aftbg.app.AppUpdateCheck;
 import adudecalledleo.aftbg.app.UncaughtExceptionHandler;
 import adudecalledleo.aftbg.app.util.LoadFrame;
 import adudecalledleo.aftbg.logging.Logger;
@@ -54,6 +55,22 @@ public record Bootstrap(LoadFrame loadFrame, Path basePath, TextboxResources tex
         }
 
         LoadFrame loadFrame = new LoadFrame("Loading...", true);
+
+        // FIXME shouldn't autoupdate in dev envs (this is for testing)
+        if (/*!BuildInfo.isDevelopment() &&*/ AppPrefs.isAutoUpdateCheckEnabled()) {
+            loadFrame.setLoadString("Checking for updates...");
+            try {
+                AppUpdateCheck.doCheck(null);
+            } catch (Exception e) {
+                Logger.error("Update check failed!", e);
+                loadFrame.setAlwaysOnTop(false);
+                JOptionPane.showMessageDialog(null,
+                        "Failed to check for updates!\nSee \"" + Logger.logFile() + "\" for more details.",
+                        "Failed to check for updates", JOptionPane.ERROR_MESSAGE);
+                loadFrame.setAlwaysOnTop(true);
+            }
+            loadFrame.setLoadString("Loading...");
+        }
 
         try {
             AppResources.load();

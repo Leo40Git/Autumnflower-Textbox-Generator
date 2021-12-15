@@ -50,7 +50,7 @@ public final class LoadFrame extends JFrame {
         setDefaultCloseOperation(important ? JFrame.EXIT_ON_CLOSE : WindowConstants.DO_NOTHING_ON_CLOSE);
         setAlwaysOnTop(important);
         setUndecorated(true);
-        final Dimension size = new Dimension(240, 80);
+        final Dimension size = new Dimension(320, 120);
         setPreferredSize(size);
         setMaximumSize(size);
         setMinimumSize(size);
@@ -59,15 +59,15 @@ public final class LoadFrame extends JFrame {
         panel.setLayout(new BorderLayout());
         panel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
         loadLabel = new JLabel(loadString);
-        loadLabel.setFont(loadLabel.getFont().deriveFont(Font.BOLD, 20));
+        loadLabel.setFont(loadLabel.getFont().deriveFont(Font.BOLD, 24));
         loadLabel.setHorizontalAlignment(SwingConstants.CENTER);
         loadLabel.setVerticalAlignment(SwingConstants.CENTER);
         JLabel animLabel = new JLabel();
-        animLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
+        animLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 40));
         animLabel.setHorizontalAlignment(SwingConstants.CENTER);
         animLabel.setVerticalAlignment(SwingConstants.CENTER);
         JLabel brandLabel = new JLabel(BuildInfo.name() + " v" + BuildInfo.version());
-        brandLabel.setFont(brandLabel.getFont().deriveFont(Font.PLAIN, 10));
+        brandLabel.setFont(brandLabel.getFont().deriveFont(Font.PLAIN, 12));
         Color brandFg = brandLabel.getForeground();
         brandLabel.setForeground(new Color(brandFg.getRed(), brandFg.getGreen(), brandFg.getBlue(), 158));
         brandLabel.setHorizontalAlignment(SwingConstants.CENTER);
