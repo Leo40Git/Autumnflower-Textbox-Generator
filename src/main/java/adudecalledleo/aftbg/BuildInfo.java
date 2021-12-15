@@ -30,7 +30,7 @@ public final class BuildInfo {
         }
 
         name = Objects.requireNonNull(jsonRep.name, "name");
-        abbreviatedName = Objects.requireNonNull(jsonRep.name_abbr, "name_abbr");
+        abbreviatedName = Objects.requireNonNull(jsonRep.abbreviatedName, "abbreviatedName");
         credits = Objects.requireNonNull(jsonRep.credits, "credits");
         String verStr = Objects.requireNonNull(jsonRep.version, "version");
 
@@ -80,7 +80,7 @@ public final class BuildInfo {
     }
 
     private static final class JsonRep {
-        public String name, name_abbr, version;
+        public String name, abbreviatedName, version;
         public String[] credits;
     }
 }

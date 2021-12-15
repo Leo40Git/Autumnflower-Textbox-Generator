@@ -549,6 +549,9 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                             "<html>" + BuildInfo.name() + " (" + BuildInfo.abbreviatedName() + ") "
                             + "version " + BuildInfo.version() + "<br/>"
                             + String.join("<br/>", BuildInfo.credits())
+                            + "<hr/>"
+                            + "Current game definition is " + gameDef.getName() + "<br/>"
+                            + String.join("<br/>", gameDef.getCredits())
                             + "</html>",
                             "About " + BuildInfo.name() + " v" + BuildInfo.version(), JOptionPane.INFORMATION_MESSAGE);
                 }

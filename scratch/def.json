@@ -6,5 +6,10 @@
     "green": -255,
     "blue": -255
   },
-  "facesPath": "faces.json"
+  "facesPath": "faces.json",
+  "credits": [
+    "Autumnflower by Kazerad and his Picarto stream chat",
+    "Most face images by DPronin and DusetrFox",
+    "Janes face image by Fuzzydoodles/Ciderward"
+  ]
 }

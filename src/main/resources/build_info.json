@@ -1,11 +1,8 @@
 {
   "name": "Autumnflower Textbox Generator",
-  "name_abbr": "AFTBG",
+  "abbreviatedName": "AFTBG",
   "version": "${version}",
   "credits": [
-    "Programmed by ADudeCalledLeo",
-    "Autumnflower by Kazerad and his Picarto stream chat",
-    "Most face images by DPronin and DusetrFox",
-    "Janes face image by Fuzzydoodles/Ciderward"
+    "Programmed by ADudeCalledLeo"
   ]
 }

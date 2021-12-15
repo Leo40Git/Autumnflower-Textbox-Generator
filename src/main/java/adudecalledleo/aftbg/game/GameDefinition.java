@@ -6,7 +6,6 @@ import adudecalledleo.aftbg.util.WindowTintAdapter;
 import adudecalledleo.aftbg.window.WindowTint;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.InstanceCreator;
 
 import java.nio.file.Path;
 
@@ -15,8 +14,6 @@ public final class GameDefinition {
     public static final Gson GSON = new GsonBuilder()
             .setLenient()
             .setPrettyPrinting()
-            .registerTypeAdapter(GameDefinition.class,
-                    (InstanceCreator<Object>) type -> new GameDefinition(null, null, null, null))
             .registerTypeAdapter(Path.class, new PathAdapter())
             .registerTypeAdapter(WindowTint.class, new WindowTintAdapter())
             .registerTypeAdapter(FacePool.class, new FacePool.Adapter())
@@ -26,12 +23,14 @@ public final class GameDefinition {
     private final Path windowPath;
     private final WindowTint windowTint;
     private final Path facesPath;
+    private final String[] credits;
 
-    public GameDefinition(String name, Path windowPath, WindowTint windowTint, Path facesPath) {
+    public GameDefinition(String name, Path windowPath, WindowTint windowTint, Path facesPath, String[] credits) {
         this.name = name;
         this.windowPath = windowPath;
         this.windowTint = windowTint;
         this.facesPath = facesPath;
+        this.credits = credits;
     }
 
     public String getName() {
@@ -48,5 +47,9 @@ public final class GameDefinition {
 
     public Path getFacesPath() {
         return facesPath;
+    }
+
+    public String[] getCredits() {
+        return credits.clone();
     }
 }
