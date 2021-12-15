@@ -14,7 +14,7 @@ public final class DelayModifierDialog extends JDialog {
     public DelayModifierDialog(Frame owner) {
         super(owner);
         setIconImage(AppResources.Icons.MOD_DELAY.getAsImage());
-        setTitle("Add face modifier");
+        setTitle("Add delay modifier");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);
         setResizable(false);

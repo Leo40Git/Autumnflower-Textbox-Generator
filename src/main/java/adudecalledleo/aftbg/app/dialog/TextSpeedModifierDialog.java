@@ -17,7 +17,7 @@ public final class TextSpeedModifierDialog extends JDialog {
     public TextSpeedModifierDialog(Frame owner) {
         super(owner);
         setIconImage(AppResources.Icons.MOD_TEXT_SPEED.getAsImage());
-        setTitle("Add face modifier");
+        setTitle("Add text speed modifier");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);
         setResizable(false);
