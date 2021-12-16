@@ -1,42 +1,62 @@
 package adudecalledleo.aftbg.app;
 
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import adudecalledleo.aftbg.logging.Logger;
+import com.google.gson.*;
 
 public final class AppPrefs {
-    private AppPrefs() { }
+    private static final Gson GSON = new GsonBuilder()
+            .setLenient()
+            .setPrettyPrinting()
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .create();
+    private static final int CURRENT_VERSION = 1;
+    private static final Path SAVE_PATH = Paths.get(".", "prefs.json").toAbsolutePath();
 
-    private static final long VERSION = 1;
+    private static AppPrefs instance;
 
-    private static final String KEY_VERSION = "version";
-    private static final String KEY_AUTO_UPDATE_CHECK = "auto_update_check";
+    private final int version;
+    private boolean autoUpdateCheck;
 
-    private static Preferences root;
-
-    public static void init() {
-        root = Preferences.userNodeForPackage(AppPrefs.class);
-        long version = root.getLong(KEY_VERSION, 0);
-        if (version == 0) {
-            root.putLong(KEY_VERSION, VERSION);
-        }
+    public AppPrefs(int version) {
+        this.version = version;
+        // DEFAULT VALUES
+        autoUpdateCheck = true;
     }
 
-    public static void deleteAll() {
-        try {
-            root.removeNode();
-            root = null;
-        } catch (BackingStoreException e) {
-            Logger.error("Failed to delete preferences", e);
+    public static void init() throws IOException {
+        if (Files.exists(SAVE_PATH)) {
+            try (BufferedReader reader = Files.newBufferedReader(SAVE_PATH)) {
+                instance = GSON.fromJson(reader, AppPrefs.class);
+            } catch (JsonParseException e) {
+                throw new IOException("Failed to parse JSON", e);
+            }
+        } else {
+            instance = new AppPrefs(CURRENT_VERSION);
+            flush();
+        }
+        Runtime.getRuntime().addShutdownHook(new Thread(AppPrefs::flush));
+    }
+
+    public static void flush() {
+        try (BufferedWriter writer = Files.newBufferedWriter(SAVE_PATH)) {
+            GSON.toJson(instance, writer);
+        } catch (IOException | JsonIOException e) {
+            Logger.error("Failed to flush preferences!", e);
         }
     }
 
     public static boolean isAutoUpdateCheckEnabled() {
-        return root.getBoolean(KEY_AUTO_UPDATE_CHECK, true);
+        return instance.autoUpdateCheck;
     }
 
     public static void setAutoUpdateCheckEnabled(boolean autoUpdateCheckEnabled) {
-        root.putBoolean(KEY_AUTO_UPDATE_CHECK, autoUpdateCheckEnabled);
+        instance.autoUpdateCheck = autoUpdateCheckEnabled;
     }
 }

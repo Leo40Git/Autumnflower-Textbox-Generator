@@ -21,7 +21,7 @@ public final class Logger {
 
     public static void init() throws IOException {
         logFile = BuildInfo.abbreviatedName().toLowerCase(Locale.ROOT) + ".log";
-        Path path = Paths.get(".", logFile);
+        Path path = Paths.get(".", logFile).toAbsolutePath();
         Files.deleteIfExists(path);
         writer = Files.newBufferedWriter(path);
         Runtime.getRuntime().addShutdownHook(new Thread(Logger::shutdown));

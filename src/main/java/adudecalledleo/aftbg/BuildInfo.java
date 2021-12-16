@@ -6,14 +6,17 @@ import java.io.InputStreamReader;
 import java.util.Objects;
 
 import adudecalledleo.aftbg.util.ResourceUtils;
-import com.google.gson.Gson;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.GsonBuilder;
 import de.skuzzle.semantic.Version;
+import org.jetbrains.annotations.Nullable;
 
 public final class BuildInfo {
     private static boolean loaded = false;
     private static boolean isDev = false;
     private static String name, abbreviatedName;
     private static Version version;
+    private static JsonRep.URLs urls;
     private static String[] credits;
 
     private BuildInfo() { }
@@ -26,12 +29,20 @@ public final class BuildInfo {
         JsonRep jsonRep;
         try (InputStream in = ResourceUtils.getResourceAsStream(BuildInfo.class, "/build_info.json");
              InputStreamReader reader = new InputStreamReader(in)) {
-            jsonRep = new Gson().fromJson(reader, JsonRep.class);
+            jsonRep = new GsonBuilder()
+                    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                    .create()
+                    .fromJson(reader, JsonRep.class);
+        } catch (IOException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IOException("Failed to parse JSON", e);
         }
 
         name = Objects.requireNonNull(jsonRep.name, "name");
-        abbreviatedName = Objects.requireNonNull(jsonRep.abbreviatedName, "abbreviatedName");
+        abbreviatedName = Objects.requireNonNull(jsonRep.abbreviatedName, "abbreviated_name");
         credits = Objects.requireNonNull(jsonRep.credits, "credits");
+        urls = jsonRep.urls;
         String verStr = Objects.requireNonNull(jsonRep.version, "version");
 
         if ("${version}".equals(verStr)) {
@@ -74,13 +85,50 @@ public final class BuildInfo {
         return version;
     }
 
+    public static @Nullable String updateJsonUrl() {
+        assertLoaded();
+        if (urls == null) {
+            return null;
+        }
+        return urls.updateJson;
+    }
+
+    public static @Nullable String homepageUrl() {
+        assertLoaded();
+        if (urls == null) {
+            return null;
+        }
+        return urls.homepage;
+    }
+
+    public static @Nullable String issueTrackerUrl() {
+        assertLoaded();
+        if (urls == null) {
+            return null;
+        }
+        return urls.issues;
+    }
+
+    public static @Nullable String sourceCodeUrl() {
+        assertLoaded();
+        if (urls == null) {
+            return null;
+        }
+        return urls.source;
+    }
+
     public static String[] credits() {
         assertLoaded();
-        return credits;
+        return credits.clone();
     }
 
     private static final class JsonRep {
         public String name, abbreviatedName, version;
+        public URLs urls;
         public String[] credits;
+
+        private static final class URLs {
+            public String updateJson, homepage, source, issues;
+        }
     }
 }

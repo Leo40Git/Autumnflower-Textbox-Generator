@@ -1,18 +1,19 @@
 package adudecalledleo.aftbg;
 
-import adudecalledleo.aftbg.face.FaceLoadException;
-import adudecalledleo.aftbg.face.FacePool;
-import adudecalledleo.aftbg.game.GameDefinition;
-import adudecalledleo.aftbg.logging.Logger;
-import adudecalledleo.aftbg.window.WindowContext;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
+import java.awt.image.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import javax.imageio.ImageIO;
+
+import adudecalledleo.aftbg.face.FaceLoadException;
+import adudecalledleo.aftbg.face.FacePool;
+import adudecalledleo.aftbg.game.GameDefinition;
+import adudecalledleo.aftbg.logging.Logger;
+import adudecalledleo.aftbg.window.WindowContext;
 
 public record TextboxResources(GameDefinition gameDefinition, WindowContext windowContext, FacePool facePool) {
     public static TextboxResources load(Path basePath) throws LoadException {
@@ -20,7 +21,7 @@ public record TextboxResources(GameDefinition gameDefinition, WindowContext wind
         GameDefinition gameDef;
         try (BufferedReader reader = Files.newBufferedReader(defPath)) {
             gameDef = GameDefinition.GSON.fromJson(reader, GameDefinition.class);
-        } catch (IOException | IllegalStateException e) {
+        } catch (Exception e) {
             throw new LoadException("Failed to read game definition", e);
         }
         Logger.debug("Using " + gameDef.getName() + " game definition");

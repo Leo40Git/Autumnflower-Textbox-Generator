@@ -46,8 +46,6 @@ public record Bootstrap(LoadFrame loadFrame, Path basePath, TextboxResources tex
 
         ModifierRegistry.init();
 
-        AppPrefs.init();
-
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
@@ -56,20 +54,32 @@ public record Bootstrap(LoadFrame loadFrame, Path basePath, TextboxResources tex
 
         LoadFrame loadFrame = new LoadFrame("Loading...", true);
 
-        // FIXME shouldn't autoupdate in dev envs (this is for testing)
-        if (/*!BuildInfo.isDevelopment() &&*/ AppPrefs.isAutoUpdateCheckEnabled()) {
-            loadFrame.setLoadString("Checking for updates...");
-            try {
-                AppUpdateCheck.doCheck(null);
-            } catch (Exception e) {
-                Logger.error("Update check failed!", e);
-                loadFrame.setAlwaysOnTop(false);
-                JOptionPane.showMessageDialog(null,
-                        "Failed to check for updates!\nSee \"" + Logger.logFile() + "\" for more details.",
-                        "Failed to check for updates", JOptionPane.ERROR_MESSAGE);
-                loadFrame.setAlwaysOnTop(true);
+        try {
+            AppPrefs.init();
+        } catch (IOException e) {
+            Logger.error("Failed to initialize preferences!", e);
+            loadFrame.setAlwaysOnTop(false);
+            JOptionPane.showMessageDialog(null,
+                    "Failed to initialize preferences!\nSee \"" + Logger.logFile() + "\" for more details.",
+                    "Failed to launch", JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
+
+        if (!BuildInfo.isDevelopment() && AppPrefs.isAutoUpdateCheckEnabled()) {
+            if (BuildInfo.updateJsonUrl() != null) {
+                loadFrame.setLoadString("Checking for updates...");
+                try {
+                    AppUpdateCheck.doCheck(null);
+                } catch (Exception e) {
+                    Logger.error("Update check failed!", e);
+                    loadFrame.setAlwaysOnTop(false);
+                    JOptionPane.showMessageDialog(null,
+                            "Failed to check for updates!\nSee \"" + Logger.logFile() + "\" for more details.",
+                            "Failed to check for updates", JOptionPane.ERROR_MESSAGE);
+                    loadFrame.setAlwaysOnTop(true);
+                }
+                loadFrame.setLoadString("Loading...");
             }
-            loadFrame.setLoadString("Loading...");
         }
 
         try {

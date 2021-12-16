@@ -1,7 +1,13 @@
 {
   "name": "Autumnflower Textbox Generator",
-  "abbreviatedName": "AFTBG",
+  "abbreviated_name": "AFTBG",
   "version": "${version}",
+  "urls": {
+    "update_json": null,
+    "homepage": null,
+    "source": null,
+    "issues": null
+  },
   "credits": [
     "Programmed by ADudeCalledLeo"
   ]

@@ -4,6 +4,7 @@ import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.util.PathAdapter;
 import adudecalledleo.aftbg.util.WindowTintAdapter;
 import adudecalledleo.aftbg.window.WindowTint;
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -14,6 +15,7 @@ public final class GameDefinition {
     public static final Gson GSON = new GsonBuilder()
             .setLenient()
             .setPrettyPrinting()
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .registerTypeAdapter(Path.class, new PathAdapter())
             .registerTypeAdapter(WindowTint.class, new WindowTintAdapter())
             .registerTypeAdapter(FacePool.class, new FacePool.Adapter())

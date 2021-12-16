@@ -1,12 +1,12 @@
 {
   "name": "Autumnflower",
-  "windowPath": "Window.png",
-  "windowTint": {
+  "window_path": "Window.png",
+  "window_tint": {
     "red": -17,
     "green": -255,
     "blue": -255
   },
-  "facesPath": "faces.json",
+  "faces_path": "faces.json",
   "credits": [
     "Autumnflower by Kazerad and his Picarto stream chat",
     "Most face images by DPronin and DusetrFox",
