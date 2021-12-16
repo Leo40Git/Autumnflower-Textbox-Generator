@@ -65,19 +65,19 @@ public record Bootstrap(LoadFrame loadFrame, Path basePath, TextboxResources tex
             System.exit(1);
         }
 
-        if (!BuildInfo.isDevelopment() && AppPrefs.isAutoUpdateCheckEnabled()) {
-            if (BuildInfo.updateJsonUrl() != null) {
+        AppUpdateCheck.init();
+        if (AppUpdateCheck.isAvailable() && !BuildInfo.isDevelopment() && AppPrefs.isAutoUpdateCheckEnabled()) {
+            try {
                 loadFrame.setLoadString("Checking for updates...");
-                try {
-                    AppUpdateCheck.doCheck(null);
-                } catch (Exception e) {
-                    Logger.error("Update check failed!", e);
-                    loadFrame.setAlwaysOnTop(false);
-                    JOptionPane.showMessageDialog(null,
-                            "Failed to check for updates!\nSee \"" + Logger.logFile() + "\" for more details.",
-                            "Failed to check for updates", JOptionPane.ERROR_MESSAGE);
-                    loadFrame.setAlwaysOnTop(true);
-                }
+                AppUpdateCheck.doCheck(null);
+            } catch (AppUpdateCheck.CheckFailedException e) {
+                Logger.error("Update check failed!", e);
+                loadFrame.setAlwaysOnTop(false);
+                JOptionPane.showMessageDialog(null,
+                        "Failed to check for updates!\nSee \"" + Logger.logFile() + "\" for more details.",
+                        "Failed to check for updates", JOptionPane.ERROR_MESSAGE);
+                loadFrame.setAlwaysOnTop(true);
+            } finally {
                 loadFrame.setLoadString("Loading...");
             }
         }
