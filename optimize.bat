@@ -1,23 +1,16 @@
 @echo off
-echo This script requires Oxipng to be on your PATH.
-echo Download it here: https://github.com/shssoichiro/oxipng/releases/latest
-pause
+
+REM This script requires Oxipng to be on your PATH.
+REM Download it here: https://github.com/shssoichiro/oxipng/releases/latest
 
 setlocal
+set OXIPNG_OPTIONS=-a -s
 pushd scratch
-call :processFolder
+echo === Optimizing %cd% and subdirectories...
+oxipng %OXIPNG_OPTIONS% -r *
 popd
 pushd scratch_ex
-call :processFolder
+echo === Optimizing %cd% and subdirectories...
+oxipng %OXIPNG_OPTIONS% -r *
 popd
-exit /b 0
-
-:processFolder
-echo Processing folder %CD%
-oxipng --strip safe *.png
-for /D %%d in (*) do (
-    pushd %%d
-    call :processFolder
-    popd
-)
 endlocal
