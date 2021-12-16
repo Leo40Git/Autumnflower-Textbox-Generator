@@ -3,7 +3,7 @@
   "abbreviated_name": "AFTBG",
   "version": "${version}",
   "urls": {
-    "update_json": null,
+    "update_json": "https://raw.githubusercontent.com/Leo40Git/Autumnflower-Textbox-Generator/master/update.json",
     "homepage": null,
     "source": null,
     "issues": null
