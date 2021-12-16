@@ -39,6 +39,12 @@ public final class FacePoolEditorDialog extends JDialog {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent evt) {
+                if (pool == null) {
+                    FacePoolEditorDialog.this.setVisible(false);
+                    FacePoolEditorDialog.this.dispose();
+                    return;
+                }
+
                 switch (JOptionPane.showConfirmDialog(FacePoolEditorDialog.this,
                         "Do you want to save your face pool before exiting?", "Close dialog",
                         JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE)) {
