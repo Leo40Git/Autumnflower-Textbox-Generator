@@ -15,6 +15,7 @@ public final class AppPrefs {
             .setLenient()
             .setPrettyPrinting()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .registerTypeAdapter(AppPrefs.class, (InstanceCreator<AppPrefs>) type -> new AppPrefs(0))
             .create();
     private static final int CURRENT_VERSION = 1;
     private static final Path SAVE_PATH = Paths.get(".", "prefs.json").toAbsolutePath();
@@ -36,6 +37,9 @@ public final class AppPrefs {
                 instance = GSON.fromJson(reader, AppPrefs.class);
             } catch (JsonParseException e) {
                 throw new IOException("Failed to parse JSON", e);
+            }
+            if (instance.version == 0) {
+                throw new IOException("Invalid preferences file: missing version");
             }
         } else {
             instance = new AppPrefs(CURRENT_VERSION);
