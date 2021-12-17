@@ -109,7 +109,17 @@ public record Bootstrap(LoadFrame loadFrame, Path basePath, TextboxResources tex
             return null;
         }
 
+        Runtime.getRuntime().addShutdownHook(new Thread(Bootstrap::cleanup, "cleanup"));
+
         done = true;
         return new Bootstrap(loadFrame, basePath, rsrc);
+    }
+
+    // (hopefully) called by shutdown hook, so we're moments before the app dies
+    private static void cleanup() {
+        AppPrefs.flush();
+
+        // logger is shut down last, in case things need to log errors beforehand
+        Logger.shutdown();
     }
 }

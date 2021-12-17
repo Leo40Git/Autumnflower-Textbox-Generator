@@ -64,8 +64,6 @@ public final class AppPrefs {
             instance = new AppPrefs();
             flush();
         }
-
-        Runtime.getRuntime().addShutdownHook(new Thread(AppPrefs::flush));
     }
 
     public static void flush() {

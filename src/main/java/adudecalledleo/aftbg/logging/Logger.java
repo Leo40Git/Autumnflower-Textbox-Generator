@@ -24,7 +24,6 @@ public final class Logger {
         Path path = Paths.get(".", logFile).toAbsolutePath();
         Files.deleteIfExists(path);
         writer = Files.newBufferedWriter(path);
-        Runtime.getRuntime().addShutdownHook(new Thread(Logger::shutdown));
     }
 
     public static void shutdown() {
