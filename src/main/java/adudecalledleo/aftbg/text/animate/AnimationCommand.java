@@ -66,7 +66,7 @@ public sealed abstract class AnimationCommand {
         }
     }
 
-    public static DrawFrame drawFrame() {
+    public static AnimationCommand drawFrame() {
         return DrawFrame.INSTANCE;
     }
 

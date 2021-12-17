@@ -10,11 +10,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import adudecalledleo.aftbg.BuildInfo;
+import adudecalledleo.aftbg.app.util.LoadFrame;
 import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.util.VersionAdapter;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.GsonBuilder;
 import de.skuzzle.semantic.Version;
+import org.commonmark.Extension;
 import org.commonmark.ext.autolink.AutolinkExtension;
 import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
 import org.commonmark.parser.Parser;
@@ -50,7 +52,7 @@ public final class AppUpdateCheck {
         }
     }
 
-    public static void doCheck(Component parent) throws CheckFailedException {
+    public static void doCheck(Component parent, LoadFrame loadFrame) throws CheckFailedException {
         if (updateJsonUrl == null) {
             return;
         }
@@ -76,19 +78,23 @@ public final class AppUpdateCheck {
             /// we have a new version!
 
             // parse and render changelogs for dialog
+            List<Extension> extensions = List.of(
+                    AutolinkExtension.create(),
+                    StrikethroughExtension.create()
+            );
             Parser parser = Parser.builder()
-                    .extensions(List.of(AutolinkExtension.create(), StrikethroughExtension.create()))
+                    .extensions(extensions)
                     .build();
             HtmlRenderer renderer = HtmlRenderer.builder()
+                    .extensions(extensions)
                     .escapeHtml(true)
                     .sanitizeUrls(true)
                     .build();
 
-            String changelogBlock = jsonRep.changelogs.entrySet().stream()
+            String renderedBlock = renderer.render(parser.parse(jsonRep.changelogs.entrySet().stream()
                     .sorted(Map.Entry.comparingByKey())
                     .map(entry -> "### " + entry.getKey() + "\n" + String.join("\n", entry.getValue()))
-                    .collect(Collectors.joining("---\n"));
-            String renderedBlock = renderer.render(parser.parse(changelogBlock));
+                    .collect(Collectors.joining("---\n"))));
 
             // TODO actually implement dialog
             Logger.trace("RENDERED BLOCK:\n" + renderedBlock);

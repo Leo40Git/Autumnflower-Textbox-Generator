@@ -69,7 +69,7 @@ public record Bootstrap(LoadFrame loadFrame, Path basePath, TextboxResources tex
         if (AppUpdateCheck.isAvailable() && !BuildInfo.isDevelopment() && AppPrefs.isAutoUpdateCheckEnabled()) {
             try {
                 loadFrame.setLoadString("Checking for updates...");
-                AppUpdateCheck.doCheck(null);
+                AppUpdateCheck.doCheck(null, loadFrame);
             } catch (AppUpdateCheck.CheckFailedException e) {
                 Logger.error("Update check failed!", e);
                 loadFrame.setAlwaysOnTop(false);
