@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import adudecalledleo.aftbg.app.util.JsonUtils;
 import adudecalledleo.aftbg.logging.Logger;
 import com.google.gson.*;
 
@@ -14,43 +15,65 @@ public final class AppPrefs {
     private static final Gson GSON = new GsonBuilder()
             .setLenient()
             .setPrettyPrinting()
-            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-            .registerTypeAdapter(AppPrefs.class, (InstanceCreator<AppPrefs>) type -> new AppPrefs(0))
             .create();
     private static final int CURRENT_VERSION = 1;
     private static final Path SAVE_PATH = Paths.get(".", "prefs.json").toAbsolutePath();
 
+    private static final class Key {
+        private static final String VERSION = "version";
+        private static final String AUTO_UPDATE_CHECK = "auto_update_check_enabled";
+    }
+
     private static AppPrefs instance;
 
-    private final int version;
     private boolean autoUpdateCheck;
 
-    public AppPrefs(int version) {
-        this.version = version;
+    public AppPrefs() {
         // DEFAULT VALUES
         autoUpdateCheck = true;
     }
 
+    public void read(JsonObject obj) throws JsonUtils.StructureException {
+        int version = JsonUtils.getInt(obj, Key.VERSION);
+        // in the future, the "version" property will determine how to read preferences from the object
+        //  to allow for backwards compatibility with older preferences files
+        // currently, though, there's only one version - the current one
+        autoUpdateCheck = JsonUtils.getBoolean(obj, Key.AUTO_UPDATE_CHECK);
+    }
+
+    public void write(JsonObject obj) {
+        obj.addProperty(Key.VERSION, CURRENT_VERSION);
+        obj.addProperty(Key.AUTO_UPDATE_CHECK, autoUpdateCheck);
+    }
+
     public static void init() throws IOException {
         if (Files.exists(SAVE_PATH)) {
+            JsonObject obj;
             try (BufferedReader reader = Files.newBufferedReader(SAVE_PATH)) {
-                instance = GSON.fromJson(reader, AppPrefs.class);
+                obj = GSON.fromJson(reader, JsonObject.class);
             } catch (JsonParseException e) {
                 throw new IOException("Failed to parse JSON", e);
             }
-            if (instance.version == 0) {
-                throw new IOException("Invalid preferences file: missing version");
+            try {
+                instance = new AppPrefs();
+                instance.read(obj);
+            } catch (JsonUtils.StructureException e) {
+                throw new IOException("Invalid preferences file", e);
             }
         } else {
-            instance = new AppPrefs(CURRENT_VERSION);
+            instance = new AppPrefs();
             flush();
         }
+
         Runtime.getRuntime().addShutdownHook(new Thread(AppPrefs::flush));
     }
 
     public static void flush() {
+        JsonObject obj = new JsonObject();
+        instance.write(obj);
+
         try (BufferedWriter writer = Files.newBufferedWriter(SAVE_PATH)) {
-            GSON.toJson(instance, writer);
+            GSON.toJson(obj, writer);
         } catch (IOException | JsonIOException e) {
             Logger.error("Failed to flush preferences!", e);
         }
