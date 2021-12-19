@@ -10,7 +10,6 @@ import com.google.gson.GsonBuilder;
 
 import java.nio.file.Path;
 
-@SuppressWarnings("ClassCanBeRecord")
 public final class GameDefinition {
     public static final Gson GSON = new GsonBuilder()
             .setLenient()
@@ -21,19 +20,11 @@ public final class GameDefinition {
             .registerTypeAdapter(FacePool.class, new FacePool.Adapter())
             .create();
 
-    private final String name;
-    private final Path windowPath;
-    private final WindowTint windowTint;
-    private final Path facesPath;
-    private final String[] credits;
-
-    public GameDefinition(String name, Path windowPath, WindowTint windowTint, Path facesPath, String[] credits) {
-        this.name = name;
-        this.windowPath = windowPath;
-        this.windowTint = windowTint;
-        this.facesPath = facesPath;
-        this.credits = credits;
-    }
+    private String name;
+    private Path windowPath;
+    private WindowTint windowTint;
+    private Path facesPath;
+    private String[] credits;
 
     public String getName() {
         return name;
