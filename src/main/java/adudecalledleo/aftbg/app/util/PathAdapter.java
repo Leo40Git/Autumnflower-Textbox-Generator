@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.util;
+package adudecalledleo.aftbg.app.util;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;

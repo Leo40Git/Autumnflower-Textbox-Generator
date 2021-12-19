@@ -11,7 +11,7 @@ import adudecalledleo.aftbg.app.util.JsonUtils;
 import adudecalledleo.aftbg.logging.Logger;
 import com.google.gson.*;
 
-public final class AppPrefs {
+public final class AppPreferences {
     private static final Gson GSON = new GsonBuilder()
             .setLenient()
             .setPrettyPrinting()
@@ -24,11 +24,11 @@ public final class AppPrefs {
         private static final String AUTO_UPDATE_CHECK = "auto_update_check_enabled";
     }
 
-    private static AppPrefs instance;
+    private static AppPreferences instance;
 
     private boolean autoUpdateCheck;
 
-    public AppPrefs() {
+    public AppPreferences() {
         // DEFAULT VALUES
         autoUpdateCheck = true;
     }
@@ -55,13 +55,13 @@ public final class AppPrefs {
                 throw new IOException("Failed to parse JSON", e);
             }
             try {
-                instance = new AppPrefs();
+                instance = new AppPreferences();
                 instance.read(obj);
             } catch (JsonUtils.StructureException e) {
                 throw new IOException("Invalid preferences file", e);
             }
         } else {
-            instance = new AppPrefs();
+            instance = new AppPreferences();
             flush();
         }
     }

@@ -2,13 +2,12 @@ package adudecalledleo.aftbg.app;
 
 import java.awt.*;
 import java.awt.image.*;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-
-import adudecalledleo.aftbg.util.ResourceUtils;
 
 public final class AppResources {
     public enum Icons {
@@ -39,8 +38,16 @@ public final class AppResources {
         loadIcons();
     }
 
+    private static InputStream openResourceStream(String path) throws IOException {
+        var in = AppResources.class.getResourceAsStream(path);
+        if (in == null) {
+            throw new FileNotFoundException(path);
+        }
+        return in;
+    }
+
     private static void loadFont() throws IOException {
-        try (InputStream in = ResourceUtils.getResourceAsStream(AppResources.class, "/font/VL-Gothic-Regular.ttf")) {
+        try (InputStream in = openResourceStream("/font/VL-Gothic-Regular.ttf")) {
             font = Font.createFont(Font.TRUETYPE_FONT, in);
         } catch (FontFormatException e) {
             throw new IOException("Embedded font is invalid", e);
@@ -51,7 +58,7 @@ public final class AppResources {
 
     private static void loadIcons() throws IOException {
         BufferedImage iconSheet;
-        try (InputStream in = ResourceUtils.getResourceAsStream(AppResources.class, "/icons.png")) {
+        try (InputStream in = openResourceStream("/icons.png")) {
             iconSheet = ImageIO.read(in);
         }
         int ix = 0, iy = 0;

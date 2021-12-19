@@ -44,7 +44,7 @@ public final class Main {
         LoadFrame loadFrame = new LoadFrame("Loading...", true);
 
         try {
-            AppPrefs.init();
+            AppPreferences.init();
         } catch (IOException e) {
             Logger.error("Failed to initialize preferences!", e);
             loadFrame.setAlwaysOnTop(false);
@@ -55,7 +55,7 @@ public final class Main {
         }
 
         AppUpdateCheck.init();
-        if (AppUpdateCheck.isAvailable() && !BuildInfo.isDevelopment() && AppPrefs.isAutoUpdateCheckEnabled()) {
+        if (AppUpdateCheck.isAvailable() && !BuildInfo.isDevelopment() && AppPreferences.isAutoUpdateCheckEnabled()) {
             try {
                 loadFrame.setLoadString("Checking for updates...");
                 AppUpdateCheck.doCheck(null, loadFrame);
@@ -112,7 +112,7 @@ public final class Main {
 
     // (hopefully) called by shutdown hook, so we're moments before the app dies
     private static void cleanup() {
-        AppPrefs.flush();
+        AppPreferences.flush();
 
         // logger is shut down last, in case things need to log errors beforehand
         Logger.shutdown();

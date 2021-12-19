@@ -3,7 +3,7 @@ package adudecalledleo.aftbg.app.util;
 import java.nio.file.Path;
 
 import adudecalledleo.aftbg.face.FacePool;
-import adudecalledleo.aftbg.game.GameDefinition;
+import adudecalledleo.aftbg.app.game.GameDefinition;
 
 @FunctionalInterface
 public interface GameDefinitionUpdateListener {

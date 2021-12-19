@@ -1,10 +1,10 @@
-package adudecalledleo.aftbg.app.render;
+package adudecalledleo.aftbg.app.component.render;
 
 import adudecalledleo.aftbg.app.util.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.face.FacePool;
-import adudecalledleo.aftbg.game.GameDefinition;
+import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.node.NodeUtils;
 import adudecalledleo.aftbg.window.WindowColors;

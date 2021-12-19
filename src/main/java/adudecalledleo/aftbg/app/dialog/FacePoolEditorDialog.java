@@ -1,15 +1,15 @@
 package adudecalledleo.aftbg.app.dialog;
 
 import adudecalledleo.aftbg.app.AppResources;
-import adudecalledleo.aftbg.app.render.FaceCategoryListCellRenderer;
-import adudecalledleo.aftbg.app.render.FaceListCellRenderer;
+import adudecalledleo.aftbg.app.component.render.FaceCategoryListCellRenderer;
+import adudecalledleo.aftbg.app.component.render.FaceListCellRenderer;
 import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.ListReorderTransferHandler;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FaceCategory;
 import adudecalledleo.aftbg.face.FaceLoadException;
 import adudecalledleo.aftbg.face.FacePool;
-import adudecalledleo.aftbg.game.GameDefinition;
+import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.logging.Logger;
 
 import javax.swing.*;

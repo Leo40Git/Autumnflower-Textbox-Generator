@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.util;
+package adudecalledleo.aftbg.app.util;
 
 import adudecalledleo.aftbg.logging.Logger;
 

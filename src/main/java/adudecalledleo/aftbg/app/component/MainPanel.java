@@ -17,16 +17,16 @@ import adudecalledleo.aftbg.BuildInfo;
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.data.TextboxListSerializer;
-import adudecalledleo.aftbg.app.dialog.FacePoolEditorDialog;
-import adudecalledleo.aftbg.app.dialog.PrefsDialog;
-import adudecalledleo.aftbg.app.render.TextboxListCellRenderer;
+import adudecalledleo.aftbg.app.dialog.modifier.FacePoolEditorDialog;
+import adudecalledleo.aftbg.app.dialog.PreferencesDialog;
+import adudecalledleo.aftbg.app.component.render.TextboxListCellRenderer;
 import adudecalledleo.aftbg.app.util.*;
 import adudecalledleo.aftbg.app.worker.GameDefinitionReloader;
 import adudecalledleo.aftbg.app.worker.TextboxAnimator;
 import adudecalledleo.aftbg.app.worker.TextboxGenerator;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FacePool;
-import adudecalledleo.aftbg.game.GameDefinition;
+import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.window.WindowContext;
 import com.google.gson.stream.JsonReader;
@@ -535,7 +535,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     worker.execute();
                 }
                 case AC_PREFS -> {
-                    var dialog = new PrefsDialog((Frame) SwingUtilities.getWindowAncestor(this));
+                    var dialog = new PreferencesDialog((Frame) SwingUtilities.getWindowAncestor(this));
                     dialog.setLocationRelativeTo(null);
                     dialog.setVisible(true);
                 }

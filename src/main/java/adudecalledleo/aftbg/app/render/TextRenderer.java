@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.text;
+package adudecalledleo.aftbg.app.render;
 
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.text.modifier.*;
@@ -6,8 +6,6 @@ import adudecalledleo.aftbg.text.node.LineBreakNode;
 import adudecalledleo.aftbg.text.node.Node;
 import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.text.node.TextNode;
-import adudecalledleo.aftbg.util.RainbowPaint;
-import adudecalledleo.aftbg.window.WindowColors;
 
 import java.awt.*;
 import java.awt.font.TextAttribute;

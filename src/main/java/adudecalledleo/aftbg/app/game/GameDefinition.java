@@ -1,8 +1,8 @@
-package adudecalledleo.aftbg.game;
+package adudecalledleo.aftbg.app.game;
 
 import adudecalledleo.aftbg.face.FacePool;
-import adudecalledleo.aftbg.util.PathAdapter;
-import adudecalledleo.aftbg.util.WindowTintAdapter;
+import adudecalledleo.aftbg.app.util.PathAdapter;
+import adudecalledleo.aftbg.app.util.WindowTintAdapter;
 import adudecalledleo.aftbg.window.WindowTint;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;

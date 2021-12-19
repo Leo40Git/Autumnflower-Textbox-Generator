@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.app.dialog;
+package adudecalledleo.aftbg.app.dialog.modifier;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

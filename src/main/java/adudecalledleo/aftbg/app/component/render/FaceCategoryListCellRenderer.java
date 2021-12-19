@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.app.render;
+package adudecalledleo.aftbg.app.component.render;
 
 import adudecalledleo.aftbg.face.FaceCategory;
 

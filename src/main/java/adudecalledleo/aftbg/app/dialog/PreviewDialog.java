@@ -1,11 +1,10 @@
 package adudecalledleo.aftbg.app.dialog;
 
-import adudecalledleo.aftbg.Main;
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.TransferableImage;
 import adudecalledleo.aftbg.logging.Logger;
-import adudecalledleo.aftbg.util.OperatingSystem;
+import adudecalledleo.aftbg.app.util.OperatingSystem;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

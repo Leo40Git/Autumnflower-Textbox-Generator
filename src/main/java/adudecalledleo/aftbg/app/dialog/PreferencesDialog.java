@@ -5,13 +5,13 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
-import adudecalledleo.aftbg.app.AppPrefs;
+import adudecalledleo.aftbg.app.AppPreferences;
 import adudecalledleo.aftbg.app.AppResources;
 
-public final class PrefsDialog extends JDialog {
+public final class PreferencesDialog extends JDialog {
     private ContentPane pane;
 
-    public PrefsDialog(Frame owner) {
+    public PreferencesDialog(Frame owner) {
         super(owner);
         setIconImage(AppResources.Icons.PREFS.getAsImage());
         setTitle("Edit preferences");
@@ -32,7 +32,7 @@ public final class PrefsDialog extends JDialog {
             Box catGeneral = new Box(BoxLayout.PAGE_AXIS);
             catGeneral.setBorder(BorderFactory.createTitledBorder("General"));
             cbAutoUpdateCheck = new JCheckBox("Automatically check for updates on app launch");
-            cbAutoUpdateCheck.setSelected(AppPrefs.isAutoUpdateCheckEnabled());
+            cbAutoUpdateCheck.setSelected(AppPreferences.isAutoUpdateCheckEnabled());
             catGeneral.add(cbAutoUpdateCheck);
             mainBox.add(catGeneral);
 
@@ -57,7 +57,7 @@ public final class PrefsDialog extends JDialog {
         }
 
         private void doApply() {
-            AppPrefs.setAutoUpdateCheckEnabled(cbAutoUpdateCheck.isSelected());
+            AppPreferences.setAutoUpdateCheckEnabled(cbAutoUpdateCheck.isSelected());
         }
 
         @Override
@@ -65,13 +65,13 @@ public final class PrefsDialog extends JDialog {
             var src = e.getSource();
             if (btnOK.equals(src)) {
                 doApply();
-                PrefsDialog.this.setVisible(false);
-                PrefsDialog.this.dispose();
+                PreferencesDialog.this.setVisible(false);
+                PreferencesDialog.this.dispose();
             } else if (btnApply.equals(src)) {
                 doApply();
             } else if (btnCancel.equals(src)) {
-                PrefsDialog.this.setVisible(false);
-                PrefsDialog.this.dispose();
+                PreferencesDialog.this.setVisible(false);
+                PreferencesDialog.this.dispose();
             }
         }
     }

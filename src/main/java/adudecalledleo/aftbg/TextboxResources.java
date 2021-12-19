@@ -11,7 +11,7 @@ import javax.imageio.ImageIO;
 
 import adudecalledleo.aftbg.face.FaceLoadException;
 import adudecalledleo.aftbg.face.FacePool;
-import adudecalledleo.aftbg.game.GameDefinition;
+import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.window.WindowContext;
 

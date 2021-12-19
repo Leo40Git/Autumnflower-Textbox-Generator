@@ -11,14 +11,14 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
-import adudecalledleo.aftbg.app.render.FaceCategoryListCellRenderer;
-import adudecalledleo.aftbg.app.render.FaceListCellRenderer;
+import adudecalledleo.aftbg.app.component.render.FaceCategoryListCellRenderer;
+import adudecalledleo.aftbg.app.component.render.FaceListCellRenderer;
 import adudecalledleo.aftbg.app.util.ComboBoxUtils;
 import adudecalledleo.aftbg.app.util.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FaceCategory;
 import adudecalledleo.aftbg.face.FacePool;
-import adudecalledleo.aftbg.game.GameDefinition;
+import adudecalledleo.aftbg.app.game.GameDefinition;
 
 public final class FaceSelectionPanel extends JPanel implements ItemListener, GameDefinitionUpdateListener {
     private final Consumer<Face> faceUpdateListener;

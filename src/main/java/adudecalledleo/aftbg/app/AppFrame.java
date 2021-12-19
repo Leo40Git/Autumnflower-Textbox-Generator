@@ -9,7 +9,7 @@ import javax.swing.*;
 import adudecalledleo.aftbg.BuildInfo;
 import adudecalledleo.aftbg.app.component.MainPanel;
 import adudecalledleo.aftbg.face.FacePool;
-import adudecalledleo.aftbg.game.GameDefinition;
+import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.window.WindowContext;
 
 public final class AppFrame extends JFrame {

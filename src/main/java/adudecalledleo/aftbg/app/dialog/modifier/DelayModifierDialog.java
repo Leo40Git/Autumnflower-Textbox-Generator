@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.app.dialog;
+package adudecalledleo.aftbg.app.dialog.modifier;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -7,17 +7,14 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import adudecalledleo.aftbg.app.AppResources;
-import adudecalledleo.aftbg.app.worker.TextboxAnimator;
 
-public final class TextSpeedModifierDialog extends JDialog {
-    private static int lastTextSpeed = TextboxAnimator.DEFAULT_TEXT_SPEED;
-
+public final class DelayModifierDialog extends JDialog {
     private final ContentPane pane;
 
-    public TextSpeedModifierDialog(Frame owner) {
+    public DelayModifierDialog(Frame owner) {
         super(owner);
-        setIconImage(AppResources.Icons.MOD_TEXT_SPEED.getAsImage());
-        setTitle("Add text speed modifier");
+        setIconImage(AppResources.Icons.MOD_DELAY.getAsImage());
+        setTitle("Add delay modifier");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);
         setResizable(false);
@@ -26,7 +23,7 @@ public final class TextSpeedModifierDialog extends JDialog {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                pane.textSpeed = null;
+                pane.delayLength = null;
             }
         });
         getRootPane().setDefaultButton(pane.btnAdd);
@@ -34,33 +31,31 @@ public final class TextSpeedModifierDialog extends JDialog {
 
     public Integer showDialog() {
         setVisible(true);
-        return pane.textSpeed;
+        return pane.delayLength;
     }
 
     private final class ContentPane extends JPanel implements ActionListener, ChangeListener {
-        final JSpinner spnTextSpeed;
+        final JSpinner spnDelayLength;
         final JButton btnCancel, btnAdd;
         final JLabel previewLabel;
-        Integer textSpeed;
+        Integer delayLength;
 
         public ContentPane() {
-            textSpeed = lastTextSpeed;
+            delayLength = 1;
 
-            spnTextSpeed = new JSpinner(new SpinnerNumberModel(textSpeed, 0, null, 1));
-            spnTextSpeed.addChangeListener(this);
+            spnDelayLength = new JSpinner(new SpinnerNumberModel(delayLength, 1, null, 1));
+            spnDelayLength.addChangeListener(this);
             btnCancel = createBtn("Cancel");
             btnAdd = createBtn("Add");
             previewLabel = new JLabel();
             updatePreviewLabel();
 
             Box mainBox = new Box(BoxLayout.PAGE_AXIS);
-            mainBox.add(new JLabel("Enter new text speed:"));
+            mainBox.add(new JLabel("Enter delay length in frames:"));
             mainBox.add(Box.createVerticalStrut(2));
-            mainBox.add(spnTextSpeed);
+            mainBox.add(spnDelayLength);
             mainBox.add(Box.createVerticalStrut(2));
-            mainBox.add(new JLabel("'Text speed' is the number of frames to wait before appending a character."));
-            mainBox.add(new JLabel("Frames are 1/100ths of a second. Default text speed is %d (%s seconds)."
-                    .formatted(TextboxAnimator.DEFAULT_TEXT_SPEED, TextboxAnimator.DEFAULT_TEXT_SPEED / 100.0)));
+            mainBox.add(new JLabel("Frames are 1/100ths of a second."));
             mainBox.add(previewLabel);
 
             JPanel btnsPanel = new JPanel();
@@ -81,27 +76,25 @@ public final class TextSpeedModifierDialog extends JDialog {
         }
 
         private void updatePreviewLabel() {
-            previewLabel.setText("This will make the animation for pause for %s seconds after each character."
-                    .formatted(textSpeed / 100.0));
+            previewLabel.setText("This will pause the animation for %s seconds.".formatted(delayLength / 100.0));
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
             Object src = e.getSource();
             if (btnAdd.equals(src)) {
-                lastTextSpeed = textSpeed;
-                TextSpeedModifierDialog.this.setVisible(false);
-                TextSpeedModifierDialog.this.dispose();
+                DelayModifierDialog.this.setVisible(false);
+                DelayModifierDialog.this.dispose();
             } else if (btnCancel.equals(src)) {
-                textSpeed = null;
-                TextSpeedModifierDialog.this.setVisible(false);
-                TextSpeedModifierDialog.this.dispose();
+                delayLength = null;
+                DelayModifierDialog.this.setVisible(false);
+                DelayModifierDialog.this.dispose();
             }
         }
 
         @Override
         public void stateChanged(ChangeEvent e) {
-            textSpeed = (Integer) spnTextSpeed.getValue();
+            delayLength = (Integer) spnDelayLength.getValue();
             updatePreviewLabel();
         }
     }

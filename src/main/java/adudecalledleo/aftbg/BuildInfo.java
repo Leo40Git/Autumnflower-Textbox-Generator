@@ -1,11 +1,11 @@
 package adudecalledleo.aftbg;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Objects;
 
-import adudecalledleo.aftbg.util.ResourceUtils;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.GsonBuilder;
 import de.skuzzle.semantic.Version;
@@ -27,7 +27,7 @@ public final class BuildInfo {
         }
 
         JsonRep jsonRep;
-        try (InputStream in = ResourceUtils.getResourceAsStream(BuildInfo.class, "/build_info.json");
+        try (InputStream in = openJsonStream();
              InputStreamReader reader = new InputStreamReader(in)) {
             jsonRep = new GsonBuilder()
                     .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
@@ -57,6 +57,14 @@ public final class BuildInfo {
         }
 
         loaded = true;
+    }
+
+    private static InputStream openJsonStream() throws IOException {
+        var in = BuildInfo.class.getResourceAsStream("/build_info.json");
+        if (in == null) {
+            throw new FileNotFoundException("/build_info.json");
+        }
+        return in;
     }
 
     private static void assertLoaded() {

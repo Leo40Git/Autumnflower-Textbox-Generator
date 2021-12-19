@@ -10,7 +10,7 @@ import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.util.LoadFrame;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.text.TextParser;
-import adudecalledleo.aftbg.text.TextRenderer;
+import adudecalledleo.aftbg.app.render.TextRenderer;
 import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.window.WindowContext;
 
