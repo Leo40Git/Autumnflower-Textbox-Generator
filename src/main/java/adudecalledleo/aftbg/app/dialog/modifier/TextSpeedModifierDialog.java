@@ -9,12 +9,12 @@ import javax.swing.event.*;
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.worker.TextboxAnimator;
 
-public final class TextSpeedModifierDialog extends JDialog {
+public final class TextSpeedModifierDialog extends ModifierDialog {
     private static int lastTextSpeed = TextboxAnimator.DEFAULT_TEXT_SPEED;
 
     private final ContentPane pane;
 
-    public TextSpeedModifierDialog(Frame owner) {
+    public TextSpeedModifierDialog(Component owner) {
         super(owner);
         setIconImage(AppResources.Icons.MOD_TEXT_SPEED.getAsImage());
         setTitle("Add text speed modifier");
@@ -23,18 +23,17 @@ public final class TextSpeedModifierDialog extends JDialog {
         setResizable(false);
         setContentPane(pane = new ContentPane());
         pack();
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                pane.textSpeed = null;
-            }
-        });
         getRootPane().setDefaultButton(pane.btnAdd);
     }
 
     public Integer showDialog() {
         setVisible(true);
         return pane.textSpeed;
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+        pane.textSpeed = null;
     }
 
     private final class ContentPane extends JPanel implements ActionListener, ChangeListener {

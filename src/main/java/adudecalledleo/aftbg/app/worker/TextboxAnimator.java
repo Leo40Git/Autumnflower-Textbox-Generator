@@ -176,7 +176,7 @@ public final class TextboxAnimator extends AbstractTextboxWorker {
                 loadFrame.dispose();
                 return null;
             }
-            var dialog = new AnimatedPreviewDialog((Frame) SwingUtilities.getWindowAncestor(parent), imageData);
+            var dialog = new AnimatedPreviewDialog(parent, imageData);
             dialog.setLocationRelativeTo(null);
             loadFrame.dispose();
             dialog.setVisible(true);

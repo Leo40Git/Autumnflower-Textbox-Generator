@@ -49,7 +49,7 @@ public final class TextboxGenerator extends AbstractTextboxWorker {
         g.dispose();
 
         if (success) {
-            var dialog = new PreviewDialog((Frame) SwingUtilities.getWindowAncestor(parent), image);
+            var dialog = new PreviewDialog(parent, image);
             dialog.setLocationRelativeTo(null);
             loadFrame.dispose();
             dialog.setVisible(true);

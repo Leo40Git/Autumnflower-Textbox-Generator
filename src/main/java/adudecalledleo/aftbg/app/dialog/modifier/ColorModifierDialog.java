@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class ColorModifierDialog extends JDialog {
+public final class ColorModifierDialog extends ModifierDialog {
     private static Result lastResult = null;
 
     public sealed static class Result { }
@@ -57,29 +57,28 @@ public final class ColorModifierDialog extends JDialog {
         }
     }
 
-    private final ContentPanel panel;
+    private final ContentPane pane;
 
-    public ColorModifierDialog(Frame owner, WindowContext winCtx) {
+    public ColorModifierDialog(Component owner, WindowContext winCtx) {
         super(owner);
         setIconImage(AppResources.Icons.MOD_COLOR.getAsImage());
         setTitle("Add color modifier");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);
         setResizable(false);
-        setContentPane(panel = new ContentPanel(winCtx));
+        setContentPane(pane = new ContentPane(winCtx));
         pack();
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                panel.result = null;
-            }
-        });
-        getRootPane().setDefaultButton(panel.btnAdd);
+        getRootPane().setDefaultButton(pane.btnAdd);
     }
 
     public Result showDialog() {
         setVisible(true);
-        return panel.result;
+        return pane.result;
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+        pane.result = null;
     }
 
     private static final class WindowColorButtonModel extends JToggleButton.ToggleButtonModel {
@@ -94,7 +93,7 @@ public final class ColorModifierDialog extends JDialog {
         }
     }
 
-    private final class ContentPanel extends JPanel implements ActionListener {
+    private final class ContentPane extends JPanel implements ActionListener {
         private final WindowContext winCtx;
         final ButtonGroup bgColors;
         final JRadioButton rbCustom;
@@ -103,7 +102,7 @@ public final class ColorModifierDialog extends JDialog {
         Color customColor;
         Result result;
 
-        private ContentPanel(WindowContext winCtx) {
+        private ContentPane(WindowContext winCtx) {
             this.winCtx = winCtx;
 
             customColor = winCtx.getColor(0);

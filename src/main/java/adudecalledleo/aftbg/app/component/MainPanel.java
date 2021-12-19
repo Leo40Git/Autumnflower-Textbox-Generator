@@ -17,7 +17,7 @@ import adudecalledleo.aftbg.BuildInfo;
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.data.TextboxListSerializer;
-import adudecalledleo.aftbg.app.dialog.modifier.FacePoolEditorDialog;
+import adudecalledleo.aftbg.app.dialog.FacePoolEditorDialog;
 import adudecalledleo.aftbg.app.dialog.PreferencesDialog;
 import adudecalledleo.aftbg.app.component.render.TextboxListCellRenderer;
 import adudecalledleo.aftbg.app.util.*;
@@ -535,12 +535,12 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     worker.execute();
                 }
                 case AC_PREFS -> {
-                    var dialog = new PreferencesDialog((Frame) SwingUtilities.getWindowAncestor(this));
+                    var dialog = new PreferencesDialog(this);
                     dialog.setLocationRelativeTo(null);
                     dialog.setVisible(true);
                 }
                 case AC_FACE_POOL_EDITOR -> {
-                    var fpd = new FacePoolEditorDialog((Frame) SwingUtilities.getWindowAncestor(this));
+                    var fpd = new FacePoolEditorDialog(this);
                     fpd.setLocationRelativeTo(null);
                     fpd.setVisible(true);
                 }

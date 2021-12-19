@@ -13,11 +13,11 @@ import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.logging.Logger;
 
-public final class AnimatedPreviewDialog extends JDialog {
+public final class AnimatedPreviewDialog extends ModalDialog {
     private final byte[] imageData;
     private final Image image;
 
-    public AnimatedPreviewDialog(Frame owner, byte[] imageData) {
+    public AnimatedPreviewDialog(Component owner, byte[] imageData) {
         super(owner);
         this.imageData = imageData;
         image = Toolkit.getDefaultToolkit().createImage(imageData);

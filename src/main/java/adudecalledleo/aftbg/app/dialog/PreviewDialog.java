@@ -17,10 +17,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public final class PreviewDialog extends JDialog {
+public final class PreviewDialog extends ModalDialog {
     private final BufferedImage image;
 
-    public PreviewDialog(Frame owner, BufferedImage image) {
+    public PreviewDialog(Component owner, BufferedImage image) {
         super(owner);
         this.image = image;
         setIconImage(AppResources.Icons.PREVIEW.getAsImage());

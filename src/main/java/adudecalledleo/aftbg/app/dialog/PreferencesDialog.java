@@ -8,10 +8,10 @@ import javax.swing.*;
 import adudecalledleo.aftbg.app.AppPreferences;
 import adudecalledleo.aftbg.app.AppResources;
 
-public final class PreferencesDialog extends JDialog {
-    private ContentPane pane;
+public final class PreferencesDialog extends ModalDialog {
+    private final ContentPane pane;
 
-    public PreferencesDialog(Frame owner) {
+    public PreferencesDialog(Component owner) {
         super(owner);
         setIconImage(AppResources.Icons.PREFS.getAsImage());
         setTitle("Edit preferences");

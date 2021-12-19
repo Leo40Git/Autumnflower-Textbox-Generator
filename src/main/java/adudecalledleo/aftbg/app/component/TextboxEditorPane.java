@@ -231,7 +231,7 @@ public final class TextboxEditorPane extends JEditorPane
             ColorModifierDialog.Result result;
             try {
                 forceCaretRendering = true;
-                var dialog = new ColorModifierDialog((Frame) SwingUtilities.getWindowAncestor(this), winCtx);
+                var dialog = new ColorModifierDialog(this, winCtx);
                 dialog.setLocationRelativeTo(null);
                 result = dialog.showDialog();
             } finally {
@@ -270,7 +270,7 @@ public final class TextboxEditorPane extends JEditorPane
             StyleSpec newSpec;
             try {
                 forceCaretRendering = true;
-                var dialog = new StyleModifierDialog((Frame) SwingUtilities.getWindowAncestor(this), spec);
+                var dialog = new StyleModifierDialog(this, spec);
                 dialog.setLocationRelativeTo(null);
                 newSpec = dialog.showDialog();
             } finally {
@@ -292,7 +292,7 @@ public final class TextboxEditorPane extends JEditorPane
             Face newFace;
             try {
                 forceCaretRendering = true;
-                var dialog = new FaceModifierDialog((Frame) SwingUtilities.getWindowAncestor(this), facePool, textboxFace);
+                var dialog = new FaceModifierDialog(this, facePool, textboxFace);
                 dialog.setLocationRelativeTo(null);
                 newFace = dialog.showDialog();
             } finally {
@@ -317,7 +317,7 @@ public final class TextboxEditorPane extends JEditorPane
             Integer delayLength;
             try {
                 forceCaretRendering = true;
-                var dialog = new DelayModifierDialog((Frame) SwingUtilities.getWindowAncestor(this));
+                var dialog = new DelayModifierDialog(this);
                 dialog.setLocationRelativeTo(null);
                 delayLength = dialog.showDialog();
             } finally {
@@ -338,7 +338,7 @@ public final class TextboxEditorPane extends JEditorPane
             Integer newTextSpeed;
             try {
                 forceCaretRendering = true;
-                var dialog = new TextSpeedModifierDialog((Frame) SwingUtilities.getWindowAncestor(this));
+                var dialog = new TextSpeedModifierDialog(this);
                 dialog.setLocationRelativeTo(null);
                 newTextSpeed = dialog.showDialog();
             } finally {

@@ -1,43 +1,39 @@
 package adudecalledleo.aftbg.app.dialog.modifier;
 
+import java.awt.*;
+import java.awt.event.*;
+
+import javax.swing.*;
+import javax.swing.event.*;
+
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.render.TextRenderer;
 import adudecalledleo.aftbg.text.modifier.StyleSpec;
 import adudecalledleo.aftbg.util.TriState;
 
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-public final class StyleModifierDialog extends JDialog {
-    private final ContentPanel panel;
+public final class StyleModifierDialog extends ModifierDialog {
+    private final ContentPane pane;
     
-    public StyleModifierDialog(Frame owner, StyleSpec spec) {
+    public StyleModifierDialog(Component owner, StyleSpec spec) {
         super(owner);
         setIconImage(AppResources.Icons.MOD_STYLE.getAsImage());
         setTitle("Add style modifier");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);
         setResizable(false);
-        setContentPane(panel = new ContentPanel(spec));
+        setContentPane(pane = new ContentPane(spec));
         pack();
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                panel.spec = null;
-            }
-        });
-        getRootPane().setDefaultButton(panel.btnAdd);
+        getRootPane().setDefaultButton(pane.btnAdd);
     }
 
     public StyleSpec showDialog() {
         setVisible(true);
-        return panel.spec;
+        return pane.spec;
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+        pane.spec = null;
     }
 
     private static final class ScriptButtonModel extends JToggleButton.ToggleButtonModel {
@@ -48,7 +44,7 @@ public final class StyleModifierDialog extends JDialog {
         }
     }
 
-    private final class ContentPanel extends JPanel implements ActionListener, ChangeListener {
+    private final class ContentPane extends JPanel implements ActionListener, ChangeListener {
         private final JCheckBox cbReset, cbBold, cbItalic, cbUnderline, cbStrikethrough;
         private final ButtonGroup bgScript;
         private final JSpinner spnSizeAdjust;
@@ -56,7 +52,7 @@ public final class StyleModifierDialog extends JDialog {
         final JButton btnCancel, btnAdd;
         StyleSpec spec;
 
-        public ContentPanel(StyleSpec spec) {
+        public ContentPane(StyleSpec spec) {
             if (spec == null) {
                 spec = StyleSpec.DEFAULT;
             }

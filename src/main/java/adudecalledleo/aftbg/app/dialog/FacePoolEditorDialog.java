@@ -23,13 +23,13 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public final class FacePoolEditorDialog extends JDialog {
+public final class FacePoolEditorDialog extends ModalDialog {
     private Path filePath;
     private FacePool pool;
 
     private final ContentPane contentPane;
 
-    public FacePoolEditorDialog(Frame owner) {
+    public FacePoolEditorDialog(Component owner) {
         super(owner);
         filePath = null;
         pool = null;

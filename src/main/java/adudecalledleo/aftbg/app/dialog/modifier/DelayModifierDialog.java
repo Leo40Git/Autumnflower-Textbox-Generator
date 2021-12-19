@@ -8,10 +8,10 @@ import javax.swing.event.*;
 
 import adudecalledleo.aftbg.app.AppResources;
 
-public final class DelayModifierDialog extends JDialog {
+public final class DelayModifierDialog extends ModifierDialog {
     private final ContentPane pane;
 
-    public DelayModifierDialog(Frame owner) {
+    public DelayModifierDialog(Component owner) {
         super(owner);
         setIconImage(AppResources.Icons.MOD_DELAY.getAsImage());
         setTitle("Add delay modifier");
@@ -20,18 +20,17 @@ public final class DelayModifierDialog extends JDialog {
         setResizable(false);
         setContentPane(pane = new ContentPane());
         pack();
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                pane.delayLength = null;
-            }
-        });
         getRootPane().setDefaultButton(pane.btnAdd);
     }
 
     public Integer showDialog() {
         setVisible(true);
         return pane.delayLength;
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+        pane.delayLength = null;
     }
 
     private final class ContentPane extends JPanel implements ActionListener, ChangeListener {
