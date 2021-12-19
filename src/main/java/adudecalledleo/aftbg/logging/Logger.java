@@ -9,13 +9,50 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public final class Logger {
+    private static final class WriterThread extends Thread {
+        public final ConcurrentLinkedDeque<String> messageStack;
+        private BufferedWriter writer;
+
+        public WriterThread(BufferedWriter writer) {
+            super("LogFileWriter");
+            setDaemon(true);
+            this.messageStack = new ConcurrentLinkedDeque<>();
+            this.writer = writer;
+        }
+
+        @Override
+        public void run() {
+            while (!Thread.interrupted()) {
+                boolean didWrite = false;
+                while (!messageStack.isEmpty()) {
+                    try {
+                        writer.write(messageStack.removeFirst());
+                        writer.newLine();
+                        didWrite = true;
+                    } catch (IOException ignored) { }
+                }
+                if (didWrite) {
+                    try {
+                        writer.flush();
+                    } catch (IOException ignored) { }
+                }
+            }
+
+            try {
+                writer.close();
+            } catch (IOException ignored) { }
+            writer = null;
+        }
+    }
+
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss,SSS");
     private static final ExceptionWriter EXCEPTION_WRITER = new ExceptionWriter("\t");
 
     private static String logFile;
-    private static BufferedWriter writer;
+    private static WriterThread writerThread;
 
     private Logger() { }
 
@@ -23,16 +60,18 @@ public final class Logger {
         logFile = BuildInfo.abbreviatedName().toLowerCase(Locale.ROOT) + ".log";
         Path path = Paths.get(".", logFile).toAbsolutePath();
         Files.deleteIfExists(path);
-        writer = Files.newBufferedWriter(path);
+        writerThread = new WriterThread(Files.newBufferedWriter(path));
+        writerThread.start();
     }
 
     public static void shutdown() {
-        if (writer != null) {
+        if (writerThread != null) {
+            writerThread.interrupt();
             try {
-                writer.close();
-            } catch (IOException ignored) { }
-            writer = null;
+                writerThread.join();
+            } catch (InterruptedException ignored) { }
         }
+        writerThread = null;
     }
 
     public static String logFile() {
@@ -62,10 +101,7 @@ public final class Logger {
         }
         stream.println(msg);
         if (level.isMoreSignificantThan(Level.DEBUG)) {
-            try {
-                writer.write(msg);
-                writer.newLine();
-            } catch (IOException ignored) { }
+            writerThread.messageStack.offer(msg);
         }
     }
 
