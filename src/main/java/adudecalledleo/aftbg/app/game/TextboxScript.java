@@ -1,0 +1,59 @@
+package adudecalledleo.aftbg.app.game;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import javax.script.Bindings;
+import javax.script.ScriptEngine;
+import javax.script.ScriptException;
+
+import adudecalledleo.aftbg.app.data.Textbox;
+import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
+import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;
+
+public final class TextboxScript {
+    private final String name;
+    private final Path path;
+
+    private ScriptObjectMirror loadedScript;
+
+    public TextboxScript(String name, Path path) {
+        this.name = name;
+        this.path = path;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Path getPath() {
+        return path;
+    }
+
+    public void load(Path basePath) throws IOException, ScriptException {
+        Path truePath = basePath.resolve(path).toAbsolutePath();
+
+        ScriptEngine engine = createScriptEngine();
+        engine.put(ScriptEngine.FILENAME, truePath.toString());
+        Bindings bindings = engine.createBindings();
+
+        try (BufferedReader reader = Files.newBufferedReader(truePath)) {
+            engine.eval(reader, bindings);
+        }
+
+        Object possibleFunc = bindings.get("updateTextbox");
+        if (possibleFunc instanceof ScriptObjectMirror mirror && mirror.isFunction()) {
+            loadedScript = mirror;
+        } else throw new ScriptException("Failed to find function updateTextbox!");
+    }
+
+    public void updateTextbox(Textbox textbox) {
+        loadedScript.call(null, textbox);
+    }
+
+    public static ScriptEngine createScriptEngine() {
+        return new NashornScriptEngineFactory().getScriptEngine("--no-java");
+    }
+}

@@ -19,19 +19,22 @@ public final class GameDefinition {
             .registerTypeAdapter(Path.class, new PathAdapter())
             .registerTypeAdapter(WindowTint.class, new WindowTintAdapter())
             .registerTypeAdapter(FacePool.class, new FacePool.Adapter())
+            .registerTypeAdapter(TextboxScriptSet.class, new TextboxScriptSet.Adapter())
             .create();
 
     private final String name;
     private final Path windowPath;
     private final WindowTint windowTint;
     private final Path facesPath;
+    private final TextboxScriptSet scripts;
     private final String[] credits;
 
-    public GameDefinition(String name, Path windowPath, WindowTint windowTint, Path facesPath, String[] credits) {
+    public GameDefinition(String name, Path windowPath, WindowTint windowTint, Path facesPath, TextboxScriptSet scripts, String[] credits) {
         this.name = name;
         this.windowPath = windowPath;
         this.windowTint = windowTint;
         this.facesPath = facesPath;
+        this.scripts = scripts;
         this.credits = credits;
     }
 
@@ -49,6 +52,10 @@ public final class GameDefinition {
 
     public Path getFacesPath() {
         return facesPath;
+    }
+
+    public TextboxScriptSet getScripts() {
+        return scripts;
     }
 
     public String[] getCredits() {
