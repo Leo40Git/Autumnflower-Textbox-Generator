@@ -54,7 +54,7 @@ public final class JsonUtils {
     }
 
     public static boolean getBoolean(JsonObject obj, String key) throws StructureException {
-        JsonElement elem = obj.get("key");
+        JsonElement elem = obj.get(key);
         if (elem == null) {
             throw createMissingKeyException(key, TYPESTR_BOOLEAN);
         } else if (elem instanceof JsonPrimitive prim && prim.isBoolean()) {
@@ -64,7 +64,7 @@ public final class JsonUtils {
     }
 
     public static boolean getBoolean(JsonObject obj, String key, boolean def) throws StructureException {
-        JsonElement elem = obj.get("key");
+        JsonElement elem = obj.get(key);
         if (elem == null) {
             return def;
         } else if (elem instanceof JsonPrimitive prim && prim.isBoolean()) {
@@ -74,7 +74,7 @@ public final class JsonUtils {
     }
 
     public static int getInt(JsonObject obj, String key) throws StructureException {
-        JsonElement elem = obj.get("key");
+        JsonElement elem = obj.get(key);
         if (elem == null) {
             throw createMissingKeyException(key, TYPESTR_NUMBER);
         } else if (elem instanceof JsonPrimitive prim && prim.isNumber()) {
@@ -84,7 +84,7 @@ public final class JsonUtils {
     }
 
     public static int getInt(JsonObject obj, String key, int def) throws StructureException {
-        JsonElement elem = obj.get("key");
+        JsonElement elem = obj.get(key);
         if (elem == null) {
             return def;
         } else if (elem instanceof JsonPrimitive prim && prim.isNumber()) {
