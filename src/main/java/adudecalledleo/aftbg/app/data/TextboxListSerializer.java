@@ -3,6 +3,7 @@ package adudecalledleo.aftbg.app.data;
 import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FacePool;
+import adudecalledleo.aftbg.text.TextSanitizer;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
@@ -93,7 +94,7 @@ public final class TextboxListSerializer {
             out.name("face");
             out.value(textbox.getFace().getPath());
             out.name("text");
-            out.value(textbox.getText().replaceAll(System.lineSeparator(), "\n"));
+            out.value(TextSanitizer.apply(textbox.getText()));
             out.endObject();
         }
         out.endArray();
