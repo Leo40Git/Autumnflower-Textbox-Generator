@@ -163,9 +163,7 @@ public final class FacePoolEditorDialog extends ModalDialog {
                     contentPane.enableButtonsOnLoad();
                     contentPane.updateCategoriesModel();
                 }
-                case AC_SAVE -> {
-                    saveFacePool();
-                }
+                case AC_SAVE -> saveFacePool();
             }
         }
     }
@@ -335,6 +333,12 @@ public final class FacePoolEditorDialog extends ModalDialog {
                     if (FaceCategory.NONE.getName().equals(newName)) {
                         JOptionPane.showMessageDialog(this,
                                 "Category name \"" + FaceCategory.NONE.getName() + "\" is reserved!",
+                                "Add Category", JOptionPane.ERROR_MESSAGE);
+                        break;
+                    }
+                    if (newName.contains("/")) {
+                        JOptionPane.showMessageDialog(this,
+                                "Category name cannot contain slashes (/)!",
                                 "Add Category", JOptionPane.ERROR_MESSAGE);
                         break;
                     }

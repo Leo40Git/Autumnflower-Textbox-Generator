@@ -106,6 +106,9 @@ public final class FacePool {
                 if (FaceCategory.NONE.getName().equals(name)) {
                     throw new IllegalStateException("Category name \"" + FaceCategory.NONE.getName() + "\" is reserved!");
                 }
+                if (name.contains("/")) {
+                    throw new IllegalStateException("Category name cannot contain slashes (/)!");
+                }
                 FaceCategory cat = pool.categories.computeIfAbsent(name, FaceCategory::new);
                 in.beginObject();
                 while (in.hasNext()) {
