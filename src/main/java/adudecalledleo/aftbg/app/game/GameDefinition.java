@@ -10,7 +10,6 @@ import com.google.gson.GsonBuilder;
 
 import java.nio.file.Path;
 
-@SuppressWarnings("ClassCanBeRecord")
 public final class GameDefinition {
     public static final Gson GSON = new GsonBuilder()
             .setLenient()
@@ -22,21 +21,12 @@ public final class GameDefinition {
             .registerTypeAdapter(TextboxScriptSet.class, new TextboxScriptSet.Adapter())
             .create();
 
-    private final String name;
-    private final Path windowPath;
-    private final WindowTint windowTint;
-    private final Path facesPath;
-    private final TextboxScriptSet scripts;
-    private final String[] credits;
-
-    public GameDefinition(String name, Path windowPath, WindowTint windowTint, Path facesPath, TextboxScriptSet scripts, String[] credits) {
-        this.name = name;
-        this.windowPath = windowPath;
-        this.windowTint = windowTint;
-        this.facesPath = facesPath;
-        this.scripts = scripts;
-        this.credits = credits;
-    }
+    private String name;
+    private Path windowPath;
+    private WindowTint windowTint;
+    private Path facesPath;
+    private TextboxScriptSet scripts;
+    private String[] credits;
 
     public String getName() {
         return name;
