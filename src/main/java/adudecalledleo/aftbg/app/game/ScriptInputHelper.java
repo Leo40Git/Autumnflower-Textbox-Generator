@@ -8,17 +8,22 @@ import javax.swing.*;
 public final class ScriptInputHelper {
     private ScriptInputHelper() { }
 
+    private static JDialog createDialog(JOptionPane pane) {
+        JDialog dialog = new JDialog((Frame) null, "Script Input", true);
+        dialog.setContentPane(pane);
+        dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        dialog.pack();
+        dialog.setResizable(false);
+        return dialog;
+    }
+
     public static Integer getInt(String message, int def) {
         JOptionPane pane = new JOptionPane(message, JOptionPane.INFORMATION_MESSAGE, JOptionPane.OK_CANCEL_OPTION,
                 null, null, null);
         pane.setWantsInput(true);
         pane.setInitialSelectionValue(def);
         pane.selectInitialValue();
-        JDialog dialog = new JDialog((Frame) null, "Script Input", true);
-        dialog.setContentPane(pane);
-        dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-        dialog.pack();
-        dialog.setResizable(false);
+        JDialog dialog = createDialog(pane);
 
         Integer[] resultBuffer = new Integer[] { null };
 
@@ -62,5 +67,40 @@ public final class ScriptInputHelper {
 
     public static Integer getInt(String message) {
         return getInt(message, 0);
+    }
+
+    public static Boolean getBoolean(String message) {
+        JOptionPane pane = new JOptionPane(message, JOptionPane.INFORMATION_MESSAGE, JOptionPane.YES_NO_OPTION);
+        JDialog dialog = createDialog(pane);
+
+        Boolean[] resultBuffer = new Boolean[] { null };
+
+        pane.addPropertyChangeListener(evt -> {
+            if (dialog.isVisible() && evt.getSource() == pane
+                    && JOptionPane.VALUE_PROPERTY.equals(evt.getPropertyName())) {
+                Object value = pane.getValue();
+                if (value instanceof Integer anInt) {
+                    if (anInt == JOptionPane.YES_OPTION) {
+                        resultBuffer[0] = true;
+                    } else {
+                        resultBuffer[0] = false;
+                    }
+                    dialog.setVisible(false);
+                    dialog.dispose();
+                }
+            }
+        });
+        dialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                resultBuffer[0] = null;
+                dialog.setVisible(false);
+                dialog.dispose();
+            }
+        });
+
+        dialog.setLocationRelativeTo(null);
+        dialog.setVisible(true);
+        return resultBuffer[0];
     }
 }

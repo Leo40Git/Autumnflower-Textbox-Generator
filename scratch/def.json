@@ -8,10 +8,9 @@
   },
   "faces_path": "faces.json",
   "scripts": {
-    "Clear Textbox": "scripts/clear_box.js",
-    "TEST SCRIPT PLS IGNORE": {
-      "path": "scripts/test.js",
-      "desc": "Seriously, this is a test script."
+    "Make Sixty Textbox": {
+      "path": "scripts/sixtybox.js",
+      "desc": "Creates a textbox of Sixty noises."
     }
   },
   "credits": [
