@@ -13,6 +13,7 @@ import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.game.shim.ShimHelpers;
 import adudecalledleo.aftbg.app.game.shim.TextboxShim;
 import adudecalledleo.aftbg.face.FacePool;
+import jdk.dynalink.beans.StaticClass;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;
 
@@ -41,6 +42,7 @@ public final class TextboxScript {
         ScriptEngine engine = createScriptEngine();
         engine.put(ScriptEngine.FILENAME, truePath.toString());
         Bindings bindings = engine.createBindings();
+        bindings.put("input", StaticClass.forClass(ScriptInputHelper.class));
 
         try (BufferedReader reader = Files.newBufferedReader(truePath)) {
             engine.eval(reader, bindings);
