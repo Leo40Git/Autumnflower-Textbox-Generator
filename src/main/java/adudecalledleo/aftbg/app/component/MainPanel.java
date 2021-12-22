@@ -458,7 +458,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             } else {
                 scriptsMenu.setEnabled(true);
                 for (var script : scripts.getScripts()) {
-                    scriptsMenu.add(new AbstractAction(script.getName()) {
+                    Action a = new AbstractAction(script.getName()) {
                         @Override
                         public void actionPerformed(ActionEvent evt) {
                             Textbox box = textboxes.get(currentTextbox);
@@ -476,7 +476,14 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                             box.setText(boxShim.getText());
                             updateTextboxEditors();
                         }
-                    });
+                    };
+
+                    String desc = script.getDescription();
+                    if (desc != null) {
+                        a.putValue(Action.SHORT_DESCRIPTION, desc);
+                    }
+
+                    scriptsMenu.add(a);
                 }
             }
         }

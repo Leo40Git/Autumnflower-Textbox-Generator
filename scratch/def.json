@@ -9,7 +9,10 @@
   "faces_path": "faces.json",
   "scripts": {
     "Clear Textbox": "scripts/clear_box.js",
-    "TEST SCRIPT PLS IGNORE": "scripts/test.js"
+    "TEST SCRIPT PLS IGNORE": {
+      "path": "scripts/test.js",
+      "desc": "Seriously, this is a test script."
+    }
   },
   "credits": [
     "Autumnflower by Kazerad and his Picarto stream chat",

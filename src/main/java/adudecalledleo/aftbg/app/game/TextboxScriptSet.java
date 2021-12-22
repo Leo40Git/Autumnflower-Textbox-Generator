@@ -24,8 +24,29 @@ public final class TextboxScriptSet {
             in.beginObject();
             while (in.hasNext()) {
                 String name = in.nextName();
-                Path path = Paths.get(in.nextString());
-                set.scripts.add(new TextboxScript(name, path));
+                Path path = null;
+                String desc = null;
+                switch (in.peek()) {
+                    case STRING -> path = Paths.get(in.nextString());
+                    case BEGIN_OBJECT -> {
+                        in.beginObject();
+                        while (in.hasNext()) {
+                            String name2 = in.nextName();
+                            switch (name2) {
+                                case "path" -> path = Paths.get(in.nextString());
+                                case "desc" -> desc = in.nextString();
+                            }
+                        }
+                        in.endObject();
+                    }
+                    default ->
+                            throw new IllegalStateException("Expected string or object for script declaration '" + name + "', "
+                                    + "instead got " + in.peek());
+                }
+                if (path == null) {
+                    throw new IllegalStateException("Script declaration '" + name + "' missing required value 'path'");
+                }
+                set.scripts.add(new TextboxScript(name, path, desc));
             }
             in.endObject();
             return set;
@@ -36,7 +57,18 @@ public final class TextboxScriptSet {
             out.beginObject();
             for (var script : value.scripts) {
                 out.name(script.getName());
-                out.value(script.getPath().toString());
+                String path = script.getPath().toString();
+                String desc = script.getDescription();
+                if (desc == null) {
+                    out.value(path);
+                } else {
+                    out.beginObject();
+                    out.name("path");
+                    out.value(path);
+                    out.name("desc");
+                    out.value(desc);
+                    out.endObject();
+                }
             }
             out.endObject();
         }
