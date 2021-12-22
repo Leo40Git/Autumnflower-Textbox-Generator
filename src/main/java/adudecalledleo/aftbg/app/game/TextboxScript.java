@@ -20,7 +20,7 @@ public final class TextboxScript {
     private final String name;
     private final Path path;
 
-    private ScriptObjectMirror loadedScript;
+    private ScriptObjectMirror updateTextboxFunc;
 
     public TextboxScript(String name, Path path) {
         this.name = name;
@@ -35,7 +35,7 @@ public final class TextboxScript {
         return path;
     }
 
-    public void load(Path basePath) throws IOException, ScriptException {
+    public void load(Path basePath) throws ScriptLoadException {
         Path truePath = basePath.resolve(path).toAbsolutePath();
 
         ScriptEngine engine = createScriptEngine();
@@ -44,17 +44,21 @@ public final class TextboxScript {
 
         try (BufferedReader reader = Files.newBufferedReader(truePath)) {
             engine.eval(reader, bindings);
+        } catch (IOException | ScriptException e) {
+            throw new ScriptLoadException("Failed to load script!", e);
         }
 
         Object possibleFunc = bindings.get("updateTextbox");
         if (possibleFunc instanceof ScriptObjectMirror mirror && mirror.isFunction()) {
-            loadedScript = mirror;
-        } else throw new ScriptException("Failed to find function updateTextbox!");
+            updateTextboxFunc = mirror;
+        } else {
+            throw new ScriptLoadException("Failed to find function updateTextbox in script!");
+        }
     }
 
     public void updateTextbox(FacePool faces, Textbox box) {
         TextboxShim boxShim = ShimHelpers.copy(box);
-        loadedScript.call(null, ShimHelpers.wrap(faces), boxShim);
+        updateTextboxFunc.call(null, ShimHelpers.wrap(faces), boxShim);
         box.setFace(ShimHelpers.unwrap(boxShim.getFace()));
         box.setText(boxShim.getText());
     }

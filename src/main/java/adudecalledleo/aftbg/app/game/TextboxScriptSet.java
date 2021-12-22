@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.script.ScriptException;
 
+import adudecalledleo.aftbg.face.FaceLoadException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -60,7 +61,7 @@ public final class TextboxScriptSet {
         return scriptsU;
     }
 
-    public void loadAll(Path basePath) throws IOException, ScriptException {
+    public void loadAll(Path basePath) throws ScriptLoadException {
         for (var script : scripts.values()) {
             script.load(basePath);
         }

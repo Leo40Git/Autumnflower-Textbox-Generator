@@ -9,6 +9,8 @@ import java.nio.file.Path;
 
 import javax.imageio.ImageIO;
 
+import adudecalledleo.aftbg.app.game.ScriptLoadException;
+import adudecalledleo.aftbg.app.game.TextboxScriptSet;
 import adudecalledleo.aftbg.face.FaceLoadException;
 import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.app.game.GameDefinition;
@@ -47,6 +49,15 @@ public record TextboxResources(GameDefinition gameDefinition, WindowContext wind
             faces.loadAll(basePath);
         } catch (FaceLoadException e) {
             throw new LoadException("Failed to load images for face pool", e);
+        }
+
+        TextboxScriptSet scripts = gameDef.getScripts();
+        if (scripts != null) {
+            try {
+                gameDef.getScripts().loadAll(basePath);
+            } catch (ScriptLoadException e) {
+                throw new LoadException("Failed to load scripts", e);
+            }
         }
 
         // region FACE POOL ADDITION TESTING - REMOVE BEFORE RELEASE!!!

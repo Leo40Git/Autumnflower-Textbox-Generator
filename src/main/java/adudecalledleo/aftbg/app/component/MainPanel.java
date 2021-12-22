@@ -20,6 +20,7 @@ import adudecalledleo.aftbg.app.data.TextboxListSerializer;
 import adudecalledleo.aftbg.app.dialog.FacePoolEditorDialog;
 import adudecalledleo.aftbg.app.dialog.PreferencesDialog;
 import adudecalledleo.aftbg.app.component.render.TextboxListCellRenderer;
+import adudecalledleo.aftbg.app.game.TextboxScriptSet;
 import adudecalledleo.aftbg.app.util.*;
 import adudecalledleo.aftbg.app.worker.GameDefinitionReloader;
 import adudecalledleo.aftbg.app.worker.TextboxAnimator;
@@ -59,6 +60,8 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     private FacePool faces;
     private Path basePath;
 
+    private MenuBarImpl menuBar;
+
     public MainPanel() {
         winCtxUpdateListeners = new ArrayList<>();
         gameDefUpdateListeners = new ArrayList<>();
@@ -88,6 +91,13 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         setLayout(new BorderLayout());
         add(createTextboxSelectionPanel(), BorderLayout.LINE_START);
         add(createTextboxEditorPanel(), BorderLayout.CENTER);
+    }
+
+    public JMenuBar getMenuBar() {
+        if (menuBar == null) {
+            menuBar = new MenuBarImpl();
+        }
+        return menuBar;
     }
 
     private JPanel createTextboxSelectionPanel() {
@@ -366,16 +376,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         return true;
     }
 
-    private MenuBarImpl menuBar;
-
-    public JMenuBar getMenuBar() {
-        if (menuBar == null) {
-            menuBar = new MenuBarImpl();
-        }
-        return menuBar;
-    }
-
-    private final class MenuBarImpl extends JMenuBar implements ActionListener {
+    private final class MenuBarImpl extends JMenuBar implements ActionListener, GameDefinitionUpdateListener {
         private static final String AC_NEW = "file.new";
         private static final String AC_LOAD = "file.load";
         private static final String AC_SAVE = "file.save";
@@ -384,6 +385,8 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         private static final String AC_PREFS = "file.preferences";
         private static final String AC_FACE_POOL_EDITOR = "tools.face_pool_editor";
         private static final String AC_ABOUT = "help.about";
+
+        private final JMenu scriptsMenu;
 
         public MenuBarImpl() {
             super();
@@ -418,6 +421,9 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             item.addActionListener(this);
             fileMenu.add(item);
 
+            scriptsMenu = new JMenu("Scripts");
+            scriptsMenu.setEnabled(false);
+
             JMenu toolsMenu = new JMenu("Tools");
             item = new JMenuItem("Face Pool Editor", AppResources.Icons.EDIT_FACE_POOL.get());
             item.setActionCommand(AC_FACE_POOL_EDITOR);
@@ -431,8 +437,35 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             helpMenu.add(item);
 
             add(fileMenu);
+            add(scriptsMenu);
             add(toolsMenu);
             add(helpMenu);
+
+            gameDefUpdateListeners.add(this);
+            if (basePath != null && gameDef != null && faces != null) {
+                updateGameDefinition(basePath, gameDef, faces);
+            }
+        }
+
+        @Override
+        public void updateGameDefinition(Path basePath, GameDefinition gameDef, FacePool facePool) {
+            TextboxScriptSet scripts = gameDef.getScripts();
+            if (scripts == null) {
+                scriptsMenu.removeAll();
+                scriptsMenu.setEnabled(false);
+            } else {
+                scriptsMenu.setEnabled(true);
+                for (var script : scripts.getScripts().values()) {
+                    scriptsMenu.add(new AbstractAction(script.getName()) {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            Textbox box = textboxes.get(currentTextbox);
+                            script.updateTextbox(faces, box);
+                            updateTextboxEditors();
+                        }
+                    });
+                }
+            }
         }
 
         private boolean canOverwriteCurrentProject(String title, String description) {
