@@ -56,11 +56,10 @@ public final class TextboxScript {
         }
     }
 
-    public void updateTextbox(FacePool faces, Textbox box) {
+    public TextboxShim run(FacePool faces, Textbox box) {
         TextboxShim boxShim = ShimHelpers.copy(box);
         updateTextboxFunc.call(null, ShimHelpers.wrap(faces), boxShim);
-        box.setFace(ShimHelpers.unwrap(boxShim.getFace()));
-        box.setText(boxShim.getText());
+        return boxShim;
     }
 
     public static ScriptEngine createScriptEngine() {

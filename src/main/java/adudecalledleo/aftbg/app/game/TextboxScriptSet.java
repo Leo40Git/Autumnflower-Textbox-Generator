@@ -3,13 +3,10 @@ package adudecalledleo.aftbg.app.game;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-import javax.script.ScriptException;
-
-import adudecalledleo.aftbg.face.FaceLoadException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -28,7 +25,7 @@ public final class TextboxScriptSet {
             while (in.hasNext()) {
                 String name = in.nextName();
                 Path path = Paths.get(in.nextString());
-                set.scripts.put(name, new TextboxScript(name, path));
+                set.scripts.add(new TextboxScript(name, path));
             }
             in.endObject();
             return set;
@@ -37,7 +34,7 @@ public final class TextboxScriptSet {
         @Override
         public void write(JsonWriter out, TextboxScriptSet value) throws IOException {
             out.beginObject();
-            for (var script : value.scripts.values()) {
+            for (var script : value.scripts) {
                 out.name(script.getName());
                 out.value(script.getPath().toString());
             }
@@ -45,24 +42,24 @@ public final class TextboxScriptSet {
         }
     }
 
-    private final Map<String, TextboxScript> scripts;
-    private final Map<String, TextboxScript> scriptsU;
+    private final List<TextboxScript> scripts;
+    private final List<TextboxScript> scriptsU;
 
     public TextboxScriptSet() {
-        scripts = new HashMap<>();
-        scriptsU = Collections.unmodifiableMap(scripts);
+        scripts = new ArrayList<>();
+        scriptsU = Collections.unmodifiableList(scripts);
     }
 
-    public TextboxScript getScript(String name) {
-        return scripts.get(name);
-    }
-
-    public Map<String, TextboxScript> getScripts() {
+    public List<TextboxScript> getScripts() {
         return scriptsU;
     }
 
+    public void addFrom(TextboxScriptSet other) {
+        scripts.addAll(other.scripts);
+    }
+
     public void loadAll(Path basePath) throws ScriptLoadException {
-        for (var script : scripts.values()) {
+        for (var script : scripts) {
             script.load(basePath);
         }
     }

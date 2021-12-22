@@ -21,6 +21,8 @@ import adudecalledleo.aftbg.app.dialog.FacePoolEditorDialog;
 import adudecalledleo.aftbg.app.dialog.PreferencesDialog;
 import adudecalledleo.aftbg.app.component.render.TextboxListCellRenderer;
 import adudecalledleo.aftbg.app.game.TextboxScriptSet;
+import adudecalledleo.aftbg.app.game.shim.ShimHelpers;
+import adudecalledleo.aftbg.app.game.shim.TextboxShim;
 import adudecalledleo.aftbg.app.util.*;
 import adudecalledleo.aftbg.app.worker.GameDefinitionReloader;
 import adudecalledleo.aftbg.app.worker.TextboxAnimator;
@@ -455,12 +457,23 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                 scriptsMenu.setEnabled(false);
             } else {
                 scriptsMenu.setEnabled(true);
-                for (var script : scripts.getScripts().values()) {
+                for (var script : scripts.getScripts()) {
                     scriptsMenu.add(new AbstractAction(script.getName()) {
                         @Override
-                        public void actionPerformed(ActionEvent e) {
+                        public void actionPerformed(ActionEvent evt) {
                             Textbox box = textboxes.get(currentTextbox);
-                            script.updateTextbox(faces, box);
+                            TextboxShim boxShim;
+                            try {
+                                boxShim = script.run(faces, box);
+                            } catch (Exception e) {
+                                Logger.error("Failed to run script!", e);
+                                JOptionPane.showMessageDialog(MainPanel.this,
+                                        "Failed to run script!\nSee \"" + Logger.logFile() + "\" for more details.",
+                                        "Script Error", JOptionPane.ERROR_MESSAGE);
+                                return;
+                            }
+                            box.setFace(ShimHelpers.unwrap(boxShim.getFace()));
+                            box.setText(boxShim.getText());
                             updateTextboxEditors();
                         }
                     });
