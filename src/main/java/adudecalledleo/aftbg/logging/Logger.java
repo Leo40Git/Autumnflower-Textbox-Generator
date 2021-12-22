@@ -9,45 +9,8 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import java.util.concurrent.ConcurrentLinkedDeque;
 
 public final class Logger {
-    private static final class WriterThread extends Thread {
-        public final ConcurrentLinkedDeque<String> messageStack;
-        private BufferedWriter writer;
-
-        public WriterThread(BufferedWriter writer) {
-            super("LogFileWriter");
-            setDaemon(true);
-            this.messageStack = new ConcurrentLinkedDeque<>();
-            this.writer = writer;
-        }
-
-        @Override
-        public void run() {
-            while (!Thread.interrupted()) {
-                boolean didWrite = false;
-                while (!messageStack.isEmpty()) {
-                    try {
-                        writer.write(messageStack.removeFirst());
-                        writer.newLine();
-                        didWrite = true;
-                    } catch (IOException ignored) { }
-                }
-                if (didWrite) {
-                    try {
-                        writer.flush();
-                    } catch (IOException ignored) { }
-                }
-            }
-
-            try {
-                writer.close();
-            } catch (IOException ignored) { }
-            writer = null;
-        }
-    }
-
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss,SSS");
     private static final ExceptionWriter EXCEPTION_WRITER = new ExceptionWriter("\t");
 

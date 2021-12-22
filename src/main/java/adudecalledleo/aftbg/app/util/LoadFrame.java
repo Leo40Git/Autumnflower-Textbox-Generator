@@ -2,6 +2,9 @@ package adudecalledleo.aftbg.app.util;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -43,6 +46,9 @@ public final class LoadFrame extends JFrame {
         }
     }
 
+    private static final List<LoadFrame> ACTIVE_FRAMES_INTERNAL = new ArrayList<>();
+    public static final List<LoadFrame> ACTIVE_FRAMES = Collections.unmodifiableList(ACTIVE_FRAMES_INTERNAL);
+
     private final JLabel loadLabel;
     private final AnimHandler animHandler;
 
@@ -58,7 +64,8 @@ public final class LoadFrame extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-        loadLabel = new JLabel(loadString);
+        loadLabel = new JLabel();
+        setLoadString(loadString);
         loadLabel.setFont(loadLabel.getFont().deriveFont(Font.BOLD, 24));
         loadLabel.setHorizontalAlignment(SwingConstants.CENTER);
         loadLabel.setVerticalAlignment(SwingConstants.CENTER);
@@ -82,9 +89,11 @@ public final class LoadFrame extends JFrame {
         animHandler.start();
         setVisible(true);
         requestFocus();
+        ACTIVE_FRAMES_INTERNAL.add(this);
     }
 
     public void setLoadString(String loadString) {
+        setTitle(loadString + " - " + BuildInfo.name());
         loadLabel.setText(loadString);
     }
 
@@ -92,5 +101,6 @@ public final class LoadFrame extends JFrame {
     public void dispose() {
         super.dispose();
         animHandler.stop();
+        ACTIVE_FRAMES_INTERNAL.remove(this);
     }
 }
