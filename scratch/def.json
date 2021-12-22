@@ -7,6 +7,10 @@
     "blue": -255
   },
   "faces_path": "faces.json",
+  "scripts": {
+    "Clear Textbox": "scripts/clear_box.js",
+    "TEST SCRIPT PLS IGNORE": "scripts/test.js"
+  },
   "credits": [
     "Autumnflower by Kazerad and his Picarto stream chat",
     "Most face images by DPronin and DusetrFox",

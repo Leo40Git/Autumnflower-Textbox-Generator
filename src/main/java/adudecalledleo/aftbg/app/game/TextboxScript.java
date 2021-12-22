@@ -10,6 +10,9 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 import adudecalledleo.aftbg.app.data.Textbox;
+import adudecalledleo.aftbg.app.game.shim.ShimHelpers;
+import adudecalledleo.aftbg.app.game.shim.TextboxShim;
+import adudecalledleo.aftbg.face.FacePool;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;
 
@@ -49,8 +52,11 @@ public final class TextboxScript {
         } else throw new ScriptException("Failed to find function updateTextbox!");
     }
 
-    public void updateTextbox(Textbox textbox) {
-        loadedScript.call(null, textbox);
+    public void updateTextbox(FacePool faces, Textbox box) {
+        TextboxShim boxShim = ShimHelpers.copy(box);
+        loadedScript.call(null, ShimHelpers.wrap(faces), boxShim);
+        box.setFace(ShimHelpers.unwrap(boxShim.getFace()));
+        box.setText(boxShim.getText());
     }
 
     public static ScriptEngine createScriptEngine() {
