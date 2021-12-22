@@ -31,7 +31,8 @@
     "entries": {
       "Angry": "faces/sixty/angry.png",
       "Blushing": "faces/sixty/blush.png",
-      "Seriously?": "faces/sixty/srsly.png"
+      "Seriously?": "faces/sixty/srsly.png",
+      "Aheago": "faces/sixty/aheago.png"
     }
   }
 }
