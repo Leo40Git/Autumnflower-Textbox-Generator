@@ -6,15 +6,27 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public final class ScriptInputHelper {
+    private static final String DIALOG_TITLE = "Script Input";
+
     private ScriptInputHelper() { }
 
     private static JDialog createDialog(JOptionPane pane) {
-        JDialog dialog = new JDialog((Frame) null, "Script Input", true);
+        JDialog dialog = new JDialog((Frame) null, DIALOG_TITLE, true);
         dialog.setContentPane(pane);
         dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         dialog.pack();
         dialog.setResizable(false);
+        dialog.setLocationRelativeTo(null);
         return dialog;
+    }
+
+    public static String getString(String message, String def) {
+        return (String) JOptionPane.showInputDialog(null, message, DIALOG_TITLE,
+                JOptionPane.INFORMATION_MESSAGE, null, null, def);
+    }
+
+    public static String getString(String message) {
+        return getString(message, "");
     }
 
     public static Integer getInt(String message, int def) {
@@ -39,7 +51,7 @@ public final class ScriptInputHelper {
                         } catch (NumberFormatException e) {
                             JOptionPane.showMessageDialog(dialog,
                                     "Please enter a number!",
-                                    "Script Input", JOptionPane.ERROR_MESSAGE);
+                                    DIALOG_TITLE, JOptionPane.ERROR_MESSAGE);
                         }
                     }
                 } else if (JOptionPane.VALUE_PROPERTY.equals(prop)) {
@@ -60,7 +72,6 @@ public final class ScriptInputHelper {
             }
         });
 
-        dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
         return resultBuffer[0];
     }
@@ -98,8 +109,7 @@ public final class ScriptInputHelper {
                 dialog.dispose();
             }
         });
-
-        dialog.setLocationRelativeTo(null);
+        
         dialog.setVisible(true);
         return resultBuffer[0];
     }
