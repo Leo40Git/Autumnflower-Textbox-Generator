@@ -38,6 +38,7 @@ public final class TextboxEditorPane extends JEditorPane
 
     private static final String AC_ADD_MOD_COLOR = "add_mod.color";
     private static final String AC_ADD_MOD_STYLE = "add_mod.style";
+    private static final String AC_ADD_MOD_GIMMICK = "add_mod.gimmick";
     private static final String AC_ADD_MOD_FACE = "add_mod.face";
     private static final String AC_ADD_MOD_DELAY = "add_mod.delay";
     private static final String AC_ADD_MOD_TEXT_SPEED = "add_mod.text_speed";
@@ -191,6 +192,11 @@ public final class TextboxEditorPane extends JEditorPane
         item.addActionListener(this);
         item.setMnemonic(KeyEvent.VK_S);
         modsMenu.add(item);
+        item = new JMenuItem("Gimmick", AppResources.Icons.MOD_GIMMICK.get());
+        item.setActionCommand(AC_ADD_MOD_GIMMICK);
+        item.addActionListener(this);
+        item.setMnemonic(KeyEvent.VK_G);
+        modsMenu.add(item);
 
         modsMenu.addSeparator();
 
@@ -271,6 +277,36 @@ public final class TextboxEditorPane extends JEditorPane
             try {
                 forceCaretRendering = true;
                 var dialog = new StyleModifierDialog(this, spec);
+                dialog.setLocationRelativeTo(null);
+                newSpec = dialog.showDialog();
+            } finally {
+                forceCaretRendering = false;
+            }
+            if (newSpec == null) {
+                requestFocus();
+                break;
+            }
+            newSpec = spec.difference(newSpec);
+            try {
+                replaceSelection(newSpec.toModifier());
+                updateTimer.restart();
+            } finally {
+                requestFocus();
+            }
+        }
+        case AC_ADD_MOD_GIMMICK -> {
+            GimmickSpec spec = GimmickSpec.DEFAULT;
+            if (nodes != null) {
+                for (var node : nodes) {
+                    if (node instanceof GimmickModifierNode gimmickModNote) {
+                        spec = spec.add(gimmickModNote.getSpec());
+                    }
+                }
+            }
+            GimmickSpec newSpec;
+            try {
+                forceCaretRendering = true;
+                var dialog = new GimmickModifierDialog(this, winCtx, spec);
                 dialog.setLocationRelativeTo(null);
                 newSpec = dialog.showDialog();
             } finally {

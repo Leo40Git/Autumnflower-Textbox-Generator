@@ -6,8 +6,8 @@ import adudecalledleo.aftbg.window.WindowContext;
 import javax.swing.*;
 import java.awt.*;
 
-public final class WindowBackgroundPanel extends JPanel {
-    private final WindowContext winCtx;
+public class WindowBackgroundPanel extends JPanel {
+    protected final WindowContext winCtx;
 
     public WindowBackgroundPanel(WindowContext winCtx) {
         this.winCtx = winCtx;

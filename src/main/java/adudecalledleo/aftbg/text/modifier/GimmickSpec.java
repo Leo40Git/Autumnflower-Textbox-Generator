@@ -10,28 +10,51 @@ import adudecalledleo.aftbg.util.Pair;
 
 public record GimmickSpec(boolean reset,
                           Fill fill, Flip flip) {
-    public enum Fill {
-        DEFAULT,
-        COLOR,
-        RAINBOW;
+    public interface GimmickEnum {
+        String getLabel();
+        boolean isDefault();
+    }
+
+    public enum Fill implements GimmickEnum {
+        DEFAULT(""),
+        COLOR("Color"),
+        RAINBOW("Rainbow");
+
+        private final String label;
+
+        Fill(String label) {
+            this.label = label;
+        }
 
         public boolean sameAs(Fill other) {
             return this == DEFAULT && other == COLOR
                     || this == COLOR && other == DEFAULT
                     || this == other;
         }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+
+        @Override
+        public boolean isDefault() {
+            return this == DEFAULT;
+        }
     }
 
-    public enum Flip {
-        DEFAULT(false, false),
-        NONE(false, false),
-        HORIZONTAL(true, false),
-        VERTICAL(false, true),
-        BOTH(true, true);
+    public enum Flip implements GimmickEnum {
+        DEFAULT("", false, false),
+        NONE("None", false, false),
+        HORIZONTAL("Horizontal", true, false),
+        VERTICAL("Vertical", false, true),
+        BOTH("Both", true, true);
 
+        private final String label;
         private final boolean horizontal, vertical;
 
-        Flip(boolean horizontal, boolean vertical) {
+        Flip(String label, boolean horizontal, boolean vertical) {
+            this.label = label;
             this.horizontal = horizontal;
             this.vertical = vertical;
         }
@@ -46,6 +69,16 @@ public record GimmickSpec(boolean reset,
 
         public boolean sameAs(Flip other) {
             return this == other || (this.horizontal == other.horizontal && this.vertical == other.vertical);
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+
+        @Override
+        public boolean isDefault() {
+            return this == DEFAULT;
         }
     }
 
@@ -144,5 +177,42 @@ public record GimmickSpec(boolean reset,
             }
             return new GimmickSpec(false, sFill, sFlip);
         }
+    }
+
+    public String toModifier() {
+        if (DEFAULT.equals(this)) {
+            return "\\" + GimmickModifierNode.KEY;
+        }
+        StringBuilder sb = new StringBuilder("\\" + GimmickModifierNode.KEY + "[");
+        if (reset) {
+            sb.append("reset,");
+        }
+        if (fill != Fill.DEFAULT) {
+            sb.append("fill=");
+            switch (fill) {
+                case COLOR -> sb.append("color");
+                case RAINBOW -> sb.append("rainbow");
+                default -> throw new InternalError("UNHANDLED FILL " + fill);
+            }
+            sb.append(',');
+        }
+        if (flip != Flip.DEFAULT) {
+            sb.append("flip=");
+            switch (flip) {
+                case NONE -> sb.append("none");
+                case HORIZONTAL -> sb.append("horizontal");
+                case VERTICAL -> sb.append("vertical");
+                case BOTH -> sb.append("both");
+                default -> throw new InternalError("UNHANDLED FLIP " + flip);
+            }
+            sb.append(',');
+        }
+        final int end = sb.length() - 1;
+        if (sb.charAt(end) == ',') {
+            sb.setCharAt(end, ']');
+        } else {
+            sb.append(']');
+        }
+        return sb.toString();
     }
 }
