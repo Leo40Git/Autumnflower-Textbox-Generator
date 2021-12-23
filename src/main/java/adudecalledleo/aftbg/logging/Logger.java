@@ -12,7 +12,7 @@ import java.util.Locale;
 
 public final class Logger {
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss,SSS");
-    private static final ExceptionWriter EXCEPTION_WRITER = new ExceptionWriter("\t");
+    private static final ExceptionWriter EXCEPTION_WRITER = new ExceptionWriter("    ");
 
     private static String logFile;
     private static WriterThread writerThread;
@@ -64,7 +64,7 @@ public final class Logger {
         }
         stream.println(msg);
         if (level.isMoreSignificantThan(Level.DEBUG)) {
-            writerThread.messageStack.offer(msg);
+            writerThread.offerMessage(msg);
         }
     }
 

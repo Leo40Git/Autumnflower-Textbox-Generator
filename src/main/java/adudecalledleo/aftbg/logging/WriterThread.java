@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 final class WriterThread extends Thread {
-    public final ConcurrentLinkedDeque<String> messageStack;
+    private final ConcurrentLinkedDeque<String> messageStack;
     private BufferedWriter writer;
 
     public WriterThread(BufferedWriter writer) {
@@ -13,6 +13,10 @@ final class WriterThread extends Thread {
         setDaemon(true);
         this.messageStack = new ConcurrentLinkedDeque<>();
         this.writer = writer;
+    }
+
+    public void offerMessage(String message) {
+        messageStack.offer(message);
     }
 
     @Override
