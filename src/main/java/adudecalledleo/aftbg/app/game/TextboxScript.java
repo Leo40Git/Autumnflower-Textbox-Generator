@@ -18,6 +18,8 @@ import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;
 
 public final class TextboxScript {
+    private static final StaticClass INPUT_CLASS = StaticClass.forClass(ScriptInputHelper.class);
+
     private final String name;
     private final Path path;
     private final String description;
@@ -48,7 +50,7 @@ public final class TextboxScript {
         ScriptEngine engine = createScriptEngine();
         engine.put(ScriptEngine.FILENAME, truePath.toString());
         Bindings bindings = engine.createBindings();
-        bindings.put("input", StaticClass.forClass(ScriptInputHelper.class));
+        bindings.put("input", INPUT_CLASS);
 
         try (BufferedReader reader = Files.newBufferedReader(truePath)) {
             engine.eval(reader, bindings);
