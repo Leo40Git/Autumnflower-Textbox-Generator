@@ -2,7 +2,7 @@ package adudecalledleo.aftbg.app.game.shim;
 
 import adudecalledleo.aftbg.face.Face;
 
-@SuppressWarnings("ClassCanBeRecord")
+@SuppressWarnings({"unused", "ClassCanBeRecord"})
 public final class FaceShim {
     final Face delegate;
 

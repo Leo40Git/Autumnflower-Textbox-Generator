@@ -4,6 +4,7 @@ import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FaceCategory;
 import adudecalledleo.aftbg.face.FacePool;
 
+@SuppressWarnings("unused")
 public final class FacePoolShim {
     private final FacePool delegate;
 

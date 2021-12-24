@@ -1,5 +1,6 @@
 package adudecalledleo.aftbg.app.game.shim;
 
+@SuppressWarnings("unused")
 public final class TextboxShim {
     private FaceShim face;
     private String text;

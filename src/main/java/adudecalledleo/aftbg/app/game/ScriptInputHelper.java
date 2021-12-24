@@ -5,6 +5,7 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
+@SuppressWarnings("unused")
 public final class ScriptInputHelper {
     private static final String DIALOG_TITLE = "Script Input";
 
@@ -81,36 +82,11 @@ public final class ScriptInputHelper {
     }
 
     public static Boolean getBoolean(String message) {
-        JOptionPane pane = new JOptionPane(message, JOptionPane.INFORMATION_MESSAGE, JOptionPane.YES_NO_OPTION);
-        JDialog dialog = createDialog(pane);
-
-        Boolean[] resultBuffer = new Boolean[] { null };
-
-        pane.addPropertyChangeListener(evt -> {
-            if (dialog.isVisible() && evt.getSource() == pane
-                    && JOptionPane.VALUE_PROPERTY.equals(evt.getPropertyName())) {
-                Object value = pane.getValue();
-                if (value instanceof Integer anInt) {
-                    if (anInt == JOptionPane.YES_OPTION) {
-                        resultBuffer[0] = true;
-                    } else {
-                        resultBuffer[0] = false;
-                    }
-                    dialog.setVisible(false);
-                    dialog.dispose();
-                }
-            }
-        });
-        dialog.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                resultBuffer[0] = null;
-                dialog.setVisible(false);
-                dialog.dispose();
-            }
-        });
-        
-        dialog.setVisible(true);
-        return resultBuffer[0];
+        return switch (JOptionPane.showConfirmDialog(null, message, DIALOG_TITLE, JOptionPane.YES_NO_OPTION,
+                JOptionPane.INFORMATION_MESSAGE)) {
+            case JOptionPane.YES_OPTION -> Boolean.TRUE;
+            case JOptionPane.NO_OPTION -> Boolean.FALSE;
+            default -> null;
+        };
     }
 }
