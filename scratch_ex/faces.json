@@ -5,6 +5,7 @@
       "Blep": "faces/mercia/blep.png",
       "Confident": "faces/mercia/confident.png",
       "Huh": "faces/mercia/huh.png",
+      "Biting Lip": "faces/mercia/lipbite.png",
       "Pog": "faces/mercia/pog.png"
     }
   },
@@ -24,7 +25,8 @@
       "Angry (Undisguised)": "faces/lif/angry_undisguised.png",
       "Flirty": "faces/lif/flirty.png",
       "High": "faces/lif/high.png",
-      "Shocked": "faces/lif/shocked.png"
+      "Shocked": "faces/lif/shocked.png",
+      "Beconed": "faces/lif/cone.png"
     }
   },
   "Sixty": {
