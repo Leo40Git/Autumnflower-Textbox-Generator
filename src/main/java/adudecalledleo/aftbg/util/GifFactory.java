@@ -81,6 +81,7 @@ public final class GifFactory {
         }
     }
 
+    // region Metadata stuff
     private static void fillGraphicsControlExtension(IIOMetadataNode node, int delayTime) {
         node.setAttribute("disposalMethod", "none");
         node.setAttribute("userInputFlag", "FALSE");
