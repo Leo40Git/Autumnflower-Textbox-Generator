@@ -1,27 +1,30 @@
 package adudecalledleo.aftbg.app.dialog;
 
+import java.awt.*;
+import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.regex.Pattern;
+
+import javax.swing.*;
+import javax.swing.event.*;
+
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.component.render.FaceCategoryListCellRenderer;
 import adudecalledleo.aftbg.app.component.render.FaceListCellRenderer;
+import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.ListReorderTransferHandler;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FaceCategory;
 import adudecalledleo.aftbg.face.FaceLoadException;
 import adudecalledleo.aftbg.face.FacePool;
-import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.logging.Logger;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Locale;
 
 public final class FacePoolEditorDialog extends ModalDialog {
     private Path filePath;
@@ -545,16 +548,18 @@ public final class FacePoolEditorDialog extends ModalDialog {
         }
     }
 
-    private static String processImageName(String name) {
+    private static final Pattern TRIMSTART_PATTERN = Pattern.compile("^_*([\\w])");
+    private static final Pattern DESNAKE_PATTERN = Pattern.compile("_([\\w])");
+    public static String processImageName(String name) {
         if (name.length() > 0) {
             int lastDotIndex = name.lastIndexOf('.');
             if (lastDotIndex > 0) {
                 name = name.substring(0, lastDotIndex);
             }
-            name = (name.charAt(0) + "").toUpperCase(Locale.ROOT) + name.substring(1);
-            while (name.contains("_")) {
-                name = name.replaceFirst("_[a-z]", " " + String.valueOf(name.charAt(name.indexOf("_") + 1)).toUpperCase(Locale.ROOT));
-            }
+            name = TRIMSTART_PATTERN.matcher(name)
+                    .replaceAll(result -> result.group(1).toUpperCase(Locale.ROOT));
+            name = DESNAKE_PATTERN.matcher(name)
+                    .replaceAll(result -> " " + result.group(1).toUpperCase(Locale.ROOT));
         }
         return name;
     }
