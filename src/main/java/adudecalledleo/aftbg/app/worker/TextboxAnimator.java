@@ -15,13 +15,11 @@ import adudecalledleo.aftbg.app.util.LoadFrame;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.logging.Logger;
-import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.animate.AnimationCommand;
 import adudecalledleo.aftbg.text.animate.TextAnimator;
 import adudecalledleo.aftbg.text.modifier.InterruptModifierNode;
 import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.util.GifFactory;
-import adudecalledleo.aftbg.window.WindowColors;
 import adudecalledleo.aftbg.window.WindowContext;
 
 public final class TextboxAnimator extends AbstractTextboxWorker {
@@ -31,19 +29,13 @@ public final class TextboxAnimator extends AbstractTextboxWorker {
     private static final int ARROW_MAX_LOOPS = 4;
     private static final int LAST_FRAME_REPEAT = GifFactory.toFrames(2, 1);
 
-    private final FacePool facePool;
-
     public TextboxAnimator(Component parent, LoadFrame loadFrame, WindowContext winCtx, FacePool facePool, List<Textbox> textboxes) {
         super(parent, loadFrame, winCtx, textboxes);
-        this.facePool = facePool;
+        parserCtx.put(FacePool.class, facePool);
     }
 
     @Override
     protected Void doInBackground() {
-        TextParser.Context ctx = new TextParser.Context()
-                .put(WindowColors.class, winCtx.getColors())
-                .put(FacePool.class, facePool);
-
         final int textboxCount = textboxes.size();
 
         TextAnimator animator = null;
@@ -53,7 +45,7 @@ public final class TextboxAnimator extends AbstractTextboxWorker {
         for (int i = 0; i < textboxes.size(); i++) {
             Textbox textbox = textboxes.get(i);
 
-            NodeList sourceNodes = parser.parse(ctx, textbox.getText());
+            NodeList sourceNodes = parser.parse(parserCtx, textbox.getText());
             if (sourceNodes.hasErrors()) {
                 success = false;
                 break;
@@ -181,13 +173,7 @@ public final class TextboxAnimator extends AbstractTextboxWorker {
             loadFrame.dispose();
             dialog.setVisible(true);
         } else {
-            loadFrame.setAlwaysOnTop(false);
-            // TODO more detailed error message
-            JOptionPane.showMessageDialog(parent,
-                    "Seems like one or more of your textboxes have errors!\n"
-                            + "Correct this, then try generating again.",
-                    "Generate animated textbox(es)", JOptionPane.ERROR_MESSAGE);
-            loadFrame.dispose();
+            handleParseErrors("Generate animated textbox(es)");
         }
 
         return null;
