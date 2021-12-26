@@ -26,7 +26,7 @@ public final class DelayModifierNode extends ModifierNode implements AnimationCo
     }
 
     public static final class Parser implements ModifierParser {
-        private static final String ERROR_PREFIX = "Delay modifier: ";
+        public static final String ERROR_PREFIX = "Delay modifier: ";
 
         @Override
         public void parse(TextParser.Context ctx, int start, int argsStart, String args, NodeList nodes) {
@@ -35,7 +35,7 @@ public final class DelayModifierNode extends ModifierNode implements AnimationCo
                         ERROR_PREFIX + "1 argument required, delay length"));
                 return;
             } else if (args.isBlank()) {
-                nodes.add(new ErrorNode(start, 2 + args.length() + 2,
+                nodes.add(new ErrorNode(start, ModifierParser.modLen(args),
                         ERROR_PREFIX + "1 argument required, delay length"));
                 return;
             }
@@ -54,7 +54,7 @@ public final class DelayModifierNode extends ModifierNode implements AnimationCo
                 return;
             }
 
-            nodes.add(new DelayModifierNode(start, 2 + args.length() + 2, delayLength, new Span(argsStart, args.length())));
+            nodes.add(new DelayModifierNode(start, ModifierParser.modLen(args), delayLength, new Span(argsStart, args.length())));
         }
     }
 

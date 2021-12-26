@@ -18,8 +18,8 @@ public interface ModifierParser {
             addNodes(ctx, start, nodes);
         }
 
-        abstract String hasArgsErrorMessage();
-        abstract void addNodes(TextParser.Context ctx, int start, NodeList nodes);
+        protected abstract String hasArgsErrorMessage();
+        protected abstract void addNodes(TextParser.Context ctx, int start, NodeList nodes);
     }
 
     static int modLen(String args) {

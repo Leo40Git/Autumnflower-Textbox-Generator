@@ -12,15 +12,15 @@ public final class InterruptModifierNode extends ModifierNode {
     }
 
     public static final class Parser extends ModifierParser.NoArgsParser {
-        private static final String ERROR_PREFIX = "Interrupt modifier: ";
+        public static final String ERROR_PREFIX = "Interrupt modifier: ";
 
         @Override
-        String hasArgsErrorMessage() {
+        protected String hasArgsErrorMessage() {
             return ERROR_PREFIX + "No arguments required";
         }
 
         @Override
-        void addNodes(TextParser.Context ctx, int start, NodeList nodes) {
+        protected void addNodes(TextParser.Context ctx, int start, NodeList nodes) {
             nodes.add(new InterruptModifierNode(start));
         }
     }

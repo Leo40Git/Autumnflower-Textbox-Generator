@@ -2,7 +2,6 @@ package adudecalledleo.aftbg.text;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import adudecalledleo.aftbg.text.modifier.ModifierRegistry;
 import adudecalledleo.aftbg.text.node.ErrorNode;
@@ -118,7 +117,8 @@ public final class TextParser {
         if (backslash) {
             nodes.add(new ErrorNode(chars.length - 1, 1, "Backslash at end of text"));
         }
-        nodes.optimize();
+        nodes.optimizeTextNodes();
+        nodes.checkForAdditionalErrors();
         return nodes;
     }
 

@@ -22,7 +22,7 @@ public final class GimmickModifierNode extends ModifierNode {
     }
 
     public static final class Parser implements ModifierParser {
-        private static final String ERROR_PREFIX = "Gimmick modifier: ";
+        public static final String ERROR_PREFIX = "Gimmick modifier: ";
 
         @Override
         public void parse(TextParser.Context ctx, int start, int argsStart, String args, NodeList nodes) {
@@ -33,7 +33,7 @@ public final class GimmickModifierNode extends ModifierNode {
 
             var pair = GimmickSpec.fromModArgs(ERROR_PREFIX, argsStart, args, nodes);
 
-            nodes.add(new GimmickModifierNode(start, 2 + args.length() + 2,
+            nodes.add(new GimmickModifierNode(start, ModifierParser.modLen(args),
                     pair.left(), pair.right()));
         }
     }

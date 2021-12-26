@@ -28,7 +28,7 @@ public final class FaceModifierNode extends ModifierNode implements AnimationCom
     }
 
     public static final class Parser implements ModifierParser {
-        private static final String ERROR_PREFIX = "Face modifier: ";
+        public static final String ERROR_PREFIX = "Face modifier: ";
 
         @Override
         public void parse(TextParser.Context ctx, int start, int argsStart, String args, NodeList nodes) {
@@ -43,7 +43,7 @@ public final class FaceModifierNode extends ModifierNode implements AnimationCom
                 nodes.add(new FaceModifierNode(start, 2, null));
                 return;
             } else if (args.isBlank()) {
-                nodes.add(new ErrorNode(start, 2 + args.length() + 2,
+                nodes.add(new ErrorNode(start, ModifierParser.modLen(args),
                         ERROR_PREFIX + "1 argument required, face path (category/name)"));
                 return;
             }
@@ -61,7 +61,7 @@ public final class FaceModifierNode extends ModifierNode implements AnimationCom
                 return;
             }
 
-            nodes.add(new FaceModifierNode(start, 2 + args.length() + 2, face, new Span(argsStart, args.length())));
+            nodes.add(new FaceModifierNode(start, ModifierParser.modLen(args), face, new Span(argsStart, args.length())));
         }
     }
 

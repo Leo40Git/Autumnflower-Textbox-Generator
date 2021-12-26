@@ -1,5 +1,6 @@
 package adudecalledleo.aftbg.text.node;
 
+import adudecalledleo.aftbg.text.modifier.InterruptModifierNode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -32,7 +33,10 @@ public final class NodeList implements Iterable<Node> {
         errors.clear();
     }
 
-    public void optimize() {
+    /**
+     * Concatenates consecutive {@link TextNode}s, and removes empty ones.
+     */
+    public void optimizeTextNodes() {
         for (int i = 0; i < wrapped.size() - 1; i++) {
             Node node = wrapped.get(i);
             if (node instanceof TextNode t1) {
@@ -47,6 +51,34 @@ public final class NodeList implements Iterable<Node> {
                 }
             }
         }
+    }
+
+    /**
+     * Checks for errors which cannot be detected during parsing, and can only be detected reliably after everything
+     * has been parsed.
+     */
+    public void checkForAdditionalErrors() {
+        // use this instead of wrapped.size() so we don't pointlessly iterate over error nodes we add
+        final int limit = wrapped.size() - 1;
+
+        // region Interrupt: check if at end of textbox
+        InterruptModifierNode lastInterruptNode = null;
+        for (int i = 0; i < limit; i++) {
+            Node node = wrapped.get(i);
+            if (node instanceof InterruptModifierNode interruptNode) {
+                if (lastInterruptNode != null) {
+                    add(new ErrorNode(lastInterruptNode.getStart(), lastInterruptNode.getLength(),
+                            InterruptModifierNode.Parser.ERROR_PREFIX + "Must be at end of textbox!"));
+                }
+                lastInterruptNode = interruptNode;
+            }
+        }
+
+        if (lastInterruptNode != null && wrapped.get(limit) != lastInterruptNode) {
+            add(new ErrorNode(lastInterruptNode.getStart(), lastInterruptNode.getLength(),
+                    InterruptModifierNode.Parser.ERROR_PREFIX + "Must be at end of textbox!"));
+        }
+        // endregion
     }
 
     public List<Node> asList() {

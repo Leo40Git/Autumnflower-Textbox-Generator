@@ -24,7 +24,7 @@ public final class ColorModifierNode extends ModifierNode {
     }
 
     public static final class Parser implements ModifierParser {
-        private static final String ERROR_PREFIX = "Color modifier: ";
+        public static final String ERROR_PREFIX = "Color modifier: ";
 
         @Override
         public void parse(TextParser.Context ctx, int start, int argsStart, String args, NodeList nodes) {
@@ -40,7 +40,7 @@ public final class ColorModifierNode extends ModifierNode {
                         ERROR_PREFIX + "1 argument required, either window color ID or hex color"));
                 return;
             } else if (args.isBlank()) {
-                nodes.add(new ErrorNode(start, 2 + args.length() + 2,
+                nodes.add(new ErrorNode(start, ModifierParser.modLen(args),
                         ERROR_PREFIX + "1 argument required, either window color ID or hex color"));
                 return;
             }

@@ -27,7 +27,7 @@ public final class TextSpeedModifierNode extends ModifierNode implements Animati
     }
 
     public static final class Parser implements ModifierParser {
-        private static final String ERROR_PREFIX = "Text speed modifier: ";
+        public static final String ERROR_PREFIX = "Text speed modifier: ";
 
         @Override
         public void parse(TextParser.Context ctx, int start, int argsStart, String args, NodeList nodes) {
@@ -36,7 +36,7 @@ public final class TextSpeedModifierNode extends ModifierNode implements Animati
                         ERROR_PREFIX + "1 argument required, new speed"));
                 return;
             } else if (args.isBlank()) {
-                nodes.add(new ErrorNode(start, 2 + args.length() + 2,
+                nodes.add(new ErrorNode(start, ModifierParser.modLen(args),
                         ERROR_PREFIX + "1 argument required, new speed"));
                 return;
             }
@@ -50,7 +50,7 @@ public final class TextSpeedModifierNode extends ModifierNode implements Animati
                 return;
             }
 
-            nodes.add(new TextSpeedModifierNode(start, 2 + args.length() + 2, newSpeed, new Span(argsStart, args.length())));
+            nodes.add(new TextSpeedModifierNode(start, ModifierParser.modLen(args), newSpeed, new Span(argsStart, args.length())));
         }
     }
 

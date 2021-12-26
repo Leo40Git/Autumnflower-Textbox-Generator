@@ -22,7 +22,7 @@ public final class StyleModifierNode extends ModifierNode {
     }
 
     public static final class Parser implements ModifierParser {
-        private static final String ERROR_PREFIX = "Style modifier: ";
+        public static final String ERROR_PREFIX = "Style modifier: ";
 
         @Override
         public void parse(TextParser.Context ctx, int start, int argsStart, String args, NodeList nodes) {
@@ -31,7 +31,7 @@ public final class StyleModifierNode extends ModifierNode {
                 return;
             }
 
-            nodes.add(new StyleModifierNode(start, 2 + args.length() + 2,
+            nodes.add(new StyleModifierNode(start, ModifierParser.modLen(args),
                     StyleSpec.fromModArgs(ERROR_PREFIX, argsStart, args, nodes),
                     new Span(argsStart, args.length())));
         }
