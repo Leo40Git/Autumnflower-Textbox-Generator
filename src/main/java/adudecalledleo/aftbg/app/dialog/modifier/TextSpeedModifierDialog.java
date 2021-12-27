@@ -7,10 +7,10 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import adudecalledleo.aftbg.app.AppResources;
-import adudecalledleo.aftbg.app.worker.TextboxAnimator;
+import adudecalledleo.aftbg.app.TextboxRenderer;
 
 public final class TextSpeedModifierDialog extends ModifierDialog {
-    private static int lastTextSpeed = TextboxAnimator.DEFAULT_TEXT_SPEED;
+    private static int lastTextSpeed = TextboxRenderer.DEFAULT_TEXT_SPEED;
 
     private final ContentPane pane;
 
@@ -59,7 +59,7 @@ public final class TextSpeedModifierDialog extends ModifierDialog {
             mainBox.add(Box.createVerticalStrut(2));
             mainBox.add(new JLabel("'Text speed' is the number of frames to wait before appending a character."));
             mainBox.add(new JLabel("Frames are 1/100ths of a second. Default text speed is %d (%s seconds)."
-                    .formatted(TextboxAnimator.DEFAULT_TEXT_SPEED, TextboxAnimator.DEFAULT_TEXT_SPEED / 100.0)));
+                    .formatted(TextboxRenderer.DEFAULT_TEXT_SPEED, TextboxRenderer.DEFAULT_TEXT_SPEED / 100.0)));
             mainBox.add(previewLabel);
 
             JPanel btnsPanel = new JPanel();
