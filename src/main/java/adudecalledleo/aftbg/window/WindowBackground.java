@@ -1,7 +1,5 @@
 package adudecalledleo.aftbg.window;
 
-import adudecalledleo.aftbg.util.AlphaMultiplicationComposite;
-
 import java.awt.*;
 import java.awt.image.*;
 
@@ -38,10 +36,9 @@ public final class WindowBackground {
     public WindowBackground copy() {
         BufferedImage scratchBufCopy = null;
         if (scratchBuf != null) {
-            ColorModel cm = scratchBuf.getColorModel();
-            boolean isAlphaPremul = scratchBuf.isAlphaPremultiplied();
-            WritableRaster raster = scratchBuf.copyData(scratchBuf.getRaster().createCompatibleWritableRaster());
-            scratchBufCopy = new BufferedImage(cm, raster, isAlphaPremul, null);
+            scratchBufCopy = new BufferedImage(scratchBuf.getColorModel(),
+                    scratchBuf.copyData(scratchBuf.getRaster().createCompatibleWritableRaster()),
+                    scratchBuf.isAlphaPremultiplied(), null);
         }
         return new WindowBackground(base, overlay, color, scratchBufCopy);
     }
@@ -58,14 +55,18 @@ public final class WindowBackground {
             final int tilesWide = width / tileWidth, tilesHigh = height / tileHeight;
             for (int ty = 0; ty <= tilesHigh; ty++) {
                 for (int tx = 0; tx <= tilesWide; tx++) {
-                    g.drawImage(overlay, tx * tileWidth, ty * tileHeight, null);
+                    sg.drawImage(overlay, tx * tileWidth, ty * tileHeight, null);
                 }
             }
-            // reduce everyone's alpha by 25%
-            sg.setComposite(new AlphaMultiplicationComposite(0.75f));
-            sg.fillRect(0, 0, width, height);
-
             sg.dispose();
+
+            // reduce everyone's alpha by 25%
+            // NOTE: this loop relies on the scratch buffer being of TYPE_INT_ARGB!
+            int[] pixels = ((DataBufferInt) scratchBuf.getRaster().getDataBuffer()).getData();
+            for (int i = 0; i < pixels.length; i++) {
+                // mask out old alpha and OR in new alpha
+                pixels[i] = (pixels[i] & ~0xFF000000) | (((int) Math.floor(((pixels[i] >> 24) & 0xFF) * 0.75)) << 24);
+            }
         }
 
         g.drawImage(scratchBuf, x, y, x + width, y + height, 0, 0, width, height, observer);
