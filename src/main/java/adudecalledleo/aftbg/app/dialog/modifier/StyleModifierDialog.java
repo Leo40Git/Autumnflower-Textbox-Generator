@@ -7,7 +7,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import adudecalledleo.aftbg.app.AppResources;
-import adudecalledleo.aftbg.app.render.TextRenderer;
+import adudecalledleo.aftbg.app.text.TextRenderer;
 import adudecalledleo.aftbg.text.modifier.StyleSpec;
 import adudecalledleo.aftbg.util.TriState;
 

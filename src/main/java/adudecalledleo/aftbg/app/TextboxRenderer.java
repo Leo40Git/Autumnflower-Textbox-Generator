@@ -8,7 +8,7 @@ import java.util.List;
 
 import adudecalledleo.aftbg.BuildInfo;
 import adudecalledleo.aftbg.app.data.Textbox;
-import adudecalledleo.aftbg.app.render.TextRenderer;
+import adudecalledleo.aftbg.app.text.TextRenderer;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.text.TextParser;

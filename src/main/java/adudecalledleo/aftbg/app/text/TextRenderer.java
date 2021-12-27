@@ -1,6 +1,7 @@
-package adudecalledleo.aftbg.app.render;
+package adudecalledleo.aftbg.app.text;
 
 import adudecalledleo.aftbg.app.AppResources;
+import adudecalledleo.aftbg.app.util.RainbowPaint;
 import adudecalledleo.aftbg.text.modifier.*;
 import adudecalledleo.aftbg.text.node.LineBreakNode;
 import adudecalledleo.aftbg.text.node.Node;

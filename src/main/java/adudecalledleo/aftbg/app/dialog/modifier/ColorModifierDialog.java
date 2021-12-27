@@ -2,7 +2,7 @@ package adudecalledleo.aftbg.app.dialog.modifier;
 
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.component.WindowBackgroundPanel;
-import adudecalledleo.aftbg.app.render.TextRenderer;
+import adudecalledleo.aftbg.app.text.TextRenderer;
 import adudecalledleo.aftbg.window.WindowColors;
 import adudecalledleo.aftbg.window.WindowContext;
 

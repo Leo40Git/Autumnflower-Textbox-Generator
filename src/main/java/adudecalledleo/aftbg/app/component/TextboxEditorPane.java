@@ -25,7 +25,7 @@ import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.text.TextParser;
-import adudecalledleo.aftbg.app.render.TextRenderer;
+import adudecalledleo.aftbg.app.text.TextRenderer;
 import adudecalledleo.aftbg.text.modifier.*;
 import adudecalledleo.aftbg.text.node.*;
 import adudecalledleo.aftbg.util.ColorUtils;
