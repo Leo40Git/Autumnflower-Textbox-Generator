@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.app.game;
+package adudecalledleo.aftbg.app.script;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,8 +10,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 import adudecalledleo.aftbg.app.data.Textbox;
-import adudecalledleo.aftbg.app.game.shim.ShimHelpers;
-import adudecalledleo.aftbg.app.game.shim.TextboxShim;
+import adudecalledleo.aftbg.app.script.shim.ShimHelpers;
+import adudecalledleo.aftbg.app.script.shim.TextboxShim;
 import adudecalledleo.aftbg.face.FacePool;
 import jdk.dynalink.beans.StaticClass;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;

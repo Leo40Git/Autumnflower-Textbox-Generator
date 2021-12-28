@@ -1,5 +1,6 @@
 package adudecalledleo.aftbg.app.game;
 
+import adudecalledleo.aftbg.app.script.TextboxScriptSet;
 import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.app.util.PathAdapter;
 import adudecalledleo.aftbg.app.util.WindowTintAdapter;

@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.app.game;
+package adudecalledleo.aftbg.app.script;
 
 import java.io.IOException;
 import java.nio.file.Path;

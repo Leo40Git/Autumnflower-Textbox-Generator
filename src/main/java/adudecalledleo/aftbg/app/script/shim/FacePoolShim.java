@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.app.game.shim;
+package adudecalledleo.aftbg.app.script.shim;
 
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FaceCategory;

@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.app.game;
+package adudecalledleo.aftbg.app.script;
 
 public final class ScriptLoadException extends Exception {
     public ScriptLoadException(String message) {

@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.app.game.shim;
+package adudecalledleo.aftbg.app.script.shim;
 
 import java.util.Map;
 import java.util.WeakHashMap;

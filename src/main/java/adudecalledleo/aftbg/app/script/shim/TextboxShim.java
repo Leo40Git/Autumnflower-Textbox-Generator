@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.app.game.shim;
+package adudecalledleo.aftbg.app.script.shim;
 
 @SuppressWarnings("unused")
 public final class TextboxShim {

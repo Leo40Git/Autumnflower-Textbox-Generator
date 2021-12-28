@@ -9,8 +9,8 @@ import java.nio.file.Path;
 
 import javax.imageio.ImageIO;
 
-import adudecalledleo.aftbg.app.game.ScriptLoadException;
-import adudecalledleo.aftbg.app.game.TextboxScriptSet;
+import adudecalledleo.aftbg.app.script.ScriptLoadException;
+import adudecalledleo.aftbg.app.script.TextboxScriptSet;
 import adudecalledleo.aftbg.face.FaceLoadException;
 import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.app.game.GameDefinition;
