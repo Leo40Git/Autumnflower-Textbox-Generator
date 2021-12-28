@@ -15,6 +15,10 @@ public final class VersionAdapter extends TypeAdapter<Version> {
 
     @Override
     public void write(JsonWriter out, Version value) throws IOException {
+        if (value == null) {
+            out.nullValue();
+            return;
+        }
         out.value(value.toString());
     }
 }

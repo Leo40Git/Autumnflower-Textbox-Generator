@@ -49,6 +49,10 @@ public final class WindowTintAdapter extends TypeAdapter<WindowTint> {
 
     @Override
     public void write(JsonWriter out, WindowTint value) throws IOException {
+        if (value == null) {
+            out.nullValue();
+            return;
+        }
         out.beginObject();
         out.name("red");
         out.value(value.red());

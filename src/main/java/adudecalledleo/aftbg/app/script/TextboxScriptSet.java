@@ -54,6 +54,10 @@ public final class TextboxScriptSet {
 
         @Override
         public void write(JsonWriter out, TextboxScriptSet value) throws IOException {
+            if (value == null) {
+                out.nullValue();
+                return;
+            }
             out.beginObject();
             for (var script : value.scripts) {
                 out.name(script.getName());

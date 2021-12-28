@@ -135,6 +135,10 @@ public final class FacePool {
 
         @Override
         public void write(JsonWriter out, FacePool value) throws IOException {
+            if (value == null) {
+                out.nullValue();
+                return;
+            }
             out.beginObject();
             for (var cat : value.categories.values()) {
                 if (cat == FaceCategory.NONE) {
