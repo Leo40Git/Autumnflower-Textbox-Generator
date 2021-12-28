@@ -15,21 +15,19 @@ import javax.swing.event.*;
 
 import adudecalledleo.aftbg.BuildInfo;
 import adudecalledleo.aftbg.app.AppResources;
+import adudecalledleo.aftbg.app.component.render.TextboxListCellRenderer;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.data.TextboxListSerializer;
 import adudecalledleo.aftbg.app.dialog.FacePoolEditorDialog;
 import adudecalledleo.aftbg.app.dialog.PreferencesDialog;
-import adudecalledleo.aftbg.app.component.render.TextboxListCellRenderer;
+import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.script.TextboxScriptSet;
-import adudecalledleo.aftbg.app.script.shim.ShimHelpers;
-import adudecalledleo.aftbg.app.script.shim.TextboxShim;
 import adudecalledleo.aftbg.app.util.*;
 import adudecalledleo.aftbg.app.worker.GameDefinitionReloader;
 import adudecalledleo.aftbg.app.worker.TextboxAnimator;
 import adudecalledleo.aftbg.app.worker.TextboxGenerator;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FacePool;
-import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.window.WindowContext;
 import com.google.gson.stream.JsonReader;
@@ -462,9 +460,8 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         @Override
                         public void actionPerformed(ActionEvent evt) {
                             Textbox box = textboxes.get(currentTextbox);
-                            TextboxShim boxShim;
                             try {
-                                boxShim = script.run(faces, box);
+                                script.run(faces, box);
                             } catch (Exception e) {
                                 Logger.error("Failed to run script!", e);
                                 JOptionPane.showMessageDialog(MainPanel.this,
@@ -472,8 +469,6 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                                         "Script Error", JOptionPane.ERROR_MESSAGE);
                                 return;
                             }
-                            box.setFace(ShimHelpers.unwrap(boxShim.getFace()));
-                            box.setText(boxShim.getText());
                             updateTextboxEditors();
                         }
                     };

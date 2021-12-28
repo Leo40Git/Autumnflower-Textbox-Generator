@@ -58,18 +58,19 @@ public final class TextboxScript {
             throw new ScriptLoadException("Failed to load script!", e);
         }
 
-        Object possibleFunc = bindings.get("updateTextbox");
-        if (possibleFunc instanceof ScriptObjectMirror mirror && mirror.isFunction()) {
+        Object func = bindings.get("updateTextbox");
+        if (func instanceof ScriptObjectMirror mirror && mirror.isFunction()) {
             updateTextboxFunc = mirror;
         } else {
             throw new ScriptLoadException("Failed to find function updateTextbox in script!");
         }
     }
 
-    public TextboxShim run(FacePool faces, Textbox box) {
+    public void run(FacePool faces, Textbox box) {
         TextboxShim boxShim = ShimHelpers.copy(box);
         updateTextboxFunc.call(null, ShimHelpers.wrap(faces), boxShim);
-        return boxShim;
+        box.setFace(ShimHelpers.unwrap(boxShim.getFace()));
+        box.setText(boxShim.getText());
     }
 
     public static ScriptEngine createScriptEngine() {
