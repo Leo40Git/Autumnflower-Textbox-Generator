@@ -18,6 +18,7 @@ import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;
 
 public final class TextboxScript {
+    private static final ScriptEngine ENGINE = createScriptEngine();
     private static final StaticClass INPUT_CLASS = StaticClass.forClass(ScriptInputHelper.class);
 
     private final String name;
@@ -47,13 +48,12 @@ public final class TextboxScript {
     public void load(Path basePath) throws ScriptLoadException {
         Path truePath = basePath.resolve(path).toAbsolutePath();
 
-        ScriptEngine engine = createScriptEngine();
-        engine.put(ScriptEngine.FILENAME, truePath.toString());
-        Bindings bindings = engine.createBindings();
+        ENGINE.put(ScriptEngine.FILENAME, truePath.toString());
+        Bindings bindings = ENGINE.createBindings();
         bindings.put("input", INPUT_CLASS);
 
         try (BufferedReader reader = Files.newBufferedReader(truePath)) {
-            engine.eval(reader, bindings);
+            ENGINE.eval(reader, bindings);
         } catch (IOException | ScriptException e) {
             throw new ScriptLoadException("Failed to load script!", e);
         }
@@ -73,7 +73,7 @@ public final class TextboxScript {
         box.setText(boxShim.getText());
     }
 
-    public static ScriptEngine createScriptEngine() {
+    private static ScriptEngine createScriptEngine() {
         return new NashornScriptEngineFactory().getScriptEngine("--no-java");
     }
 }
