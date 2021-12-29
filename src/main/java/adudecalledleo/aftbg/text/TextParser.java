@@ -4,10 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import adudecalledleo.aftbg.text.modifier.ModifierRegistry;
-import adudecalledleo.aftbg.text.node.ErrorNode;
-import adudecalledleo.aftbg.text.node.LineBreakNode;
-import adudecalledleo.aftbg.text.node.NodeList;
-import adudecalledleo.aftbg.text.node.TextNode;
+import adudecalledleo.aftbg.text.node.*;
 
 /**
  * <b>NOTE:</b> This class is <em>not safe</em> for multithreading.
@@ -56,11 +53,11 @@ public final class TextParser {
             char c = chars[pos];
             if (backslash) {
                 backslash = false;
+                flushTextNode();
                 if (c == '\\') {
-                    sb.append('\\');
-                    textLength += 2;
+                    nodes.add(new TextNode.Escaped(pos - 1, 2, "\\", "\\\\"));
+                    textStart += 2;
                 } else {
-                    flushTextNode();
                     int modStartPos = pos++ - 1;
                     var parser = ModifierRegistry.get(c);
                     if (pos < chars.length && chars[pos] == '[') {
@@ -126,6 +123,7 @@ public final class TextParser {
         if (textLength > 0) {
             nodes.add(new TextNode(textStart, textLength, sb.toString()));
             sb.setLength(0);
+            textStart += textLength;
             textLength = 0;
         }
     }

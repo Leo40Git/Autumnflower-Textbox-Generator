@@ -50,6 +50,7 @@ public final class TextboxEditorPane extends JEditorPane
     private final Timer updateTimer;
     private final Map<Object, Action> actions;
     private final Map<Rectangle2D, String> errors;
+    private final Map<Rectangle2D, Color> escapedColors;
     private final Line2D scratchLine;
     private final SimpleAttributeSet styleNormal, styleMod;
     private final JPopupMenu popupMenu;
@@ -67,6 +68,7 @@ public final class TextboxEditorPane extends JEditorPane
         textParser = new TextParser();
         textParserCtx = new TextParser.Context();
         errors = new HashMap<>();
+        escapedColors = new HashMap<>();
         scratchLine = new Line2D.Double(0, 0, 0, 0);
 
         styleNormal = new SimpleAttributeSet();
@@ -416,13 +418,22 @@ public final class TextboxEditorPane extends JEditorPane
 
         super.paintComponent(g);
 
+        for (var entry : escapedColors.entrySet()) {
+            var rect = entry.getKey();
+            g2d.setClip(rect);
+            final double y = rect.getY() + rect.getHeight() - 1;
+            scratchLine.setLine(rect.getX(), y, rect.getX() + rect.getWidth(), y);
+            g2d.setColor(entry.getValue());
+            g2d.draw(scratchLine);
+        }
+
         g2d.setColor(Color.RED);
         for (var entry : errors.entrySet()) {
             var rect = entry.getKey();
             g2d.setClip(rect);
             final double y = rect.getY() + rect.getHeight() - 3;
             boolean raised = true;
-            for (double x = rect.getX(); x <= rect.getX() + rect.getWidth() + 2; x += 2) {
+            for (double x = rect.getX(); x <= rect.getX() + rect.getWidth()/* + 2*/; x += 2) {
                 scratchLine.setLine(x, y + (raised ? 2 : 0), x + 2, y + (raised ? 0 : 2));
                 g2d.draw(scratchLine);
                 raised = !raised;
@@ -478,9 +489,11 @@ public final class TextboxEditorPane extends JEditorPane
         flushChanges(true);
     }
 
+    private static final boolean DUMP_NODES = false;
+
     private void highlight() {
         if (getDocument() instanceof StyledDocument doc) {
-            MutableAttributeSet style = styleNormal;
+            MutableAttributeSet style = styleNormal, styleEscaped = styleMod;
             doc.setParagraphAttributes(0, doc.getLength(), style, true);
             doc.setCharacterAttributes(0, doc.getLength(), style, true);
 
@@ -495,6 +508,19 @@ public final class TextboxEditorPane extends JEditorPane
                 Logger.error("Failed to get text to parse!", e);
                 return;
             }
+
+            // region NODE DUMP
+            if (DUMP_NODES) {
+                Logger.trace("=== NODE DUMP START ===");
+                for (Node node : nodes) {
+                    Logger.trace(node.toString());
+                }
+                Logger.trace("=== NODE DUMP  END  ===");
+            }
+            // endregion
+
+            escapedColors.clear();
+
             StyleSpec styleSpec = StyleSpec.DEFAULT;
 
             for (Node node : nodes) {
@@ -511,16 +537,25 @@ public final class TextboxEditorPane extends JEditorPane
                 } else if (node instanceof StyleModifierNode modStyle) {
                     doc.setCharacterAttributes(modStyle.getStart(), modStyle.getLength(), styleMod, true);
                     styleSpec = styleSpec.add(modStyle.getSpec());
-                    style = new SimpleAttributeSet(style);
-                    StyleConstants.setBold(style, styleSpec.isBold());
-                    StyleConstants.setItalic(style, styleSpec.isItalic());
-                    StyleConstants.setUnderline(style, styleSpec.isUnderline());
-                    StyleConstants.setStrikeThrough(style, styleSpec.isStrikethrough());
-                    StyleConstants.setSuperscript(style, styleSpec.superscript() == StyleSpec.Superscript.SUPER);
-                    StyleConstants.setSubscript(style, styleSpec.superscript() == StyleSpec.Superscript.SUB);
-                    StyleConstants.setFontSize(style, StyleConstants.getFontSize(styleNormal) + styleSpec.getRealSizeAdjust());
+                    style = modifyStyleToSpec(style, styleSpec);
+                    styleEscaped = modifyStyleToSpec(styleEscaped, styleSpec);
                 } else if (node instanceof ModifierNode) {
                     doc.setCharacterAttributes(node.getStart(), node.getLength(), styleMod, true);
+                } else if (node instanceof TextNode.Escaped) {
+                    doc.setCharacterAttributes(node.getStart(), node.getLength(), styleEscaped, true);
+
+                    Rectangle2D startRect, endRect;
+                    final int end = node.getStart() + node.getLength();
+                    try {
+                        startRect = modelToView2D(node.getStart());
+                        endRect = modelToView2D(end);
+
+                        escapedColors.put(new Rectangle2D.Double(startRect.getX(), startRect.getY(),
+                                        endRect.getX() - startRect.getX(), Math.max(startRect.getHeight(), endRect.getHeight())),
+                                StyleConstants.getForeground(style));
+                    } catch (BadLocationException e) {
+                        Logger.error("Failed to generate escaped text bounds!", e);
+                    }
                 } else {
                     doc.setCharacterAttributes(node.getStart(), node.getLength(), style, true);
                 }
@@ -547,6 +582,18 @@ public final class TextboxEditorPane extends JEditorPane
         }
 
         SwingUtilities.invokeLater(this::repaint);
+    }
+
+    private MutableAttributeSet modifyStyleToSpec(MutableAttributeSet style, StyleSpec styleSpec) {
+        style = new SimpleAttributeSet(style);
+        StyleConstants.setBold(style, styleSpec.isBold());
+        StyleConstants.setItalic(style, styleSpec.isItalic());
+        StyleConstants.setUnderline(style, styleSpec.isUnderline());
+        StyleConstants.setStrikeThrough(style, styleSpec.isStrikethrough());
+        StyleConstants.setSuperscript(style, styleSpec.superscript() == StyleSpec.Superscript.SUPER);
+        StyleConstants.setSubscript(style, styleSpec.superscript() == StyleSpec.Superscript.SUB);
+        StyleConstants.setFontSize(style, StyleConstants.getFontSize(styleNormal) + styleSpec.getRealSizeAdjust());
+        return style;
     }
 
     private static final class StyledDocumentImpl extends DefaultStyledDocument {

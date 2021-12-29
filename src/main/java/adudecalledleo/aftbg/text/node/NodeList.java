@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterator;
+import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 
 public final class NodeList implements Iterable<Node> {
@@ -37,14 +38,26 @@ public final class NodeList implements Iterable<Node> {
      * Concatenates consecutive {@link TextNode}s, and removes empty ones.
      */
     public void optimizeTextNodes() {
+        optimizeTextNodes0(TextNode.class, (t1, t2) ->
+                new TextNode(t1.getStart(), t1.getLength() + t2.getLength(),
+                        t1.getContents() + t2.getContents()));
+        optimizeTextNodes0(TextNode.Escaped.class, (t1, t2) ->
+                new TextNode.Escaped(t1.getStart(), t1.getLength() + t2.getLength(),
+                        t1.getContents() + t2.getContents(),
+                        t1.getOriginalContents() + t2.getOriginalContents()));
+    }
+
+    private <N extends TextNode> void optimizeTextNodes0(Class<N> clazz, BinaryOperator<N> concatFunc) {
         for (int i = 0; i < wrapped.size() - 1; i++) {
             Node node = wrapped.get(i);
-            if (node instanceof TextNode t1) {
+            if (node.getClass() == clazz) {
+                N t1 = clazz.cast(node);
                 Node nextNode = wrapped.get(i + 1);
-                if (nextNode instanceof TextNode t2) {
-                    wrapped.set(i, new TextNode(t1.getStart(), t1.getLength() + t2.getLength(),
-                            t1.getContents() + t2.getContents()));
+                if (nextNode.getClass() == clazz) {
+                    N t2 = clazz.cast(nextNode);
+                    wrapped.set(i, concatFunc.apply(t1, t2));
                     wrapped.remove(i + 1);
+                    i--;
                 } else if (t1.getContents().isEmpty()) {
                     wrapped.remove(i);
                     i--;
