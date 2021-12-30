@@ -7,12 +7,7 @@
     "blue": -255
   },
   "faces_path": "faces.json",
-  "scripts": {
-    "Make Sixty Textbox": {
-      "path": "scripts/sixtybox.js",
-      "desc": "Creates a textbox of Sixty noises."
-    }
-  },
+  "scripts_path": "scripts.json",
   "credits": [
     "Autumnflower by Kazerad and his Picarto stream chat",
     "Most face images by DPronin and DusetrFox",

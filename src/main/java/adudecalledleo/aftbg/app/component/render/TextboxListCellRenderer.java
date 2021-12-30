@@ -1,7 +1,6 @@
 package adudecalledleo.aftbg.app.component.render;
 
 import adudecalledleo.aftbg.app.util.GameDefinitionUpdateListener;
-import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.app.game.GameDefinition;
@@ -12,10 +11,9 @@ import adudecalledleo.aftbg.window.WindowContext;
 
 import javax.swing.*;
 import java.awt.*;
-import java.nio.file.Path;
 
 public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox>
-        implements WindowContextUpdateListener, GameDefinitionUpdateListener {
+        implements GameDefinitionUpdateListener {
     private final TextParser textParser;
     private final TextParser.Context textParserCtx;
     private WindowContext winCtx;
@@ -29,14 +27,11 @@ public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox>
     }
 
     @Override
-    public void updateWindowContext(WindowContext winCtx) {
-        this.winCtx = winCtx;
-        textParserCtx.put(WindowColors.class, winCtx.getColors());
-    }
-
-    @Override
-    public void updateGameDefinition(Path basePath, GameDefinition gameDef, FacePool facePool) {
-        textParserCtx.put(FacePool.class, facePool);
+    public void updateGameDefinition(GameDefinition gameDef) {
+        this.winCtx = gameDef.winCtx();
+        textParserCtx
+                .put(WindowColors.class, winCtx.getColors())
+                .put(FacePool.class, gameDef.faces());
     }
 
     @Override

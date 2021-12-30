@@ -9,15 +9,15 @@ import javax.swing.*;
 import adudecalledleo.aftbg.app.TextboxRenderer;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.dialog.AnimatedPreviewDialog;
+import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.util.LoadFrame;
 import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.logging.Logger;
-import adudecalledleo.aftbg.window.WindowContext;
 
 public final class TextboxAnimator extends AbstractTextboxWorker {
-    public TextboxAnimator(Component parent, LoadFrame loadFrame, WindowContext winCtx, FacePool facePool, List<Textbox> textboxes) {
-        super(parent, loadFrame, winCtx, textboxes);
-        parserCtx.put(FacePool.class, facePool);
+    public TextboxAnimator(Component parent, LoadFrame loadFrame, GameDefinition gameDef, List<Textbox> textboxes) {
+        super(parent, loadFrame, gameDef, textboxes);
+        parserCtx.put(FacePool.class, gameDef.faces());
     }
 
     @Override

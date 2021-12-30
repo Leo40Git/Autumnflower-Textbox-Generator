@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,13 +21,14 @@ import adudecalledleo.aftbg.app.dialog.FacePoolEditorDialog;
 import adudecalledleo.aftbg.app.dialog.PreferencesDialog;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.script.TextboxScriptSet;
-import adudecalledleo.aftbg.app.util.*;
+import adudecalledleo.aftbg.app.util.DialogUtils;
+import adudecalledleo.aftbg.app.util.GameDefinitionUpdateListener;
+import adudecalledleo.aftbg.app.util.ListReorderTransferHandler;
+import adudecalledleo.aftbg.app.util.LoadFrame;
 import adudecalledleo.aftbg.app.worker.TextboxAnimator;
 import adudecalledleo.aftbg.app.worker.TextboxGenerator;
 import adudecalledleo.aftbg.face.Face;
-import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.logging.Logger;
-import adudecalledleo.aftbg.window.WindowContext;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
@@ -42,8 +42,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     private static final String AC_GENERATE = "generate";
     private static final String AC_GENERATE_ANIMATION = "generate_animation";
 
-    private final List<WindowContextUpdateListener> winCtxUpdateListeners;
-    private final List<GameDefinitionUpdateListener> gameDefUpdateListeners;
+    private final List<GameDefinitionUpdateListener> updateListeners;
 
     private final List<Textbox> textboxes;
     private int currentTextbox;
@@ -54,16 +53,12 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     private final FaceSelectionPanel faceSelection;
     private final TextboxEditorPane editorPane;
 
-    private WindowContext winCtx;
     private GameDefinition gameDef;
-    private FacePool faces;
-    private Path basePath;
 
     private MenuBarImpl menuBar;
 
     public MainPanel() {
-        winCtxUpdateListeners = new ArrayList<>();
-        gameDefUpdateListeners = new ArrayList<>();
+        updateListeners = new ArrayList<>();
 
         textboxes = new ArrayList<>();
         textboxes.add(new Textbox(Face.NONE, ""));
@@ -71,18 +66,16 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         projectSerializer = new TextboxListSerializer(this);
 
         faceSelection = new FaceSelectionPanel(this::onFaceChanged);
-        gameDefUpdateListeners.add(faceSelection);
+        updateListeners.add(faceSelection);
         editorPane = new TextboxEditorPane(this::onTextUpdated);
-        winCtxUpdateListeners.add(editorPane);
-        gameDefUpdateListeners.add(editorPane);
+        updateListeners.add(editorPane);
 
         textboxSelector = new JList<>();
         textboxSelector.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         updateTextboxSelectorModel();
         textboxSelector.addListSelectionListener(this);
         var renderer = new TextboxListCellRenderer();
-        winCtxUpdateListeners.add(renderer);
-        gameDefUpdateListeners.add(renderer);
+        updateListeners.add(renderer);
         textboxSelector.setCellRenderer(renderer);
         textboxSelector.setOpaque(false);
         ListReorderTransferHandler.install(textboxSelector, this);
@@ -130,7 +123,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         buttonPanel.add(btn);
 
         var scroll = new WindowBackgroundScrollPane(textboxSelector);
-        winCtxUpdateListeners.add(scroll);
+        updateListeners.add(scroll);
 
         JPanel listPanel = new JPanel();
         listPanel.setLayout(new BorderLayout());
@@ -146,13 +139,13 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         btnGenerate.setActionCommand(AC_GENERATE);
         btnGenerate.addActionListener(this);
         btnGenerate.setEnabled(false);
-        winCtxUpdateListeners.add(winCtx1 -> btnGenerate.setEnabled(true));
+        updateListeners.add(gameDef -> btnGenerate.setEnabled(true));
         buttonPanel.add(btnGenerate);
         JButton btnGenerateAnim = new JButton("Generate Animation");
         btnGenerateAnim.setActionCommand(AC_GENERATE_ANIMATION);
         btnGenerateAnim.addActionListener(this);
         btnGenerateAnim.setEnabled(false);
-        winCtxUpdateListeners.add(winCtx1 -> btnGenerateAnim.setEnabled(true));
+        updateListeners.add(gameDef -> btnGenerateAnim.setEnabled(true));
         buttonPanel.add(btnGenerateAnim);
 
         JPanel textboxPanel = new JPanel();
@@ -163,19 +156,10 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         return textboxPanel;
     }
 
-    public void updateWindowContext(WindowContext winCtx) {
-        this.winCtx = winCtx;
-        for (var listener : winCtxUpdateListeners) {
-            listener.updateWindowContext(winCtx);
-        }
-    }
-
-    public void updateGameDefinition(Path basePath, GameDefinition gameDef, FacePool faces) {
-        this.basePath = basePath;
+    public void updateGameDefinition(GameDefinition gameDef) {
         this.gameDef = gameDef;
-        this.faces = faces;
-        for (var listener : gameDefUpdateListeners) {
-            listener.updateGameDefinition(basePath, gameDef, faces);
+        for (var listener : updateListeners) {
+            listener.updateGameDefinition(gameDef);
         }
     }
 
@@ -215,9 +199,9 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
             case AC_GENERATE -> {
-                if (winCtx == null) {
+                if (gameDef == null) {
                     JOptionPane.showMessageDialog(this,
-                            "Window context hasn't been loaded yet (somehow)!",
+                            "A game definition hasn't been loaded yet!",
                             "Generate", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -230,19 +214,13 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                 loadFrame.setVisible(true);
                 List<Textbox> textboxesCopy = new ArrayList<>(textboxes);
 
-                var worker = new TextboxGenerator(this, loadFrame, winCtx, textboxesCopy);
+                var worker = new TextboxGenerator(this, loadFrame, gameDef, textboxesCopy);
                 worker.execute();
             }
             case AC_GENERATE_ANIMATION -> {
-                if (winCtx == null) {
+                if (gameDef == null) {
                     JOptionPane.showMessageDialog(this,
-                            "Window context hasn't been loaded yet (somehow)!",
-                            "Generate Animated", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                if (faces == null) {
-                    JOptionPane.showMessageDialog(this,
-                            "Face pool hasn't been loaded yet (somehow)!",
+                            "A game definition hasn't been loaded yet!",
                             "Generate Animated", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -255,7 +233,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                 loadFrame.setVisible(true);
                 List<Textbox> textboxesCopy = new ArrayList<>(textboxes);
 
-                var worker = new TextboxAnimator(this, loadFrame, winCtx, faces, textboxesCopy);
+                var worker = new TextboxAnimator(this, loadFrame, gameDef, textboxesCopy);
                 worker.execute();
             }
             case AC_TEXTBOX_ADD -> {
@@ -434,15 +412,15 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             add(toolsMenu);
             add(helpMenu);
 
-            gameDefUpdateListeners.add(this);
-            if (basePath != null && gameDef != null && faces != null) {
-                updateGameDefinition(basePath, gameDef, faces);
+            updateListeners.add(this);
+            if (gameDef != null) {
+                updateGameDefinition(gameDef);
             }
         }
 
         @Override
-        public void updateGameDefinition(Path basePath, GameDefinition gameDef, FacePool facePool) {
-            TextboxScriptSet scripts = gameDef.getScripts();
+        public void updateGameDefinition(GameDefinition gameDef) {
+            TextboxScriptSet scripts = gameDef.scripts();
             if (scripts == null) {
                 scriptsMenu.removeAll();
                 scriptsMenu.setEnabled(false);
@@ -454,7 +432,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         public void actionPerformed(ActionEvent evt) {
                             Textbox box = textboxes.get(currentTextbox);
                             try {
-                                script.run(faces, box);
+                                script.run(gameDef.faces(), box);
                             } catch (Exception e) {
                                 Logger.error("Failed to run script!", e);
                                 JOptionPane.showMessageDialog(MainPanel.this,
@@ -525,7 +503,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     List<Textbox> newTextboxes;
                     try (FileReader fr = new FileReader(src);
                          JsonReader in = GameDefinition.GSON.newJsonReader(fr)) {
-                        newTextboxes = projectSerializer.read(in, faces);
+                        newTextboxes = projectSerializer.read(in, gameDef.faces());
                     } catch (TextboxListSerializer.ReadCancelledException ignored) {
                         break;
                     } catch (IOException | IllegalStateException e) {
@@ -585,8 +563,8 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                             + "version " + BuildInfo.version() + "<br/>"
                             + String.join("<br/>", BuildInfo.credits())
                             + "<hr/>"
-                            + "Current game definition is " + gameDef.getName() + "<br/>"
-                            + String.join("<br/>", gameDef.getCredits())
+                            + "Current game definition is " + gameDef.name() + "<br/>"
+                            + String.join("<br/>", gameDef.credits())
                             + "</html>",
                             "About " + BuildInfo.name() + " v" + BuildInfo.version(), JOptionPane.INFORMATION_MESSAGE);
                 }

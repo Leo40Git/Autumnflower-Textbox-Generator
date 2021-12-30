@@ -1,13 +1,14 @@
 package adudecalledleo.aftbg.app.component;
 
-import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
+import adudecalledleo.aftbg.app.game.GameDefinition;
+import adudecalledleo.aftbg.app.util.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.util.ColorUtils;
 import adudecalledleo.aftbg.window.WindowContext;
 
 import javax.swing.*;
 import java.awt.*;
 
-public final class WindowBackgroundScrollPane extends JScrollPane implements WindowContextUpdateListener {
+public final class WindowBackgroundScrollPane extends JScrollPane implements GameDefinitionUpdateListener {
     private final ViewportImpl viewport;
 
     public WindowBackgroundScrollPane(Component view) {
@@ -16,8 +17,8 @@ public final class WindowBackgroundScrollPane extends JScrollPane implements Win
     }
 
     @Override
-    public void updateWindowContext(WindowContext winCtx) {
-        viewport.winCtx = winCtx;
+    public void updateGameDefinition(GameDefinition gameDef) {
+        viewport.winCtx = gameDef.winCtx().copy();
     }
 
     private static final class ViewportImpl extends JViewport {

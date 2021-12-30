@@ -2,21 +2,17 @@ package adudecalledleo.aftbg.app;
 
 import java.awt.event.*;
 import java.io.IOException;
-import java.nio.file.Path;
 
 import javax.swing.*;
 
 import adudecalledleo.aftbg.BuildInfo;
 import adudecalledleo.aftbg.app.component.MainPanel;
-import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.app.game.GameDefinition;
-import adudecalledleo.aftbg.window.WindowContext;
 
 public final class AppFrame extends JFrame {
-    public AppFrame(Path basePath, GameDefinition gameDef, WindowContext winCtx, FacePool faces) {
+    public AppFrame(GameDefinition gameDef) {
         var panel = new MainPanel();
-        panel.updateGameDefinition(basePath, gameDef, faces);
-        panel.updateWindowContext(winCtx);
+        panel.updateGameDefinition(gameDef);
 
         setTitle(BuildInfo.name());
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);

@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.*;
 
 import adudecalledleo.aftbg.app.data.Textbox;
+import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.util.LoadFrame;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.window.WindowColors;
@@ -19,14 +20,15 @@ public abstract class AbstractTextboxWorker extends SwingWorker<Void, Void> {
     protected final WindowContext winCtx;
     protected final List<Textbox> textboxes;
 
-    public AbstractTextboxWorker(Component parent, LoadFrame loadFrame, WindowContext winCtx, List<Textbox> textboxes) {
+    public AbstractTextboxWorker(Component parent, LoadFrame loadFrame, GameDefinition gameDef, List<Textbox> textboxes) {
         this.parent = parent;
         this.loadFrame = loadFrame;
-        this.parser = new TextParser();
-        this.winCtx = winCtx.copy();
-        this.parserCtx = new TextParser.Context()
-                .put(WindowColors.class, this.winCtx.getColors());
+        this.winCtx = gameDef.winCtx().copy();
         this.textboxes = textboxes;
+
+        this.parser = new TextParser();
+        this.parserCtx = new TextParser.Context()
+                .put(WindowColors.class, winCtx.getColors());
     }
 
     protected void handleParseErrors(String title) {

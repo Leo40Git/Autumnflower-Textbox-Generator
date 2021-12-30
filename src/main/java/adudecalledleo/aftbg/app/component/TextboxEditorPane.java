@@ -5,7 +5,6 @@ import java.awt.event.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -19,7 +18,6 @@ import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.dialog.modifier.*;
 import adudecalledleo.aftbg.app.util.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.app.util.UnmodifiableAttributeSetView;
-import adudecalledleo.aftbg.app.util.WindowContextUpdateListener;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.app.game.GameDefinition;
@@ -33,7 +31,7 @@ import adudecalledleo.aftbg.window.WindowColors;
 import adudecalledleo.aftbg.window.WindowContext;
 
 public final class TextboxEditorPane extends JEditorPane
-        implements WindowContextUpdateListener, GameDefinitionUpdateListener, ActionListener {
+        implements GameDefinitionUpdateListener, ActionListener {
     private static final BufferedImage SCRATCH_IMAGE = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 
     private static final String AC_ADD_MOD_COLOR = "add_mod.color";
@@ -474,17 +472,8 @@ public final class TextboxEditorPane extends JEditorPane
     }
 
     @Override
-    public void updateWindowContext(WindowContext winCtx) {
-        this.winCtx = winCtx;
-        setCaretColor(winCtx.getColor(0));
-        StyleConstants.setForeground(styleNormal, winCtx.getColor(0));
-        textParserCtx.put(WindowColors.class, winCtx.getColors());
-        flushChanges(true);
-    }
-
-    @Override
-    public void updateGameDefinition(Path basePath, GameDefinition gameDef, FacePool facePool) {
-        this.facePool = facePool;
+    public void updateGameDefinition(GameDefinition gameDef) {
+        this.facePool = gameDef.faces();
         textParserCtx.put(FacePool.class, facePool);
         flushChanges(true);
     }

@@ -4,7 +4,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.nio.file.Path;
 import java.util.function.Consumer;
 
 import javax.swing.DefaultComboBoxModel;
@@ -74,8 +73,8 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
     }
 
     @Override
-    public void updateGameDefinition(Path basePath, GameDefinition gameDef, FacePool facePool) {
-        updateFacePool(facePool);
+    public void updateGameDefinition(GameDefinition gameDef) {
+        updateFacePool(gameDef.faces());
     }
 
     private static int getSelectedIndex(DefaultComboBoxModel<?> model) {
