@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,8 @@ import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.app.util.ListReorderTransferHandler;
 import adudecalledleo.aftbg.app.util.LoadFrame;
+import adudecalledleo.aftbg.app.worker.ExtensionDefinitionLoader;
+import adudecalledleo.aftbg.app.worker.GameDefinitionLoader;
 import adudecalledleo.aftbg.app.worker.TextboxAnimator;
 import adudecalledleo.aftbg.app.worker.TextboxGenerator;
 import adudecalledleo.aftbg.face.Face;
@@ -358,6 +361,8 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         private static final String AC_LOAD = "file.load";
         private static final String AC_SAVE = "file.save";
         private static final String AC_SAVE_AS = "file.save_as";
+        private static final String AC_DEF_LOAD = "file.def.load";
+        private static final String AC_DEF_LOAD_EXT = "file.def.load_ext";
         private static final String AC_PREFS = "file.preferences";
         private static final String AC_FACE_POOL_EDITOR = "tools.face_pool_editor";
         private static final String AC_ABOUT = "help.about";
@@ -384,6 +389,15 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             fileMenu.add(item);
             item = new JMenuItem("Save Project As...", AppResources.Icons.PROJECT_SAVE_AS.get());
             item.setActionCommand(AC_SAVE_AS);
+            item.addActionListener(this);
+            fileMenu.add(item);
+            fileMenu.addSeparator();
+            item = new JMenuItem("Load Game Definition");
+            item.setActionCommand(AC_DEF_LOAD);
+            item.addActionListener(this);
+            fileMenu.add(item);
+            item = new JMenuItem("Load Extension Definition");
+            item.setActionCommand(AC_DEF_LOAD_EXT);
             item.addActionListener(this);
             fileMenu.add(item);
             fileMenu.addSeparator();
@@ -420,9 +434,10 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
         @Override
         public void updateGameDefinition(GameDefinition gameDef) {
+            scriptsMenu.removeAll();
+
             TextboxScriptSet scripts = gameDef.scripts();
             if (scripts == null) {
-                scriptsMenu.removeAll();
                 scriptsMenu.setEnabled(false);
             } else {
                 scriptsMenu.setEnabled(true);
@@ -538,6 +553,30 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         DialogUtils.showErrorDialog(MainPanel.this,
                                 "Failed to write project!\n" + e, "Save Project");
                     }
+                }
+                case AC_DEF_LOAD -> {
+                    File defFile = DialogUtils.fileOpenDialog(this, "Load game definition", DialogUtils.FILTER_JSON_FILES);
+                    if (defFile == null) {
+                        return;
+                    }
+
+                    Path defPath = defFile.toPath();
+                    LoadFrame loadFrame = new LoadFrame("Loading...", false);
+
+                    var worker = new GameDefinitionLoader(MainPanel.this, loadFrame, defPath);
+                    worker.execute();
+                }
+                case AC_DEF_LOAD_EXT -> {
+                    File extFile = DialogUtils.fileOpenDialog(this, "Load extension definition", DialogUtils.FILTER_JSON_FILES);
+                    if (extFile == null) {
+                        return;
+                    }
+
+                    Path extPath = extFile.toPath();
+                    LoadFrame loadFrame = new LoadFrame("Loading...", false);
+
+                    var worker = new ExtensionDefinitionLoader(MainPanel.this, loadFrame, gameDef, extPath);
+                    worker.execute();
                 }
                 case AC_PREFS -> {
                     var dialog = new PreferencesDialog(this);
