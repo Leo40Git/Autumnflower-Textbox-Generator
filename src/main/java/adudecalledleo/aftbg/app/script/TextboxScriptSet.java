@@ -36,6 +36,10 @@ public final class TextboxScriptSet {
         }
     }
 
+    public void clear() {
+        scripts.clear();
+    }
+
     public static final class Adapter extends TypeAdapter<TextboxScriptSet> {
         @Override
         public TextboxScriptSet read(JsonReader in) throws IOException {

@@ -41,23 +41,29 @@ public final class GameDefinition {
     private final String[] credits;
     private final Path basePath;
     private final WindowContext winCtx;
-    private final FacePool faces;
-    private final TextboxScriptSet scripts;
+    private final FacePool baseFaces;
+    private final TextboxScriptSet baseScripts;
+
     private final List<ExtensionDefinition> extensions, extensionsU;
+    private final FacePool allFaces;
+    private final TextboxScriptSet allScripts;
 
     public GameDefinition(String name, String[] description, String[] credits,
                           Path basePath,
-                          WindowContext winCtx, FacePool faces, TextboxScriptSet scripts) {
+                          WindowContext winCtx, FacePool baseFaces, TextboxScriptSet baseScripts) {
         this.name = name;
         this.description = description;
         this.credits = credits;
         this.basePath = basePath;
         this.winCtx = winCtx;
-        this.faces = faces;
-        this.scripts = scripts;
+        this.baseFaces = baseFaces;
+        this.baseScripts = baseScripts;
 
         extensions = new ArrayList<>();
         extensionsU = Collections.unmodifiableList(extensions);
+        allFaces = new FacePool();
+        allScripts = new TextboxScriptSet();
+        updateExtensions();
     }
 
     public static GameDefinition load(Path filePath) throws DefinitionLoadException {
@@ -120,7 +126,7 @@ public final class GameDefinition {
         try {
             scripts.loadAll(basePath);
         } catch (ScriptLoadException e) {
-            throw new DefinitionLoadException("Failed to load scripts", e);
+            throw new DefinitionLoadException("Failed to load baseScripts", e);
         }
 
         return new GameDefinition(jsonRep.name, jsonRep.description, jsonRep.credits, basePath, winCtx, faces, scripts);
@@ -129,9 +135,20 @@ public final class GameDefinition {
     public void loadExtension(Path extPath) throws DefinitionLoadException {
         var ext = ExtensionDefinition.load(extPath);
         extensions.add(ext);
+        updateExtensions();
+    }
 
-        faces.addFrom(ext.faces());
-        scripts.addFrom(ext.scripts());
+    private void updateExtensions() {
+        allFaces.clear();
+        allScripts.clear();
+
+        allFaces.addFrom(baseFaces);
+        allScripts.addFrom(baseScripts);
+
+        for (var ext : extensions) {
+            allFaces.addFrom(ext.faces());
+            allScripts.addFrom(ext.scripts());
+        }
     }
 
     public String name() {
@@ -155,14 +172,14 @@ public final class GameDefinition {
     }
 
     public FacePool faces() {
-        return faces;
+        return allFaces;
     }
 
     public TextboxScriptSet scripts() {
-        return scripts;
+        return allScripts;
     }
 
-    public List<ExtensionDefinition> addons() {
+    public List<ExtensionDefinition> extensions() {
         return extensionsU;
     }
 
