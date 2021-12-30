@@ -475,6 +475,8 @@ public final class TextboxEditorPane extends JEditorPane
     public void updateGameDefinition(GameDefinition gameDef) {
         this.gameDef = gameDef;
         this.winCtx = gameDef.winCtx().copy();
+        setCaretColor(winCtx.getColor(0));
+        StyleConstants.setForeground(styleNormal, winCtx.getColor(0));
         textParserCtx
                 .put(WindowColors.class, winCtx.getColors())
                 .put(FacePool.class, gameDef.faces());
