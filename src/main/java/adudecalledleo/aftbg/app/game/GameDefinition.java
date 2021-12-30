@@ -5,17 +5,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 
 import javax.imageio.ImageIO;
 
 import adudecalledleo.aftbg.app.script.ScriptLoadException;
 import adudecalledleo.aftbg.app.script.TextboxScriptSet;
-import adudecalledleo.aftbg.app.util.PathAdapter;
 import adudecalledleo.aftbg.app.util.WindowTintAdapter;
 import adudecalledleo.aftbg.face.FaceLoadException;
 import adudecalledleo.aftbg.face.FacePool;
+import adudecalledleo.aftbg.util.PathUtils;
 import adudecalledleo.aftbg.window.WindowContext;
 import adudecalledleo.aftbg.window.WindowTint;
 import com.google.gson.FieldNamingPolicy;
@@ -52,7 +51,7 @@ public record GameDefinition(String name,
                     .formatted(filePath));
         }
 
-        Path facesPath = tryResolve(basePath, jsonRep.facesPath, "face pool definition");
+        Path facesPath = PathUtils.tryResolve(basePath, jsonRep.facesPath, "face pool definition", LoadException::new);
         FacePool faces;
         try (BufferedReader reader = Files.newBufferedReader(facesPath)) {
             faces = GSON.fromJson(reader, FacePool.class);
@@ -61,7 +60,7 @@ public record GameDefinition(String name,
                     .formatted(facesPath));
         }
 
-        Path scriptsPath = tryResolve(basePath, jsonRep.scriptsPath, "scripts definition");
+        Path scriptsPath = PathUtils.tryResolve(basePath, jsonRep.scriptsPath, "scripts definition", LoadException::new);
         TextboxScriptSet scripts;
         try (BufferedReader reader = Files.newBufferedReader(scriptsPath)) {
             scripts = GSON.fromJson(reader, TextboxScriptSet.class);
@@ -70,7 +69,7 @@ public record GameDefinition(String name,
                     .formatted(scriptsPath));
         }
 
-        Path windowPath = tryResolve(basePath, jsonRep.windowPath, "Window image");
+        Path windowPath = PathUtils.tryResolve(basePath, jsonRep.windowPath, "Window image", LoadException::new);
         BufferedImage windowImage;
         try (InputStream input = Files.newInputStream(windowPath)) {
             windowImage = ImageIO.read(input);
@@ -92,14 +91,6 @@ public record GameDefinition(String name,
         }
 
         return new GameDefinition(jsonRep.name, basePath, winCtx, faces, scripts, jsonRep.credits);
-    }
-
-    private static Path tryResolve(Path base, String other, String description) throws LoadException {
-        try {
-            return base.resolve(other);
-        } catch (InvalidPathException e) {
-            throw new LoadException("Got invalid %s path".formatted(description), e);
-        }
     }
 
     public static final class LoadException extends Exception {

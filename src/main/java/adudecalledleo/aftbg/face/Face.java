@@ -1,14 +1,16 @@
 package adudecalledleo.aftbg.face;
 
-import adudecalledleo.aftbg.util.ColorUtils;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
+import java.awt.image.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+
+import adudecalledleo.aftbg.util.ColorUtils;
+import adudecalledleo.aftbg.util.PathUtils;
 
 public final class Face {
     private static final BufferedImage BLANK = new BufferedImage(144, 144, BufferedImage.TYPE_INT_ARGB);
@@ -24,18 +26,18 @@ public final class Face {
 
     private final String name;
     private final String category;
-    private final Path imagePath;
+    private final String imagePath;
     BufferedImage image;
     private ImageIcon icon;
 
-    Face(String name, String category, Path imagePath, BufferedImage image) {
+    Face(String name, String category, String imagePath, BufferedImage image) {
         this.name = name;
         this.category = category;
         this.imagePath = imagePath;
         this.image = image;
     }
 
-    Face(String name, String category, Path imagePath) {
+    Face(String name, String category, String imagePath) {
         this(name, category, imagePath, null);
     }
 
@@ -51,7 +53,7 @@ public final class Face {
         return category + "/" + name;
     }
 
-    public Path getImagePath() {
+    public String getImagePath() {
         return imagePath;
     }
 
@@ -60,7 +62,8 @@ public final class Face {
             image = BLANK;
             return;
         }
-        Path path = basePath.resolve(imagePath).toAbsolutePath();
+
+        Path path = PathUtils.tryResolve(basePath, imagePath, "image", FaceLoadException::new).toAbsolutePath();
         try (var in = Files.newInputStream(path)) {
             image = ImageIO.read(in);
         } catch (IOException e) {

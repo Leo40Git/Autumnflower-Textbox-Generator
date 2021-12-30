@@ -1,17 +1,17 @@
 package adudecalledleo.aftbg.face;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import adudecalledleo.aftbg.util.PathUtils;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import org.jetbrains.annotations.ApiStatus;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public final class FacePool {
     public static final FacePool EMPTY = new FacePool();
@@ -127,7 +127,7 @@ public final class FacePool {
             in.beginObject();
             while (in.hasNext()) {
                 String name = in.nextName();
-                Path imagePath = Paths.get(in.nextString());
+                String imagePath = in.nextString();
                 cat.add(name, imagePath);
             }
             in.endObject();
@@ -155,7 +155,7 @@ public final class FacePool {
                 for (var entry : cat.faces.entrySet()) {
                     final Face face = entry.getValue();
                     out.name(face.getName());
-                    out.value(face.getImagePath().toString().replaceAll("\\\\", "/"));
+                    out.value(PathUtils.sanitize(face.getImagePath()));
                 }
                 out.endObject();
                 out.endObject();

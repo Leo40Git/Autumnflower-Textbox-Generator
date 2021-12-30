@@ -13,6 +13,7 @@ import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.script.shim.ShimHelpers;
 import adudecalledleo.aftbg.app.script.shim.TextboxShim;
 import adudecalledleo.aftbg.face.FacePool;
+import adudecalledleo.aftbg.util.PathUtils;
 import jdk.dynalink.beans.StaticClass;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;
@@ -22,12 +23,12 @@ public final class TextboxScript {
     private static final StaticClass INPUT_CLASS = StaticClass.forClass(ScriptInputHelper.class);
 
     private final String name;
-    private final Path path;
+    private final String path;
     private final String description;
 
     private ScriptObjectMirror updateTextboxFunc;
 
-    public TextboxScript(String name, Path path, String description) {
+    public TextboxScript(String name, String path, String description) {
         this.name = name;
         this.path = path;
         this.description = description;
@@ -37,7 +38,7 @@ public final class TextboxScript {
         return name;
     }
 
-    public Path getPath() {
+    public String getPath() {
         return path;
     }
 
@@ -46,13 +47,13 @@ public final class TextboxScript {
     }
 
     public void load(Path basePath) throws ScriptLoadException {
-        Path truePath = basePath.resolve(path).toAbsolutePath();
+        Path path = PathUtils.tryResolve(basePath, this.path, "script", ScriptLoadException::new).toAbsolutePath();
 
-        ENGINE.put(ScriptEngine.FILENAME, truePath.toString());
+        ENGINE.put(ScriptEngine.FILENAME, path.toString());
         Bindings bindings = ENGINE.createBindings();
         bindings.put("input", INPUT_CLASS);
 
-        try (BufferedReader reader = Files.newBufferedReader(truePath)) {
+        try (BufferedReader reader = Files.newBufferedReader(path)) {
             ENGINE.eval(reader, bindings);
         } catch (IOException | ScriptException e) {
             throw new ScriptLoadException("Failed to load script!", e);
