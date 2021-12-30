@@ -1,12 +1,14 @@
 package adudecalledleo.aftbg;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.swing.*;
 
 import adudecalledleo.aftbg.app.*;
+import adudecalledleo.aftbg.app.game.GameDefinition;
+import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.LoadFrame;
 import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.text.modifier.ModifierRegistry;
@@ -84,6 +86,35 @@ public final class Main {
             System.exit(1);
             return;
         }
+
+        loadFrame.setAlwaysOnTop(false);
+        File defFile = DialogUtils.fileOpenDialog(null, "Load game definition", DialogUtils.FILTER_JSON_FILES);
+        if (defFile == null) {
+            System.exit(0);
+            return;
+        }
+
+        Path defPath = defFile.toPath();
+        loadFrame.setAlwaysOnTop(true);
+        GameDefinition gameDef;
+        try {
+            gameDef = GameDefinition.load(defPath);
+        } catch (GameDefinition.LoadException e) {
+            Logger.error("Failed to load game definition!", e);
+            loadFrame.setAlwaysOnTop(false);
+            JOptionPane.showMessageDialog(null,
+                    "Failed to load game definition!\nSee " + Logger.logFile() + "\" for more details.");
+            System.exit(1);
+            return;
+        }
+
+        SwingUtilities.invokeLater(() -> {
+            AppFrame frame = new AppFrame(gameDef);
+            loadFrame.dispose();
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+            frame.requestFocus();
+        });
     }
 
     // (hopefully) called by shutdown hook, so we're moments before the app dies
