@@ -14,8 +14,6 @@ import com.google.gson.stream.JsonWriter;
 import org.jetbrains.annotations.ApiStatus;
 
 public final class FacePool {
-    public static final FacePool EMPTY = new FacePool();
-
     private final Map<String, FaceCategory> categories, categoriesU;
 
     public FacePool() {
@@ -31,10 +29,6 @@ public final class FacePool {
     }
 
     public void addFrom(FacePool other) {
-        if (other == EMPTY) {
-            return;
-        }
-
         for (var entry : other.categories.entrySet()) {
             var cat = categories.get(entry.getKey());
             if (cat == FaceCategory.NONE) {

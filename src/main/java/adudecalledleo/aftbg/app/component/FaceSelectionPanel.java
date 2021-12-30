@@ -20,6 +20,8 @@ import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 
 public final class FaceSelectionPanel extends JPanel implements ItemListener, GameDefinitionUpdateListener {
+    private static final FacePool INITIAL_FACE_POOL = new FacePool();
+
     private final Consumer<Face> faceUpdateListener;
     private final JComboBox<FaceCategory> catSel;
     private final JComboBox<Face> faceSel;
@@ -58,7 +60,7 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
         c.insets.right = 0;
         add(faceSel, c);
 
-        updateFacePool(FacePool.EMPTY);
+        updateFacePool(INITIAL_FACE_POOL);
         catSel.setSelectedItem(FaceCategory.NONE);
         faceSel.setSelectedItem(Face.NONE);
         faceSel.setEnabled(false);

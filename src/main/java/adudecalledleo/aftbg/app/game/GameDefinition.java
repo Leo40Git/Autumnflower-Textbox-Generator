@@ -64,7 +64,7 @@ public record GameDefinition(String name, String[] description, String[] credits
 
         TextboxScriptSet scripts;
         if (jsonRep.scriptsPath == null) {
-            scripts = TextboxScriptSet.EMPTY;
+            scripts = new TextboxScriptSet();
         } else {
             Path scriptsPath = PathUtils.tryResolve(basePath, jsonRep.scriptsPath, "scripts definition",
                     DefinitionLoadException::new);

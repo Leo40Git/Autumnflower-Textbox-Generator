@@ -14,8 +14,6 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 public final class TextboxScriptSet {
-    public static final TextboxScriptSet EMPTY = new TextboxScriptSet();
-
     private final List<TextboxScript> scripts;
     private final List<TextboxScript> scriptsU;
 
@@ -29,10 +27,6 @@ public final class TextboxScriptSet {
     }
 
     public void addFrom(TextboxScriptSet other) {
-        if (other == EMPTY) {
-            return;
-        }
-
         scripts.addAll(other.scripts);
     }
 
