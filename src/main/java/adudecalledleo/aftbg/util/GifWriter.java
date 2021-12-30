@@ -1,5 +1,8 @@
 package adudecalledleo.aftbg.util;
 
+import java.awt.image.*;
+import java.io.IOException;
+
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageTypeSpecifier;
@@ -7,67 +10,67 @@ import javax.imageio.ImageWriter;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
 
-public final class GifFactory {
-    private GifFactory() { }
+import org.jetbrains.annotations.Nullable;
 
+public final class GifWriter implements AutoCloseable {
     public static int toFrames(double seconds, int delayTime) {
         return (int) (seconds / (delayTime * 0.01));
     }
 
-    public static void write(List<BufferedImage> frames, int delayTime, String comment, OutputStream out) throws IOException {
-        try (ImageOutputStream ios = ImageIO.createImageOutputStream(out)) {
-            ImageWriter writer = ImageIO.getImageWritersByFormatName("gif").next();
+    private final ImageOutputStream output;
+    private final int delayTime;
+    private final @Nullable String comment;
+    private final ImageWriter writer;
 
-            IIOMetadata imageMeta = writer.getDefaultImageMetadata(
-                    ImageTypeSpecifier.createFromBufferedImageType(frames.get(0).getType()),
+    private boolean initialized;
+    private IIOMetadata imageMeta;
+    private String imageMetaFormatName;
+    private IIOMetadataNode imageRoot;
+
+    public GifWriter(ImageOutputStream output, int delayTime, @Nullable String comment) {
+        this.output = output;
+        this.delayTime = delayTime;
+        this.comment = comment;
+
+        writer = ImageIO.getImageWritersByFormatName("gif").next();
+        writer.setOutput(output);
+
+        initialized = false;
+    }
+
+    public GifWriter(ImageOutputStream output, int delayTime) {
+        this(output, delayTime, null);
+    }
+
+    public void writeFrame(BufferedImage frame, int repeatCount) throws IOException {
+        if (!initialized) {
+            imageMeta = writer.getDefaultImageMetadata(
+                    ImageTypeSpecifier.createFromBufferedImageType(frame.getType()),
                     writer.getDefaultWriteParam());
-            String imageMetaFormatName = imageMeta.getNativeMetadataFormatName();
-            IIOMetadataNode imageRoot = (IIOMetadataNode) imageMeta.getAsTree(imageMetaFormatName);
+            imageMetaFormatName = imageMeta.getNativeMetadataFormatName();
+            imageRoot = (IIOMetadataNode) imageMeta.getAsTree(imageMetaFormatName);
             fillImageMetadata(imageRoot, delayTime, comment);
             imageMeta.setFromTree(imageMetaFormatName, imageRoot);
 
-            writer.setOutput(ios);
             writer.prepareWriteSequence(null);
-            BufferedImage lastFrame = null;
-            boolean wroteLastFrame = false;
-            int thisDelayTime = delayTime;
-            for (BufferedImage frame : frames) {
-                if (frame == lastFrame) {
-                    thisDelayTime += delayTime;
-                    wroteLastFrame = false;
-                } else {
-                    fillDelayTimeOnly(imageRoot, thisDelayTime);
-                    imageMeta.mergeTree(imageMetaFormatName, imageRoot);
-                    writer.writeToSequence(new IIOImage(lastFrame == null ? frame : lastFrame,
-                            null, imageMeta), writer.getDefaultWriteParam());
-                    thisDelayTime = delayTime;
-                    wroteLastFrame = true;
-                    lastFrame = frame;
-                }
-            }
-            if (lastFrame != null && !wroteLastFrame) {
-                fillDelayTimeOnly(imageRoot, thisDelayTime);
-                imageMeta.mergeTree(imageMetaFormatName, imageRoot);
-                writer.writeToSequence(new IIOImage(lastFrame, null, imageMeta), writer.getDefaultWriteParam());
-            }
-            writer.endWriteSequence();
-            ios.flush();
+
+            initialized = true;
         }
+
+        int thisDelayTime = delayTime * repeatCount;
+        fillDelayTimeOnly(imageRoot, thisDelayTime);
+        imageMeta.mergeTree(imageMetaFormatName, imageRoot);
+        writer.writeToSequence(new IIOImage(frame, null, imageMeta), writer.getDefaultWriteParam());
     }
 
-    public static byte[] create(List<BufferedImage> frames, int delayTime, String comment) throws IOException {
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            write(frames, delayTime, comment, baos);
-            return baos.toByteArray();
-        }
+    @Override
+    public void close() throws IOException {
+        writer.endWriteSequence();
+        output.close();
     }
 
+    // region Metadata stuff
     private static void fillImageMetadata(IIOMetadataNode root, int delayTime, String comment) {
         IIOMetadataNode graphicsControl = getOrCreateNode(root, "GraphicControlExtension");
         fillGraphicsControlExtension(graphicsControl, delayTime);
@@ -81,7 +84,6 @@ public final class GifFactory {
         }
     }
 
-    // region Metadata stuff
     private static void fillGraphicsControlExtension(IIOMetadataNode node, int delayTime) {
         node.setAttribute("disposalMethod", "none");
         node.setAttribute("userInputFlag", "FALSE");
