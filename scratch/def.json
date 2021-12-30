@@ -1,5 +1,13 @@
 {
   "name": "Autumnflower",
+  "description": [
+    "A definition for the game Autumnflower."
+  ],
+  "credits": [
+    "Autumnflower by Kazerad and his Picarto stream chat",
+    "Most face images by DPronin and DusetrFox",
+    "Janes face image by Fuzzydoodles/Ciderward"
+  ],
   "window_path": "Window.png",
   "window_tint": {
     "red": -17,
@@ -7,10 +15,5 @@
     "blue": -255
   },
   "faces_path": "faces.json",
-  "scripts_path": "scripts.json",
-  "credits": [
-    "Autumnflower by Kazerad and his Picarto stream chat",
-    "Most face images by DPronin and DusetrFox",
-    "Janes face image by Fuzzydoodles/Ciderward"
-  ]
+  "scripts_path": "scripts.json"
 }

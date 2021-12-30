@@ -8,6 +8,7 @@ import javax.swing.*;
 
 import adudecalledleo.aftbg.app.*;
 import adudecalledleo.aftbg.app.game.GameDefinition;
+import adudecalledleo.aftbg.app.game.DefinitionLoadException;
 import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.LoadFrame;
 import adudecalledleo.aftbg.logging.Logger;
@@ -93,7 +94,7 @@ public final class Main {
         GameDefinition gameDef;
         try {
             gameDef = GameDefinition.load(defPath);
-        } catch (GameDefinition.LoadException e) {
+        } catch (DefinitionLoadException e) {
             Logger.error("Failed to load game definition!", e);
             loadFrame.setAlwaysOnTop(false);
             DialogUtils.showErrorDialog(null, "Failed to load game definition!", "Failed to launch");

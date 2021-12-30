@@ -31,6 +31,10 @@ public final class FacePool {
     }
 
     public void addFrom(FacePool other) {
+        if (other == EMPTY) {
+            return;
+        }
+
         for (var entry : other.categories.entrySet()) {
             var cat = categories.get(entry.getKey());
             if (cat == FaceCategory.NONE) {
