@@ -3,16 +3,14 @@ package adudecalledleo.aftbg.app;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import adudecalledleo.aftbg.BuildInfo;
 import adudecalledleo.aftbg.app.util.LoadFrame;
-import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.app.util.VersionAdapter;
+import adudecalledleo.aftbg.logging.Logger;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.GsonBuilder;
 import de.skuzzle.semantic.Version;
@@ -25,21 +23,8 @@ import org.commonmark.renderer.html.HtmlRenderer;
 public final class AppUpdateCheck {
     private AppUpdateCheck() { }
 
-    private static URL updateJsonUrl;
-
-    public static void init() {
-        String updateJsonUrlRaw = BuildInfo.updateJsonUrl();
-        if (updateJsonUrlRaw != null) {
-            try {
-                updateJsonUrl = new URL(updateJsonUrlRaw);
-            } catch (MalformedURLException e) {
-                Logger.error("Update JSON URL is malformed!", e);
-            }
-        }
-    }
-
     public static boolean isAvailable() {
-        return updateJsonUrl != null;
+        return BuildInfo.updateJsonUrl() != null;
     }
 
     public static final class CheckFailedException extends Exception {
@@ -53,12 +38,12 @@ public final class AppUpdateCheck {
     }
 
     public static void doCheck(Component parent, LoadFrame loadFrame) throws CheckFailedException {
-        if (updateJsonUrl == null) {
+        if (BuildInfo.updateJsonUrl() == null) {
             return;
         }
 
         JsonRep jsonRep;
-        try (InputStreamReader isr = new InputStreamReader(updateJsonUrl.openStream());
+        try (InputStreamReader isr = new InputStreamReader(BuildInfo.updateJsonUrl().openStream());
              BufferedReader reader = new BufferedReader(isr)) {
             jsonRep = new GsonBuilder()
                     .setLenient()
@@ -67,7 +52,7 @@ public final class AppUpdateCheck {
                     .create()
                     .fromJson(reader, JsonRep.class);
         } catch (Exception e) {
-            throw new CheckFailedException("Failed to download JSON from " + updateJsonUrl, e);
+            throw new CheckFailedException("Failed to download JSON from " + BuildInfo.updateJsonUrl(), e);
         }
 
         if (jsonRep.latestVersion == null) {

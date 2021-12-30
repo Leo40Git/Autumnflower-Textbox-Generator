@@ -57,7 +57,6 @@ public final class Main {
             System.exit(1);
         }
 
-        AppUpdateCheck.init();
         if (AppUpdateCheck.isAvailable() && !BuildInfo.isDevelopment() && AppPreferences.isAutoUpdateCheckEnabled()) {
             try {
                 loadFrame.setLoadString("Checking for updates...");

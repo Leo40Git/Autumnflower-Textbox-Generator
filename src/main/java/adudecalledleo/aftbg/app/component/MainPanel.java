@@ -13,11 +13,11 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.event.*;
 
-import adudecalledleo.aftbg.BuildInfo;
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.component.render.TextboxListCellRenderer;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.data.TextboxListSerializer;
+import adudecalledleo.aftbg.app.dialog.AboutDialog;
 import adudecalledleo.aftbg.app.dialog.FacePoolEditorDialog;
 import adudecalledleo.aftbg.app.dialog.PreferencesDialog;
 import adudecalledleo.aftbg.app.game.GameDefinition;
@@ -60,7 +60,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
     private GameDefinition gameDef;
 
-    private MenuBarImpl menuBar;
+    private MenuBar menuBar;
 
     public MainPanel(JFrame frame) {
         this.frame = frame;
@@ -94,7 +94,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
     public JMenuBar getMenuBar() {
         if (menuBar == null) {
-            menuBar = new MenuBarImpl();
+            menuBar = new MenuBar();
         }
         return menuBar;
     }
@@ -358,7 +358,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         return true;
     }
 
-    private final class MenuBarImpl extends JMenuBar implements ActionListener, GameDefinitionUpdateListener {
+    private final class MenuBar extends JMenuBar implements ActionListener, GameDefinitionUpdateListener {
         private static final String AC_NEW = "file.new";
         private static final String AC_LOAD = "file.load";
         private static final String AC_SAVE = "file.save";
@@ -371,7 +371,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
         private final JMenu scriptsMenu;
 
-        public MenuBarImpl() {
+        public MenuBar() {
             super();
 
             JMenuItem item;
@@ -398,7 +398,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             item.setActionCommand(AC_DEF_LOAD);
             item.addActionListener(this);
             fileMenu.add(item);
-            item = new JMenuItem("Load Extension Definition");
+            item = new JMenuItem("Load Extension");
             item.setActionCommand(AC_DEF_LOAD_EXT);
             item.addActionListener(this);
             fileMenu.add(item);
@@ -591,15 +591,9 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     fpd.setVisible(true);
                 }
                 case AC_ABOUT -> {
-                    JOptionPane.showMessageDialog(MainPanel.this,
-                            "<html>" + BuildInfo.name() + " (" + BuildInfo.abbreviatedName() + ") "
-                            + "version " + BuildInfo.version() + "<br/>"
-                            + String.join("<br/>", BuildInfo.credits())
-                            + "<hr/>"
-                            + "Current game definition is " + gameDef.name() + "<br/>"
-                            + String.join("<br/>", gameDef.credits())
-                            + "</html>",
-                            "About " + BuildInfo.name() + " v" + BuildInfo.version(), JOptionPane.INFORMATION_MESSAGE);
+                    var dialog = new AboutDialog(this, gameDef);
+                    dialog.setLocationRelativeTo(null);
+                    dialog.setVisible(true);
                 }
             }
         }
