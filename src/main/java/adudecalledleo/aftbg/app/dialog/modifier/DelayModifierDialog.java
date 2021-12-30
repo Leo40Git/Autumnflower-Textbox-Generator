@@ -16,7 +16,6 @@ public final class DelayModifierDialog extends ModifierDialog {
         setIconImage(AppResources.Icons.MOD_DELAY.getAsImage());
         setTitle("Add delay modifier");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setModal(true);
         setResizable(false);
         setContentPane(pane = new ContentPane());
         pack();

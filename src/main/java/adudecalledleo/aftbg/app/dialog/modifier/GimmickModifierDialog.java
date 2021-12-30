@@ -23,7 +23,6 @@ public final class GimmickModifierDialog extends ModifierDialog {
         setIconImage(AppResources.Icons.MOD_GIMMICK.getAsImage());
         setTitle("Add gimmick modifier");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setModal(true);
         setResizable(false);
         setContentPane(pane = new ContentPane(winCtx, spec));
         pack();

@@ -6,7 +6,7 @@ import javax.swing.*;
 
 public abstract class ModalDialog extends JDialog {
     public ModalDialog(Component owner) {
-        super(getWindowAncestor(owner), ModalityType.APPLICATION_MODAL);
+        super(getWindowAncestor(owner), DEFAULT_MODALITY_TYPE);
     }
 
     private static Window getWindowAncestor(Component c) {

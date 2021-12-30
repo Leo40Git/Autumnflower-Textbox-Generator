@@ -65,7 +65,6 @@ public final class FacePoolEditorDialog extends ModalDialog {
                 }
             }
         });
-        setModal(true);
         setResizable(false);
         setContentPane(contentPane = new ContentPane());
         setJMenuBar(new MenuBar());

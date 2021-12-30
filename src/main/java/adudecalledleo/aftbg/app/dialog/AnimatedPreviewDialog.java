@@ -25,7 +25,6 @@ public final class AnimatedPreviewDialog extends ModalDialog {
         setIconImage(AppResources.Icons.PREVIEW.getAsImage());
         setTitle("Preview generated animation");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setModal(true);
         setResizable(false);
         setContentPane(new PreviewPanel());
         pack();

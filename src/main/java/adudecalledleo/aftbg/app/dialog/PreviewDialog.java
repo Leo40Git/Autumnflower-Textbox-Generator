@@ -27,7 +27,6 @@ public final class PreviewDialog extends ModalDialog {
         setIconImage(AppResources.Icons.PREVIEW.getAsImage());
         setTitle("Preview generated textbox(es)");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setModal(true);
         setResizable(false);
         setContentPane(new PreviewPanel());
         pack();

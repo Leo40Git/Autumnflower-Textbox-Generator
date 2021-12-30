@@ -19,7 +19,6 @@ public final class StyleModifierDialog extends ModifierDialog {
         setIconImage(AppResources.Icons.MOD_STYLE.getAsImage());
         setTitle("Add style modifier");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setModal(true);
         setResizable(false);
         setContentPane(pane = new ContentPane(spec));
         pack();

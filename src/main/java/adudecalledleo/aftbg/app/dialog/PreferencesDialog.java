@@ -16,7 +16,6 @@ public final class PreferencesDialog extends ModalDialog {
         setIconImage(AppResources.Icons.PREFS.getAsImage());
         setTitle("Edit preferences");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setModal(true);
         setResizable(false);
         setContentPane(pane = new ContentPane());
         pack();

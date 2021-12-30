@@ -19,7 +19,6 @@ public final class TextSpeedModifierDialog extends ModifierDialog {
         setIconImage(AppResources.Icons.MOD_TEXT_SPEED.getAsImage());
         setTitle("Add text speed modifier");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setModal(true);
         setResizable(false);
         setContentPane(pane = new ContentPane());
         pack();

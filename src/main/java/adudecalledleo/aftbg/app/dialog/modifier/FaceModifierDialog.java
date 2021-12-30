@@ -19,7 +19,6 @@ public final class FaceModifierDialog extends ModifierDialog {
         setIconImage(AppResources.Icons.MOD_FACE.getAsImage());
         setTitle("Add face modifier");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setModal(true);
         setResizable(false);
         setContentPane(pane = new ContentPane(facePool, face));
         pack();
