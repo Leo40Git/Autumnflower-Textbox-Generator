@@ -12,16 +12,17 @@ import javax.swing.filechooser.*;
 
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.util.DialogUtils;
+import adudecalledleo.aftbg.app.util.SizedByteArray;
 import adudecalledleo.aftbg.logging.Logger;
 
 public final class AnimatedPreviewDialog extends ModalDialog {
-    private final byte[] imageData;
+    private final SizedByteArray imageData;
     private final Image image;
 
-    public AnimatedPreviewDialog(Component owner, byte[] imageData) {
+    public AnimatedPreviewDialog(Component owner, SizedByteArray imageData) {
         super(owner);
         this.imageData = imageData;
-        image = Toolkit.getDefaultToolkit().createImage(imageData);
+        image = Toolkit.getDefaultToolkit().createImage(imageData.bytes(), 0, imageData.size());
         setIconImage(AppResources.Icons.PREVIEW.getAsImage());
         setTitle("Preview generated animation");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -88,7 +89,7 @@ public final class AnimatedPreviewDialog extends ModalDialog {
                     }
                 }
                 try (FileOutputStream out = new FileOutputStream(sel)) {
-                    out.write(imageData);
+                    out.write(imageData.bytes(), 0, imageData.size());
                 } catch (IOException ex) {
                     Logger.error("Error while saving animation!", ex);
                     DialogUtils.showErrorDialog(this,

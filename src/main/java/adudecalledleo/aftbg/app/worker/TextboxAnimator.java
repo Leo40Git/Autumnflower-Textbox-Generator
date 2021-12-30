@@ -1,6 +1,5 @@
 package adudecalledleo.aftbg.app.worker;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
@@ -11,6 +10,7 @@ import adudecalledleo.aftbg.app.dialog.AnimatedPreviewDialog;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.LoadFrame;
+import adudecalledleo.aftbg.app.util.SizedByteArray;
 import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.logging.Logger;
 
@@ -22,7 +22,7 @@ public final class TextboxAnimator extends AbstractTextboxWorker {
 
     @Override
     protected Void doInBackground() {
-        byte[] imageData;
+        SizedByteArray imageData;
         try {
             imageData = TextboxRenderer.renderAnimation(winCtx, parser, parserCtx, textboxes);
         } catch (IOException e) {

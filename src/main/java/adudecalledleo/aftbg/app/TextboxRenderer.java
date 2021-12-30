@@ -2,7 +2,6 @@ package adudecalledleo.aftbg.app;
 
 import java.awt.*;
 import java.awt.image.*;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -11,6 +10,7 @@ import javax.imageio.ImageIO;
 import adudecalledleo.aftbg.BuildInfo;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.text.TextRenderer;
+import adudecalledleo.aftbg.app.util.SizedByteArray;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.text.TextParser;
@@ -19,6 +19,7 @@ import adudecalledleo.aftbg.text.animate.TextAnimator;
 import adudecalledleo.aftbg.text.modifier.InterruptModifierNode;
 import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.util.ColorUtils;
+import adudecalledleo.aftbg.util.FastByteArrayOutputStream;
 import adudecalledleo.aftbg.util.GifWriter;
 import adudecalledleo.aftbg.window.WindowContext;
 
@@ -67,13 +68,13 @@ public final class TextboxRenderer {
     public static final int ARROW_MAX_LOOPS = 4;
     public static final int LAST_FRAME_REPEAT = GifWriter.toFrames(2, 1);
 
-    public static byte[] renderAnimation(WindowContext winCtx, TextParser parser, TextParser.Context parserCtx,
-                                         List<Textbox> textboxes) throws IOException {
+    public static SizedByteArray renderAnimation(WindowContext winCtx, TextParser parser, TextParser.Context parserCtx,
+                                                 List<Textbox> textboxes) throws IOException {
         final int textboxCount = textboxes.size();
 
         TextAnimator animator = new TextAnimator(new NodeList());
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        FastByteArrayOutputStream baos = new FastByteArrayOutputStream();
 
         try (GifWriter writer = new GifWriter(ImageIO.createImageOutputStream(baos), 1,
                 "Created using %s v%s".formatted(BuildInfo.name(), BuildInfo.version()))) {
@@ -164,6 +165,6 @@ public final class TextboxRenderer {
             }
         }
 
-        return baos.toByteArray();
+        return new SizedByteArray(baos.size(), baos.toByteArray());
     }
 }
