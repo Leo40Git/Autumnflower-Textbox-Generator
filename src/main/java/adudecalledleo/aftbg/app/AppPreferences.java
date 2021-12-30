@@ -67,6 +67,10 @@ public final class AppPreferences {
     }
 
     public static void flush() {
+        if (instance == null) {
+            return;
+        }
+
         JsonObject obj = new JsonObject();
         instance.write(obj);
 
