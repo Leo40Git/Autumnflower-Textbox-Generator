@@ -8,6 +8,7 @@ import javax.swing.*;
 import adudecalledleo.aftbg.BuildInfo;
 import adudecalledleo.aftbg.app.component.MainPanel;
 import adudecalledleo.aftbg.app.game.GameDefinition;
+import adudecalledleo.aftbg.app.util.DialogUtils;
 
 public final class AppFrame extends JFrame {
     public AppFrame(GameDefinition gameDef) {
@@ -31,6 +32,7 @@ public final class AppFrame extends JFrame {
                             } catch (IOException | IllegalStateException e) {
                                 JOptionPane.showMessageDialog(AppFrame.this,
                                         "Failed to write project!\n" + e + "\n" +
+                                                DialogUtils.logFileInstruction() + "\n" +
                                                 "To prevent your work from being lost, the current operation has been cancelled.",
                                         "Exit", JOptionPane.ERROR_MESSAGE);
                                 break;

@@ -10,6 +10,7 @@ import adudecalledleo.aftbg.app.TextboxRenderer;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.dialog.AnimatedPreviewDialog;
 import adudecalledleo.aftbg.app.game.GameDefinition;
+import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.LoadFrame;
 import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.logging.Logger;
@@ -28,9 +29,7 @@ public final class TextboxAnimator extends AbstractTextboxWorker {
         } catch (IOException e) {
             Logger.error("Failed to generate GIF data", e);
             loadFrame.setAlwaysOnTop(false);
-            JOptionPane.showMessageDialog(null,
-                    "Failed to generate GIF data!\nSee \"" + Logger.logFile() + "\" for more details.",
-                    "Animation Test", JOptionPane.ERROR_MESSAGE);
+            DialogUtils.showErrorDialog(null, "Failed to generate GIF data!", "Animation Test");
             loadFrame.dispose();
             return null;
         }

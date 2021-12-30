@@ -23,7 +23,7 @@ public final class UncaughtExceptionHandler implements Thread.UncaughtExceptionH
             frame.setAlwaysOnTop(false);
         }
         int option = DialogUtils.showCustomConfirmDialog(null,
-                "An uncaught exception has occurred!\nSee \"" + Logger.logFile() + "\" for more details.",
+                "An uncaught exception has occurred!\n" + DialogUtils.logFileInstruction(),
                 "Uncaught Exception!", OPTIONS, JOptionPane.ERROR_MESSAGE);
         switch (option) {
         default:

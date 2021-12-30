@@ -87,9 +87,9 @@ public final class AnimatedPreviewDialog extends ModalDialog {
                     out.write(imageData);
                 } catch (IOException ex) {
                     Logger.error("Error while saving animation!", ex);
-                    JOptionPane.showMessageDialog(this,
-                            "An exception occurred while saving the animation:\nSee \"" + Logger.logFile() + "\" for more details.",
-                            "Couldn't save image!", JOptionPane.ERROR_MESSAGE);
+                    DialogUtils.showErrorDialog(this,
+                            "An exception occurred while saving the animation:\n" + e,
+                            "Couldn't save animation!");
                     return;
                 }
                 JOptionPane.showMessageDialog(this,

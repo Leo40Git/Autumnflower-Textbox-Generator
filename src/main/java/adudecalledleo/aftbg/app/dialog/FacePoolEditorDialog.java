@@ -88,10 +88,8 @@ public final class FacePoolEditorDialog extends ModalDialog {
             GameDefinition.GSON.toJson(pool, writer);
         } catch (Exception e) {
             Logger.error("Failed to write face pool", e);
-            JOptionPane.showMessageDialog(this,
-                    "Failed to write face pool!\n" + e + "\n"
-                            + "See \"" + Logger.logFile() + "\" for more details.",
-                    "Save Pool", JOptionPane.ERROR_MESSAGE);
+            DialogUtils.showErrorDialog(this,
+                    "Failed to write face pool!\n" + e, "Save Pool");
             return false;
         }
 
@@ -156,10 +154,8 @@ public final class FacePoolEditorDialog extends ModalDialog {
                         newPool.loadAll(newFilePath.getParent());
                     } catch (Exception e) {
                         Logger.error("Failed to read face pool for editing", e);
-                        JOptionPane.showMessageDialog(this,
-                                "Failed to read face pool for editing!\n" + e + "\n"
-                                        + "See \"" + Logger.logFile() + "\" for more details.",
-                                "Load Pool", JOptionPane.ERROR_MESSAGE);
+                        DialogUtils.showErrorDialog(this,
+                                "Failed to read face pool!\n" + e, "Load Pool");
                         return;
                     }
                     filePath = newFilePath;
@@ -385,9 +381,10 @@ public final class FacePoolEditorDialog extends ModalDialog {
                     try {
                         newFace.loadImage(filePath.getParent());
                     } catch (FaceLoadException ex) {
-                        JOptionPane.showMessageDialog(this,
+                        Logger.error("Failed to load new face", ex);
+                        DialogUtils.showErrorDialog(this,
                                 "Failed to load new face \"" + newName + "\":\n" + ex,
-                                "Add Face", JOptionPane.ERROR_MESSAGE);
+                                "Add Face");
                         selectedCat.remove(newFace);
                         break;
                     }
@@ -506,9 +503,10 @@ public final class FacePoolEditorDialog extends ModalDialog {
                         try {
                             newFace.loadImage(filePath.getParent());
                         } catch (FaceLoadException ex) {
-                            JOptionPane.showMessageDialog(this,
+                            Logger.error("Failed to load new face", ex);
+                            DialogUtils.showErrorDialog(this,
                                     "Failed to load new face \"" + faceName + "\":\n" + ex,
-                                    "Add Entire Folder", JOptionPane.ERROR_MESSAGE);
+                                    "Add Entire Folder");
                             newCat.remove(newFace);
                         }
                     }

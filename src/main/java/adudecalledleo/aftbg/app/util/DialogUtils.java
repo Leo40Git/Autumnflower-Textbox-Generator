@@ -6,17 +6,31 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
 
+import adudecalledleo.aftbg.logging.Logger;
+
 public final class DialogUtils {
+    private DialogUtils() { }
+
+    public static String logFileInstruction() {
+        return "See " + Logger.logFile() + "\" for more details.";
+    }
+
+    public static void showErrorDialog(Component parent, String message, String title) {
+        JOptionPane.showMessageDialog(parent,
+                message + "\n" + logFileInstruction(),
+                title, JOptionPane.ERROR_MESSAGE);
+    }
+
+    public static int showCustomConfirmDialog(Component parent, Object message, String title,
+                                              String[] options, int messageType) {
+        return JOptionPane.showOptionDialog(parent, message, title, JOptionPane.DEFAULT_OPTION, messageType,
+                null, options, null);
+    }
+
     public static final FileNameExtensionFilter FILTER_IMAGE_FILES
             = new FileNameExtensionFilter("Image files", ImageIO.getReaderFileSuffixes());
     public static final FileNameExtensionFilter FILTER_JSON_FILES
             = new FileNameExtensionFilter("JSON files", "json");
-
-    public static int showCustomConfirmDialog(Component parentComponent, Object message, String title,
-                                              String[] options, int messageType) {
-        return JOptionPane.showOptionDialog(parentComponent, message, title, JOptionPane.DEFAULT_OPTION, messageType,
-                null, options, null);
-    }
 
     private static final JFileChooser FC_OPEN = createFileChooser(), FC_SAVE = createFileChooser();
     private static final JFileChooser FC_OPEN_FOLDER = createFolderChooser();

@@ -52,9 +52,7 @@ public final class Main {
         } catch (IOException e) {
             Logger.error("Failed to initialize preferences!", e);
             loadFrame.setAlwaysOnTop(false);
-            JOptionPane.showMessageDialog(null,
-                    "Failed to initialize preferences!\nSee \"" + Logger.logFile() + "\" for more details.",
-                    "Failed to launch", JOptionPane.ERROR_MESSAGE);
+            DialogUtils.showErrorDialog(null, "Failed to initialize preferences!", "Failed to launch");
             System.exit(1);
         }
 
@@ -66,9 +64,7 @@ public final class Main {
             } catch (AppUpdateCheck.CheckFailedException e) {
                 Logger.error("Update check failed!", e);
                 loadFrame.setAlwaysOnTop(false);
-                JOptionPane.showMessageDialog(null,
-                        "Failed to check for updates!\nSee \"" + Logger.logFile() + "\" for more details.",
-                        "Failed to check for updates", JOptionPane.ERROR_MESSAGE);
+                DialogUtils.showErrorDialog(null, "Failed to check for updates!", "Failed to check for updates");
                 loadFrame.setAlwaysOnTop(true);
             } finally {
                 loadFrame.setLoadString("Loading...");
@@ -80,9 +76,7 @@ public final class Main {
         } catch (IOException e) {
             Logger.error("Failed to load app resources!", e);
             loadFrame.setAlwaysOnTop(false);
-            JOptionPane.showMessageDialog(null,
-                    "Failed to load app resources!\nSee \"" + Logger.logFile() + "\" for more details.",
-                    "Failed to launch", JOptionPane.ERROR_MESSAGE);
+            DialogUtils.showErrorDialog(null, "Failed to load app resources!", "Failed to launch");
             System.exit(1);
             return;
         }
@@ -102,8 +96,7 @@ public final class Main {
         } catch (GameDefinition.LoadException e) {
             Logger.error("Failed to load game definition!", e);
             loadFrame.setAlwaysOnTop(false);
-            JOptionPane.showMessageDialog(null,
-                    "Failed to load game definition!\nSee " + Logger.logFile() + "\" for more details.");
+            DialogUtils.showErrorDialog(null, "Failed to load game definition!", "Failed to launch");
             System.exit(1);
             return;
         }

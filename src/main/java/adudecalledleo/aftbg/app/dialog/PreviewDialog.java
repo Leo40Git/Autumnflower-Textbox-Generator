@@ -120,9 +120,9 @@ public final class PreviewDialog extends ModalDialog {
                         cb.setContents(new TransferableImage(imageToCopy), null);
                     } catch (Exception ex) {
                         Logger.error("Error while copying image to clipboard!", ex);
-                        JOptionPane.showMessageDialog(this,
-                                "An exception occured while copying the image to the clipboard:\n" + ex,
-                                "Couldn't copy image to clipboard!", JOptionPane.ERROR_MESSAGE);
+                        DialogUtils.showErrorDialog(this,
+                                "An exception occurred while copying the image to the clipboard:\n" + ex,
+                                "Couldn't copy image to clipboard!");
                         break;
                     }
                     JOptionPane.showMessageDialog(this, "Successfully copied the image to the clipboard.",
@@ -150,9 +150,9 @@ public final class PreviewDialog extends ModalDialog {
                         ImageIO.write(image, "png", sel);
                     } catch (IOException ex) {
                         Logger.error("Error while saving image!", ex);
-                        JOptionPane.showMessageDialog(this,
-                                "An exception occurred while saving the image:\nSee \"" + Logger.logFile() + "\" for more details.",
-                                "Couldn't save image!", JOptionPane.ERROR_MESSAGE);
+                        DialogUtils.showErrorDialog(this,
+                                "An exception occurred while saving the image:\n" + ex,
+                                "Couldn't save image!");
                         break;
                     }
                     JOptionPane.showMessageDialog(this,

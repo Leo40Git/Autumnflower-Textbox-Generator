@@ -435,9 +435,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                                 script.run(gameDef.faces(), box);
                             } catch (Exception e) {
                                 Logger.error("Failed to run script!", e);
-                                JOptionPane.showMessageDialog(MainPanel.this,
-                                        "Failed to run script!\nSee \"" + Logger.logFile() + "\" for more details.",
-                                        "Script Error", JOptionPane.ERROR_MESSAGE);
+                                DialogUtils.showErrorDialog(MainPanel.this, "Failed to run script!", "Script Error");
                                 return;
                             }
                             updateTextboxEditors();
@@ -467,7 +465,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         Logger.error("Failed to write project!", e);
                         JOptionPane.showMessageDialog(MainPanel.this,
                                 "Failed to write project!\n" + e + "\n"
-                                        + "See \"" + Logger.logFile() + "\" for more details.\n"
+                                        + DialogUtils.logFileInstruction() + "\n"
                                         + "To prevent your work from being lost, the current operation has been cancelled.",
                                 title, JOptionPane.ERROR_MESSAGE);
                         return false;
@@ -508,10 +506,8 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         break;
                     } catch (IOException | IllegalStateException e) {
                         Logger.error("Failed to read project!", e);
-                        JOptionPane.showMessageDialog(MainPanel.this,
-                                "Failed to read project!\n" + e + "\n" 
-                                        + "See \"" + Logger.logFile() + "\" for more details.",
-                                "Load Project", JOptionPane.ERROR_MESSAGE);
+                        DialogUtils.showErrorDialog(MainPanel.this,
+                                "Failed to read project!\n" + e, "Load Project");
                         break;
                     }
 
@@ -530,10 +526,8 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         saveProject(false);
                     } catch (IOException | IllegalStateException e) {
                         Logger.error("Failed to write project!", e);
-                        JOptionPane.showMessageDialog(MainPanel.this,
-                                "Failed to write project!\n" + e + "\n" 
-                                        + "See \"" + Logger.logFile() + "\" for more details.",
-                                "Save Project", JOptionPane.ERROR_MESSAGE);
+                        DialogUtils.showErrorDialog(MainPanel.this,
+                                "Failed to write project!\n" + e, "Save Project");
                     }
                 }
                 case AC_SAVE_AS -> {
@@ -541,10 +535,8 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         saveProject(true);
                     } catch (IOException | IllegalStateException e) {
                         Logger.error("Failed to write project!", e);
-                        JOptionPane.showMessageDialog(MainPanel.this,
-                                "Failed to write project!\n" + e + "\n" 
-                                        + "See \"" + Logger.logFile() + "\" for more details.",
-                                "Save Project", JOptionPane.ERROR_MESSAGE);
+                        DialogUtils.showErrorDialog(MainPanel.this,
+                                "Failed to write project!\n" + e, "Save Project");
                     }
                 }
                 case AC_PREFS -> {
