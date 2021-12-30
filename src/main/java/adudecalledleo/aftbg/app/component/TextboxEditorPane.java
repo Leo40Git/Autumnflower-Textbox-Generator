@@ -53,8 +53,8 @@ public final class TextboxEditorPane extends JEditorPane
     private final SimpleAttributeSet styleNormal, styleMod;
     private final JPopupMenu popupMenu;
 
+    private GameDefinition gameDef;
     private WindowContext winCtx;
-    private FacePool facePool;
     private boolean forceCaretRendering;
     private Face textboxFace;
     private NodeList nodes;
@@ -328,7 +328,7 @@ public final class TextboxEditorPane extends JEditorPane
             Face newFace;
             try {
                 forceCaretRendering = true;
-                var dialog = new FaceModifierDialog(this, facePool, textboxFace);
+                var dialog = new FaceModifierDialog(this, gameDef.faces(), textboxFace);
                 dialog.setLocationRelativeTo(null);
                 newFace = dialog.showDialog();
             } finally {
@@ -431,7 +431,7 @@ public final class TextboxEditorPane extends JEditorPane
             g2d.setClip(rect);
             final double y = rect.getY() + rect.getHeight() - 3;
             boolean raised = true;
-            for (double x = rect.getX(); x <= rect.getX() + rect.getWidth()/* + 2*/; x += 2) {
+            for (double x = rect.getX(); x <= rect.getX() + rect.getWidth(); x += 2) {
                 scratchLine.setLine(x, y + (raised ? 2 : 0), x + 2, y + (raised ? 0 : 2));
                 g2d.draw(scratchLine);
                 raised = !raised;
@@ -473,8 +473,11 @@ public final class TextboxEditorPane extends JEditorPane
 
     @Override
     public void updateGameDefinition(GameDefinition gameDef) {
-        this.facePool = gameDef.faces();
-        textParserCtx.put(FacePool.class, facePool);
+        this.gameDef = gameDef;
+        this.winCtx = gameDef.winCtx().copy();
+        textParserCtx
+                .put(WindowColors.class, winCtx.getColors())
+                .put(FacePool.class, gameDef.faces());
         flushChanges(true);
     }
 
