@@ -23,7 +23,6 @@ import adudecalledleo.aftbg.app.dialog.PreferencesDialog;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.script.TextboxScriptSet;
 import adudecalledleo.aftbg.app.util.*;
-import adudecalledleo.aftbg.app.worker.GameDefinitionReloader;
 import adudecalledleo.aftbg.app.worker.TextboxAnimator;
 import adudecalledleo.aftbg.app.worker.TextboxGenerator;
 import adudecalledleo.aftbg.face.Face;
@@ -381,7 +380,6 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         private static final String AC_LOAD = "file.load";
         private static final String AC_SAVE = "file.save";
         private static final String AC_SAVE_AS = "file.save_as";
-        private static final String AC_RELOAD_DEF = "file.reload_def";
         private static final String AC_PREFS = "file.preferences";
         private static final String AC_FACE_POOL_EDITOR = "tools.face_pool_editor";
         private static final String AC_ABOUT = "help.about";
@@ -408,11 +406,6 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             fileMenu.add(item);
             item = new JMenuItem("Save Project As...", AppResources.Icons.PROJECT_SAVE_AS.get());
             item.setActionCommand(AC_SAVE_AS);
-            item.addActionListener(this);
-            fileMenu.add(item);
-            fileMenu.addSeparator();
-            item = new JMenuItem("Reload Game Definition");
-            item.setActionCommand(AC_RELOAD_DEF);
             item.addActionListener(this);
             fileMenu.add(item);
             fileMenu.addSeparator();
@@ -575,12 +568,6 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                                         + "See \"" + Logger.logFile() + "\" for more details.",
                                 "Save Project", JOptionPane.ERROR_MESSAGE);
                     }
-                }
-                case AC_RELOAD_DEF -> {
-                    LoadFrame loadFrame = new LoadFrame("Reloading...", false);
-
-                    var worker = new GameDefinitionReloader(MainPanel.this, loadFrame, basePath);
-                    worker.execute();
                 }
                 case AC_PREFS -> {
                     var dialog = new PreferencesDialog(this);

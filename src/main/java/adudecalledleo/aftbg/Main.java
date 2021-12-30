@@ -31,6 +31,8 @@ public final class Main {
             return;
         }
 
+        Runtime.getRuntime().addShutdownHook(new Thread(Main::cleanup, "cleanup"));
+
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
 
         ModifierRegistry.init();
@@ -82,32 +84,6 @@ public final class Main {
             System.exit(1);
             return;
         }
-
-        Path basePath = Paths.get("scratch").toAbsolutePath();
-
-        TextboxResources rsrc;
-        try {
-            rsrc = TextboxResources.load(basePath);
-        } catch (TextboxResources.LoadException e) {
-            Logger.error("Failed to load textbox resources!", e);
-            loadFrame.setAlwaysOnTop(false);
-            JOptionPane.showMessageDialog(null,
-                    "Failed to load textbox resources!\nSee \"" + Logger.logFile() + "\" for more details.",
-                    "Failed to launch", JOptionPane.ERROR_MESSAGE);
-            System.exit(1);
-            return;
-        }
-
-        Runtime.getRuntime().addShutdownHook(new Thread(Main::cleanup, "cleanup"));
-
-        SwingUtilities.invokeLater(() -> {
-            AppFrame frame = new AppFrame(basePath, rsrc.gameDefinition(), rsrc.windowContext(), rsrc.facePool());
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-            loadFrame.setVisible(false);
-            loadFrame.dispose();
-            frame.requestFocus();
-        });
     }
 
     // (hopefully) called by shutdown hook, so we're moments before the app dies
