@@ -1,0 +1,10 @@
+{
+  "name": "Autumnflower Addons",
+  "description": [
+    "Community-made addons for the Autumnflower game definition."
+  ],
+  "credits": [
+    "Faces by ADudeCalledLeo/Leo40Git"
+  ],
+  "faces_path": "faces.json"
+}
