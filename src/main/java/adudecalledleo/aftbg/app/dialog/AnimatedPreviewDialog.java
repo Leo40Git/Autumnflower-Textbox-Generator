@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import javax.swing.*;
 import javax.swing.filechooser.*;
@@ -77,9 +78,13 @@ public final class AnimatedPreviewDialog extends ModalDialog {
                             JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
                     if (confirm != JOptionPane.YES_OPTION)
                         return;
-                    if (!sel.delete()) {
-                        JOptionPane.showMessageDialog(this, "Could not delete file.",
-                                "Could not overwrite file", JOptionPane.ERROR_MESSAGE);
+                    try {
+                        Files.delete(sel.toPath());
+                    } catch (IOException ex) {
+                        Logger.error("Error while deleting file!", ex);
+                        DialogUtils.showErrorDialog(this,
+                                "Could not delete file.",
+                                "Could not overwrite file.");
                         return;
                     }
                 }

@@ -16,6 +16,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 public final class PreviewDialog extends ModalDialog {
     private final BufferedImage image;
@@ -140,9 +141,13 @@ public final class PreviewDialog extends ModalDialog {
                                 JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
                         if (confirm != JOptionPane.YES_OPTION)
                             return;
-                        if (!sel.delete()) {
-                            JOptionPane.showMessageDialog(this, "Could not delete file.",
-                                    "Could not overwrite file", JOptionPane.ERROR_MESSAGE);
+                        try {
+                            Files.delete(sel.toPath());
+                        } catch (IOException ex) {
+                            Logger.error("Error while deleting file!", ex);
+                            DialogUtils.showErrorDialog(this,
+                                    "Could not delete file.",
+                                    "Could not overwrite file.");
                             return;
                         }
                     }
