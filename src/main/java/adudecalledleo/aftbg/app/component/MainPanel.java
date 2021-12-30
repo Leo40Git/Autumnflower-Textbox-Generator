@@ -45,6 +45,8 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     private static final String AC_GENERATE = "generate";
     private static final String AC_GENERATE_ANIMATION = "generate_animation";
 
+    public final JFrame frame;
+
     private final List<GameDefinitionUpdateListener> updateListeners;
 
     private final List<Textbox> textboxes;
@@ -60,7 +62,9 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
     private MenuBarImpl menuBar;
 
-    public MainPanel() {
+    public MainPanel(JFrame frame) {
+        this.frame = frame;
+
         updateListeners = new ArrayList<>();
 
         textboxes = new ArrayList<>();
@@ -212,11 +216,10 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                 editorPane.flushChanges(false);
                 faceSelection.flushChanges();
 
-                LoadFrame loadFrame = new LoadFrame("Generating...", false);
-                loadFrame.setAlwaysOnTop(true);
-                loadFrame.setVisible(true);
                 List<Textbox> textboxesCopy = new ArrayList<>(textboxes);
 
+                frame.setEnabled(false);
+                LoadFrame loadFrame = new LoadFrame("Generating...", false);
                 var worker = new TextboxGenerator(this, loadFrame, gameDef, textboxesCopy);
                 worker.execute();
             }
@@ -231,11 +234,10 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                 editorPane.flushChanges(false);
                 faceSelection.flushChanges();
 
-                LoadFrame loadFrame = new LoadFrame("Generating...", false);
-                loadFrame.setAlwaysOnTop(true);
-                loadFrame.setVisible(true);
                 List<Textbox> textboxesCopy = new ArrayList<>(textboxes);
 
+                frame.setEnabled(false);
+                LoadFrame loadFrame = new LoadFrame("Generating...", false);
                 var worker = new TextboxAnimator(this, loadFrame, gameDef, textboxesCopy);
                 worker.execute();
             }
@@ -559,10 +561,10 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     if (defFile == null) {
                         return;
                     }
-
                     Path defPath = defFile.toPath();
-                    LoadFrame loadFrame = new LoadFrame("Loading...", false);
 
+                    frame.setEnabled(false);
+                    LoadFrame loadFrame = new LoadFrame("Loading...", false);
                     var worker = new GameDefinitionLoader(MainPanel.this, loadFrame, defPath);
                     worker.execute();
                 }
@@ -571,10 +573,10 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     if (extFile == null) {
                         return;
                     }
-
                     Path extPath = extFile.toPath();
-                    LoadFrame loadFrame = new LoadFrame("Loading...", false);
 
+                    frame.setEnabled(false);
+                    LoadFrame loadFrame = new LoadFrame("Loading...", false);
                     var worker = new ExtensionDefinitionLoader(MainPanel.this, loadFrame, gameDef, extPath);
                     worker.execute();
                 }

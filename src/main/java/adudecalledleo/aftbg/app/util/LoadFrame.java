@@ -54,7 +54,7 @@ public final class LoadFrame extends JFrame {
 
     public LoadFrame(String loadString, boolean important) {
         setDefaultCloseOperation(important ? JFrame.EXIT_ON_CLOSE : WindowConstants.DO_NOTHING_ON_CLOSE);
-        setAlwaysOnTop(important);
+        setAlwaysOnTop(true);
         setUndecorated(true);
         final Dimension size = new Dimension(320, 120);
         setPreferredSize(size);

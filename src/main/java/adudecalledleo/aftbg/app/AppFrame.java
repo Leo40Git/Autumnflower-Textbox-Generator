@@ -12,7 +12,7 @@ import adudecalledleo.aftbg.app.util.DialogUtils;
 
 public final class AppFrame extends JFrame {
     public AppFrame(GameDefinition gameDef) {
-        var panel = new MainPanel();
+        var panel = new MainPanel(this);
         panel.updateGameDefinition(gameDef);
 
         setTitle(BuildInfo.name());

@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.swing.*;
 
+import adudecalledleo.aftbg.app.component.MainPanel;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.util.LoadFrame;
@@ -12,17 +13,14 @@ import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.window.WindowColors;
 import adudecalledleo.aftbg.window.WindowContext;
 
-public abstract class AbstractTextboxWorker extends SwingWorker<Void, Void> {
-    protected final Component parent;
-    protected final LoadFrame loadFrame;
+public abstract class AbstractTextboxWorker extends AbstractWorker {
     protected final TextParser parser;
     protected final TextParser.Context parserCtx;
     protected final WindowContext winCtx;
     protected final List<Textbox> textboxes;
 
-    public AbstractTextboxWorker(Component parent, LoadFrame loadFrame, GameDefinition gameDef, List<Textbox> textboxes) {
-        this.parent = parent;
-        this.loadFrame = loadFrame;
+    public AbstractTextboxWorker(MainPanel mainPanel, LoadFrame loadFrame, GameDefinition gameDef, List<Textbox> textboxes) {
+        super(mainPanel, loadFrame);
         this.winCtx = gameDef.winCtx().copy();
         this.textboxes = textboxes;
 
@@ -34,10 +32,10 @@ public abstract class AbstractTextboxWorker extends SwingWorker<Void, Void> {
     protected void handleParseErrors(String title) {
         loadFrame.setAlwaysOnTop(false);
         // TODO more detailed error message
-        JOptionPane.showMessageDialog(parent,
+        JOptionPane.showMessageDialog(mainPanel,
                 "Seems like one or more of your textboxes have errors!\n"
                         + "Correct this, then try generating again.",
                 title, JOptionPane.ERROR_MESSAGE);
-        loadFrame.dispose();
+        cleanup();
     }
 }
