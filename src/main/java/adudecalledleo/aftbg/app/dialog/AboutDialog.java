@@ -10,19 +10,24 @@ import java.util.List;
 import javax.swing.*;
 
 import adudecalledleo.aftbg.BuildInfo;
+import adudecalledleo.aftbg.app.AppPreferences;
 import adudecalledleo.aftbg.app.AppResources;
+import adudecalledleo.aftbg.app.component.render.StringListCellRenderer;
 import adudecalledleo.aftbg.app.game.ExtensionDefinition;
 import adudecalledleo.aftbg.app.game.GameDefinition;
+import adudecalledleo.aftbg.app.util.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.app.worker.BrowseWorker;
 import adudecalledleo.aftbg.logging.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public final class AboutDialog extends ModalDialog {
     private final GameDefinition gameDef;
+    private final GameDefinitionUpdateListener gameDefUpdateListener;
 
-    public AboutDialog(Component owner, GameDefinition gameDef) {
+    public AboutDialog(Component owner, GameDefinition gameDef, GameDefinitionUpdateListener gameDefUpdateListener) {
         super(owner);
         this.gameDef = gameDef;
+        this.gameDefUpdateListener = gameDefUpdateListener;
         setIconImage(AppResources.Icons.ABOUT.getAsImage());
         setTitle("About " + BuildInfo.name());
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -31,7 +36,7 @@ public final class AboutDialog extends ModalDialog {
         pack();
 
         var dim = getSize();
-        setSize(Math.max(dim.width, 500), Math.max(dim.height, 450));
+        setSize(Math.max(dim.width, 600), Math.max(dim.height, 480));
     }
 
     private final class ContentPane extends JPanel {
@@ -101,32 +106,85 @@ public final class AboutDialog extends ModalDialog {
             return box;
         }
 
-        private Component createExtInfo() {
-            if (gameDef.extensions().isEmpty()) {
-                JLabel lbl = new JLabel("No extensions loaded!");
-                lbl.setFont(lbl.getFont().deriveFont(Font.BOLD, 16));
-                lbl.setHorizontalAlignment(JLabel.CENTER);
-                lbl.setVerticalAlignment(JLabel.CENTER);
-                return lbl;
-            }
+        private static final int EXT_LIST_WIDTH = 200;
+        private JList<String> extList;
+        private DefaultListModel<String> extListModel;
 
+        private Component createExtInfo() {
             List<ExtensionDefinition> exts = new ArrayList<>(gameDef.extensions());
 
             Box descBox = new Box(BoxLayout.PAGE_AXIS);
-            descBox.add(new JLabel("Select an extension!"));
+            descBox_noSelection(descBox);
             descBox.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0));
 
-            DefaultListModel<String> extListModel = new DefaultListModel<>();
+            extListModel = new DefaultListModel<>();
             for (var ext : exts) {
                 extListModel.addElement(ext.name());
             }
 
-            JList<String> extList = new JList<>();
+            extList = new JList<>();
             extList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            extList.setCellRenderer(new StringListCellRenderer(EXT_LIST_WIDTH));
             extList.setModel(extListModel);
-            extList.addListSelectionListener(e -> {
-                var ext = exts.get(e.getFirstIndex());
-                descBox.removeAll();
+
+            if (exts.isEmpty()) {
+                extList_empty();
+            }
+
+            JButton btnUnloadExt = new JButton("Unload");
+            btnUnloadExt.setEnabled(false);
+            btnUnloadExt.addActionListener(e -> {
+                if (exts.isEmpty()) {
+                    return;
+                }
+
+                int i = extList.getSelectedIndex();
+                if (i < 0) {
+                    return;
+                }
+
+                var ext = exts.get(i);
+                if (gameDef.unloadExtension(ext)) {
+                    exts.remove(ext);
+                    if (exts.isEmpty()) {
+                        extList_empty();
+                    } else {
+                        extListModel.removeElement(ext.name());
+                    }
+                    AppPreferences.getLastExtensions().remove(ext.filePath());
+                    extList_selectionChanged(exts, descBox, btnUnloadExt);
+                    SwingUtilities.invokeLater(() -> gameDefUpdateListener.updateGameDefinition(gameDef));
+                }
+            });
+
+            extList.addListSelectionListener(e -> extList_selectionChanged(exts, descBox, btnUnloadExt));
+
+            JPanel extListPanel = new JPanel(new BorderLayout());
+            extListPanel.add(new JScrollPane(extList), BorderLayout.CENTER);
+            extListPanel.add(btnUnloadExt, BorderLayout.PAGE_END);
+
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.add(extListPanel, BorderLayout.LINE_START);
+            panel.add(descBox, BorderLayout.CENTER);
+            return panel;
+        }
+
+        private void extList_empty() {
+            extListModel.clear();
+            extListModel.addElement("(none)");
+            extList.setSelectedIndex(-1);
+            extList.setEnabled(false);
+        }
+
+        private void extList_selectionChanged(List<ExtensionDefinition> exts, Box descBox, JButton btnUnloadExt) {
+            descBox.removeAll();
+            int i = extList.getSelectedIndex();
+            if (exts.isEmpty() || i < 0) {
+                btnUnloadExt.setEnabled(false);
+                descBox_noSelection(descBox);
+            } else {
+                btnUnloadExt.setEnabled(true);
+                var ext = exts.get(i);
                 JLabel lblName = new JLabel(ext.name());
                 lblName.setFont(lblName.getFont().deriveFont(Font.BOLD));
                 descBox.add(lblName);
@@ -139,12 +197,11 @@ public final class AboutDialog extends ModalDialog {
                 for (String credit : ext.credits()) {
                     descBox.add(new JLabel(credit));
                 }
-            });
+            }
+        }
 
-            JPanel panel = new JPanel(new BorderLayout());
-            panel.add(new JScrollPane(extList), BorderLayout.LINE_START);
-            panel.add(descBox, BorderLayout.CENTER);
-            return panel;
+        private void descBox_noSelection(Box descBox) {
+            descBox.add(new JLabel("Select an extension!"));
         }
 
         private int addLinkButton(JPanel btnPanel, @Nullable URL url, String text) {

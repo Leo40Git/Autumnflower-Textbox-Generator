@@ -603,7 +603,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     fpd.setVisible(true);
                 }
                 case AC_ABOUT -> {
-                    var dialog = new AboutDialog(MainPanel.this, gameDef);
+                    var dialog = new AboutDialog(MainPanel.this, gameDef, MainPanel.this::updateGameDefinition);
                     dialog.setLocationRelativeTo(null);
                     dialog.setVisible(true);
                 }
