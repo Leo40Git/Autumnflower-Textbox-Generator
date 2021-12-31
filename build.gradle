@@ -25,19 +25,6 @@ runtime {
                'java.logging', 'jdk.crypto.cryptoki', 'jdk.crypto.ec', 'jdk.crypto.mscapi', 'jdk.unsupported']
 }
 
-tasks.jpackageImage.doLast {
-    delete("$buildDir/jpackage/${project.name}/scratch")
-    delete("$buildDir/jpackage/${project.name}/scratch_ex")
-    copy {
-        from('scratch')
-        into("$buildDir/jpackage/${project.name}/scratch")
-    }
-    copy {
-        from('scratch_ex')
-        into("$buildDir/jpackage/${project.name}/scratch_ex")
-    }
-}
-
 group 'adudecalledleo'
 
 repositories {
