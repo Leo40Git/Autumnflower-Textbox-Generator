@@ -134,8 +134,23 @@ public final class GameDefinition {
     }
 
     public ExtensionDefinition loadExtension(Path extPath) throws DefinitionLoadException {
+        extPath = extPath.toAbsolutePath();
+        boolean reload = false;
+        int i = 0;
+        for (; i < extensions.size(); i++) {
+            var ext = extensions.get(i);
+            if (ext.filePath().equals(extPath)) {
+                reload = true;
+                break;
+            }
+        }
+
         var ext = ExtensionDefinition.load(extPath);
-        extensions.add(ext);
+        if (reload) {
+            extensions.set(i, ext);
+        } else {
+            extensions.add(ext);
+        }
         updateExtensions();
         return ext;
     }
