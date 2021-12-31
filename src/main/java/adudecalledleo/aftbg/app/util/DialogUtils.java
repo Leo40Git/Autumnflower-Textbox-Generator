@@ -12,7 +12,7 @@ public final class DialogUtils {
     private DialogUtils() { }
 
     public static String logFileInstruction() {
-        return "See " + Logger.logFile() + "\" for more details.";
+        return "See \"" + Logger.logFile() + "\" for more details.";
     }
 
     public static void showErrorDialog(Component parent, String message, String title) {

@@ -48,7 +48,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
     public final JFrame frame;
 
-    private final List<GameDefinitionUpdateListener> updateListeners;
+    public final List<GameDefinitionUpdateListener> updateListeners;
 
     private final List<Textbox> textboxes;
     private int currentTextbox;
@@ -162,6 +162,10 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         textboxPanel.add(new JScrollPane(editorPane), BorderLayout.CENTER);
         textboxPanel.add(buttonPanel, BorderLayout.PAGE_END);
         return textboxPanel;
+    }
+
+    public GameDefinition getGameDefinition() {
+        return gameDef;
     }
 
     public void updateGameDefinition(GameDefinition gameDef) {
@@ -358,6 +362,19 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             projectSerializer.write(textboxes, out);
         }
         return true;
+    }
+
+    public void promptLoadExtension() {
+        File extFile = DialogUtils.fileOpenDialog(this, "Load extension definition", DialogUtils.FILTER_JSON_FILES);
+        if (extFile == null) {
+            return;
+        }
+        Path extPath = extFile.toPath();
+
+        frame.setEnabled(false);
+        LoadFrame loadFrame = new LoadFrame("Loading...", false);
+        var worker = new ExtensionDefinitionLoader(this, loadFrame, gameDef, extPath);
+        worker.execute();
     }
 
     private final class MenuBar extends JMenuBar implements ActionListener, GameDefinitionUpdateListener {
@@ -581,16 +598,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     worker.execute();
                 }
                 case AC_DEF_LOAD_EXT -> {
-                    File extFile = DialogUtils.fileOpenDialog(MainPanel.this, "Load extension definition", DialogUtils.FILTER_JSON_FILES);
-                    if (extFile == null) {
-                        break;
-                    }
-                    Path extPath = extFile.toPath();
-
-                    frame.setEnabled(false);
-                    LoadFrame loadFrame = new LoadFrame("Loading...", false);
-                    var worker = new ExtensionDefinitionLoader(MainPanel.this, loadFrame, gameDef, extPath);
-                    worker.execute();
+                    promptLoadExtension();
                 }
                 case AC_PREFS -> {
                     var dialog = new PreferencesDialog(MainPanel.this);
@@ -603,7 +611,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     fpd.setVisible(true);
                 }
                 case AC_ABOUT -> {
-                    var dialog = new AboutDialog(MainPanel.this, gameDef, MainPanel.this::updateGameDefinition);
+                    var dialog = new AboutDialog(MainPanel.this);
                     dialog.setLocationRelativeTo(null);
                     dialog.setVisible(true);
                 }
