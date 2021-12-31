@@ -19,16 +19,17 @@ public final class ExtensionDefinition {
     private final String name;
     private final String[] description;
     private final String[] credits;
-    private final Path basePath;
+    private final Path filePath, basePath;
     private final FacePool faces;
     private final TextboxScriptSet scripts;
 
-    public ExtensionDefinition(String name, String[] description, String[] credits,
-                               Path basePath,
-                               FacePool faces, TextboxScriptSet scripts) {
+    private ExtensionDefinition(String name, String[] description, String[] credits,
+                                Path filePath, Path basePath,
+                                FacePool faces, TextboxScriptSet scripts) {
         this.name = name;
         this.description = description;
         this.credits = credits;
+        this.filePath = filePath;
         this.basePath = basePath;
         this.faces = faces;
         this.scripts = scripts;
@@ -90,7 +91,7 @@ public final class ExtensionDefinition {
             throw new DefinitionLoadException("Failed to load scripts", e);
         }
 
-        return new ExtensionDefinition(jsonRep.name, jsonRep.description, jsonRep.credits, basePath, faces, scripts);
+        return new ExtensionDefinition(jsonRep.name, jsonRep.description, jsonRep.credits, filePath, basePath, faces, scripts);
     }
 
     public String name() {
@@ -103,6 +104,10 @@ public final class ExtensionDefinition {
 
     public String[] credits() {
         return credits;
+    }
+
+    public Path filePath() {
+        return filePath;
     }
 
     public Path basePath() {

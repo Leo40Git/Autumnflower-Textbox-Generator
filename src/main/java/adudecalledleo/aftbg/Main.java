@@ -7,8 +7,8 @@ import java.nio.file.Path;
 import javax.swing.*;
 
 import adudecalledleo.aftbg.app.*;
-import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.game.DefinitionLoadException;
+import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.LoadFrame;
 import adudecalledleo.aftbg.logging.Logger;
@@ -81,24 +81,44 @@ public final class Main {
             return;
         }
 
-        loadFrame.setAlwaysOnTop(false);
-        File defFile = DialogUtils.fileOpenDialog(null, "Load game definition", DialogUtils.FILTER_JSON_FILES);
-        if (defFile == null) {
-            System.exit(0);
-            return;
+        Path defPath = AppPreferences.getLastGameDefinition();
+        if (defPath == null) {
+            // TODO first start experience
+            AppPreferences.getLastExtensions().clear();
+            loadFrame.setAlwaysOnTop(false);
+            File defFile = DialogUtils.fileOpenDialog(null, "Load game definition", DialogUtils.FILTER_JSON_FILES);
+            if (defFile == null) {
+                System.exit(0);
+                return;
+            }
+            defPath = defFile.toPath().toAbsolutePath();
+            loadFrame.setAlwaysOnTop(true);
         }
 
-        Path defPath = defFile.toPath();
-        loadFrame.setAlwaysOnTop(true);
         GameDefinition gameDef;
         try {
             gameDef = GameDefinition.load(defPath);
         } catch (DefinitionLoadException e) {
-            Logger.error("Failed to load game definition!", e);
+            Logger.error("Failed to load game definition from \"%s\"!".formatted(defPath), e);
             loadFrame.setAlwaysOnTop(false);
-            DialogUtils.showErrorDialog(null, "Failed to load game definition!", "Failed to launch");
+            DialogUtils.showErrorDialog(null, "Failed to load game definition from\n%s!".formatted(defPath),
+                    "Failed to launch");
             System.exit(1);
             return;
+        }
+        AppPreferences.setLastGameDefinition(gameDef.filePath());
+
+        for (var extPath : AppPreferences.getLastExtensions()) {
+            extPath = extPath.toAbsolutePath();
+            try {
+                gameDef.loadExtension(extPath);
+            } catch (DefinitionLoadException e) {
+                Logger.error("Failed to auto-load extension from \"%s\"!".formatted(defPath), e);
+                loadFrame.setAlwaysOnTop(false);
+                DialogUtils.showErrorDialog(null, "Failed to auto-load extension from:\n%s".formatted(defPath),
+                        "Failed to auto-load extension");
+                loadFrame.setAlwaysOnTop(true);
+            }
         }
 
         SwingUtilities.invokeLater(() -> {

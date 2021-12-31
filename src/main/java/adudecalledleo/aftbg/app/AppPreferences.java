@@ -3,13 +3,18 @@ package adudecalledleo.aftbg.app;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import adudecalledleo.aftbg.app.util.JsonUtils;
 import adudecalledleo.aftbg.logging.Logger;
 import com.google.gson.*;
+import org.jetbrains.annotations.Nullable;
 
 public final class AppPreferences {
     private static final Gson GSON = new GsonBuilder()
@@ -22,15 +27,21 @@ public final class AppPreferences {
     private static final class Key {
         private static final String VERSION = "version";
         private static final String AUTO_UPDATE_CHECK = "auto_update_check_enabled";
+        private static final String LAST_GAME_DEFINITION = "last_game_definition";
+        private static final String LAST_EXTENSIONS = "last_extensions";
     }
 
     private static AppPreferences instance;
 
-    private boolean autoUpdateCheck;
+    private boolean autoUpdateCheckEnabled;
+    private @Nullable Path lastGameDefinition;
+    private final Set<Path> lastExtensions;
 
     public AppPreferences() {
         // DEFAULT VALUES
-        autoUpdateCheck = true;
+        autoUpdateCheckEnabled = true;
+        lastGameDefinition = null;
+        lastExtensions = new LinkedHashSet<>();
     }
 
     public void read(JsonObject obj) throws JsonUtils.StructureException {
@@ -38,12 +49,46 @@ public final class AppPreferences {
         // in the future, the "version" property will determine how to read preferences from the object
         //  to allow for backwards compatibility with older preferences files
         // currently, though, there's only one version - the current one
-        autoUpdateCheck = JsonUtils.getBoolean(obj, Key.AUTO_UPDATE_CHECK);
+
+        autoUpdateCheckEnabled = JsonUtils.getBoolean(obj, Key.AUTO_UPDATE_CHECK);
+        lastGameDefinition = JsonUtils.getPath(obj, Key.LAST_GAME_DEFINITION);
+
+        lastExtensions.clear();
+        var lastExtsArr = JsonUtils.getArray(obj, Key.LAST_EXTENSIONS);
+        if (lastExtsArr != null) {
+            for (int i = 0, size = lastExtsArr.size(); i < size; i++) {
+                var elem = lastExtsArr.get(i);
+                if (elem instanceof JsonPrimitive prim && prim.isString()) {
+                    String rawUri = elem.getAsString();
+                    URI uri;
+                    try {
+                        uri = new URI(rawUri);
+                    } catch (URISyntaxException e) {
+                        throw new JsonUtils.StructureException(("Expected element at index %d of array property \"%s\" to be a URI, "
+                                + "but it couldn't be parsed as such!").formatted(i, Key.LAST_EXTENSIONS), e);
+                    }
+                    try {
+                        lastExtensions.add(Paths.get(uri));
+                    } catch (Exception e) {
+                        throw new JsonUtils.StructureException(("Expected element at index %d of array property \"%s\" to be a path URI, "
+                                + "but failed to convert it into a path!").formatted(i, Key.LAST_EXTENSIONS), e);
+                    }
+                } else {
+                    throw JsonUtils.createWrongArrayElemTypeException(Key.LAST_EXTENSIONS, i, JsonUtils.TYPESTR_STRING, elem);
+                }
+            }
+        }
     }
 
     public void write(JsonObject obj) {
         obj.addProperty(Key.VERSION, CURRENT_VERSION);
-        obj.addProperty(Key.AUTO_UPDATE_CHECK, autoUpdateCheck);
+        obj.addProperty(Key.AUTO_UPDATE_CHECK, autoUpdateCheckEnabled);
+        JsonUtils.putPath(obj, Key.LAST_GAME_DEFINITION, lastGameDefinition);
+        JsonArray lastExtsArr = new JsonArray();
+        for (var path : lastExtensions) {
+            lastExtsArr.add(path.toUri().toString());
+        }
+        obj.add(Key.LAST_EXTENSIONS, lastExtsArr);
     }
 
     public static void init() throws IOException {
@@ -82,10 +127,22 @@ public final class AppPreferences {
     }
 
     public static boolean isAutoUpdateCheckEnabled() {
-        return instance.autoUpdateCheck;
+        return instance.autoUpdateCheckEnabled;
     }
 
     public static void setAutoUpdateCheckEnabled(boolean autoUpdateCheckEnabled) {
-        instance.autoUpdateCheck = autoUpdateCheckEnabled;
+        instance.autoUpdateCheckEnabled = autoUpdateCheckEnabled;
+    }
+
+    public static @Nullable Path getLastGameDefinition() {
+        return instance.lastGameDefinition;
+    }
+
+    public static void setLastGameDefinition(@Nullable Path lastGameDefinition) {
+        instance.lastGameDefinition = lastGameDefinition;
+    }
+
+    public static Set<Path> getLastExtensions() {
+        return instance.lastExtensions;
     }
 }

@@ -39,7 +39,7 @@ public final class GameDefinition {
     private final String name;
     private final String[] description;
     private final String[] credits;
-    private final Path basePath;
+    private final Path filePath, basePath;
     private final WindowContext winCtx;
     private final FacePool baseFaces;
     private final TextboxScriptSet baseScripts;
@@ -48,12 +48,13 @@ public final class GameDefinition {
     private final FacePool allFaces;
     private final TextboxScriptSet allScripts;
 
-    public GameDefinition(String name, String[] description, String[] credits,
-                          Path basePath,
+    private GameDefinition(String name, String[] description, String[] credits,
+                          Path filePath, Path basePath,
                           WindowContext winCtx, FacePool baseFaces, TextboxScriptSet baseScripts) {
         this.name = name;
         this.description = description;
         this.credits = credits;
+        this.filePath = filePath;
         this.basePath = basePath;
         this.winCtx = winCtx;
         this.baseFaces = baseFaces;
@@ -129,13 +130,22 @@ public final class GameDefinition {
             throw new DefinitionLoadException("Failed to load baseScripts", e);
         }
 
-        return new GameDefinition(jsonRep.name, jsonRep.description, jsonRep.credits, basePath, winCtx, faces, scripts);
+        return new GameDefinition(jsonRep.name, jsonRep.description, jsonRep.credits, filePath, basePath, winCtx, faces, scripts);
     }
 
-    public void loadExtension(Path extPath) throws DefinitionLoadException {
+    public ExtensionDefinition loadExtension(Path extPath) throws DefinitionLoadException {
         var ext = ExtensionDefinition.load(extPath);
         extensions.add(ext);
         updateExtensions();
+        return ext;
+    }
+
+    public boolean unloadExtension(ExtensionDefinition ext) {
+        if (extensions.remove(ext)) {
+            updateExtensions();
+            return true;
+        }
+        return false;
     }
 
     private void updateExtensions() {
@@ -161,6 +171,10 @@ public final class GameDefinition {
 
     public String[] credits() {
         return credits;
+    }
+
+    public Path filePath() {
+        return filePath;
     }
 
     public Path basePath() {

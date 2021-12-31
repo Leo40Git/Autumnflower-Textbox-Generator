@@ -13,6 +13,7 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import adudecalledleo.aftbg.app.AppPreferences;
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.component.render.TextboxListCellRenderer;
 import adudecalledleo.aftbg.app.data.Textbox;
@@ -165,6 +166,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
     public void updateGameDefinition(GameDefinition gameDef) {
         this.gameDef = gameDef;
+        AppPreferences.setLastGameDefinition(gameDef.filePath());
         for (var listener : updateListeners) {
             listener.updateGameDefinition(gameDef);
         }
@@ -557,9 +559,19 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     }
                 }
                 case AC_DEF_LOAD -> {
-                    File defFile = DialogUtils.fileOpenDialog(this, "Load game definition", DialogUtils.FILTER_JSON_FILES);
+                    if (!gameDef.extensions().isEmpty()) {
+                        int result = JOptionPane.showConfirmDialog(MainPanel.this,
+                                "<html>Are you sure?<br/>"
+                                        + "Loading a new game definition will <b>unload all extensions!</b></html>",
+                                "Load Game Definition", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                        if (result != JOptionPane.YES_OPTION) {
+                            break;
+                        }
+                    }
+
+                    File defFile = DialogUtils.fileOpenDialog(MainPanel.this, "Load game definition", DialogUtils.FILTER_JSON_FILES);
                     if (defFile == null) {
-                        return;
+                        break;
                     }
                     Path defPath = defFile.toPath();
 
@@ -569,9 +581,9 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     worker.execute();
                 }
                 case AC_DEF_LOAD_EXT -> {
-                    File extFile = DialogUtils.fileOpenDialog(this, "Load extension definition", DialogUtils.FILTER_JSON_FILES);
+                    File extFile = DialogUtils.fileOpenDialog(MainPanel.this, "Load extension definition", DialogUtils.FILTER_JSON_FILES);
                     if (extFile == null) {
-                        return;
+                        break;
                     }
                     Path extPath = extFile.toPath();
 
@@ -581,17 +593,17 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     worker.execute();
                 }
                 case AC_PREFS -> {
-                    var dialog = new PreferencesDialog(this);
+                    var dialog = new PreferencesDialog(MainPanel.this);
                     dialog.setLocationRelativeTo(null);
                     dialog.setVisible(true);
                 }
                 case AC_FACE_POOL_EDITOR -> {
-                    var fpd = new FacePoolEditorDialog(this);
+                    var fpd = new FacePoolEditorDialog(MainPanel.this);
                     fpd.setLocationRelativeTo(null);
                     fpd.setVisible(true);
                 }
                 case AC_ABOUT -> {
-                    var dialog = new AboutDialog(this, gameDef);
+                    var dialog = new AboutDialog(MainPanel.this, gameDef);
                     dialog.setLocationRelativeTo(null);
                     dialog.setVisible(true);
                 }
