@@ -3,7 +3,6 @@ package adudecalledleo.aftbg.app;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,6 +12,7 @@ import java.util.Set;
 
 import adudecalledleo.aftbg.app.util.JsonUtils;
 import adudecalledleo.aftbg.logging.Logger;
+import adudecalledleo.aftbg.util.PathUtils;
 import com.google.gson.*;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,22 +59,14 @@ public final class AppPreferences {
             for (int i = 0, size = lastExtsArr.size(); i < size; i++) {
                 var elem = lastExtsArr.get(i);
                 if (elem instanceof JsonPrimitive prim && prim.isString()) {
-                    String rawUri = elem.getAsString();
-                    URI uri;
                     try {
-                        uri = new URI(rawUri);
-                    } catch (URISyntaxException e) {
-                        throw new JsonUtils.StructureException(("Expected element at index %d of array property \"%s\" to be a URI, "
-                                + "but it couldn't be parsed as such!").formatted(i, Key.LAST_EXTENSIONS), e);
-                    }
-                    try {
-                        lastExtensions.add(Paths.get(uri));
-                    } catch (Exception e) {
+                        lastExtensions.add(PathUtils.fromRawUri(prim.getAsString()));
+                    } catch (URISyntaxException | PathUtils.InvalidPathURIException e) {
                         throw new JsonUtils.StructureException(("Expected element at index %d of array property \"%s\" to be a path URI, "
                                 + "but failed to convert it into a path!").formatted(i, Key.LAST_EXTENSIONS), e);
                     }
                 } else {
-                    throw JsonUtils.createWrongArrayElemTypeException(Key.LAST_EXTENSIONS, i, JsonUtils.TYPESTR_STRING, elem);
+                    throw JsonUtils.createWrongArrayElemTypeException(Key.LAST_EXTENSIONS, i, JsonUtils.ElementType.STRING, elem);
                 }
             }
         }

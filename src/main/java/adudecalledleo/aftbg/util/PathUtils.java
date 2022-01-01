@@ -1,6 +1,8 @@
 package adudecalledleo.aftbg.util;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
@@ -68,5 +70,30 @@ public final class PathUtils {
      */
     public static Path tryResolve(Path base, String other, String description) {
         return tryResolve(base, other, description, IllegalArgumentException::new);
+    }
+
+    /**
+     * Tries to convert the given URI string into a {@link Path} object.
+     *
+     * @param rawUri the URI string to convert
+     * @return the resulting {@code Path}.
+     * @throws URISyntaxException      if the given string isn't a valid URI.
+     * @throws InvalidPathURIException if the given string is a valid URI,
+     *                                 but {@link Paths#get(URI)} failed to convert it into a path.
+     * @see Paths#get(URI)
+     */
+    public static Path fromRawUri(String rawUri) throws URISyntaxException, InvalidPathURIException {
+        URI uri = new URI(rawUri);
+        try {
+            return Paths.get(uri);
+        } catch (Exception e) {
+            throw new InvalidPathURIException("Failed to convert URI \"%s\" into Path".formatted(uri), e);
+        }
+    }
+
+    public static class InvalidPathURIException extends Exception {
+        private InvalidPathURIException(String message, Throwable cause) {
+            super(message, cause);
+        }
     }
 }
