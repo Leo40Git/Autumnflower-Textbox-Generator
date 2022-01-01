@@ -2,28 +2,28 @@ package adudecalledleo.aftbg.app.component;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
+import java.awt.geom.*;
+import java.awt.image.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import javax.swing.event.*;
 import javax.swing.text.*;
 
 import adudecalledleo.aftbg.app.AppResources;
+import adudecalledleo.aftbg.app.component.text.UnderlineHighlighter;
+import adudecalledleo.aftbg.app.component.text.ZigZagHighlighter;
 import adudecalledleo.aftbg.app.dialog.modifier.*;
+import adudecalledleo.aftbg.app.game.GameDefinition;
+import adudecalledleo.aftbg.app.text.TextRenderer;
 import adudecalledleo.aftbg.app.util.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.app.util.UnmodifiableAttributeSetView;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FacePool;
-import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.text.TextParser;
-import adudecalledleo.aftbg.app.text.TextRenderer;
 import adudecalledleo.aftbg.text.modifier.*;
 import adudecalledleo.aftbg.text.node.*;
 import adudecalledleo.aftbg.util.ColorUtils;
@@ -33,6 +33,12 @@ import adudecalledleo.aftbg.window.WindowContext;
 public final class TextboxEditorPane extends JEditorPane
         implements GameDefinitionUpdateListener, ActionListener {
     private static final BufferedImage SCRATCH_IMAGE = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+    private static final Highlighter.HighlightPainter HLP_ERROR = new ZigZagHighlighter(Color.RED);
+    private static final Map<Color, Highlighter.HighlightPainter> HLP_ESCAPED_COLORS = new HashMap<>();
+
+    private static Highlighter.HighlightPainter getEscapedColorHighlightPainter(Color color) {
+        return HLP_ESCAPED_COLORS.computeIfAbsent(color, UnderlineHighlighter::new);
+    }
 
     private static final String AC_ADD_MOD_COLOR = "add_mod.color";
     private static final String AC_ADD_MOD_STYLE = "add_mod.style";
@@ -48,8 +54,6 @@ public final class TextboxEditorPane extends JEditorPane
     private final Timer updateTimer;
     private final Map<Object, Action> actions;
     private final Map<Rectangle2D, String> errors;
-    private final Map<Rectangle2D, Color> escapedColors;
-    private final Line2D scratchLine;
     private final SimpleAttributeSet styleNormal, styleMod;
     private final JPopupMenu popupMenu;
 
@@ -66,8 +70,6 @@ public final class TextboxEditorPane extends JEditorPane
         textParser = new TextParser();
         textParserCtx = new TextParser.Context();
         errors = new HashMap<>();
-        escapedColors = new HashMap<>();
-        scratchLine = new Line2D.Double(0, 0, 0, 0);
 
         styleNormal = new SimpleAttributeSet();
         StyleConstants.setFontFamily(styleNormal, TextRenderer.DEFAULT_FONT.getFamily());
@@ -416,27 +418,7 @@ public final class TextboxEditorPane extends JEditorPane
 
         super.paintComponent(g);
 
-        for (var entry : escapedColors.entrySet()) {
-            var rect = entry.getKey();
-            g2d.setClip(rect);
-            final double y = rect.getY() + rect.getHeight() - 1;
-            scratchLine.setLine(rect.getX(), y, rect.getX() + rect.getWidth(), y);
-            g2d.setColor(entry.getValue());
-            g2d.draw(scratchLine);
-        }
-
-        g2d.setColor(Color.RED);
-        for (var entry : errors.entrySet()) {
-            var rect = entry.getKey();
-            g2d.setClip(rect);
-            final double y = rect.getY() + rect.getHeight() - 3;
-            boolean raised = true;
-            for (double x = rect.getX(); x <= rect.getX() + rect.getWidth(); x += 2) {
-                scratchLine.setLine(x, y + (raised ? 2 : 0), x + 2, y + (raised ? 0 : 2));
-                g2d.draw(scratchLine);
-                raised = !raised;
-            }
-        }
+        //getHighlighter().paint(g);
     }
 
     @Override
@@ -486,10 +468,12 @@ public final class TextboxEditorPane extends JEditorPane
     private static final boolean DUMP_NODES = false;
 
     private void highlight() {
+        Highlighter highlighter = getHighlighter();
         if (getDocument() instanceof StyledDocument doc) {
             MutableAttributeSet style = styleNormal, styleEscaped = styleMod;
             doc.setParagraphAttributes(0, doc.getLength(), style, true);
             doc.setCharacterAttributes(0, doc.getLength(), style, true);
+            highlighter.removeAllHighlights();
 
             if (winCtx == null) {
                 return;
@@ -513,8 +497,6 @@ public final class TextboxEditorPane extends JEditorPane
             }
             // endregion
 
-            escapedColors.clear();
-
             StyleSpec styleSpec = StyleSpec.DEFAULT;
 
             for (Node node : nodes) {
@@ -536,19 +518,12 @@ public final class TextboxEditorPane extends JEditorPane
                 } else if (node instanceof ModifierNode) {
                     doc.setCharacterAttributes(node.getStart(), node.getLength(), styleMod, true);
                 } else if (node instanceof TextNode.Escaped) {
-                    doc.setCharacterAttributes(node.getStart(), node.getLength(), styleEscaped, true);
-
-                    Rectangle2D startRect, endRect;
-                    final int end = node.getStart() + node.getLength();
                     try {
-                        startRect = modelToView2D(node.getStart());
-                        endRect = modelToView2D(end);
-
-                        escapedColors.put(new Rectangle2D.Double(startRect.getX(), startRect.getY(),
-                                        endRect.getX() - startRect.getX(), Math.max(startRect.getHeight(), endRect.getHeight())),
-                                StyleConstants.getForeground(style));
+                        highlighter.addHighlight(node.getStart(), node.getStart() + node.getLength(),
+                                getEscapedColorHighlightPainter(StyleConstants.getForeground(style)));
+                        doc.setCharacterAttributes(node.getStart(), node.getLength(), styleEscaped, true);
                     } catch (BadLocationException e) {
-                        Logger.error("Failed to generate escaped text bounds!", e);
+                        Logger.error("Failed to properly highlight escaped text!", e);
                     }
                 } else {
                     doc.setCharacterAttributes(node.getStart(), node.getLength(), style, true);
@@ -558,11 +533,11 @@ public final class TextboxEditorPane extends JEditorPane
             errors.clear();
 
             for (ErrorNode err : nodes.getErrors()) {
-                doc.setCharacterAttributes(err.getStart(), err.getLength(), styleNormal, true);
-
-                Rectangle2D startRect, endRect;
                 final int end = err.getStart() + err.getLength();
+
                 try {
+                    Rectangle2D startRect, endRect;
+
                     startRect = modelToView2D(err.getStart());
                     endRect = modelToView2D(end);
 
@@ -570,7 +545,14 @@ public final class TextboxEditorPane extends JEditorPane
                                     endRect.getX() - startRect.getX(), Math.max(startRect.getHeight(), endRect.getHeight())),
                             err.getMessage());
                 } catch (BadLocationException e) {
-                    Logger.error("Failed to generate error node text bounds!", e);
+                    Logger.error("Failed to generate tooltip bounds for error!", e);
+                }
+
+                try {
+                    highlighter.addHighlight(err.getStart(), end, HLP_ERROR);
+                    doc.setCharacterAttributes(err.getStart(), err.getLength(), styleNormal, true);
+                } catch (BadLocationException e) {
+                    Logger.error("Failed to properly highlight error!", e);
                 }
             }
         }
