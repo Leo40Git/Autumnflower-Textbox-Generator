@@ -235,172 +235,172 @@ public final class TextboxEditorPane extends JEditorPane
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
-        case AC_ADD_MOD_COLOR -> {
-            ColorModifierDialog.Result result;
-            try {
-                forceCaretRendering = true;
-                var dialog = new ColorModifierDialog(this, winCtx);
-                dialog.setLocationRelativeTo(null);
-                result = dialog.showDialog();
-            } finally {
-                forceCaretRendering = false;
-            }
-            if (result == null) {
-                requestFocus();
-                break;
-            }
-            String toInsert;
-            if (result instanceof ColorModifierDialog.WindowResult winResult) {
-                toInsert = "\\" + ColorModifierNode.KEY + "[" + winResult.getIndex() + "]";
-            } else if (result instanceof ColorModifierDialog.ConstantResult constResult) {
-                var col = constResult.getColor();
-                toInsert = "\\%c[#%02X%02X%02X]".formatted(
-                        ColorModifierNode.KEY, col.getRed(), col.getGreen(), col.getBlue());
-            } else {
-                throw new InternalError("Unhandled result type " + result + "?!");
-            }
-            try {
-                replaceSelection(toInsert);
-                updateTimer.restart();
-            } finally {
-                requestFocus();
-            }
-        }
-        case AC_ADD_MOD_STYLE -> {
-            StyleSpec spec = StyleSpec.DEFAULT;
-            if (nodes != null) {
-                for (var node : nodes) {
-                    if (node instanceof StyleModifierNode styleModNote) {
-                        spec = spec.add(styleModNote.getSpec());
-                    }
+            case AC_ADD_MOD_COLOR -> {
+                ColorModifierDialog.Result result;
+                try {
+                    forceCaretRendering = true;
+                    var dialog = new ColorModifierDialog(this, winCtx);
+                    dialog.setLocationRelativeTo(null);
+                    result = dialog.showDialog();
+                } finally {
+                    forceCaretRendering = false;
+                }
+                if (result == null) {
+                    requestFocus();
+                    break;
+                }
+                String toInsert;
+                if (result instanceof ColorModifierDialog.WindowResult winResult) {
+                    toInsert = "\\" + ColorModifierNode.KEY + "[" + winResult.getIndex() + "]";
+                } else if (result instanceof ColorModifierDialog.ConstantResult constResult) {
+                    var col = constResult.getColor();
+                    toInsert = "\\%c[#%02X%02X%02X]".formatted(
+                            ColorModifierNode.KEY, col.getRed(), col.getGreen(), col.getBlue());
+                } else {
+                    throw new InternalError("Unhandled result type " + result + "?!");
+                }
+                try {
+                    replaceSelection(toInsert);
+                    updateTimer.restart();
+                } finally {
+                    requestFocus();
                 }
             }
-            StyleSpec newSpec;
-            try {
-                forceCaretRendering = true;
-                var dialog = new StyleModifierDialog(this, spec);
-                dialog.setLocationRelativeTo(null);
-                newSpec = dialog.showDialog();
-            } finally {
-                forceCaretRendering = false;
-            }
-            if (newSpec == null) {
-                requestFocus();
-                break;
-            }
-            newSpec = spec.difference(newSpec);
-            try {
-                replaceSelection(newSpec.toModifier());
-                updateTimer.restart();
-            } finally {
-                requestFocus();
-            }
-        }
-        case AC_ADD_MOD_GIMMICK -> {
-            GimmickSpec spec = GimmickSpec.DEFAULT;
-            if (nodes != null) {
-                for (var node : nodes) {
-                    if (node instanceof GimmickModifierNode gimmickModNote) {
-                        spec = spec.add(gimmickModNote.getSpec());
+            case AC_ADD_MOD_STYLE -> {
+                StyleSpec spec = StyleSpec.DEFAULT;
+                if (nodes != null) {
+                    for (var node : nodes) {
+                        if (node instanceof StyleModifierNode styleModNote) {
+                            spec = spec.add(styleModNote.getSpec());
+                        }
                     }
                 }
+                StyleSpec newSpec;
+                try {
+                    forceCaretRendering = true;
+                    var dialog = new StyleModifierDialog(this, spec);
+                    dialog.setLocationRelativeTo(null);
+                    newSpec = dialog.showDialog();
+                } finally {
+                    forceCaretRendering = false;
+                }
+                if (newSpec == null) {
+                    requestFocus();
+                    break;
+                }
+                newSpec = spec.difference(newSpec);
+                try {
+                    replaceSelection(newSpec.toModifier());
+                    updateTimer.restart();
+                } finally {
+                    requestFocus();
+                }
             }
-            GimmickSpec newSpec;
-            try {
-                forceCaretRendering = true;
-                var dialog = new GimmickModifierDialog(this, winCtx, spec);
-                dialog.setLocationRelativeTo(null);
-                newSpec = dialog.showDialog();
-            } finally {
-                forceCaretRendering = false;
+            case AC_ADD_MOD_GIMMICK -> {
+                GimmickSpec spec = GimmickSpec.DEFAULT;
+                if (nodes != null) {
+                    for (var node : nodes) {
+                        if (node instanceof GimmickModifierNode gimmickModNote) {
+                            spec = spec.add(gimmickModNote.getSpec());
+                        }
+                    }
+                }
+                GimmickSpec newSpec;
+                try {
+                    forceCaretRendering = true;
+                    var dialog = new GimmickModifierDialog(this, winCtx, spec);
+                    dialog.setLocationRelativeTo(null);
+                    newSpec = dialog.showDialog();
+                } finally {
+                    forceCaretRendering = false;
+                }
+                if (newSpec == null) {
+                    requestFocus();
+                    break;
+                }
+                newSpec = spec.difference(newSpec);
+                try {
+                    replaceSelection(newSpec.toModifier());
+                    updateTimer.restart();
+                } finally {
+                    requestFocus();
+                }
             }
-            if (newSpec == null) {
-                requestFocus();
-                break;
+            case AC_ADD_MOD_FACE -> {
+                Face newFace;
+                try {
+                    forceCaretRendering = true;
+                    var dialog = new FaceModifierDialog(this, gameDef.faces(), textboxFace);
+                    dialog.setLocationRelativeTo(null);
+                    newFace = dialog.showDialog();
+                } finally {
+                    forceCaretRendering = false;
+                }
+                if (newFace == null) {
+                    requestFocus();
+                    break;
+                }
+                String mod = "\\" + FaceModifierNode.KEY;
+                if (newFace != Face.NONE) {
+                    mod = "\\%c[%s]".formatted(FaceModifierNode.KEY, newFace.getPath());
+                }
+                try {
+                    replaceSelection(mod);
+                    updateTimer.restart();
+                } finally {
+                    requestFocus();
+                }
             }
-            newSpec = spec.difference(newSpec);
-            try {
-                replaceSelection(newSpec.toModifier());
-                updateTimer.restart();
-            } finally {
-                requestFocus();
+            case AC_ADD_MOD_DELAY -> {
+                Integer delayLength;
+                try {
+                    forceCaretRendering = true;
+                    var dialog = new DelayModifierDialog(this);
+                    dialog.setLocationRelativeTo(null);
+                    delayLength = dialog.showDialog();
+                } finally {
+                    forceCaretRendering = false;
+                }
+                if (delayLength == null) {
+                    requestFocus();
+                    break;
+                }
+                try {
+                    replaceSelection("\\%c[%d]".formatted(DelayModifierNode.KEY, delayLength));
+                    updateTimer.restart();
+                } finally {
+                    requestFocus();
+                }
             }
-        }
-        case AC_ADD_MOD_FACE -> {
-            Face newFace;
-            try {
-                forceCaretRendering = true;
-                var dialog = new FaceModifierDialog(this, gameDef.faces(), textboxFace);
-                dialog.setLocationRelativeTo(null);
-                newFace = dialog.showDialog();
-            } finally {
-                forceCaretRendering = false;
+            case AC_ADD_MOD_TEXT_SPEED -> {
+                Integer newTextSpeed;
+                try {
+                    forceCaretRendering = true;
+                    var dialog = new TextSpeedModifierDialog(this);
+                    dialog.setLocationRelativeTo(null);
+                    newTextSpeed = dialog.showDialog();
+                } finally {
+                    forceCaretRendering = false;
+                }
+                if (newTextSpeed == null) {
+                    requestFocus();
+                    break;
+                }
+                try {
+                    replaceSelection("\\%c[%d]".formatted(TextSpeedModifierNode.KEY, newTextSpeed));
+                    updateTimer.restart();
+                } finally {
+                    requestFocus();
+                }
             }
-            if (newFace == null) {
-                requestFocus();
-                break;
+            case AC_ADD_MOD_INTERRUPT -> {
+                try {
+                    replaceSelection("\\" + InterruptModifierNode.KEY);
+                    updateTimer.restart();
+                } finally {
+                    requestFocus();
+                }
             }
-            String mod = "\\" + FaceModifierNode.KEY;
-            if (newFace != Face.NONE) {
-                mod = "\\%c[%s]".formatted(FaceModifierNode.KEY, newFace.getPath());
-            }
-            try {
-                replaceSelection(mod);
-                updateTimer.restart();
-            } finally {
-                requestFocus();
-            }
-        }
-        case AC_ADD_MOD_DELAY -> {
-            Integer delayLength;
-            try {
-                forceCaretRendering = true;
-                var dialog = new DelayModifierDialog(this);
-                dialog.setLocationRelativeTo(null);
-                delayLength = dialog.showDialog();
-            } finally {
-                forceCaretRendering = false;
-            }
-            if (delayLength == null) {
-                requestFocus();
-                break;
-            }
-            try {
-                replaceSelection("\\%c[%d]".formatted(DelayModifierNode.KEY, delayLength));
-                updateTimer.restart();
-            } finally {
-                requestFocus();
-            }
-        }
-        case AC_ADD_MOD_TEXT_SPEED -> {
-            Integer newTextSpeed;
-            try {
-                forceCaretRendering = true;
-                var dialog = new TextSpeedModifierDialog(this);
-                dialog.setLocationRelativeTo(null);
-                newTextSpeed = dialog.showDialog();
-            } finally {
-                forceCaretRendering = false;
-            }
-            if (newTextSpeed == null) {
-                requestFocus();
-                break;
-            }
-            try {
-                replaceSelection("\\%c[%d]".formatted(TextSpeedModifierNode.KEY, newTextSpeed));
-                updateTimer.restart();
-            } finally {
-                requestFocus();
-            }
-        }
-        case AC_ADD_MOD_INTERRUPT -> {
-            try {
-                replaceSelection("\\" + InterruptModifierNode.KEY);
-                updateTimer.restart();
-            } finally {
-                requestFocus();
-            }
-        }
         }
     }
 
