@@ -4,12 +4,18 @@ import java.io.IOException;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import de.skuzzle.semantic.Version;
 
 public final class VersionAdapter extends TypeAdapter<Version> {
     @Override
     public Version read(JsonReader in) throws IOException {
+        if (in.peek() == JsonToken.NULL) {
+            in.skipValue();
+            return null;
+        }
+
         return Version.parseVersion(in.nextString(), true);
     }
 
@@ -19,6 +25,7 @@ public final class VersionAdapter extends TypeAdapter<Version> {
             out.nullValue();
             return;
         }
+
         out.value(value.toString());
     }
 }

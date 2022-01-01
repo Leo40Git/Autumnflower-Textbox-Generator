@@ -54,14 +54,14 @@ public final class PairAdapter<L, R> extends TypeAdapter<Pair<L, R>> {
 
         while (in.hasNext()) {
             switch (in.nextName()) {
-            case "left" -> {
-                left = leftAdapter.read(in);
-                gotLeft = true;
-            }
-            case "right" -> {
-                right = rightAdapter.read(in);
-                gotRight = true;
-            }
+                case "left" -> {
+                    left = leftAdapter.read(in);
+                    gotLeft = true;
+                }
+                case "right" -> {
+                    right = rightAdapter.read(in);
+                    gotRight = true;
+                }
             }
         }
 

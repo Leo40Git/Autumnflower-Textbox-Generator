@@ -12,7 +12,7 @@ public final class WindowTintAdapter extends TypeAdapter<WindowTint> {
     @Override
     public WindowTint read(JsonReader in) throws IOException {
         if (in.peek() == JsonToken.NULL) {
-            in.skipValue();
+            in.nextNull();
             return null;
         }
         boolean gotRed = false, gotGreen = false, gotBlue = false;

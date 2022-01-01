@@ -94,11 +94,13 @@ public final class FacePool {
         @Override
         public FacePool read(JsonReader in) throws IOException {
             if (in.peek() == JsonToken.NULL) {
-                in.skipValue();
+                in.nextNull();
                 return null;
             }
+
             FacePool pool = new FacePool();
             in.beginObject();
+
             while (in.hasNext()) {
                 String name = in.nextName();
                 if (FaceCategory.NONE.getName().equals(name)) {
@@ -117,6 +119,7 @@ public final class FacePool {
                 }
                 in.endObject();
             }
+
             in.endObject();
             return pool;
         }
@@ -137,6 +140,7 @@ public final class FacePool {
                 out.nullValue();
                 return;
             }
+
             out.beginObject();
             for (var cat : value.categories.values()) {
                 if (cat == FaceCategory.NONE) {

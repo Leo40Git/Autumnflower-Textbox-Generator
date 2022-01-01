@@ -2,7 +2,6 @@ package adudecalledleo.aftbg.app.script;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -44,37 +43,40 @@ public final class TextboxScriptSet {
         @Override
         public TextboxScriptSet read(JsonReader in) throws IOException {
             if (in.peek() == JsonToken.NULL) {
-                in.skipValue();
+                in.nextNull();
                 return null;
             }
+
             TextboxScriptSet set = new TextboxScriptSet();
             in.beginObject();
+
             while (in.hasNext()) {
                 String name = in.nextName();
                 String path = null;
                 String desc = null;
                 switch (in.peek()) {
-                case STRING -> path = in.nextString();
-                case BEGIN_OBJECT -> {
-                    in.beginObject();
-                    while (in.hasNext()) {
-                        String name2 = in.nextName();
-                        switch (name2) {
-                        case "path" -> path = in.nextString();
-                        case "desc" -> desc = in.nextString();
+                    case STRING -> path = in.nextString();
+                    case BEGIN_OBJECT -> {
+                        in.beginObject();
+                        while (in.hasNext()) {
+                            String name2 = in.nextName();
+                            switch (name2) {
+                            case "path" -> path = in.nextString();
+                            case "desc" -> desc = in.nextString();
+                            }
                         }
+                        in.endObject();
                     }
-                    in.endObject();
-                }
-                default ->
-                        throw new IllegalStateException("Expected string or object for script declaration '" + name + "', "
-                                + "instead got " + in.peek());
+                    default ->
+                            throw new IllegalStateException("Expected string or object for script declaration '" + name + "', "
+                                    + "instead got " + in.peek());
                 }
                 if (path == null) {
                     throw new IllegalStateException("Script declaration '" + name + "' missing required value 'path'");
                 }
                 set.scripts.add(new TextboxScript(name, path, desc));
             }
+
             in.endObject();
             return set;
         }
@@ -85,6 +87,7 @@ public final class TextboxScriptSet {
                 out.nullValue();
                 return;
             }
+
             out.beginObject();
             for (var script : value.scripts) {
                 out.name(script.getName());
