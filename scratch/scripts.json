@@ -1,6 +1,6 @@
 {
   "Make Sixty Textbox": {
     "path": "scripts/sixtybox.js",
-    "desc": "Creates a textbox of Sixty noises."
+    "description": "Creates a textbox of Sixty noises."
   }
 }

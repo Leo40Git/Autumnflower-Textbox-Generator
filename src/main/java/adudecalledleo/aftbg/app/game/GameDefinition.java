@@ -81,7 +81,7 @@ public final class GameDefinition {
             jsonRep = GSON.fromJson(reader, JsonRep.class);
         } catch (Exception e) {
             throw new DefinitionLoadException("Failed to read definition from \"%s\""
-                    .formatted(filePath));
+                    .formatted(filePath), e);
         }
 
         Path facesPath = PathUtils.tryResolve(basePath, jsonRep.facesPath, "face pool definition",
@@ -91,7 +91,7 @@ public final class GameDefinition {
             faces = GSON.fromJson(reader, FacePool.class);
         } catch (Exception e) {
             throw new DefinitionLoadException("Failed to read face pool definition from \"%s\""
-                    .formatted(facesPath));
+                    .formatted(facesPath), e);
         }
 
         TextboxScriptSet scripts;
@@ -104,7 +104,7 @@ public final class GameDefinition {
                 scripts = GSON.fromJson(reader, TextboxScriptSet.class);
             } catch (Exception e) {
                 throw new DefinitionLoadException("Failed to read scripts definition from \"%s\""
-                        .formatted(scriptsPath));
+                        .formatted(scriptsPath), e);
             }
         }
 
@@ -115,7 +115,7 @@ public final class GameDefinition {
             windowImage = ImageIO.read(input);
         } catch (IOException e) {
             throw new DefinitionLoadException("Failed to load Window image from \"%s\""
-                    .formatted(windowPath));
+                    .formatted(windowPath), e);
         }
 
         WindowContext winCtx = new WindowContext(windowImage, jsonRep.windowTint);

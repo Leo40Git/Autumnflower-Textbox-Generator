@@ -76,6 +76,7 @@ public final class TextboxScriptSet {
                                     desc = new String[] { in.nextString() };
                                 }
                             }
+                            default -> in.skipValue();
                         }
                     }
                     in.endObject();
