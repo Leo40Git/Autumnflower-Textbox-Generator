@@ -12,12 +12,15 @@ import javax.swing.*;
 import adudecalledleo.aftbg.BuildInfo;
 import adudecalledleo.aftbg.app.AppPreferences;
 import adudecalledleo.aftbg.app.AppResources;
+import adudecalledleo.aftbg.app.AppUpdateCheck;
 import adudecalledleo.aftbg.app.component.MainPanel;
 import adudecalledleo.aftbg.app.component.render.StringListCellRenderer;
 import adudecalledleo.aftbg.app.game.ExtensionDefinition;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.util.GameDefinitionUpdateListener;
+import adudecalledleo.aftbg.app.util.LoadFrame;
 import adudecalledleo.aftbg.app.worker.BrowseWorker;
+import adudecalledleo.aftbg.app.worker.UpdateCheckWorker;
 import adudecalledleo.aftbg.logging.Logger;
 import org.jetbrains.annotations.Nullable;
 
@@ -87,12 +90,32 @@ public final class AboutDialog extends ModalDialog {
                 infoBox.add(new JLabel(credit));
             }
 
-            JPanel btnPanel = new JPanel();
+            JPanel btnPanel = new JPanel(new GridBagLayout());
             btnPanel.setOpaque(false);
-            addLinkButton(btnPanel, BuildInfo.homepageUrl(), "Homepage");
-            addLinkButton(btnPanel, BuildInfo.issuesUrl(), "Issue Tracker");
-            addLinkButton(btnPanel, BuildInfo.sourceUrl(), "Source Code");
-            btnPanel.setLayout(new GridLayout(1, 0, 2, 0));
+            var gbc = new GridBagConstraints();
+            gbc.fill = GridBagConstraints.BOTH;
+            gbc.gridx = gbc.gridy = 0;
+            gbc.weightx = gbc.weighty = 1.0;
+
+            if (AppUpdateCheck.isAvailable()) {
+                JButton updateCheckBtn = new JButton("Check for Updates");
+                updateCheckBtn.addActionListener(e -> {
+                    LoadFrame loadFrame = new LoadFrame("Checking for updates...", false);
+                    new UpdateCheckWorker(this, loadFrame).execute();
+                });
+                gbc.gridwidth = GridBagConstraints.REMAINDER;
+                gbc.insets.bottom = 2;
+                btnPanel.add(updateCheckBtn, gbc);
+                gbc.gridwidth = 1;
+                gbc.insets.bottom = 0;
+                gbc.gridy++;
+            }
+
+            gbc.insets.right = 2;
+            addLinkButton(btnPanel, gbc, BuildInfo.homepageUrl(), "Homepage");
+            addLinkButton(btnPanel, gbc, BuildInfo.issuesUrl(), "Issue Tracker");
+            gbc.insets.right = 0;
+            addLinkButton(btnPanel, gbc, BuildInfo.sourceUrl(), "Source Code");
 
             JPanel panel = new JPanel(new BorderLayout());
             panel.setOpaque(false);
@@ -243,7 +266,7 @@ public final class AboutDialog extends ModalDialog {
             descBox.add(new JLabel("Select an extension!"));
         }
 
-        private void addLinkButton(JPanel btnPanel, @Nullable URL url, String text) {
+        private void addLinkButton(JPanel btnPanel, GridBagConstraints gbc, @Nullable URL url, String text) {
             if (!isBrowsingSupported() || url == null) {
                 return;
             }
@@ -258,7 +281,8 @@ public final class AboutDialog extends ModalDialog {
 
             JButton btn = new JButton(text);
             btn.addActionListener(e -> new BrowseWorker(uri).execute());
-            btnPanel.add(btn);
+            btnPanel.add(btn, gbc);
+            gbc.gridx++;
         }
     }
 
