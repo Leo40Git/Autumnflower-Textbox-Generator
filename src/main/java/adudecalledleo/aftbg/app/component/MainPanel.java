@@ -478,9 +478,11 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         }
                     };
 
-                    String desc = script.getDescription();
-                    if (desc != null) {
-                        a.putValue(Action.SHORT_DESCRIPTION, desc);
+                    String[] desc = script.getDescription();
+                    if (desc.length == 1) {
+                        a.putValue(Action.SHORT_DESCRIPTION, desc[0]);
+                    } else if (desc.length > 0) {
+                        a.putValue(Action.SHORT_DESCRIPTION, "<html>" + String.join("<br/>", desc) + "</html>");
                     }
 
                     scriptsMenu.add(a);

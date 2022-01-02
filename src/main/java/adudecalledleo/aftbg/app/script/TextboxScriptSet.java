@@ -40,6 +40,8 @@ public final class TextboxScriptSet {
     }
 
     public static final class Adapter extends TypeAdapter<TextboxScriptSet> {
+        private static final String[] EMPTY_DESCRIPTION = new String[0];
+
         @Override
         public TextboxScriptSet read(JsonReader in) throws IOException {
             if (in.peek() == JsonToken.NULL) {
@@ -51,30 +53,40 @@ public final class TextboxScriptSet {
             in.beginObject();
 
             while (in.hasNext()) {
-                String name = in.nextName();
+                String scrName = in.nextName();
                 String path = null;
-                String desc = null;
-                switch (in.peek()) {
-                    case STRING -> path = in.nextString();
-                    case BEGIN_OBJECT -> {
-                        in.beginObject();
-                        while (in.hasNext()) {
-                            String name2 = in.nextName();
-                            switch (name2) {
+                String[] desc = EMPTY_DESCRIPTION;
+
+                if (in.peek() == JsonToken.BEGIN_OBJECT) {
+                    in.beginObject();
+                    while (in.hasNext()) {
+                        String name = in.nextName();
+                        switch (name) {
                             case "path" -> path = in.nextString();
-                            case "desc" -> desc = in.nextString();
+                            case "description" -> {
+                                if (in.peek() == JsonToken.BEGIN_ARRAY) {
+                                    List<String> lines = new ArrayList<>();
+                                    in.beginArray();
+                                    while (in.hasNext()) {
+                                        lines.add(in.nextString());
+                                    }
+                                    in.endArray();
+                                    desc = lines.toArray(EMPTY_DESCRIPTION);
+                                } else {
+                                    desc = new String[] { in.nextString() };
+                                }
                             }
                         }
-                        in.endObject();
                     }
-                    default ->
-                            throw new IllegalStateException("Expected string or object for script declaration '" + name + "', "
-                                    + "instead got " + in.peek());
+                    in.endObject();
+                } else {
+                    path = in.nextString();
                 }
+
                 if (path == null) {
-                    throw new IllegalStateException("Script declaration '" + name + "' missing required value 'path'");
+                    throw new IllegalStateException("Script declaration '" + scrName + "' missing required value 'path'");
                 }
-                set.scripts.add(new TextboxScript(name, path, desc));
+                set.scripts.add(new TextboxScript(scrName, path, desc));
             }
 
             in.endObject();
@@ -92,15 +104,23 @@ public final class TextboxScriptSet {
             for (var script : value.scripts) {
                 out.name(script.getName());
                 String path = PathUtils.sanitize(script.getPath());
-                String desc = script.getDescription();
-                if (desc == null) {
+                String[] desc = script.getDescription();
+                if (desc.length == 0) {
                     out.value(path);
                 } else {
                     out.beginObject();
                     out.name("path");
                     out.value(path);
-                    out.name("desc");
-                    out.value(desc);
+                    out.name("description");
+                    if (desc.length == 1) {
+                        out.value(desc[0]);
+                    } else {
+                        out.beginArray();
+                        for (var line : desc) {
+                            out.value(line);
+                        }
+                        out.endArray();
+                    }
                     out.endObject();
                 }
             }

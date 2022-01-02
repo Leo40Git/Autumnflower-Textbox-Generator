@@ -24,11 +24,11 @@ public final class TextboxScript {
 
     private final String name;
     private final String path;
-    private final String description;
+    private final String[] description;
 
     private ScriptObjectMirror updateTextboxFunc;
 
-    public TextboxScript(String name, String path, String description) {
+    public TextboxScript(String name, String path, String[] description) {
         this.name = name;
         this.path = path;
         this.description = description;
@@ -42,7 +42,7 @@ public final class TextboxScript {
         return path;
     }
 
-    public String getDescription() {
+    public String[] getDescription() {
         return description;
     }
 
