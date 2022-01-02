@@ -76,26 +76,29 @@ public final class AboutDialog extends ModalDialog {
         }
 
         private Component createAppInfo() {
-            Box box = new Box(BoxLayout.PAGE_AXIS);
-            box.add(new JLabel("<html><b>%s</b> (%s)</html>".formatted(BuildInfo.name(), BuildInfo.abbreviatedName())));
-            box.add(new JLabel("version " + BuildInfo.version()));
+            Box infoBox = new Box(BoxLayout.PAGE_AXIS);
+            infoBox.add(new JLabel("<html><b>%s</b> (%s)</html>".formatted(BuildInfo.name(), BuildInfo.abbreviatedName())));
+            infoBox.add(new JLabel("version " + BuildInfo.version()));
+            infoBox.add(Box.createVerticalStrut(16));
             JLabel lblCredits = new JLabel("Credits:");
             lblCredits.setFont(lblCredits.getFont().deriveFont(Font.BOLD));
-            box.add(lblCredits);
+            infoBox.add(lblCredits);
             for (String credit : BuildInfo.credits()) {
-                box.add(new JLabel(credit));
+                infoBox.add(new JLabel(credit));
             }
 
             JPanel btnPanel = new JPanel();
-            int cols = 0;
-            cols += addLinkButton(btnPanel, BuildInfo.homepageUrl(), "Homepage");
-            cols += addLinkButton(btnPanel, BuildInfo.issuesUrl(), "Issue Tracker");
-            cols += addLinkButton(btnPanel, BuildInfo.sourceUrl(), "Source Code");
-            btnPanel.setLayout(new GridLayout(1, cols, 2, 0));
+            btnPanel.setOpaque(false);
+            addLinkButton(btnPanel, BuildInfo.homepageUrl(), "Homepage");
+            addLinkButton(btnPanel, BuildInfo.issuesUrl(), "Issue Tracker");
+            addLinkButton(btnPanel, BuildInfo.sourceUrl(), "Source Code");
+            btnPanel.setLayout(new GridLayout(1, 0, 2, 0));
 
             JPanel panel = new JPanel(new BorderLayout());
-            panel.add(box, BorderLayout.CENTER);
+            panel.setOpaque(false);
+            panel.add(infoBox, BorderLayout.CENTER);
             panel.add(btnPanel, BorderLayout.PAGE_END);
+
             return panel;
         }
 
@@ -107,6 +110,7 @@ public final class AboutDialog extends ModalDialog {
             for (String desc : gameDef.description()) {
                 box.add(new JLabel(desc));
             }
+            box.add(Box.createVerticalStrut(16));
             JLabel lblCredits = new JLabel("Credits:");
             lblCredits.setFont(lblCredits.getFont().deriveFont(Font.BOLD));
             box.add(lblCredits);
@@ -168,14 +172,17 @@ public final class AboutDialog extends ModalDialog {
             extList.addListSelectionListener(e -> extList_selectionChanged());
 
             JPanel btnPanel = new JPanel(new GridLayout(1, 2, 2, 0));
+            btnPanel.setOpaque(false);
             btnPanel.add(btnLoadExt);
             btnPanel.add(btnUnloadExt);
 
             JPanel extListPanel = new JPanel(new BorderLayout());
+            extListPanel.setOpaque(false);
             extListPanel.add(new JScrollPane(extList), BorderLayout.CENTER);
             extListPanel.add(btnPanel, BorderLayout.PAGE_END);
 
             JPanel panel = new JPanel(new BorderLayout());
+            panel.setOpaque(false);
             panel.add(extListPanel, BorderLayout.LINE_START);
             panel.add(descBox, BorderLayout.CENTER);
 
@@ -236,22 +243,22 @@ public final class AboutDialog extends ModalDialog {
             descBox.add(new JLabel("Select an extension!"));
         }
 
-        private int addLinkButton(JPanel btnPanel, @Nullable URL url, String text) {
+        private void addLinkButton(JPanel btnPanel, @Nullable URL url, String text) {
             if (!isBrowsingSupported() || url == null) {
-                return 0;
+                return;
             }
+
             URI uri;
             try {
                 uri = url.toURI();
             } catch (URISyntaxException e) {
                 Logger.error("Failed to convert URL \"%s\" to URI".formatted(url), e);
-                return 0;
+                return;
             }
 
             JButton btn = new JButton(text);
             btn.addActionListener(e -> new BrowseWorker(uri).execute());
             btnPanel.add(btn);
-            return 1;
         }
     }
 
