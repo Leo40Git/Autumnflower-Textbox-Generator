@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Random;
 
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
@@ -21,6 +22,7 @@ import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;
 public final class TextboxScript {
     private static final ScriptEngine ENGINE = createScriptEngine();
     private static final StaticClass INPUT_CLASS = StaticClass.forClass(ScriptInputHelper.class);
+    private static final Random RANDOM = new Random();
 
     private final String name;
     private final String path;
@@ -52,6 +54,7 @@ public final class TextboxScript {
         ENGINE.put(ScriptEngine.FILENAME, path.toString());
         Bindings bindings = ENGINE.createBindings();
         bindings.put("input", INPUT_CLASS);
+        bindings.put("random", RANDOM);
 
         try (BufferedReader reader = Files.newBufferedReader(path)) {
             ENGINE.eval(reader, bindings);
