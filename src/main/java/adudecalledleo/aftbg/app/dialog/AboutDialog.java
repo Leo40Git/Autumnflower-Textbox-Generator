@@ -17,7 +17,7 @@ import adudecalledleo.aftbg.app.component.MainPanel;
 import adudecalledleo.aftbg.app.component.render.StringListCellRenderer;
 import adudecalledleo.aftbg.app.game.ExtensionDefinition;
 import adudecalledleo.aftbg.app.game.GameDefinition;
-import adudecalledleo.aftbg.app.util.GameDefinitionUpdateListener;
+import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.app.util.LoadFrame;
 import adudecalledleo.aftbg.app.worker.BrowseWorker;
 import adudecalledleo.aftbg.app.worker.UpdateCheckWorker;

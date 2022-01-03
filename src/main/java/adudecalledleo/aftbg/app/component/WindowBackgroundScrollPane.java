@@ -1,12 +1,13 @@
 package adudecalledleo.aftbg.app.component;
 
-import adudecalledleo.aftbg.app.game.GameDefinition;
-import adudecalledleo.aftbg.app.util.GameDefinitionUpdateListener;
-import adudecalledleo.aftbg.util.ColorUtils;
-import adudecalledleo.aftbg.window.WindowContext;
+import java.awt.*;
 
 import javax.swing.*;
-import java.awt.*;
+
+import adudecalledleo.aftbg.app.game.GameDefinition;
+import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
+import adudecalledleo.aftbg.util.ColorUtils;
+import adudecalledleo.aftbg.window.WindowContext;
 
 public final class WindowBackgroundScrollPane extends JScrollPane implements GameDefinitionUpdateListener {
     private final ViewportImpl viewport;

@@ -1,16 +1,17 @@
 package adudecalledleo.aftbg.app.component.render;
 
-import adudecalledleo.aftbg.app.util.GameDefinitionUpdateListener;
+import java.awt.*;
+
+import javax.swing.*;
+
 import adudecalledleo.aftbg.app.data.Textbox;
-import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.app.game.GameDefinition;
+import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
+import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.text.node.NodeUtils;
 import adudecalledleo.aftbg.window.WindowColors;
 import adudecalledleo.aftbg.window.WindowContext;
-
-import javax.swing.*;
-import java.awt.*;
 
 public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox>
         implements GameDefinitionUpdateListener {

@@ -1,6 +1,4 @@
-package adudecalledleo.aftbg.app.util;
-
-import adudecalledleo.aftbg.app.game.GameDefinition;
+package adudecalledleo.aftbg.app.game;
 
 @FunctionalInterface
 public interface GameDefinitionUpdateListener {

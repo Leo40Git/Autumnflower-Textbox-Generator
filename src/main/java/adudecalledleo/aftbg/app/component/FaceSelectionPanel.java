@@ -1,23 +1,19 @@
 package adudecalledleo.aftbg.app.component;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.function.Consumer;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import adudecalledleo.aftbg.app.component.render.FaceCategoryListCellRenderer;
 import adudecalledleo.aftbg.app.component.render.FaceListCellRenderer;
+import adudecalledleo.aftbg.app.game.GameDefinition;
+import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.app.util.ComboBoxUtils;
-import adudecalledleo.aftbg.app.util.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.face.FaceCategory;
 import adudecalledleo.aftbg.face.FacePool;
-import adudecalledleo.aftbg.app.game.GameDefinition;
 
 public final class FaceSelectionPanel extends JPanel implements ItemListener, GameDefinitionUpdateListener {
     private static final FacePool INITIAL_FACE_POOL = new FacePool();
