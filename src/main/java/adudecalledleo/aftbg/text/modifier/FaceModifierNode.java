@@ -11,13 +11,14 @@ import adudecalledleo.aftbg.text.node.ErrorNode;
 import adudecalledleo.aftbg.text.node.ModifierNode;
 import adudecalledleo.aftbg.text.node.NodeList;
 import adudecalledleo.aftbg.text.node.Span;
+import org.jetbrains.annotations.NotNull;
 
 public final class FaceModifierNode extends ModifierNode implements AnimationCommandNode {
     public static final char KEY = '@';
 
     private final AnimationCommand.SetFace animCmd;
 
-    public FaceModifierNode(int start, int length, Face face, Span... argSpans) {
+    public FaceModifierNode(int start, int length, @NotNull Face face, Span... argSpans) {
         super(start, length, KEY, argSpans);
         animCmd = new AnimationCommand.SetFace(face);
     }
@@ -40,7 +41,7 @@ public final class FaceModifierNode extends ModifierNode implements AnimationCom
             }
 
             if (args == null) {
-                nodes.add(new FaceModifierNode(start, 2, null));
+                nodes.add(new FaceModifierNode(start, 2, Face.NONE));
                 return;
             } else if (args.isBlank()) {
                 nodes.add(new ErrorNode(start, ModifierParser.modLen(args),

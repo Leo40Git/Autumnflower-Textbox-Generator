@@ -1,6 +1,7 @@
 package adudecalledleo.aftbg.text.animate;
 
 import adudecalledleo.aftbg.face.Face;
+import org.jetbrains.annotations.NotNull;
 
 public sealed abstract class AnimationCommand {
     /**
@@ -55,13 +56,13 @@ public sealed abstract class AnimationCommand {
      * Set the face image and draw a new frame.
      */
     public static final class SetFace extends AnimationCommand {
-        private final Face face;
+        private final @NotNull Face face;
 
-        public SetFace(Face face) {
+        public SetFace(@NotNull Face face) {
             this.face = face;
         }
 
-        public Face getFace() {
+        public @NotNull Face getFace() {
             return face;
         }
     }
