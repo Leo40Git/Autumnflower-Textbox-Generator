@@ -9,7 +9,6 @@ import adudecalledleo.aftbg.app.script.TextboxScriptSet;
 import adudecalledleo.aftbg.face.FaceLoadException;
 import adudecalledleo.aftbg.face.FacePool;
 import adudecalledleo.aftbg.util.PathUtils;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import static adudecalledleo.aftbg.app.game.GameDefinition.GSON;
@@ -122,8 +121,7 @@ public final class ExtensionDefinition {
         return scripts;
     }
 
-    @ApiStatus.Internal
-    public static final class JsonRep {
+    private static final class JsonRep {
         public String name;
         public String[] description;
         public String[] credits;

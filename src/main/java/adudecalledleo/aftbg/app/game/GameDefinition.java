@@ -23,7 +23,6 @@ import adudecalledleo.aftbg.window.WindowTint;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public final class GameDefinition {
@@ -212,8 +211,7 @@ public final class GameDefinition {
         return extensionsU;
     }
 
-    @ApiStatus.Internal
-    public static final class JsonRep {
+    private static final class JsonRep {
         public String name;
         public String[] description;
         public String[] credits;
