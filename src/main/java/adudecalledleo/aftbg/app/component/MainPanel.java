@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -147,14 +148,17 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         btnGenerate.setActionCommand(AC_GENERATE);
         btnGenerate.addActionListener(this);
         btnGenerate.setEnabled(false);
-        updateListeners.add(gameDef -> btnGenerate.setEnabled(true));
         buttonPanel.add(btnGenerate);
         JButton btnGenerateAnim = new JButton("Generate Animation");
         btnGenerateAnim.setActionCommand(AC_GENERATE_ANIMATION);
         btnGenerateAnim.addActionListener(this);
         btnGenerateAnim.setEnabled(false);
-        updateListeners.add(gameDef -> btnGenerateAnim.setEnabled(true));
         buttonPanel.add(btnGenerateAnim);
+
+        updateListeners.add(gameDef -> {
+            btnGenerate.setEnabled(true);
+            btnGenerateAnim.setEnabled(true);
+        });
 
         JPanel textboxPanel = new JPanel();
         textboxPanel.setLayout(new BorderLayout());
@@ -171,6 +175,11 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     public void updateGameDefinition(GameDefinition gameDef) {
         this.gameDef = gameDef;
         AppPreferences.setLastGameDefinition(gameDef.filePath());
+        Set<Path> lastExts = AppPreferences.getLastExtensions();
+        lastExts.clear();
+        for (var ext : gameDef.extensions()) {
+            lastExts.add(ext.filePath());
+        }
         for (var listener : updateListeners) {
             listener.updateGameDefinition(gameDef);
         }
