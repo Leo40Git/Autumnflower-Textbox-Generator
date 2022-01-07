@@ -9,10 +9,11 @@ import java.nio.file.Path;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import adudecalledleo.aftbg.app.game.DefinedObject;
 import adudecalledleo.aftbg.app.util.ColorUtils;
 import adudecalledleo.aftbg.app.util.PathUtils;
 
-public final class Face {
+public final class Face extends DefinedObject {
     private static final BufferedImage BLANK = new BufferedImage(144, 144, BufferedImage.TYPE_INT_ARGB);
 
     public static final Face NONE = new Face("(none)", "None", null, BLANK);
@@ -57,25 +58,6 @@ public final class Face {
         return imagePath;
     }
 
-    public void loadImage(Path basePath) throws FaceLoadException {
-        if (imagePath == null) {
-            image = BLANK;
-            return;
-        }
-
-        Path path = PathUtils.tryResolve(basePath, imagePath, "image", FaceLoadException::new).toAbsolutePath();
-        try (var in = Files.newInputStream(path)) {
-            image = ImageIO.read(in);
-        } catch (IOException e) {
-            throw new FaceLoadException("Exception occurred while loading image \"" + path + "\"", e);
-        }
-        if (image.getWidth() != 144 || image.getHeight() != 144) {
-            throw new FaceLoadException("Image \"" + path + "\" must be 144 by 144," +
-                    "was " + image.getWidth() + " by " + image.getHeight());
-        }
-        icon = null;
-    }
-
     public boolean isBlank() {
         return image == BLANK;
     }
@@ -97,7 +79,26 @@ public final class Face {
         return icon;
     }
 
-    private BufferedImage scaleImage(BufferedImage src, int width, int height) {
+    public void loadImage(Path basePath) throws FaceLoadException {
+        if (imagePath == null) {
+            image = BLANK;
+            return;
+        }
+
+        Path path = PathUtils.tryResolve(basePath, imagePath, "image", FaceLoadException::new).toAbsolutePath();
+        try (var in = Files.newInputStream(path)) {
+            image = ImageIO.read(in);
+        } catch (IOException e) {
+            throw new FaceLoadException("Exception occurred while loading image \"" + path + "\"", e);
+        }
+        if (image.getWidth() != 144 || image.getHeight() != 144) {
+            throw new FaceLoadException("Image \"" + path + "\" must be 144 by 144," +
+                    "was " + image.getWidth() + " by " + image.getHeight());
+        }
+        icon = null;
+    }
+
+    private static BufferedImage scaleImage(BufferedImage src, int width, int height) {
         BufferedImage dst = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = dst.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);

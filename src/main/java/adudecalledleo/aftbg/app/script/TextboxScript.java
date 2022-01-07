@@ -12,6 +12,7 @@ import javax.script.ScriptException;
 
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.face.FacePool;
+import adudecalledleo.aftbg.app.game.DefinedObject;
 import adudecalledleo.aftbg.app.script.shim.ShimHelpers;
 import adudecalledleo.aftbg.app.script.shim.TextboxShim;
 import adudecalledleo.aftbg.app.util.PathUtils;
@@ -19,7 +20,7 @@ import jdk.dynalink.beans.StaticClass;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;
 
-public final class TextboxScript {
+public final class TextboxScript extends DefinedObject {
     private static final ScriptEngine ENGINE = createScriptEngine();
     private static final StaticClass INPUT_CLASS = StaticClass.forClass(ScriptInputHelper.class);
     private static final Random RANDOM = new Random();

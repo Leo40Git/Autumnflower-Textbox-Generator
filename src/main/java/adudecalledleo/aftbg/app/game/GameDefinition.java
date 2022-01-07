@@ -25,7 +25,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.jetbrains.annotations.Nullable;
 
-public final class GameDefinition {
+public final class GameDefinition extends Definition {
     public static final Gson GSON = new GsonBuilder()
             .setLenient()
             .setPrettyPrinting()
@@ -35,10 +35,6 @@ public final class GameDefinition {
             .registerTypeAdapter(TextboxScriptSet.class, new TextboxScriptSet.Adapter())
             .create();
 
-    private final String name;
-    private final String[] description;
-    private final String[] credits;
-    private final Path filePath, basePath;
     private final WindowContext winCtx;
     private final FacePool baseFaces;
     private final TextboxScriptSet baseScripts;
@@ -50,14 +46,14 @@ public final class GameDefinition {
     private GameDefinition(String name, String[] description, String[] credits,
                           Path filePath, Path basePath,
                           WindowContext winCtx, FacePool baseFaces, TextboxScriptSet baseScripts) {
-        this.name = name;
-        this.description = description;
-        this.credits = credits;
-        this.filePath = filePath;
-        this.basePath = basePath;
+        super(name, description, credits, filePath, basePath);
+
         this.winCtx = winCtx;
         this.baseFaces = baseFaces;
         this.baseScripts = baseScripts;
+
+        setAsSource(this.baseFaces);
+        setAsSource(this.baseScripts);
 
         extensions = new ArrayList<>();
         extensionsU = Collections.unmodifiableList(extensions);
@@ -173,26 +169,6 @@ public final class GameDefinition {
             allFaces.addFrom(ext.faces());
             allScripts.addFrom(ext.scripts());
         }
-    }
-
-    public String name() {
-        return name;
-    }
-
-    public String[] description() {
-        return description;
-    }
-
-    public String[] credits() {
-        return credits;
-    }
-
-    public Path filePath() {
-        return filePath;
-    }
-
-    public Path basePath() {
-        return basePath;
     }
 
     public WindowContext winCtx() {

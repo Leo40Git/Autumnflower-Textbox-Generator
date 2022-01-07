@@ -13,25 +13,20 @@ import org.jetbrains.annotations.Nullable;
 
 import static adudecalledleo.aftbg.app.game.GameDefinition.GSON;
 
-@SuppressWarnings("ClassCanBeRecord")
-public final class ExtensionDefinition {
-    private final String name;
-    private final String[] description;
-    private final String[] credits;
-    private final Path filePath, basePath;
+public final class ExtensionDefinition extends Definition {
     private final FacePool faces;
     private final TextboxScriptSet scripts;
 
     private ExtensionDefinition(String name, String[] description, String[] credits,
                                 Path filePath, Path basePath,
                                 FacePool faces, TextboxScriptSet scripts) {
-        this.name = name;
-        this.description = description;
-        this.credits = credits;
-        this.filePath = filePath;
-        this.basePath = basePath;
+        super(name, description, credits, filePath, basePath);
+
         this.faces = faces;
         this.scripts = scripts;
+
+        setAsSource(this.faces);
+        setAsSource(this.scripts);
     }
 
     public static ExtensionDefinition load(Path filePath) throws DefinitionLoadException {
@@ -91,26 +86,6 @@ public final class ExtensionDefinition {
         }
 
         return new ExtensionDefinition(jsonRep.name, jsonRep.description, jsonRep.credits, filePath, basePath, faces, scripts);
-    }
-
-    public String name() {
-        return name;
-    }
-
-    public String[] description() {
-        return description;
-    }
-
-    public String[] credits() {
-        return credits;
-    }
-
-    public Path filePath() {
-        return filePath;
-    }
-
-    public Path basePath() {
-        return basePath;
     }
 
     public FacePool faces() {
