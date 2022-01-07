@@ -1,8 +1,8 @@
 package adudecalledleo.aftbg.app.component.render;
 
-import adudecalledleo.aftbg.util.ColorUtils;
-
 import javax.swing.*;
+
+import adudecalledleo.aftbg.app.util.ColorUtils;
 
 public abstract class BaseListCellRenderer<T> extends JLabel implements ListCellRenderer<T> {
     protected BaseListCellRenderer() {

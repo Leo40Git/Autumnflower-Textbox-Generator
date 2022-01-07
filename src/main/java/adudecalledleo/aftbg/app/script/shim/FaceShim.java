@@ -1,6 +1,6 @@
 package adudecalledleo.aftbg.app.script.shim;
 
-import adudecalledleo.aftbg.face.Face;
+import adudecalledleo.aftbg.app.face.Face;
 
 @SuppressWarnings({"unused", "ClassCanBeRecord"})
 public final class FaceShim {

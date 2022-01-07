@@ -1,9 +1,10 @@
 package adudecalledleo.aftbg.app.component.render;
 
-import adudecalledleo.aftbg.face.Face;
+import java.awt.*;
 
 import javax.swing.*;
-import java.awt.*;
+
+import adudecalledleo.aftbg.app.face.Face;
 
 public final class FaceListCellRenderer extends BaseListCellRenderer<Face> {
     public enum Mode {

@@ -8,12 +8,12 @@ import javax.swing.*;
 
 import adudecalledleo.aftbg.app.component.render.FaceCategoryListCellRenderer;
 import adudecalledleo.aftbg.app.component.render.FaceListCellRenderer;
+import adudecalledleo.aftbg.app.face.Face;
+import adudecalledleo.aftbg.app.face.FaceCategory;
+import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.app.util.ComboBoxUtils;
-import adudecalledleo.aftbg.face.Face;
-import adudecalledleo.aftbg.face.FaceCategory;
-import adudecalledleo.aftbg.face.FacePool;
 
 public final class FaceSelectionPanel extends JPanel implements ItemListener, GameDefinitionUpdateListener {
     private static final FacePool INITIAL_FACE_POOL = new FacePool();

@@ -1,17 +1,18 @@
 package adudecalledleo.aftbg.app.data;
 
-import adudecalledleo.aftbg.app.util.DialogUtils;
-import adudecalledleo.aftbg.face.Face;
-import adudecalledleo.aftbg.face.FacePool;
-import adudecalledleo.aftbg.text.TextSanitizer;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-
-import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.*;
+
+import adudecalledleo.aftbg.app.face.Face;
+import adudecalledleo.aftbg.app.face.FacePool;
+import adudecalledleo.aftbg.app.text.TextSanitizer;
+import adudecalledleo.aftbg.app.util.DialogUtils;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
 public final class TextboxListSerializer {
     private static final String[] OPTIONS = { "Abort", "Ignore", "Ignore All" };

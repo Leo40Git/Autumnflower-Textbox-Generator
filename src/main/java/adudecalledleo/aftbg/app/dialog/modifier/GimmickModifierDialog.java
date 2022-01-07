@@ -9,10 +9,10 @@ import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.component.WindowBackgroundPanel;
 import adudecalledleo.aftbg.app.component.render.BaseListCellRenderer;
 import adudecalledleo.aftbg.app.text.TextRenderer;
-import adudecalledleo.aftbg.text.modifier.GimmickModifierNode;
-import adudecalledleo.aftbg.text.modifier.GimmickSpec;
-import adudecalledleo.aftbg.text.node.NodeList;
-import adudecalledleo.aftbg.text.node.TextNode;
+import adudecalledleo.aftbg.app.text.modifier.GimmickModifierNode;
+import adudecalledleo.aftbg.app.text.modifier.GimmickSpec;
+import adudecalledleo.aftbg.app.text.node.NodeList;
+import adudecalledleo.aftbg.app.text.node.TextNode;
 import adudecalledleo.aftbg.window.WindowContext;
 
 public final class GimmickModifierDialog extends ModifierDialog {

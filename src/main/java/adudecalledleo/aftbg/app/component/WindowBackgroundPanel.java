@@ -1,10 +1,11 @@
 package adudecalledleo.aftbg.app.component;
 
-import adudecalledleo.aftbg.util.ColorUtils;
-import adudecalledleo.aftbg.window.WindowContext;
+import java.awt.*;
 
 import javax.swing.*;
-import java.awt.*;
+
+import adudecalledleo.aftbg.app.util.ColorUtils;
+import adudecalledleo.aftbg.window.WindowContext;
 
 public class WindowBackgroundPanel extends JPanel {
     protected final WindowContext winCtx;

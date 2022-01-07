@@ -4,11 +4,11 @@ import java.io.BufferedReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import adudecalledleo.aftbg.app.face.FaceLoadException;
+import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.script.ScriptLoadException;
 import adudecalledleo.aftbg.app.script.TextboxScriptSet;
-import adudecalledleo.aftbg.face.FaceLoadException;
-import adudecalledleo.aftbg.face.FacePool;
-import adudecalledleo.aftbg.util.PathUtils;
+import adudecalledleo.aftbg.app.util.PathUtils;
 import org.jetbrains.annotations.Nullable;
 
 import static adudecalledleo.aftbg.app.game.GameDefinition.GSON;

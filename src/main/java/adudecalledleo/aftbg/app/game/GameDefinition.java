@@ -12,12 +12,12 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import adudecalledleo.aftbg.app.face.FaceLoadException;
+import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.script.ScriptLoadException;
 import adudecalledleo.aftbg.app.script.TextboxScriptSet;
+import adudecalledleo.aftbg.app.util.PathUtils;
 import adudecalledleo.aftbg.app.util.WindowTintAdapter;
-import adudecalledleo.aftbg.face.FaceLoadException;
-import adudecalledleo.aftbg.face.FacePool;
-import adudecalledleo.aftbg.util.PathUtils;
 import adudecalledleo.aftbg.window.WindowContext;
 import adudecalledleo.aftbg.window.WindowTint;
 import com.google.gson.FieldNamingPolicy;

@@ -11,7 +11,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 import adudecalledleo.aftbg.app.data.Textbox;
-import adudecalledleo.aftbg.face.Face;
+import adudecalledleo.aftbg.app.face.Face;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;
 

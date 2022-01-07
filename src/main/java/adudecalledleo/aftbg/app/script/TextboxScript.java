@@ -11,10 +11,10 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 import adudecalledleo.aftbg.app.data.Textbox;
+import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.script.shim.ShimHelpers;
 import adudecalledleo.aftbg.app.script.shim.TextboxShim;
-import adudecalledleo.aftbg.face.FacePool;
-import adudecalledleo.aftbg.util.PathUtils;
+import adudecalledleo.aftbg.app.util.PathUtils;
 import jdk.dynalink.beans.StaticClass;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;

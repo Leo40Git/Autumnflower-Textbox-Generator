@@ -11,8 +11,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import adudecalledleo.aftbg.app.util.JsonUtils;
+import adudecalledleo.aftbg.app.util.PathUtils;
 import adudecalledleo.aftbg.logging.Logger;
-import adudecalledleo.aftbg.util.PathUtils;
 import com.google.gson.*;
 import org.jetbrains.annotations.Nullable;
 

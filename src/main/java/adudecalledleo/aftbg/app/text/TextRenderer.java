@@ -1,19 +1,18 @@
 package adudecalledleo.aftbg.app.text;
 
-import adudecalledleo.aftbg.app.AppResources;
-import adudecalledleo.aftbg.app.util.RainbowPaint;
-import adudecalledleo.aftbg.text.modifier.*;
-import adudecalledleo.aftbg.text.node.LineBreakNode;
-import adudecalledleo.aftbg.text.node.Node;
-import adudecalledleo.aftbg.text.node.NodeList;
-import adudecalledleo.aftbg.text.node.TextNode;
-
 import java.awt.*;
-import java.awt.font.TextAttribute;
-import java.awt.font.TextLayout;
-import java.awt.geom.AffineTransform;
+import java.awt.font.*;
+import java.awt.geom.*;
 import java.util.HashMap;
 import java.util.Map;
+
+import adudecalledleo.aftbg.app.AppResources;
+import adudecalledleo.aftbg.app.text.modifier.*;
+import adudecalledleo.aftbg.app.text.node.LineBreakNode;
+import adudecalledleo.aftbg.app.text.node.Node;
+import adudecalledleo.aftbg.app.text.node.NodeList;
+import adudecalledleo.aftbg.app.text.node.TextNode;
+import adudecalledleo.aftbg.app.util.RainbowPaint;
 
 public final class TextRenderer {
     public static final Color OUTLINE_COLOR = new Color(0, 0, 0, 127);

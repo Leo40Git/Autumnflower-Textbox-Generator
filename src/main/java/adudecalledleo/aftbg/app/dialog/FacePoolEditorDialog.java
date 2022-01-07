@@ -17,15 +17,15 @@ import javax.swing.event.*;
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.component.render.FaceCategoryListCellRenderer;
 import adudecalledleo.aftbg.app.component.render.FaceListCellRenderer;
+import adudecalledleo.aftbg.app.face.Face;
+import adudecalledleo.aftbg.app.face.FaceCategory;
+import adudecalledleo.aftbg.app.face.FaceLoadException;
+import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.ListReorderTransferHandler;
-import adudecalledleo.aftbg.face.Face;
-import adudecalledleo.aftbg.face.FaceCategory;
-import adudecalledleo.aftbg.face.FaceLoadException;
-import adudecalledleo.aftbg.face.FacePool;
+import adudecalledleo.aftbg.app.util.PathUtils;
 import adudecalledleo.aftbg.logging.Logger;
-import adudecalledleo.aftbg.util.PathUtils;
 
 public final class FacePoolEditorDialog extends ModalDialog {
     private Path filePath;

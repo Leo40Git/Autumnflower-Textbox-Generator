@@ -8,8 +8,8 @@ import javax.swing.event.*;
 
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.text.TextRenderer;
-import adudecalledleo.aftbg.text.modifier.StyleSpec;
-import adudecalledleo.aftbg.util.TriState;
+import adudecalledleo.aftbg.app.text.modifier.StyleSpec;
+import adudecalledleo.aftbg.app.util.TriState;
 
 public final class StyleModifierDialog extends ModifierDialog {
     private final ContentPane pane;

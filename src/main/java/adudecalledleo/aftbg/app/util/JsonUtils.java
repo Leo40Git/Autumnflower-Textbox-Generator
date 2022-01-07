@@ -3,7 +3,6 @@ package adudecalledleo.aftbg.app.util;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
-import adudecalledleo.aftbg.util.PathUtils;
 import com.google.gson.*;
 import org.jetbrains.annotations.Nullable;
 

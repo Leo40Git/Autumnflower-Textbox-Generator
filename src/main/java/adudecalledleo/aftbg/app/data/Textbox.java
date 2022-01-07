@@ -1,6 +1,6 @@
 package adudecalledleo.aftbg.app.data;
 
-import adudecalledleo.aftbg.face.Face;
+import adudecalledleo.aftbg.app.face.Face;
 
 public final class Textbox {
     private Face face;

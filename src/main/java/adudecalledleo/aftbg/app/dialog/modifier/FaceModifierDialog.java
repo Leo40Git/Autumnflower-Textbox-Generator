@@ -8,8 +8,8 @@ import javax.swing.*;
 
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.component.FaceSelectionPanel;
-import adudecalledleo.aftbg.face.Face;
-import adudecalledleo.aftbg.face.FacePool;
+import adudecalledleo.aftbg.app.face.Face;
+import adudecalledleo.aftbg.app.face.FacePool;
 
 public final class FaceModifierDialog extends ModifierDialog {
     private final ContentPane pane;

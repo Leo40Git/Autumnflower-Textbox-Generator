@@ -9,18 +9,18 @@ import javax.imageio.ImageIO;
 
 import adudecalledleo.aftbg.BuildInfo;
 import adudecalledleo.aftbg.app.data.Textbox;
+import adudecalledleo.aftbg.app.face.Face;
+import adudecalledleo.aftbg.app.text.TextParser;
 import adudecalledleo.aftbg.app.text.TextRenderer;
+import adudecalledleo.aftbg.app.text.animate.AnimationCommand;
+import adudecalledleo.aftbg.app.text.animate.TextAnimator;
+import adudecalledleo.aftbg.app.text.modifier.InterruptModifierNode;
+import adudecalledleo.aftbg.app.text.node.NodeList;
+import adudecalledleo.aftbg.app.util.ColorUtils;
+import adudecalledleo.aftbg.app.util.FastByteArrayOutputStream;
+import adudecalledleo.aftbg.app.util.GifWriter;
 import adudecalledleo.aftbg.app.util.SizedByteArray;
-import adudecalledleo.aftbg.face.Face;
 import adudecalledleo.aftbg.logging.Logger;
-import adudecalledleo.aftbg.text.TextParser;
-import adudecalledleo.aftbg.text.animate.AnimationCommand;
-import adudecalledleo.aftbg.text.animate.TextAnimator;
-import adudecalledleo.aftbg.text.modifier.InterruptModifierNode;
-import adudecalledleo.aftbg.text.node.NodeList;
-import adudecalledleo.aftbg.util.ColorUtils;
-import adudecalledleo.aftbg.util.FastByteArrayOutputStream;
-import adudecalledleo.aftbg.util.GifWriter;
 import adudecalledleo.aftbg.window.WindowContext;
 
 public final class TextboxRenderer {

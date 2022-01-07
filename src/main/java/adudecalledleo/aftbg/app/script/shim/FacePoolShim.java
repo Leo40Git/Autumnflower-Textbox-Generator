@@ -1,8 +1,8 @@
 package adudecalledleo.aftbg.app.script.shim;
 
-import adudecalledleo.aftbg.face.Face;
-import adudecalledleo.aftbg.face.FaceCategory;
-import adudecalledleo.aftbg.face.FacePool;
+import adudecalledleo.aftbg.app.face.Face;
+import adudecalledleo.aftbg.app.face.FaceCategory;
+import adudecalledleo.aftbg.app.face.FacePool;
 
 @SuppressWarnings("unused")
 public final class FacePoolShim {

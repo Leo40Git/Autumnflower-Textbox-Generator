@@ -1,9 +1,10 @@
 package adudecalledleo.aftbg.app.component.render;
 
-import adudecalledleo.aftbg.face.FaceCategory;
+import java.awt.*;
 
 import javax.swing.*;
-import java.awt.*;
+
+import adudecalledleo.aftbg.app.face.FaceCategory;
 
 public final class FaceCategoryListCellRenderer extends BaseListCellRenderer<FaceCategory> {
     public FaceCategoryListCellRenderer() {

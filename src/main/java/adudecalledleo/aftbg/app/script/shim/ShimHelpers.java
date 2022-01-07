@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import adudecalledleo.aftbg.app.data.Textbox;
-import adudecalledleo.aftbg.face.Face;
-import adudecalledleo.aftbg.face.FacePool;
+import adudecalledleo.aftbg.app.face.Face;
+import adudecalledleo.aftbg.app.face.FacePool;
 
 public final class ShimHelpers {
     private ShimHelpers() { }

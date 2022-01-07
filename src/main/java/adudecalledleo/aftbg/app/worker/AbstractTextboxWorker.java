@@ -1,6 +1,5 @@
 package adudecalledleo.aftbg.app.worker;
 
-import java.awt.*;
 import java.util.List;
 
 import javax.swing.*;
@@ -8,8 +7,8 @@ import javax.swing.*;
 import adudecalledleo.aftbg.app.component.MainPanel;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.game.GameDefinition;
+import adudecalledleo.aftbg.app.text.TextParser;
 import adudecalledleo.aftbg.app.util.LoadFrame;
-import adudecalledleo.aftbg.text.TextParser;
 import adudecalledleo.aftbg.window.WindowColors;
 import adudecalledleo.aftbg.window.WindowContext;
 
