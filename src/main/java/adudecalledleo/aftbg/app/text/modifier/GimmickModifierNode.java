@@ -7,6 +7,8 @@ import adudecalledleo.aftbg.app.text.node.ModifierNode;
 import adudecalledleo.aftbg.app.text.node.NodeList;
 import adudecalledleo.aftbg.app.text.node.Span;
 
+import static adudecalledleo.aftbg.app.text.modifier.ModifierParser.modLen;
+
 public final class GimmickModifierNode extends ModifierNode {
     public static final char KEY = 'g';
 
