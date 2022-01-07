@@ -44,7 +44,7 @@ public final class FaceCategory {
 
     public void addFrom(FaceCategory other) {
         for (var entry : other.faces.values()) {
-            faces.put(entry.getName(), new Face(entry.getName(), this.name, entry.getImagePath(), entry.image));
+            faces.put(entry.getName(), entry);
         }
     }
 

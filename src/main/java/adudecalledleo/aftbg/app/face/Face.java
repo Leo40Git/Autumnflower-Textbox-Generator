@@ -111,6 +111,6 @@ public final class Face extends DefinedObject {
 
     @Override
     public String toString() {
-        return name;
+        return getPath();
     }
 }

@@ -88,6 +88,11 @@ public final class ExtensionDefinition extends Definition {
         return new ExtensionDefinition(jsonRep.name, jsonRep.description, jsonRep.credits, filePath, basePath, faces, scripts);
     }
 
+    @Override
+    public String qualifiedName() {
+        return "[ext] " + name;
+    }
+
     public FacePool faces() {
         return faces;
     }

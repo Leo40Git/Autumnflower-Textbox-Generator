@@ -128,6 +128,11 @@ public final class GameDefinition extends Definition {
         return new GameDefinition(jsonRep.name, jsonRep.description, jsonRep.credits, filePath, basePath, winCtx, faces, scripts);
     }
 
+    @Override
+    public String qualifiedName() {
+        return name;
+    }
+
     public ExtensionDefinition loadExtension(Path extPath) throws DefinitionLoadException {
         extPath = extPath.toAbsolutePath();
         boolean reload = false;

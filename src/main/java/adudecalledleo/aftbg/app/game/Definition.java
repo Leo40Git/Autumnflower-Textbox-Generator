@@ -40,6 +40,8 @@ public sealed abstract class Definition permits GameDefinition, ExtensionDefinit
         return basePath;
     }
 
+    public abstract String qualifiedName();
+
     protected void setAsSource(FacePool faces) {
         for (FaceCategory category : faces.getCategories().values()) {
             if (category == FaceCategory.NONE) {
@@ -56,5 +58,10 @@ public sealed abstract class Definition permits GameDefinition, ExtensionDefinit
         for (var script : scripts.getScripts()) {
             script.setSource(this);
         }
+    }
+
+    @Override
+    public String toString() {
+        return qualifiedName();
     }
 }

@@ -29,6 +29,7 @@ import adudecalledleo.aftbg.app.script.TextboxScriptSet;
 import adudecalledleo.aftbg.app.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.ListReorderTransferHandler;
 import adudecalledleo.aftbg.app.util.LoadFrame;
+import adudecalledleo.aftbg.app.util.MultilineBuilder;
 import adudecalledleo.aftbg.app.worker.ExtensionDefinitionLoader;
 import adudecalledleo.aftbg.app.worker.GameDefinitionLoader;
 import adudecalledleo.aftbg.app.worker.TextboxAnimator;
@@ -487,12 +488,10 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         }
                     };
 
-                    String[] desc = script.getDescription();
-                    if (desc.length == 1) {
-                        a.putValue(Action.SHORT_DESCRIPTION, desc[0]);
-                    } else if (desc.length > 0) {
-                        a.putValue(Action.SHORT_DESCRIPTION, "<html>" + String.join("<br/>", desc) + "</html>");
-                    }
+                    a.putValue(Action.SHORT_DESCRIPTION, new MultilineBuilder()
+                            .lines(script.getDescription())
+                            .line("<b>From:</b> " + script.getSource().qualifiedName())
+                            .toString());
 
                     scriptsMenu.add(a);
                 }

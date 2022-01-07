@@ -33,11 +33,30 @@ public final class FaceListCellRenderer extends BaseListCellRenderer<Face> {
         setIcon(value.getIcon());
         switch (mode) {
             case GRID -> {
-                setText("");
-                setToolTipText(value.getName());
+                setText(null);
+
+                var src = value.getSource();
+                if (src == null) {
+                    setToolTipText(value.getName());
+                } else {
+                    setToolTipText("<html>%s<br/><b>From:</b> %s</html>"
+                            .formatted(value.getName(), src.qualifiedName()));
+                }
             }
-            case LIST_SIMPLE -> setText(value.getName());
-            case LIST_DETAILED -> setText("<html>%s<br><i>%s</i></html>".formatted(value.getName(), value.getImagePath()));
+            case LIST_SIMPLE -> {
+                setText(value.getName());
+
+                var src = value.getSource();
+                if (src == null) {
+                    setToolTipText(null);
+                } else {
+                    setToolTipText("<html><b>From:</b> %s</html>".formatted(src.qualifiedName()));
+                }
+            }
+            case LIST_DETAILED -> {
+                setText("<html>%s<br><i>%s</i></html>".formatted(value.getName(), value.getImagePath()));
+                setToolTipText(null);
+            }
         }
         return this;
     }
