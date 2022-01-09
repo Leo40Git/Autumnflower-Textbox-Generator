@@ -1,6 +1,6 @@
 package adudecalledleo.aftbg;
 
-import adudecalledleo.aftbg.app.dialog.FacePoolEditorDialog;
+import adudecalledleo.aftbg.app.ui.dialog.FacePoolEditorDialog;
 
 public class ProcessImageNameTest {
     public static void main(String[] args) {
