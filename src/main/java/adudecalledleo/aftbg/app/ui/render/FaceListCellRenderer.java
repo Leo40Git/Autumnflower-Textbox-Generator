@@ -34,14 +34,7 @@ public final class FaceListCellRenderer extends BaseListCellRenderer<Face> {
         switch (mode) {
             case GRID -> {
                 setText(null);
-
-                var src = value.getSource();
-                if (src == null) {
-                    setToolTipText(value.getName());
-                } else {
-                    setToolTipText("<html>%s<br/><b>From:</b> %s</html>"
-                            .formatted(value.getName(), src.qualifiedName()));
-                }
+                setToolTipText(null);
             }
             case LIST_SIMPLE -> {
                 setText(value.getName());

@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.util.function.Consumer;
 
 import javax.swing.*;
+import javax.swing.event.*;
 
 import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.face.FaceCategory;
@@ -13,35 +14,43 @@ import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.app.ui.render.FaceCategoryListCellRenderer;
 import adudecalledleo.aftbg.app.ui.render.FaceListCellRenderer;
-import adudecalledleo.aftbg.app.util.ComboBoxUtils;
 
 public final class FaceSelectionPanel extends JPanel implements ItemListener, GameDefinitionUpdateListener {
     private static final FacePool INITIAL_FACE_POOL = new FacePool();
 
     private final Consumer<Face> faceUpdateListener;
     private final JComboBox<FaceCategory> catSel;
-    private final JComboBox<Face> faceSel;
+    private final JList<Face> faceDisplay;
     private final DefaultComboBoxModel<FaceCategory> catModel;
-    private final DefaultComboBoxModel<Face> faceModel;
+    private final DefaultListModel<Face> faceDisplayModel;
 
     private FacePool facePool;
+    private Face selectedFace;
 
     public FaceSelectionPanel(Consumer<Face> faceUpdateListener) {
         this.faceUpdateListener = faceUpdateListener;
 
+        selectedFace = Face.NONE;
+
         catSel = new JComboBox<>();
-        faceSel = new JComboBox<>();
+        faceDisplay = new JList<>();
 
         catModel = new DefaultComboBoxModel<>();
-        faceModel = new DefaultComboBoxModel<>();
+        faceDisplayModel = new DefaultListModel<>();
 
         catSel.setModel(catModel);
         catSel.setRenderer(new FaceCategoryListCellRenderer());
-        faceSel.setModel(faceModel);
-        faceSel.setRenderer(new FaceListCellRenderer(FaceListCellRenderer.Mode.LIST_SIMPLE));
-
-        ComboBoxUtils.setupGridSelectionPopup(faceSel, new FaceListCellRenderer(FaceListCellRenderer.Mode.GRID),
-                Face.NONE, 5, 8);
+        faceDisplay.setModel(faceDisplayModel);
+        faceDisplay.setCellRenderer(new FaceListCellRenderer(FaceListCellRenderer.Mode.LIST_SIMPLE));
+        faceDisplay.setSelectionModel(new NoSelectionModel());
+        faceDisplay.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (faceDisplay.isEnabled()) {
+                    openPopup();
+                }
+            }
+        });
 
         setLayout(new GridBagLayout());
         var c = new GridBagConstraints();
@@ -54,15 +63,14 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
         c.gridx++;
         c.weightx = 0.6;
         c.insets.right = 0;
-        add(faceSel, c);
+        add(faceDisplay, c);
 
         updateFacePool(INITIAL_FACE_POOL);
         catSel.setSelectedItem(FaceCategory.NONE);
-        faceSel.setSelectedItem(Face.NONE);
-        faceSel.setEnabled(false);
+        faceDisplayModel.addElement(Face.NONE);
+        faceDisplay.setEnabled(false);
 
         catSel.addItemListener(this);
-        faceSel.addItemListener(this);
     }
 
     public void updateFacePool(FacePool pool) {
@@ -75,19 +83,9 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
         updateFacePool(gameDef.faces());
     }
 
-    private static int getSelectedIndex(DefaultComboBoxModel<?> model) {
-        var selectedObj = model.getSelectedItem();
-        int selected;
-        if (selectedObj == null) {
-            selected = 0;
-        } else {
-            selected = model.getIndexOf(selectedObj);
-        }
-        return selected;
-    }
-
-    private static void setSelectedIndex(DefaultComboBoxModel<?> model, int selected) {
-        model.setSelectedItem(model.getElementAt(Math.min(model.getSize() - 1, selected)));
+    private void openPopup() {
+        new SelectionPopup((FaceCategory) catModel.getSelectedItem())
+                .show(faceDisplay, 0, faceDisplay.getHeight() + faceDisplay.getInsets().bottom);
     }
 
     private void updateCategoriesModel(FacePool pool) {
@@ -99,44 +97,35 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
         catSel.setSelectedIndex(Math.min(catModel.getSize() - 1, selected));
     }
 
-    private void updateFacesModel(FaceCategory cat) {
-        int selected = Math.max(faceSel.getSelectedIndex(), 0);
+    private void updateSelectedFace(FaceCategory cat) {
+        /*
+        int selected = Math.max(faceDisplay.getSelectedIndex(), 0);
 
-        faceModel.removeAllElements();
-        faceModel.addAll(cat.getFaces().values());
+        faceDisplayModel.removeAllElements();
+        faceDisplayModel.addAll(cat.getFaces().values());
 
-        faceSel.setSelectedIndex(Math.min(faceModel.getSize() - 1, selected));
+        faceDisplay.setSelectedIndex(Math.min(faceDisplayModel.getSize() - 1, selected));*/
+        // TODO
+        setFace0(cat.getFaces().values().iterator().next());
+    }
+
+    private void setFace0(Face face) {
+        selectedFace = face;
+        faceDisplayModel.set(0, selectedFace);
+        flushChanges();
     }
 
     public void setFace(Face face) {
         if (facePool != null) {
             var cat = facePool.getCategory(face.getCategory());
             catModel.setSelectedItem(cat);
-            faceModel.setSelectedItem(face);
+            faceDisplayModel.set(0, face);
+            selectedFace = face;
         }
-    }
-
-    private Face getSelectedFace() {
-        var selectedItem = faceSel.getSelectedItem();
-        if (selectedItem instanceof Face face) {
-            return face;
-        } else if (selectedItem instanceof String str) {
-            var cat = (FaceCategory) catModel.getSelectedItem();
-            if (cat == null) {
-                return Face.NONE;
-            }
-            var face = cat.get(str);
-            if (face == null) {
-                return Face.NONE;
-            }
-            faceSel.setSelectedItem(face);
-            return face;
-        }
-        return Face.NONE;
     }
 
     public void flushChanges() {
-        faceUpdateListener.accept(getSelectedFace());
+        faceUpdateListener.accept(selectedFace);
     }
 
     @Override
@@ -151,13 +140,110 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
                 catModel.setSelectedItem(FaceCategory.NONE);
                 return;
             }
-            updateFacesModel(cat);
-            faceSel.setEnabled(cat != FaceCategory.NONE);
-        } else if (faceSel.equals(src)) {
-            if (faceModel.getSize() == 0) {
-                return;
-            }
-            faceUpdateListener.accept(getSelectedFace());
+            updateSelectedFace(cat);
+            faceDisplay.setEnabled(cat != FaceCategory.NONE);
         }
+    }
+
+    private final class SelectionPopup extends JPopupMenu implements ListSelectionListener, MouseMotionListener {
+        private final FaceCategory category;
+
+        private final PlaceholderTextField txtSearch;
+        private final JList<Face> lstFaces;
+        private final DefaultListModel<Face> mdlFaces;
+        private final JLabel lblName, lblSource;
+
+        public SelectionPopup(FaceCategory category) {
+            this.category = category;
+
+            txtSearch = new PlaceholderTextField();
+            txtSearch.setPlaceholder("Search...");
+
+            lstFaces = new JList<>();
+            mdlFaces = new DefaultListModel<>();
+            mdlFaces.addAll(category.getFaces().values());
+            lstFaces.setModel(mdlFaces);
+            lstFaces.setCellRenderer(new FaceListCellRenderer(FaceListCellRenderer.Mode.GRID));
+            lstFaces.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+            lstFaces.setVisibleRowCount(0);
+            lstFaces.setSelectedValue(selectedFace, true);
+            lstFaces.addListSelectionListener(this);
+            lstFaces.addMouseMotionListener(this);
+
+            lblName = new JLabel("Hover over a face...");
+            lblSource = new JLabel(" ");
+
+            Box infoBox = new Box(BoxLayout.PAGE_AXIS);
+            infoBox.add(lblName);
+            infoBox.add(lblSource);
+
+            JScrollPane scrollPane = new JScrollPane(lstFaces);
+            scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+            var cellSize = lstFaces.getCellRenderer()
+                    .getListCellRendererComponent(lstFaces, Face.NONE,
+                            0, false, false)
+                    .getPreferredSize();
+
+            final int columns = 5;
+            final int maxRows = 8;
+
+            var size = new Dimension(cellSize.width * columns + scrollPane.getVerticalScrollBar().getWidth(),
+                    0);
+
+            // don't ask me why these extra 19 pixels are needed, but this seems to solve rows sometimes breaking
+            //  one column before they should
+            size.width += 19;
+
+            // calculate height
+            int modelSize = Math.min(columns * maxRows, lstFaces.getModel().getSize());
+            size.height = cellSize.height * (modelSize / columns);
+            if (modelSize % columns > 0) {
+                size.height += cellSize.height;
+            }
+
+            // again, for some reason these extra 2 pixels prevent the list from being scrollable if all rows would
+            // fit on-screen
+            size.height += 2;
+
+            scrollPane.setPreferredSize(size);
+            scrollPane.setMinimumSize(size);
+
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.setOpaque(false);
+            panel.add(txtSearch, BorderLayout.PAGE_START);
+            panel.add(scrollPane, BorderLayout.CENTER);
+            panel.add(infoBox, BorderLayout.PAGE_END);
+
+            add(panel);
+        }
+
+        @Override
+        public void valueChanged(ListSelectionEvent e) {
+            FaceSelectionPanel.this.setFace0(lstFaces.getSelectedValue());
+            setVisible(false);
+        }
+
+        @Override
+        public void mouseMoved(MouseEvent e) {
+            Point p = e.getPoint();
+            int i = lstFaces.locationToIndex(p);
+            if (i >= 0 && lstFaces.getCellBounds(i, i).contains(p)) {
+                Face face = mdlFaces.get(i);
+                lblName.setText(face.getName());
+                var source = face.getSource();
+                if (source == null) {
+                    lblSource.setText(" ");
+                } else {
+                    lblSource.setText("<html><b>From:</b> %s</html>".formatted(face.getSource().qualifiedName()));
+                }
+            } else {
+                lblName.setText("Hover over a face...");
+                lblSource.setText(" ");
+            }
+        }
+
+        @Override
+        public void mouseDragged(MouseEvent e) { }
     }
 }
