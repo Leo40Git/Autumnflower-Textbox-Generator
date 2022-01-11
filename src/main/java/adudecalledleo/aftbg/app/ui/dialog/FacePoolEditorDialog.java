@@ -206,7 +206,7 @@ public final class FacePoolEditorDialog extends ModalDialog {
             faceList = new JList<>();
             faceList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             faceList.setModel(faceModel);
-            faceList.setCellRenderer(new FaceListCellRenderer(FaceListCellRenderer.Mode.LIST_DETAILED));
+            faceList.setCellRenderer(new FaceListCellRenderer(true));
             ListReorderTransferHandler.install(faceList, this);
             faceList.setEnabled(false);
             faceList.addListSelectionListener(this);

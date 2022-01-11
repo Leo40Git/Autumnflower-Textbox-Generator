@@ -7,23 +7,15 @@ import javax.swing.*;
 import adudecalledleo.aftbg.app.face.Face;
 
 public final class FaceListCellRenderer extends BaseListCellRenderer<Face> {
-    public enum Mode {
-        GRID, LIST_SIMPLE, LIST_DETAILED
-    }
+    private static final Dimension SIZE = new Dimension(72 * 4 + 4, 72);
 
-    private final Mode mode;
+    private boolean showImagePath;
 
-    public FaceListCellRenderer(Mode mode) {
+    public FaceListCellRenderer(boolean showImagePath) {
         super();
-        this.mode = mode;
-        Dimension size;
-        if (mode == Mode.GRID) {
-            size = new Dimension(72, 72);
-        } else {
-            size = new Dimension(72 * 4 + 4, 72);
-        }
-        setPreferredSize(size);
-        setMinimumSize(size);
+        this.showImagePath = showImagePath;
+        setPreferredSize(SIZE);
+        setMinimumSize(SIZE);
     }
 
     @Override
@@ -35,24 +27,17 @@ public final class FaceListCellRenderer extends BaseListCellRenderer<Face> {
 
         updateColors(list, index, isSelected, cellHasFocus);
         setIcon(value.getIcon());
-        switch (mode) {
-            case GRID -> {
-                setText(null);
-                setToolTipText(null);
-            }
-            case LIST_SIMPLE -> {
-                setText(value.getName());
+        if (showImagePath) {
+            setText("<html>%s<br><i>%s</i></html>".formatted(value.getName(), value.getImagePath()));
+            setToolTipText(null);
+        } else {
+            setText(value.getName());
 
-                var src = value.getSource();
-                if (src == null) {
-                    setToolTipText(null);
-                } else {
-                    setToolTipText("<html><b>From:</b> %s</html>".formatted(src.qualifiedName()));
-                }
-            }
-            case LIST_DETAILED -> {
-                setText("<html>%s<br><i>%s</i></html>".formatted(value.getName(), value.getImagePath()));
+            var src = value.getSource();
+            if (src == null) {
                 setToolTipText(null);
+            } else {
+                setToolTipText("<html><b>From:</b> %s</html>".formatted(src.qualifiedName()));
             }
         }
         return this;
