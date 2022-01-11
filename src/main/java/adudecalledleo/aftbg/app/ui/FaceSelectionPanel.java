@@ -258,7 +258,9 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
                 scrollPane.setPreferredSize(size);
                 scrollPane.setMinimumSize(size);
 
-                pack();
+                packRememberingSearchFocus();
+
+                lstFaces.ensureIndexIsVisible(mdlFaces.indexOf(selectedFace));
             }
         }
 
@@ -288,7 +290,15 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
             scrollPane.setPreferredSize(size);
             scrollPane.setMinimumSize(size);
 
+            packRememberingSearchFocus();
+        }
+
+        private void packRememberingSearchFocus() {
+            boolean searchFocused = txtSearch.isFocusOwner();
             pack();
+            if (searchFocused) {
+                txtSearch.requestFocus();
+            }
         }
 
         private void updateSearchQuery() {
@@ -333,6 +343,8 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
         public void show(Component invoker, int x, int y) {
             resetHover();
             txtSearch.setText(null);
+            lcrGrid.setSelectedFace(selectedFace);
+            lcrSearchResults.setSelectedFace(selectedFace);
             super.show(invoker, x, y);
         }
 

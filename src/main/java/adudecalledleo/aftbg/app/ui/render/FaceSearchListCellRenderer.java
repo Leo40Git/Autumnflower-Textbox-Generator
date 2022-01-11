@@ -14,6 +14,7 @@ public final class FaceSearchListCellRenderer extends BaseListCellRenderer<Face>
     private final Map<String, String> highlightedCache;
     private Pattern highlightedPattern;
     private String highlightedString;
+    private Face selectedFace;
 
     public FaceSearchListCellRenderer() {
         super();
@@ -38,12 +39,24 @@ public final class FaceSearchListCellRenderer extends BaseListCellRenderer<Face>
         this.highlightedString = highlightedString;
     }
 
+    public Face getSelectedFace() {
+        return selectedFace;
+    }
+
+    public void setSelectedFace(Face selectedFace) {
+        this.selectedFace = selectedFace;
+    }
+
     @Override
     public Component getListCellRendererComponent(JList<? extends Face> list, Face value, int index, boolean isSelected, boolean cellHasFocus) {
         if (value == null) {
             return this;
         }
+
         updateColors(list, index, isSelected, cellHasFocus);
+        if (!isSelected && selectedFace == value) {
+            setBackground(FaceGridCellRenderer.SELECTED_FACE_BACKGROUND);
+        }
         setIcon(value.getIcon());
         setText(highlight(value.getName()));
         var src = value.getSource();
@@ -61,7 +74,6 @@ public final class FaceSearchListCellRenderer extends BaseListCellRenderer<Face>
         }
         return highlightedCache.computeIfAbsent(original, str -> "<html>%s</html>".formatted(
                 highlightedPattern.matcher(str)
-                        .replaceAll(result -> "<span bgcolor=\"yellow\">%s</span>"
-                                .formatted(result.group()))));
+                        .replaceAll(result -> "<u>%s</u>".formatted(result.group()))));
     }
 }
