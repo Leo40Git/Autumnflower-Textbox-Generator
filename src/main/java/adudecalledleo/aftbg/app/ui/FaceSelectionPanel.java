@@ -151,6 +151,9 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
         public SelectionPopup() {
             txtSearch = new PlaceholderTextField();
             txtSearch.setPlaceholder("Search...");
+            txtSearch.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createEmptyBorder(0, 0, 2, 0),
+                    txtSearch.getBorder()));
 
             lstFaces = new JList<>();
             mdlFaces = new DefaultListModel<>();

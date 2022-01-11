@@ -9,7 +9,7 @@ import adudecalledleo.aftbg.app.face.Face;
 public final class FaceListCellRenderer extends BaseListCellRenderer<Face> {
     private static final Dimension SIZE = new Dimension(72 * 4 + 4, 72);
 
-    private boolean showImagePath;
+    private final boolean showImagePath;
 
     public FaceListCellRenderer(boolean showImagePath) {
         super();
