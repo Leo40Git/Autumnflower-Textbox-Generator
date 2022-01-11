@@ -14,6 +14,7 @@ import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.app.ui.render.FaceCategoryListCellRenderer;
 import adudecalledleo.aftbg.app.ui.render.FaceGridCellRenderer;
 import adudecalledleo.aftbg.app.ui.render.FaceListCellRenderer;
+import adudecalledleo.aftbg.app.util.ComboBoxUtils;
 
 public final class FaceSelectionPanel extends JPanel implements ItemListener, GameDefinitionUpdateListener {
     private static final FacePool INITIAL_FACE_POOL = new FacePool();
@@ -45,16 +46,7 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
         catSel.setRenderer(new FaceCategoryListCellRenderer());
         faceDisplay.setModel(faceDisplayModel);
         faceDisplay.setRenderer(new FaceListCellRenderer(false));
-        // HACK to replace popup menu
-        final var popup = (JPopupMenu) faceDisplay.getAccessibleContext().getAccessibleChild(0);
-        popup.addPropertyChangeListener("visible", evt -> {
-            if (evt.getNewValue() == Boolean.TRUE) {
-                popup.setVisible(false);
-                selectionPopup.show(faceDisplay, 0, faceDisplay.getHeight() + faceDisplay.getInsets().bottom);
-            } else if (evt.getNewValue() == Boolean.FALSE) {
-                selectionPopup.setVisible(false);
-            }
-        });
+        ComboBoxUtils.replacePopup(faceDisplay, selectionPopup);
 
         setLayout(new GridBagLayout());
         var c = new GridBagConstraints();
