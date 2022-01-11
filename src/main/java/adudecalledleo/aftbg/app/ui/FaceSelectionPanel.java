@@ -5,7 +5,6 @@ import java.awt.event.*;
 import java.util.function.Consumer;
 
 import javax.swing.*;
-import javax.swing.event.*;
 
 import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.face.FaceCategory;
@@ -20,9 +19,10 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
 
     private final Consumer<Face> faceUpdateListener;
     private final JComboBox<FaceCategory> catSel;
-    private final JList<Face> faceDisplay;
+    private final JComboBox<Face> faceDisplay;
     private final DefaultComboBoxModel<FaceCategory> catModel;
-    private final DefaultListModel<Face> faceDisplayModel;
+    private final DefaultComboBoxModel<Face> faceDisplayModel;
+    private final SelectionPopup selectionPopup;
 
     private FacePool facePool;
     private Face selectedFace;
@@ -33,22 +33,25 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
         selectedFace = Face.NONE;
 
         catSel = new JComboBox<>();
-        faceDisplay = new JList<>();
+        faceDisplay = new JComboBox<>();
 
         catModel = new DefaultComboBoxModel<>();
-        faceDisplayModel = new DefaultListModel<>();
+        faceDisplayModel = new DefaultComboBoxModel<>();
+
+        selectionPopup = new SelectionPopup();
 
         catSel.setModel(catModel);
         catSel.setRenderer(new FaceCategoryListCellRenderer());
         faceDisplay.setModel(faceDisplayModel);
-        faceDisplay.setCellRenderer(new FaceListCellRenderer(FaceListCellRenderer.Mode.LIST_SIMPLE));
-        faceDisplay.setSelectionModel(new NoSelectionModel());
-        faceDisplay.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (faceDisplay.isEnabled()) {
-                    openPopup();
-                }
+        faceDisplay.setRenderer(new FaceListCellRenderer(FaceListCellRenderer.Mode.LIST_SIMPLE));
+        // HACK to replace popup menu
+        final JPopupMenu popup = (JPopupMenu) faceDisplay.getAccessibleContext().getAccessibleChild(0);
+        popup.addPropertyChangeListener("visible", evt -> {
+            if (evt.getNewValue() == Boolean.TRUE) {
+                popup.setVisible(false);
+                openPopup();
+            } else if (evt.getNewValue() == Boolean.FALSE) {
+                selectionPopup.setVisible(false);
             }
         });
 
@@ -84,8 +87,7 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
     }
 
     private void openPopup() {
-        new SelectionPopup((FaceCategory) catModel.getSelectedItem())
-                .show(faceDisplay, 0, faceDisplay.getHeight() + faceDisplay.getInsets().bottom);
+        selectionPopup.show(faceDisplay, 0, faceDisplay.getHeight() + faceDisplay.getInsets().bottom);
     }
 
     private void updateCategoriesModel(FacePool pool) {
@@ -94,10 +96,14 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
         catModel.removeAllElements();
         catModel.addAll(pool.getCategories().values());
 
-        catSel.setSelectedIndex(Math.min(catModel.getSize() - 1, selected));
+        int newIndex = Math.min(catModel.getSize() - 1, selected);
+        catSel.setSelectedIndex(newIndex);
+        selectionPopup.updateCategory(catModel.getElementAt(newIndex));
     }
 
-    private void updateSelectedFace(FaceCategory cat) {
+    private void updateCategory(FaceCategory cat) {
+        selectionPopup.updateCategory(cat);
+
         /*
         int selected = Math.max(faceDisplay.getSelectedIndex(), 0);
 
@@ -111,7 +117,8 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
 
     private void setFace0(Face face) {
         selectedFace = face;
-        faceDisplayModel.set(0, selectedFace);
+        faceDisplayModel.removeAllElements();
+        faceDisplayModel.addElement(selectedFace);
         flushChanges();
     }
 
@@ -119,7 +126,8 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
         if (facePool != null) {
             var cat = facePool.getCategory(face.getCategory());
             catModel.setSelectedItem(cat);
-            faceDisplayModel.set(0, face);
+            faceDisplayModel.removeAllElements();
+            faceDisplayModel.addElement(face);
             selectedFace = face;
         }
     }
@@ -140,46 +148,57 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
                 catModel.setSelectedItem(FaceCategory.NONE);
                 return;
             }
-            updateSelectedFace(cat);
+            updateCategory(cat);
             faceDisplay.setEnabled(cat != FaceCategory.NONE);
         }
     }
 
-    private final class SelectionPopup extends JPopupMenu implements ListSelectionListener, MouseMotionListener {
-        private final FaceCategory category;
-
+    private final class SelectionPopup extends JPopupMenu implements MouseListener, MouseMotionListener {
         private final PlaceholderTextField txtSearch;
         private final JList<Face> lstFaces;
         private final DefaultListModel<Face> mdlFaces;
         private final JLabel lblName, lblSource;
+        private final JScrollPane scrollPane;
 
-        public SelectionPopup(FaceCategory category) {
-            this.category = category;
-
+        public SelectionPopup() {
             txtSearch = new PlaceholderTextField();
             txtSearch.setPlaceholder("Search...");
 
             lstFaces = new JList<>();
             mdlFaces = new DefaultListModel<>();
-            mdlFaces.addAll(category.getFaces().values());
             lstFaces.setModel(mdlFaces);
+            lstFaces.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             lstFaces.setCellRenderer(new FaceListCellRenderer(FaceListCellRenderer.Mode.GRID));
             lstFaces.setLayoutOrientation(JList.HORIZONTAL_WRAP);
             lstFaces.setVisibleRowCount(0);
-            lstFaces.setSelectedValue(selectedFace, true);
-            lstFaces.addListSelectionListener(this);
+            lstFaces.addMouseListener(this);
             lstFaces.addMouseMotionListener(this);
 
-            lblName = new JLabel("Hover over a face...");
-            lblSource = new JLabel(" ");
+            lblName = new JLabel();
+            lblSource = new JLabel();
 
             Box infoBox = new Box(BoxLayout.PAGE_AXIS);
             infoBox.add(lblName);
             infoBox.add(lblSource);
 
-            JScrollPane scrollPane = new JScrollPane(lstFaces);
+            scrollPane = new JScrollPane(lstFaces);
             scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.setOpaque(false);
+            panel.add(txtSearch, BorderLayout.PAGE_START);
+            panel.add(scrollPane, BorderLayout.CENTER);
+            panel.add(infoBox, BorderLayout.PAGE_END);
+
+            add(panel);
+            deselect();
+        }
+
+        public void updateCategory(FaceCategory cat) {
+            mdlFaces.clear();
+            mdlFaces.addAll(cat.getFaces().values());
+
+            // recalculate scroll pane size
             var cellSize = lstFaces.getCellRenderer()
                     .getListCellRendererComponent(lstFaces, Face.NONE,
                             0, false, false)
@@ -208,20 +227,31 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
 
             scrollPane.setPreferredSize(size);
             scrollPane.setMinimumSize(size);
+        }
 
-            JPanel panel = new JPanel(new BorderLayout());
-            panel.setOpaque(false);
-            panel.add(txtSearch, BorderLayout.PAGE_START);
-            panel.add(scrollPane, BorderLayout.CENTER);
-            panel.add(infoBox, BorderLayout.PAGE_END);
+        private static final int[] NO_SELECTION = new int[0];
 
-            add(panel);
+        private void deselect() {
+            lstFaces.setSelectedIndices(NO_SELECTION);
+            lblName.setText("Hover over a face...");
+            lblSource.setText(" ");
         }
 
         @Override
-        public void valueChanged(ListSelectionEvent e) {
-            FaceSelectionPanel.this.setFace0(lstFaces.getSelectedValue());
-            setVisible(false);
+        public void show(Component invoker, int x, int y) {
+            deselect();
+            super.show(invoker, x, y);
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            Point p = e.getPoint();
+            int i = lstFaces.locationToIndex(p);
+            if (i >= 0 && lstFaces.getCellBounds(i, i).contains(p)) {
+                Face face = mdlFaces.get(i);
+                FaceSelectionPanel.this.setFace0(face);
+                setVisible(false);
+            }
         }
 
         @Override
@@ -229,21 +259,43 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
             Point p = e.getPoint();
             int i = lstFaces.locationToIndex(p);
             if (i >= 0 && lstFaces.getCellBounds(i, i).contains(p)) {
+                lstFaces.setSelectedIndex(i);
                 Face face = mdlFaces.get(i);
                 lblName.setText(face.getName());
                 var source = face.getSource();
                 if (source == null) {
-                    lblSource.setText(" ");
+                    lblSource.setText("<html><b>From:</b> (source == null!)</html>");
                 } else {
                     lblSource.setText("<html><b>From:</b> %s</html>".formatted(face.getSource().qualifiedName()));
                 }
             } else {
-                lblName.setText("Hover over a face...");
-                lblSource.setText(" ");
+                deselect();
             }
         }
 
         @Override
-        public void mouseDragged(MouseEvent e) { }
+        public void mouseDragged(MouseEvent e) {
+            mouseMoved(e);
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            Point p = e.getPoint();
+            int i = lstFaces.locationToIndex(p);
+            if (i < 0 || !lstFaces.getCellBounds(i, i).contains(p)) {
+                deselect();
+            }
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            deselect();
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) { }
+
+        @Override
+        public void mouseEntered(MouseEvent e) { }
     }
 }

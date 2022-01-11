@@ -29,6 +29,10 @@ public final class FaceListCellRenderer extends BaseListCellRenderer<Face> {
     @Override
     public Component getListCellRendererComponent(JList<? extends Face> list, Face value, int index,
                                                   boolean isSelected, boolean cellHasFocus) {
+        if (value == null) {
+            return this;
+        }
+
         updateColors(list, index, isSelected, cellHasFocus);
         setIcon(value.getIcon());
         switch (mode) {
