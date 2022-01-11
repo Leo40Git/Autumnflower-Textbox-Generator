@@ -2,9 +2,13 @@ package adudecalledleo.aftbg.app.ui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Comparator;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import javax.swing.*;
+import javax.swing.event.*;
 
 import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.face.FaceCategory;
@@ -14,7 +18,9 @@ import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.app.ui.render.FaceCategoryListCellRenderer;
 import adudecalledleo.aftbg.app.ui.render.FaceGridCellRenderer;
 import adudecalledleo.aftbg.app.ui.render.FaceListCellRenderer;
+import adudecalledleo.aftbg.app.ui.render.FaceSearchListCellRenderer;
 import adudecalledleo.aftbg.app.util.ComboBoxUtils;
+import adudecalledleo.aftbg.app.util.Pair;
 
 public final class FaceSelectionPanel extends JPanel implements ItemListener, GameDefinitionUpdateListener {
     private static final FacePool INITIAL_FACE_POOL = new FacePool();
@@ -141,32 +147,49 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
         faceDisplay.setEnabled(cat != FaceCategory.NONE);
     }
 
-    private final class SelectionPopup extends JPopupMenu implements MouseListener, MouseMotionListener {
+    private final class SelectionPopup extends JPopupMenu implements ActionListener, DocumentListener, MouseListener, MouseMotionListener {
         private final PlaceholderTextField txtSearch;
+        private final JButton btnClear;
         private final JList<Face> lstFaces;
         private final DefaultListModel<Face> mdlFaces;
         private final JLabel lblName, lblSource;
         private final JScrollPane scrollPane;
 
+        private final FaceGridCellRenderer lcrGrid;
+        private final FaceSearchListCellRenderer lcrSearchResults;
+
+        private FaceCategory currentCategory;
+        private boolean isSearching;
+
         public SelectionPopup() {
+            lcrGrid = new FaceGridCellRenderer();
+            lcrSearchResults = new FaceSearchListCellRenderer();
+
             txtSearch = new PlaceholderTextField();
             txtSearch.setPlaceholder("Search...");
+            txtSearch.getDocument().addDocumentListener(this);
             txtSearch.setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createEmptyBorder(0, 0, 2, 0),
                     txtSearch.getBorder()));
+
+            btnClear = new JButton("x");
+            btnClear.addActionListener(this);
 
             lstFaces = new JList<>();
             mdlFaces = new DefaultListModel<>();
             lstFaces.setModel(mdlFaces);
             lstFaces.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            lstFaces.setCellRenderer(new FaceGridCellRenderer());
-            lstFaces.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-            lstFaces.setVisibleRowCount(0);
+            setupGrid(false);
             lstFaces.addMouseListener(this);
             lstFaces.addMouseMotionListener(this);
 
             lblName = new JLabel();
             lblSource = new JLabel();
+
+            JPanel searchPanel = new JPanel(new BorderLayout());
+            searchPanel.setOpaque(false);
+            searchPanel.add(txtSearch, BorderLayout.CENTER);
+            searchPanel.add(btnClear, BorderLayout.LINE_END);
 
             Box infoBox = new Box(BoxLayout.PAGE_AXIS);
             infoBox.add(lblName);
@@ -177,7 +200,7 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
 
             JPanel panel = new JPanel(new BorderLayout());
             panel.setOpaque(false);
-            panel.add(txtSearch, BorderLayout.PAGE_START);
+            panel.add(searchPanel, BorderLayout.PAGE_START);
             panel.add(scrollPane, BorderLayout.CENTER);
             panel.add(infoBox, BorderLayout.PAGE_END);
 
@@ -186,38 +209,118 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
         }
 
         public void updateCategory(FaceCategory cat) {
+            this.currentCategory = cat;
+            if (isSearching) {
+                txtSearch.setText(null);
+            } else {
+                refreshModel();
+                setupGrid(true);
+            }
+        }
+
+        private void refreshModel() {
             mdlFaces.clear();
-            mdlFaces.addAll(cat.getFaces().values());
+            mdlFaces.addAll(currentCategory.getFaces().values());
+        }
+
+        private void setupGrid(boolean doResize) {
+            lstFaces.setCellRenderer(lcrGrid);
+            lstFaces.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+            lstFaces.setVisibleRowCount(0);
+            if (doResize) {
+                // recalculate scroll pane size
+                var cellSize = lcrGrid
+                        .getListCellRendererComponent(lstFaces, Face.NONE,
+                                0, false, false)
+                        .getPreferredSize();
+
+                final int columns = 5;
+                final int maxRows = 8;
+
+                var size = new Dimension(cellSize.width * columns + scrollPane.getVerticalScrollBar().getWidth(),
+                        0);
+
+                // don't ask me why these extra 19 pixels are needed, but this seems to solve rows sometimes breaking
+                //  one column before they should
+                size.width += 19;
+
+                // calculate height
+                int modelSize = Math.min(columns * maxRows, lstFaces.getModel().getSize());
+                size.height = cellSize.height * (modelSize / columns);
+                if (modelSize % columns > 0) {
+                    size.height += cellSize.height;
+                }
+
+                // again, for some reason these extra 2 pixels prevent the list from being scrollable if all rows would
+                //  fit on-screen
+                size.height += 2;
+
+                scrollPane.setPreferredSize(size);
+                scrollPane.setMinimumSize(size);
+
+                pack();
+            }
+        }
+
+        private void setupSearchResults() {
+            final int maxRows = 8;
+
+            lstFaces.setCellRenderer(lcrSearchResults);
+            lstFaces.setLayoutOrientation(JList.VERTICAL);
+            lstFaces.setVisibleRowCount(maxRows);
 
             // recalculate scroll pane size
-            var cellSize = lstFaces.getCellRenderer()
+            var cellSize = lcrSearchResults
                     .getListCellRendererComponent(lstFaces, Face.NONE,
                             0, false, false)
                     .getPreferredSize();
-
-            final int columns = 5;
-            final int maxRows = 8;
-
-            var size = new Dimension(cellSize.width * columns + scrollPane.getVerticalScrollBar().getWidth(),
-                    0);
+            int modelSize = Math.min(maxRows, lstFaces.getModel().getSize());
+            var size = new Dimension(cellSize.width + scrollPane.getVerticalScrollBar().getWidth(),
+                    cellSize.height * modelSize);
 
             // don't ask me why these extra 19 pixels are needed, but this seems to solve rows sometimes breaking
             //  one column before they should
             size.width += 19;
-
-            // calculate height
-            int modelSize = Math.min(columns * maxRows, lstFaces.getModel().getSize());
-            size.height = cellSize.height * (modelSize / columns);
-            if (modelSize % columns > 0) {
-                size.height += cellSize.height;
-            }
-
             // again, for some reason these extra 2 pixels prevent the list from being scrollable if all rows would
-            // fit on-screen
+            //  fit on-screen
             size.height += 2;
 
             scrollPane.setPreferredSize(size);
             scrollPane.setMinimumSize(size);
+
+            pack();
+        }
+
+        private void updateSearchQuery() {
+            String query = txtSearch.getText();
+            if (query.isEmpty()) {
+                refreshModel();
+                if (isSearching) {
+                    setupGrid(true);
+                }
+                isSearching = false;
+            } else {
+                if (!isSearching) {
+                    setupSearchResults();
+                }
+                isSearching = true;
+                String queryLC = query.toLowerCase(Locale.ROOT);
+                lcrSearchResults.setHighlightedString(queryLC);
+                mdlFaces.clear();
+                // TODO wait a bit before actually searching (see TextboxEditorPane highlight behavior)
+                // TODO stick this in a worker
+                currentCategory.getFaces().values().stream()
+                        .map(face -> {
+                            int firstIndex = face.getName().toLowerCase(Locale.ROOT).indexOf(queryLC);
+                            if (firstIndex < 0) {
+                                return null;
+                            }
+                            return new Pair<>(face, firstIndex);
+                        })
+                        .filter(Objects::nonNull)
+                        .sorted(Comparator.comparingInt(Pair::right))
+                        .forEach(pair -> mdlFaces.addElement(pair.left()));
+            }
         }
 
         private void resetHover() {
@@ -229,7 +332,23 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
         @Override
         public void show(Component invoker, int x, int y) {
             resetHover();
+            txtSearch.setText(null);
             super.show(invoker, x, y);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            txtSearch.setText(null);
+        }
+
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+            updateSearchQuery();
+        }
+
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+            updateSearchQuery();
         }
 
         @Override
@@ -286,5 +405,8 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
 
         @Override
         public void mouseEntered(MouseEvent e) { }
+
+        @Override
+        public void changedUpdate(DocumentEvent e) { }
     }
 }

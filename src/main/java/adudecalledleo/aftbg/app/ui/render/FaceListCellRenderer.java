@@ -7,7 +7,7 @@ import javax.swing.*;
 import adudecalledleo.aftbg.app.face.Face;
 
 public final class FaceListCellRenderer extends BaseListCellRenderer<Face> {
-    private static final Dimension SIZE = new Dimension(72 * 4 + 4, 72);
+    static final Dimension SIZE = new Dimension(72 * 4 + 4, 72);
 
     private final boolean showImagePath;
 
