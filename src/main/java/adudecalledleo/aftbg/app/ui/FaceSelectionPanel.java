@@ -97,17 +97,10 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
     }
 
     private void updateCategory(FaceCategory cat) {
+        int selected = Math.max(0, selectionPopup.mdlFaces.indexOf(selectedFace));
         selectionPopup.updateCategory(cat);
-
-        /*
-        int selected = Math.max(faceDisplay.getSelectedIndex(), 0);
-
-        faceDisplayModel.removeAllElements();
-        faceDisplayModel.addAll(cat.getFaces().values());
-
-        faceDisplay.setSelectedIndex(Math.min(faceDisplayModel.getSize() - 1, selected));*/
-        // TODO
-        setFace0(cat.getFaces().values().iterator().next());
+        selected = Math.min(selectionPopup.mdlFaces.getSize() - 1, selected);
+        setFace0(selectionPopup.mdlFaces.get(selected));
     }
 
     private void setFace0(Face face) {
