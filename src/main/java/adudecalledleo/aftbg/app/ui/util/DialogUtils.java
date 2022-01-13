@@ -1,10 +1,11 @@
-package adudecalledleo.aftbg.app.util;
+package adudecalledleo.aftbg.app.ui.util;
+
+import java.awt.*;
+import java.io.File;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
-import java.io.File;
+import javax.swing.filechooser.*;
 
 import adudecalledleo.aftbg.logging.Logger;
 

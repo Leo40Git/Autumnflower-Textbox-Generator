@@ -11,7 +11,7 @@ import javax.swing.*;
 import javax.swing.filechooser.*;
 
 import adudecalledleo.aftbg.app.AppResources;
-import adudecalledleo.aftbg.app.util.DialogUtils;
+import adudecalledleo.aftbg.app.ui.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.SizedByteArray;
 import adudecalledleo.aftbg.logging.Logger;
 

@@ -13,9 +13,9 @@ import javax.swing.*;
 import javax.swing.filechooser.*;
 
 import adudecalledleo.aftbg.app.AppResources;
-import adudecalledleo.aftbg.app.util.DialogUtils;
+import adudecalledleo.aftbg.app.ui.util.DialogUtils;
+import adudecalledleo.aftbg.app.ui.util.TransferableImage;
 import adudecalledleo.aftbg.app.util.OperatingSystem;
-import adudecalledleo.aftbg.app.util.TransferableImage;
 import adudecalledleo.aftbg.logging.Logger;
 
 public final class PreviewDialog extends ModalDialog {

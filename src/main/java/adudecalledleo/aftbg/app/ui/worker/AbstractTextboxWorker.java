@@ -7,8 +7,8 @@ import javax.swing.*;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.text.TextParser;
+import adudecalledleo.aftbg.app.ui.LoadFrame;
 import adudecalledleo.aftbg.app.ui.MainPanel;
-import adudecalledleo.aftbg.app.util.LoadFrame;
 import adudecalledleo.aftbg.window.WindowColors;
 import adudecalledleo.aftbg.window.WindowContext;
 

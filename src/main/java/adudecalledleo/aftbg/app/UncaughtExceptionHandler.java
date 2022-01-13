@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.swing.*;
 
-import adudecalledleo.aftbg.app.util.DialogUtils;
-import adudecalledleo.aftbg.app.util.LoadFrame;
+import adudecalledleo.aftbg.app.ui.LoadFrame;
+import adudecalledleo.aftbg.app.ui.util.DialogUtils;
 import adudecalledleo.aftbg.logging.Logger;
 
 public final class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {

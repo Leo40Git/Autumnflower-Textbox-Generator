@@ -16,11 +16,11 @@ import adudecalledleo.aftbg.app.AppUpdateCheck;
 import adudecalledleo.aftbg.app.game.ExtensionDefinition;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
+import adudecalledleo.aftbg.app.ui.LoadFrame;
 import adudecalledleo.aftbg.app.ui.MainPanel;
 import adudecalledleo.aftbg.app.ui.render.StringListCellRenderer;
 import adudecalledleo.aftbg.app.ui.worker.BrowseWorker;
 import adudecalledleo.aftbg.app.ui.worker.UpdateCheckWorker;
-import adudecalledleo.aftbg.app.util.LoadFrame;
 import adudecalledleo.aftbg.logging.Logger;
 import org.jetbrains.annotations.Nullable;
 

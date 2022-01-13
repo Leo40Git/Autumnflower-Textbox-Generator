@@ -2,8 +2,8 @@ package adudecalledleo.aftbg.app.ui.worker;
 
 import javax.swing.*;
 
+import adudecalledleo.aftbg.app.ui.LoadFrame;
 import adudecalledleo.aftbg.app.ui.MainPanel;
-import adudecalledleo.aftbg.app.util.LoadFrame;
 
 public abstract class AbstractWorker extends SwingWorker<Void, Void> {
     protected final MainPanel mainPanel;

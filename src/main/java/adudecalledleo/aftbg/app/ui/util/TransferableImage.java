@@ -1,9 +1,7 @@
-package adudecalledleo.aftbg.app.util;
+package adudecalledleo.aftbg.app.ui.util;
 
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.datatransfer.*;
 
 @SuppressWarnings("ClassCanBeRecord")
 public final class TransferableImage implements Transferable {

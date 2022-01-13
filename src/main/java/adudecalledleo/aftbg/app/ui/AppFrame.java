@@ -7,7 +7,7 @@ import javax.swing.*;
 
 import adudecalledleo.aftbg.BuildInfo;
 import adudecalledleo.aftbg.app.game.GameDefinition;
-import adudecalledleo.aftbg.app.util.DialogUtils;
+import adudecalledleo.aftbg.app.ui.util.DialogUtils;
 
 public final class AppFrame extends JFrame {
     public AppFrame(GameDefinition gameDef) {

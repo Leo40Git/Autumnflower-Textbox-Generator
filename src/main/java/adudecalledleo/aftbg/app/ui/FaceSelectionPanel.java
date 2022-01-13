@@ -19,7 +19,7 @@ import adudecalledleo.aftbg.app.ui.render.FaceCategoryListCellRenderer;
 import adudecalledleo.aftbg.app.ui.render.FaceGridCellRenderer;
 import adudecalledleo.aftbg.app.ui.render.FaceListCellRenderer;
 import adudecalledleo.aftbg.app.ui.render.FaceSearchListCellRenderer;
-import adudecalledleo.aftbg.app.util.ComboBoxUtils;
+import adudecalledleo.aftbg.app.ui.util.ComboBoxUtils;
 import adudecalledleo.aftbg.app.util.Pair;
 
 public final class FaceSelectionPanel extends JPanel implements ItemListener, GameDefinitionUpdateListener {

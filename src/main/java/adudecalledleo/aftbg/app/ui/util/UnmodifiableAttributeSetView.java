@@ -1,8 +1,8 @@
-package adudecalledleo.aftbg.app.util;
+package adudecalledleo.aftbg.app.ui.util;
 
-import javax.swing.text.AttributeSet;
-import javax.swing.text.MutableAttributeSet;
 import java.util.Enumeration;
+
+import javax.swing.text.*;
 
 public final class UnmodifiableAttributeSetView implements MutableAttributeSet {
     private final AttributeSet delegate;

@@ -10,7 +10,7 @@ import javax.swing.*;
 import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.text.TextSanitizer;
-import adudecalledleo.aftbg.app.util.DialogUtils;
+import adudecalledleo.aftbg.app.ui.util.DialogUtils;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 

@@ -22,8 +22,8 @@ import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.ui.render.FaceCategoryListCellRenderer;
 import adudecalledleo.aftbg.app.ui.render.FaceListCellRenderer;
-import adudecalledleo.aftbg.app.util.DialogUtils;
-import adudecalledleo.aftbg.app.util.ListReorderTransferHandler;
+import adudecalledleo.aftbg.app.ui.util.DialogUtils;
+import adudecalledleo.aftbg.app.ui.util.ListReorderTransferHandler;
 import adudecalledleo.aftbg.app.util.PathUtils;
 import adudecalledleo.aftbg.logging.Logger;
 

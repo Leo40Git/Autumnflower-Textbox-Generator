@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.app.util;
+package adudecalledleo.aftbg.app.ui;
 
 import java.awt.*;
 import java.awt.event.*;

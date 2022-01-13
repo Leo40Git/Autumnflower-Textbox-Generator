@@ -7,10 +7,10 @@ import adudecalledleo.aftbg.app.TextboxRenderer;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.game.GameDefinition;
+import adudecalledleo.aftbg.app.ui.LoadFrame;
 import adudecalledleo.aftbg.app.ui.MainPanel;
 import adudecalledleo.aftbg.app.ui.dialog.AnimatedPreviewDialog;
-import adudecalledleo.aftbg.app.util.DialogUtils;
-import adudecalledleo.aftbg.app.util.LoadFrame;
+import adudecalledleo.aftbg.app.ui.util.DialogUtils;
 import adudecalledleo.aftbg.app.util.SizedByteArray;
 import adudecalledleo.aftbg.logging.Logger;
 

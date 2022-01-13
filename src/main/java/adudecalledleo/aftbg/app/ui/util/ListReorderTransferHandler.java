@@ -1,10 +1,9 @@
-package adudecalledleo.aftbg.app.util;
+package adudecalledleo.aftbg.app.ui.util;
+
+import java.awt.datatransfer.*;
+import java.awt.dnd.*;
 
 import javax.swing.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
-import java.awt.dnd.*;
 
 public final class ListReorderTransferHandler extends TransferHandler {
     public interface ReorderCallback {

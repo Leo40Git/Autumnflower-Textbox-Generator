@@ -14,8 +14,8 @@ import adudecalledleo.aftbg.app.game.DefinitionLoadException;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.text.modifier.ModifierRegistry;
 import adudecalledleo.aftbg.app.ui.AppFrame;
-import adudecalledleo.aftbg.app.util.DialogUtils;
-import adudecalledleo.aftbg.app.util.LoadFrame;
+import adudecalledleo.aftbg.app.ui.LoadFrame;
+import adudecalledleo.aftbg.app.ui.util.DialogUtils;
 import adudecalledleo.aftbg.logging.Logger;
 
 public final class Main {

@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import adudecalledleo.aftbg.BuildInfo;
-import adudecalledleo.aftbg.app.util.LoadFrame;
+import adudecalledleo.aftbg.app.ui.LoadFrame;
 import adudecalledleo.aftbg.app.util.VersionAdapter;
 import adudecalledleo.aftbg.logging.Logger;
 import com.google.gson.FieldNamingPolicy;

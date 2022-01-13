@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.*;
 
-import adudecalledleo.aftbg.app.util.DialogUtils;
+import adudecalledleo.aftbg.app.ui.util.DialogUtils;
 import adudecalledleo.aftbg.logging.Logger;
 
 public final class BrowseWorker extends SwingWorker<Void, Void> {

@@ -5,8 +5,8 @@ import java.awt.*;
 import javax.swing.*;
 
 import adudecalledleo.aftbg.app.AppUpdateCheck;
-import adudecalledleo.aftbg.app.util.DialogUtils;
-import adudecalledleo.aftbg.app.util.LoadFrame;
+import adudecalledleo.aftbg.app.ui.LoadFrame;
+import adudecalledleo.aftbg.app.ui.util.DialogUtils;
 import adudecalledleo.aftbg.logging.Logger;
 
 public final class UpdateCheckWorker extends SwingWorker<Void, Void> {

@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.app.util;
+package adudecalledleo.aftbg.app.ui.util;
 
 import javax.swing.*;
 
