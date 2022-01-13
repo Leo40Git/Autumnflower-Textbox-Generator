@@ -142,7 +142,6 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
 
     private final class SelectionPopup extends JPopupMenu implements ActionListener, DocumentListener, MouseListener, MouseMotionListener {
         private final PlaceholderTextField txtSearch;
-        private final JButton btnClear;
         private final JList<Face> lstFaces;
         private final DefaultListModel<Face> mdlFaces;
         private final JLabel lblName, lblSource;
@@ -165,7 +164,7 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
                     BorderFactory.createEmptyBorder(0, 0, 2, 0),
                     txtSearch.getBorder()));
 
-            btnClear = new JButton("x");
+            JButton btnClear = new JButton("x");
             btnClear.addActionListener(this);
 
             lstFaces = new JList<>();
@@ -273,12 +272,9 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
             var size = new Dimension(cellSize.width + scrollPane.getVerticalScrollBar().getWidth(),
                     cellSize.height * modelSize);
 
-            // don't ask me why these extra 19 pixels are needed, but this seems to solve rows sometimes breaking
-            //  one column before they should
-            size.width += 19;
-            // again, for some reason these extra 2 pixels prevent the list from being scrollable if all rows would
-            //  fit on-screen
-            size.height += 2;
+            // don't ask me why these extra 2 pixels are needed, but this seems to solve the horizontal scrollbar
+            //  appearing when it really shouldn't
+            size.width += 2;
 
             scrollPane.setPreferredSize(size);
             scrollPane.setMinimumSize(size);
