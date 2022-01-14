@@ -2,12 +2,14 @@ package adudecalledleo.aftbg.app;
 
 import java.awt.*;
 import java.awt.image.*;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.text.html.*;
+
+import adudecalledleo.aftbg.logging.Logger;
 
 public final class AppResources {
     public enum Icons {
@@ -30,6 +32,8 @@ public final class AppResources {
     }
 
     private static Font font;
+
+    private static StyleSheet updateStyleSheet;
 
     private AppResources() { }
 
@@ -77,5 +81,24 @@ public final class AppResources {
             throw new IllegalStateException("Font hasn't been loaded!");
         }
         return font;
+    }
+
+    public static StyleSheet getUpdateStyleSheet() {
+        if (updateStyleSheet == null) {
+            loadUpdateStyleSheet();
+        }
+        return updateStyleSheet;
+    }
+
+    private static void loadUpdateStyleSheet() {
+        updateStyleSheet = new StyleSheet();
+        try (InputStream in = openResourceStream("/update.css");
+             InputStreamReader isr = new InputStreamReader(in, StandardCharsets.UTF_8);
+             BufferedReader reader = new BufferedReader(isr)) {
+            updateStyleSheet.loadRules(reader, null);
+        } catch (IOException e) {
+            Logger.error("Failed to load update stylesheet, using default stylesheet instead", e);
+        }
+        Logger.trace("[AppResources] CSS loaded: \n" + updateStyleSheet.toString());
     }
 }
