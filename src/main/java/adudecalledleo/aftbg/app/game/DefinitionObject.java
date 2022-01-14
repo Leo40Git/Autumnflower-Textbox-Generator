@@ -2,7 +2,7 @@ package adudecalledleo.aftbg.app.game;
 
 import org.jetbrains.annotations.ApiStatus;
 
-public abstract class DefinedObject {
+public abstract class DefinitionObject {
     protected Definition source;
 
     public Definition getSource() {

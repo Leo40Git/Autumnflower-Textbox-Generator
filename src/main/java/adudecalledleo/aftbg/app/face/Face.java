@@ -9,11 +9,11 @@ import java.nio.file.Path;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-import adudecalledleo.aftbg.app.game.DefinedObject;
+import adudecalledleo.aftbg.app.game.DefinitionObject;
 import adudecalledleo.aftbg.app.util.ColorUtils;
 import adudecalledleo.aftbg.app.util.PathUtils;
 
-public final class Face extends DefinedObject {
+public final class Face extends DefinitionObject {
     private static final BufferedImage BLANK = new BufferedImage(144, 144, BufferedImage.TYPE_INT_ARGB);
 
     public static final Face NONE = new Face("(none)", "None", null, BLANK);
