@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,7 +27,7 @@ public final class AppPreferences {
 
     private static final class Key {
         private static final String VERSION = "version";
-        private static final String AUTO_UPDATE_CHECK = "auto_update_check_enabled";
+        private static final String AUTO_UPDATE_CHECK_ENABLED = "auto_update_check_enabled";
         private static final String LAST_GAME_DEFINITION = "last_game_definition";
         private static final String LAST_EXTENSIONS = "last_extensions";
     }
@@ -50,11 +51,11 @@ public final class AppPreferences {
         //  to allow for backwards compatibility with older preferences files
         // currently, though, there's only one version - the current one
 
-        autoUpdateCheckEnabled = JsonUtils.getBoolean(obj, Key.AUTO_UPDATE_CHECK);
-        lastGameDefinition = JsonUtils.getPath(obj, Key.LAST_GAME_DEFINITION);
+        autoUpdateCheckEnabled = JsonUtils.getBoolean(obj, Key.AUTO_UPDATE_CHECK_ENABLED);
+        lastGameDefinition = JsonUtils.getPathNullable(obj, Key.LAST_GAME_DEFINITION);
 
         lastExtensions.clear();
-        var lastExtsArr = JsonUtils.getArray(obj, Key.LAST_EXTENSIONS);
+        var lastExtsArr = JsonUtils.getArrayNullable(obj, Key.LAST_EXTENSIONS);
         if (lastExtsArr != null) {
             for (int i = 0, size = lastExtsArr.size(); i < size; i++) {
                 var elem = lastExtsArr.get(i);
@@ -66,7 +67,7 @@ public final class AppPreferences {
                                 + "but failed to convert it into a path!").formatted(i, Key.LAST_EXTENSIONS), e);
                     }
                 } else {
-                    throw JsonUtils.createWrongArrayElemTypeException(Key.LAST_EXTENSIONS, i, JsonUtils.ElementType.STRING, elem);
+                    throw JsonUtils.createWrongTypeException(Key.LAST_EXTENSIONS, i, JsonUtils.ElementType.STRING, elem);
                 }
             }
         }
@@ -74,7 +75,7 @@ public final class AppPreferences {
 
     public void write(JsonObject obj) {
         obj.addProperty(Key.VERSION, CURRENT_VERSION);
-        obj.addProperty(Key.AUTO_UPDATE_CHECK, autoUpdateCheckEnabled);
+        obj.addProperty(Key.AUTO_UPDATE_CHECK_ENABLED, autoUpdateCheckEnabled);
         JsonUtils.putPath(obj, Key.LAST_GAME_DEFINITION, lastGameDefinition);
         JsonArray lastExtsArr = new JsonArray();
         for (var path : lastExtensions) {
@@ -86,7 +87,7 @@ public final class AppPreferences {
     public static void init() throws IOException {
         if (Files.exists(SAVE_PATH)) {
             JsonObject obj;
-            try (BufferedReader reader = Files.newBufferedReader(SAVE_PATH)) {
+            try (BufferedReader reader = Files.newBufferedReader(SAVE_PATH, StandardCharsets.UTF_8)) {
                 obj = GSON.fromJson(reader, JsonObject.class);
             } catch (JsonParseException e) {
                 throw new IOException("Failed to parse JSON", e);
@@ -111,7 +112,7 @@ public final class AppPreferences {
         JsonObject obj = new JsonObject();
         instance.write(obj);
 
-        try (BufferedWriter writer = Files.newBufferedWriter(SAVE_PATH)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(SAVE_PATH, StandardCharsets.UTF_8)) {
             GSON.toJson(obj, writer);
         } catch (IOException | JsonIOException e) {
             Logger.error("Failed to flush preferences!", e);

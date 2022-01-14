@@ -57,7 +57,7 @@ public final class JsonUtils {
             super(message, cause);
         }
     }
-    
+
     public static StructureException createMissingKeyException(String key, ElementType expectedType) {
         return new StructureException("Expected property \"%s\" of type %s, but was missing!"
                 .formatted(key, expectedType.getFriendlyName()));
@@ -68,9 +68,9 @@ public final class JsonUtils {
                 .formatted(key, expectedType.getFriendlyName(), ElementType.of(elem).getFriendlyName()));
     }
 
-    public static StructureException createWrongArrayElemTypeException(String key, int i, ElementType expectedType, JsonElement elem) {
+    public static StructureException createWrongTypeException(String key, int index, ElementType expectedType, JsonElement elem) {
         return new JsonUtils.StructureException(("Expected element at index %d of array property \"%s\" to be of type %s, "
-                + "but was of type %s!").formatted(i, key, expectedType.getFriendlyName(), ElementType.of(elem).getFriendlyName()));
+                + "but was of type %s!").formatted(index, key, expectedType.getFriendlyName(), ElementType.of(elem).getFriendlyName()));
     }
 
     public static boolean getBoolean(JsonObject obj, String key) throws StructureException {
@@ -113,7 +113,17 @@ public final class JsonUtils {
         throw createWrongTypeException(key, ElementType.NUMBER, elem);
     }
 
-    public static @Nullable String getString(JsonObject obj, String key) throws StructureException {
+    public static String getString(JsonObject obj, String key) throws StructureException {
+        JsonElement elem = obj.get(key);
+        if (elem == null) {
+            throw createMissingKeyException(key, ElementType.STRING);
+        } else if (elem instanceof JsonPrimitive prim && prim.isString()) {
+            return prim.getAsString();
+        }
+        throw createWrongTypeException(key, ElementType.STRING, elem);
+    }
+
+    public static @Nullable String getStringNullable(JsonObject obj, String key) throws StructureException {
         JsonElement elem = obj.get(key);
         if (elem == null || elem.isJsonNull()) {
             return null;
@@ -123,9 +133,19 @@ public final class JsonUtils {
         throw createWrongTypeException(key, ElementType.STRING, elem);
     }
 
-    public static @Nullable JsonArray getArray(JsonObject obj, String key) throws StructureException {
+    public static JsonArray getArray(JsonObject obj, String key) throws StructureException {
         JsonElement elem = obj.get(key);
         if (elem == null) {
+            throw createMissingKeyException(key, ElementType.ARRAY);
+        } else if (elem instanceof JsonArray arr) {
+            return arr;
+        }
+        throw createWrongTypeException(key, ElementType.ARRAY, elem);
+    }
+
+    public static @Nullable JsonArray getArrayNullable(JsonObject obj, String key) throws StructureException {
+        JsonElement elem = obj.get(key);
+        if (elem == null || elem.isJsonNull()) {
             return null;
         } else if (elem instanceof JsonArray arr) {
             return arr;
@@ -133,8 +153,18 @@ public final class JsonUtils {
         throw createWrongTypeException(key, ElementType.ARRAY, elem);
     }
 
-    public static @Nullable Path getPath(JsonObject obj, String key) throws StructureException {
+    public static Path getPath(JsonObject obj, String key) throws StructureException {
         String rawUri = getString(obj, key);
+        try {
+            return PathUtils.fromRawUri(rawUri);
+        } catch (URISyntaxException | PathUtils.InvalidPathURIException e) {
+            throw new StructureException(("Expected property \"%s\" to be a path URI, "
+                    + "but failed to convert it into a path!").formatted(key), e);
+        }
+    }
+
+    public static @Nullable Path getPathNullable(JsonObject obj, String key) throws StructureException {
+        String rawUri = getStringNullable(obj, key);
         if (rawUri == null) {
             return null;
         } else {
