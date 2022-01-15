@@ -3,8 +3,9 @@ package adudecalledleo.aftbg.app;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,6 +31,7 @@ import org.commonmark.renderer.NodeRenderer;
 import org.commonmark.renderer.html.HtmlNodeRendererContext;
 import org.commonmark.renderer.html.HtmlNodeRendererFactory;
 import org.commonmark.renderer.html.HtmlRenderer;
+import org.jetbrains.annotations.Nullable;
 
 public final class AppUpdateCheck {
     private AppUpdateCheck() { }
@@ -75,9 +77,7 @@ public final class AppUpdateCheck {
                     return;
                 }
 
-                Map<String, String> attrs = new HashMap<>();
-                attrs.put("class", tagName);
-                ctx.extendAttributes(node, tagName, attrs);
+                Map<String, String> attrs = ctx.extendAttributes(node, tagName, Map.of("class", tagName));
                 var writer = ctx.getWriter();
                 writer.tag("span", attrs);
                 renderChildren(node);
@@ -120,6 +120,19 @@ public final class AppUpdateCheck {
         if (BuildInfo.version().compareTo(jsonRep.latestVersion) < 0) {
             /// we have a new version!
 
+            // get download URL
+            URL dlUrl;
+            if (jsonRep.latestVersionDownload == null) {
+                // if latest version DL link isn't specified, assume homepage
+                dlUrl = BuildInfo.homepageUrl();
+            } else {
+                try {
+                    dlUrl = new URL(jsonRep.latestVersionDownload);
+                } catch (MalformedURLException e) {
+                    throw new CheckFailedException("Failed to parse latest version download URL", e);
+                }
+            }
+
             // parse and render changelogs for dialog
             List<Extension> extensions = List.of(
                     AutolinkExtension.create(),
@@ -136,13 +149,6 @@ public final class AppUpdateCheck {
                     .sanitizeUrls(true)
                     .build();
 
-            // FIXME remove this!
-            jsonRep.changelogs.put(Version.create(9, 9, 9), new String[] {
-                    "~~testing addons~~  ",
-                    "++abcd++  ",
-                    "https://google.com"
-            });
-
             String renderedBlock = renderer.render(parser.parse(jsonRep.changelogs.entrySet().stream()
                     .sorted(Map.Entry.comparingByKey())
                     .map(entry -> "### " + entry.getKey() + "\n" + String.join("\n", entry.getValue()))
@@ -152,7 +158,7 @@ public final class AppUpdateCheck {
             boolean wasAOT = loadFrame.isAlwaysOnTop();
             loadFrame.setAlwaysOnTop(false);
             Logger.trace(renderedBlock);
-            var dialog = new UpdateAvailableDialog(parent, renderedBlock);
+            var dialog = new UpdateAvailableDialog(parent, renderedBlock, dlUrl);
             dialog.setLocationRelativeTo(null);
             dialog.setVisible(true);
             loadFrame.setAlwaysOnTop(wasAOT);
@@ -161,6 +167,7 @@ public final class AppUpdateCheck {
 
     private static final class JsonRep {
         public Version latestVersion;
+        public @Nullable String latestVersionDownload;
         public Map<Version, String[]> changelogs;
     }
 }
