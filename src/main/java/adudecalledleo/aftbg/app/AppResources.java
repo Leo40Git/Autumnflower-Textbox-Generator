@@ -99,6 +99,5 @@ public final class AppResources {
         } catch (IOException e) {
             Logger.error("Failed to load update stylesheet, using default stylesheet instead", e);
         }
-        Logger.trace("[AppResources] CSS loaded: \n" + updateStyleSheet.toString());
     }
 }

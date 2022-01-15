@@ -15,7 +15,6 @@ import adudecalledleo.aftbg.BuildInfo;
 import adudecalledleo.aftbg.app.ui.LoadFrame;
 import adudecalledleo.aftbg.app.ui.dialog.UpdateAvailableDialog;
 import adudecalledleo.aftbg.app.util.VersionAdapter;
-import adudecalledleo.aftbg.logging.Logger;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.GsonBuilder;
 import de.skuzzle.semantic.Version;
@@ -157,7 +156,6 @@ public final class AppUpdateCheck {
 
             boolean wasAOT = loadFrame.isAlwaysOnTop();
             loadFrame.setAlwaysOnTop(false);
-            Logger.trace(renderedBlock);
             var dialog = new UpdateAvailableDialog(parent, renderedBlock, dlUrl);
             dialog.setLocationRelativeTo(null);
             dialog.setVisible(true);
