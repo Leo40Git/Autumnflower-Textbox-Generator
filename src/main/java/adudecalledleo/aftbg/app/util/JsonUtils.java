@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 public final class JsonUtils {
     private JsonUtils() { }
-    
+
     public enum ElementType {
         NULL("null"), OBJECT("object"), ARRAY("array"),
         BOOLEAN("boolean"), NUMBER("number"), STRING("string");

@@ -11,15 +11,13 @@ import adudecalledleo.aftbg.app.script.TextboxScriptSet;
 import adudecalledleo.aftbg.app.util.PathUtils;
 import org.jetbrains.annotations.Nullable;
 
-import static adudecalledleo.aftbg.app.game.GameDefinition.GSON;
-
 public final class ExtensionDefinition extends Definition {
-    private final FacePool faces;
-    private final TextboxScriptSet scripts;
+    private final @Nullable FacePool faces;
+    private final @Nullable TextboxScriptSet scripts;
 
     private ExtensionDefinition(String name, String[] description, String[] credits,
                                 Path filePath, Path basePath,
-                                FacePool faces, TextboxScriptSet scripts) {
+                                @Nullable FacePool faces, @Nullable TextboxScriptSet scripts) {
         super(name, description, credits, filePath, basePath);
 
         this.faces = faces;
@@ -46,10 +44,12 @@ public final class ExtensionDefinition extends Definition {
                     .formatted(filePath));
         }
 
-        FacePool faces;
-        if (jsonRep.facesPath == null) {
-            faces = new FacePool();
-        } else {
+        if (jsonRep.name == null) {
+            throw new DefinitionLoadException("Name is missing!");
+        }
+
+        FacePool faces = null;
+        if (jsonRep.facesPath != null) {
             Path facesPath = PathUtils.tryResolve(basePath, jsonRep.facesPath, "face pool definition",
                     DefinitionLoadException::new);
             try (BufferedReader reader = Files.newBufferedReader(facesPath)) {
@@ -60,10 +60,8 @@ public final class ExtensionDefinition extends Definition {
             }
         }
 
-        TextboxScriptSet scripts;
-        if (jsonRep.scriptsPath == null) {
-            scripts = new TextboxScriptSet();
-        } else {
+        TextboxScriptSet scripts = null;
+        if (jsonRep.scriptsPath != null) {
             Path scriptsPath = PathUtils.tryResolve(basePath, jsonRep.scriptsPath, "scripts definition",
                     DefinitionLoadException::new);
             try (BufferedReader reader = Files.newBufferedReader(scriptsPath)) {
@@ -74,15 +72,19 @@ public final class ExtensionDefinition extends Definition {
             }
         }
 
-        try {
-            faces.loadAll(basePath);
-        } catch (FaceLoadException e) {
-            throw new DefinitionLoadException("Failed to load face pool", e);
+        if (faces != null) {
+            try {
+                faces.loadAll(basePath);
+            } catch (FaceLoadException e) {
+                throw new DefinitionLoadException("Failed to load face pool", e);
+            }
         }
-        try {
-            scripts.loadAll(basePath);
-        } catch (ScriptLoadException e) {
-            throw new DefinitionLoadException("Failed to load scripts", e);
+        if (scripts != null) {
+            try {
+                scripts.loadAll(basePath);
+            } catch (ScriptLoadException e) {
+                throw new DefinitionLoadException("Failed to load scripts", e);
+            }
         }
 
         return new ExtensionDefinition(jsonRep.name, jsonRep.description, jsonRep.credits, filePath, basePath, faces, scripts);
@@ -93,18 +95,18 @@ public final class ExtensionDefinition extends Definition {
         return "[ext] " + name;
     }
 
-    public FacePool faces() {
+    public @Nullable FacePool faces() {
         return faces;
     }
 
-    public TextboxScriptSet scripts() {
+    public @Nullable TextboxScriptSet scripts() {
         return scripts;
     }
 
     private static final class JsonRep {
         public String name;
-        public String[] description;
-        public String[] credits;
+        public String[] description = DEFAULT_DESCRIPTION;
+        public String[] credits = DEFAULT_CREDITS;
         public @Nullable String facesPath;
         public @Nullable String scriptsPath;
     }

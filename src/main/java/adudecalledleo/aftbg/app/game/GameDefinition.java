@@ -17,24 +17,11 @@ import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.script.ScriptLoadException;
 import adudecalledleo.aftbg.app.script.TextboxScriptSet;
 import adudecalledleo.aftbg.app.util.PathUtils;
-import adudecalledleo.aftbg.app.util.WindowTintAdapter;
 import adudecalledleo.aftbg.window.WindowContext;
 import adudecalledleo.aftbg.window.WindowTint;
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.jetbrains.annotations.Nullable;
 
 public final class GameDefinition extends Definition {
-    public static final Gson GSON = new GsonBuilder()
-            .setLenient()
-            .setPrettyPrinting()
-            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-            .registerTypeAdapter(WindowTint.class, new WindowTintAdapter())
-            .registerTypeAdapter(FacePool.class, new FacePool.Adapter())
-            .registerTypeAdapter(TextboxScriptSet.class, new TextboxScriptSet.Adapter())
-            .create();
-
     private final WindowContext winCtx;
     private final FacePool baseFaces;
     private final TextboxScriptSet baseScripts;
@@ -77,6 +64,19 @@ public final class GameDefinition extends Definition {
         } catch (Exception e) {
             throw new DefinitionLoadException("Failed to read definition from \"%s\""
                     .formatted(filePath), e);
+        }
+
+        if (jsonRep.name == null) {
+            throw new DefinitionLoadException("Name is missing!");
+        }
+        if (jsonRep.windowPath == null) {
+            throw new DefinitionLoadException("Window path is missing!");
+        }
+        if (jsonRep.windowTint == null) {
+            throw new DefinitionLoadException("Window tint is missing!");
+        }
+        if (jsonRep.facesPath == null) {
+            throw new DefinitionLoadException("Face pool definition path is missing!");
         }
 
         Path facesPath = PathUtils.tryResolve(basePath, jsonRep.facesPath, "face pool definition",
@@ -171,8 +171,12 @@ public final class GameDefinition extends Definition {
         allScripts.addFrom(baseScripts);
 
         for (var ext : extensions) {
-            allFaces.addFrom(ext.faces());
-            allScripts.addFrom(ext.scripts());
+            if (ext.faces() != null) {
+                allFaces.addFrom(ext.faces());
+            }
+            if (ext.scripts() != null) {
+                allScripts.addFrom(ext.scripts());
+            }
         }
     }
 
@@ -194,8 +198,8 @@ public final class GameDefinition extends Definition {
 
     private static final class JsonRep {
         public String name;
-        public String[] description;
-        public String[] credits;
+        public String[] description = DEFAULT_DESCRIPTION;
+        public String[] credits = DEFAULT_CREDITS;
         public String windowPath;
         public WindowTint windowTint;
         public String facesPath;

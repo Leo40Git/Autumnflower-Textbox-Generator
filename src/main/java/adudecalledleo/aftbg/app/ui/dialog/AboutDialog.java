@@ -133,12 +133,14 @@ public final class AboutDialog extends ModalDialog {
             for (String desc : gameDef.description()) {
                 box.add(new JLabel(desc));
             }
-            box.add(Box.createVerticalStrut(16));
-            JLabel lblCredits = new JLabel("Credits:");
-            lblCredits.setFont(lblCredits.getFont().deriveFont(Font.BOLD));
-            box.add(lblCredits);
-            for (String credit : gameDef.credits()) {
-                box.add(new JLabel(credit));
+            if (gameDef.credits().length > 0) {
+                box.add(Box.createVerticalStrut(16));
+                JLabel lblCredits = new JLabel("Credits:");
+                lblCredits.setFont(lblCredits.getFont().deriveFont(Font.BOLD));
+                box.add(lblCredits);
+                for (String credit : gameDef.credits()) {
+                    box.add(new JLabel(credit));
+                }
             }
             return box;
         }
@@ -252,11 +254,14 @@ public final class AboutDialog extends ModalDialog {
                 for (String desc : ext.description()) {
                     descBox.add(new JLabel(desc));
                 }
-                JLabel lblCredits = new JLabel("Credits:");
-                lblCredits.setFont(lblCredits.getFont().deriveFont(Font.BOLD));
-                descBox.add(lblCredits);
-                for (String credit : ext.credits()) {
-                    descBox.add(new JLabel(credit));
+                if (ext.credits().length > 0) {
+                    descBox.add(Box.createVerticalStrut(16));
+                    JLabel lblCredits = new JLabel("Credits:");
+                    lblCredits.setFont(lblCredits.getFont().deriveFont(Font.BOLD));
+                    descBox.add(lblCredits);
+                    for (String credit : ext.credits()) {
+                        descBox.add(new JLabel(credit));
+                    }
                 }
             }
             descBox.repaint();

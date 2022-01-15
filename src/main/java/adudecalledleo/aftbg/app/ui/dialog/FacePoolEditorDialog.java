@@ -19,7 +19,7 @@ import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.face.FaceCategory;
 import adudecalledleo.aftbg.app.face.FaceLoadException;
 import adudecalledleo.aftbg.app.face.FacePool;
-import adudecalledleo.aftbg.app.game.GameDefinition;
+import adudecalledleo.aftbg.app.game.Definition;
 import adudecalledleo.aftbg.app.ui.render.FaceCategoryListCellRenderer;
 import adudecalledleo.aftbg.app.ui.render.FaceListCellRenderer;
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
@@ -84,7 +84,7 @@ public final class FacePoolEditorDialog extends ModalDialog {
         }
 
         try (BufferedWriter writer = Files.newBufferedWriter(filePath)) {
-            GameDefinition.GSON.toJson(pool, writer);
+            Definition.GSON.toJson(pool, writer);
         } catch (Exception e) {
             Logger.error("Failed to write face pool", e);
             DialogUtils.showErrorDialog(this,
@@ -149,7 +149,7 @@ public final class FacePoolEditorDialog extends ModalDialog {
                     Path newFilePath = file.toPath();
                     FacePool newPool;
                     try (BufferedReader reader = Files.newBufferedReader(newFilePath)) {
-                        newPool = GameDefinition.GSON.fromJson(reader, FacePool.class);
+                        newPool = Definition.GSON.fromJson(reader, FacePool.class);
                         newPool.loadAll(newFilePath.getParent());
                     } catch (Exception e) {
                         Logger.error("Failed to read face pool for editing", e);

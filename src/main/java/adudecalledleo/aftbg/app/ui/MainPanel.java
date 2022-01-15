@@ -19,6 +19,7 @@ import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.data.TextboxListSerializer;
 import adudecalledleo.aftbg.app.face.Face;
+import adudecalledleo.aftbg.app.game.Definition;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.app.script.TextboxScriptSet;
@@ -367,7 +368,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             currentProject = sel;
         }
         try (FileWriter fw = new FileWriter(currentProject);
-             JsonWriter out = GameDefinition.GSON.newJsonWriter(fw)) {
+             JsonWriter out = Definition.GSON.newJsonWriter(fw)) {
             projectSerializer.write(textboxes, out);
         }
         return true;
@@ -545,7 +546,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
                     List<Textbox> newTextboxes;
                     try (FileReader fr = new FileReader(src);
-                         JsonReader in = GameDefinition.GSON.newJsonReader(fr)) {
+                         JsonReader in = Definition.GSON.newJsonReader(fr)) {
                         newTextboxes = projectSerializer.read(in, gameDef.faces());
                     } catch (TextboxListSerializer.ReadCancelledException ignored) {
                         break;
