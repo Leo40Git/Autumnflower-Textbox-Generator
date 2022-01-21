@@ -2,9 +2,7 @@ package adudecalledleo.aftbg.app.ui;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Comparator;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 import javax.swing.*;
@@ -20,7 +18,7 @@ import adudecalledleo.aftbg.app.ui.render.FaceGridCellRenderer;
 import adudecalledleo.aftbg.app.ui.render.FaceListCellRenderer;
 import adudecalledleo.aftbg.app.ui.render.FaceSearchListCellRenderer;
 import adudecalledleo.aftbg.app.ui.util.ComboBoxUtils;
-import adudecalledleo.aftbg.app.util.Pair;
+import adudecalledleo.aftbg.app.ui.worker.FaceSearchWorker;
 
 public final class FaceSelectionPanel extends JPanel implements ItemListener, GameDefinitionUpdateListener {
     private static final FacePool INITIAL_FACE_POOL = new FacePool();
@@ -152,6 +150,7 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
 
         private FaceCategory currentCategory;
         private boolean isSearching;
+        private FaceSearchWorker currentSearchWorker;
 
         public SelectionPopup() {
             lcrGrid = new FaceGridCellRenderer();
@@ -302,23 +301,21 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
                 if (!isSearching) {
                     setupSearchResults();
                 }
+
+                if (currentSearchWorker != null) {
+                    currentSearchWorker.cancel(true);
+                    currentSearchWorker = null;
+                }
+
                 isSearching = true;
                 String queryLC = query.toLowerCase(Locale.ROOT);
                 lcrSearchResults.setHighlightedString(queryLC);
                 mdlFaces.clear();
+
                 // TODO wait a bit before actually searching (see TextboxEditorPane highlight behavior)
-                // TODO stick this in a worker
-                currentCategory.getFaces().values().stream()
-                        .map(face -> {
-                            int firstIndex = face.getName().toLowerCase(Locale.ROOT).indexOf(queryLC);
-                            if (firstIndex < 0) {
-                                return null;
-                            }
-                            return new Pair<>(face, firstIndex);
-                        })
-                        .filter(Objects::nonNull)
-                        .sorted(Comparator.comparingInt(Pair::right))
-                        .forEach(pair -> mdlFaces.addElement(pair.left()));
+                // TODO add loading animation (swap viewport?)
+                currentSearchWorker = new FaceSearchWorker(currentCategory, queryLC, mdlFaces::addAll);
+                currentSearchWorker.execute();
             }
         }
 

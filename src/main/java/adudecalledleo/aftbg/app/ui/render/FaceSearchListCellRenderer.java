@@ -59,12 +59,6 @@ public final class FaceSearchListCellRenderer extends BaseListCellRenderer<Face>
         }
         setIcon(value.getIcon());
         setText(highlight(value.getName()));
-        var src = value.getSource();
-        if (src == null) {
-            setToolTipText(null);
-        } else {
-            setToolTipText("<html><b>From:</b> %s</html>".formatted(src.qualifiedName()));
-        }
         return this;
     }
 
