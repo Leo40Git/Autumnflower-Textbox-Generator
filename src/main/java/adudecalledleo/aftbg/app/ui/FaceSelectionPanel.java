@@ -313,8 +313,16 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
                 mdlFaces.clear();
 
                 // TODO wait a bit before actually searching (see TextboxEditorPane highlight behavior)
-                // TODO add loading animation (swap viewport?)
+                // TODO add loading animation
                 currentSearchWorker = new FaceSearchWorker(currentCategory, queryLC, mdlFaces::addAll);
+                currentSearchWorker.getPropertyChangeSupport().addPropertyChangeListener("state", evt -> {
+                    if (evt.getNewValue() == SwingWorker.StateValue.DONE) {
+                        // TODO stop loading animation
+                        if (mdlFaces.isEmpty()) {
+                            // TODO show "no results"
+                        }
+                    }
+                });
                 currentSearchWorker.execute();
             }
         }
