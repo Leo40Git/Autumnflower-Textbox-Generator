@@ -290,6 +290,11 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
         }
 
         private void updateSearchQuery() {
+            if (currentSearchWorker != null) {
+                currentSearchWorker.cancel(true);
+                currentSearchWorker = null;
+            }
+
             String query = txtSearch.getText();
             if (query.isEmpty()) {
                 refreshModel();
@@ -301,12 +306,6 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
                 if (!isSearching) {
                     setupSearchResults();
                 }
-
-                if (currentSearchWorker != null) {
-                    currentSearchWorker.cancel(true);
-                    currentSearchWorker = null;
-                }
-
                 isSearching = true;
                 String queryLC = query.toLowerCase(Locale.ROOT);
                 lcrSearchResults.setHighlightedString(queryLC);
