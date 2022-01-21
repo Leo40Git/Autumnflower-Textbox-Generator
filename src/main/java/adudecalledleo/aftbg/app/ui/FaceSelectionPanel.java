@@ -196,7 +196,10 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
             panel.add(infoBox, BorderLayout.PAGE_END);
 
             add(panel);
-            resetHover();
+
+            // this is more reliable than packing, apparently
+            show(null, 0, 0);
+            setVisible(false);
         }
 
         public void updateCategory(FaceCategory cat) {
@@ -231,9 +234,9 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
                 var size = new Dimension(cellSize.width * columns + scrollPane.getVerticalScrollBar().getWidth(),
                         0);
 
-                // don't ask me why these extra 19 pixels are needed, but this seems to solve rows sometimes breaking
+                // don't ask me why these extra 2 pixels are needed, but this seems to solve rows sometimes breaking
                 //  one column before they should
-                size.width += 19;
+                size.width += 2;
 
                 // calculate height
                 int modelSize = Math.min(columns * maxRows, lstFaces.getModel().getSize());
@@ -298,9 +301,7 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
             String query = txtSearch.getText();
             if (query.isEmpty()) {
                 refreshModel();
-                if (isSearching) {
-                    setupGrid(true);
-                }
+                setupGrid(isSearching);
                 isSearching = false;
             } else {
                 if (!isSearching) {
