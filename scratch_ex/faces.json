@@ -38,5 +38,10 @@
       "Sigh": "faces/sixty/sigh.png",
       "Aheago": "faces/sixty/aheago.png"
     }
+  },
+  "Twelve": {
+    "entries": {
+      "Tiled (Smug)": "faces/twelve/tiled_smug.png"
+    }
   }
 }
