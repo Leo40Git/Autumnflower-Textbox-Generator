@@ -138,8 +138,10 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
         faceDisplay.setEnabled(cat != FaceCategory.NONE);
     }
 
-    private final class SelectionPopup extends JPopupMenu implements ActionListener, DocumentListener, MouseListener, MouseMotionListener {
+    private final class SelectionPopup extends JPopupMenu implements ActionListener, DocumentListener, MouseListener,
+            MouseMotionListener, PopupMenuListener {
         private final PlaceholderTextField txtSearch;
+        private final JButton btnClear;
         private final JList<Face> lstFaces;
         private final DefaultListModel<Face> mdlFaces;
         private final JLabel lblName, lblSource;
@@ -147,14 +149,18 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
 
         private final FaceGridCellRenderer lcrGrid;
         private final FaceSearchListCellRenderer lcrSearchResults;
+        private final Timer searchTimer;
 
         private FaceCategory currentCategory;
         private boolean isSearching;
         private FaceSearchWorker currentSearchWorker;
+        private volatile String currentSearchQuery;
 
         public SelectionPopup() {
             lcrGrid = new FaceGridCellRenderer();
             lcrSearchResults = new FaceSearchListCellRenderer();
+            searchTimer = new Timer(250, this);
+            searchTimer.setRepeats(false);
 
             txtSearch = new PlaceholderTextField();
             txtSearch.setPlaceholder("Search...");
@@ -163,7 +169,7 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
                     BorderFactory.createEmptyBorder(0, 0, 2, 0),
                     txtSearch.getBorder()));
 
-            JButton btnClear = new JButton("x");
+            btnClear = new JButton("x");
             btnClear.addActionListener(this);
 
             lstFaces = new JList<>();
@@ -200,11 +206,17 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
             // this is more reliable than packing, apparently
             show(null, 0, 0);
             setVisible(false);
+
+            addPopupMenuListener(this);
         }
 
         public void updateCategory(FaceCategory cat) {
             this.currentCategory = cat;
             if (isSearching) {
+                if (currentSearchWorker != null) {
+                    currentSearchWorker.cancel(true);
+                    currentSearchWorker = null;
+                }
                 txtSearch.setText(null);
             } else {
                 refreshModel();
@@ -308,22 +320,9 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
                     setupSearchResults();
                 }
                 isSearching = true;
-                String queryLC = query.toLowerCase(Locale.ROOT);
-                lcrSearchResults.setHighlightedString(queryLC);
-                mdlFaces.clear();
-
-                // TODO wait a bit before actually searching (see TextboxEditorPane highlight behavior)
+                currentSearchQuery = query.toLowerCase(Locale.ROOT);
                 // TODO add loading animation
-                currentSearchWorker = new FaceSearchWorker(currentCategory, queryLC, mdlFaces::addAll);
-                currentSearchWorker.getPropertyChangeSupport().addPropertyChangeListener("state", evt -> {
-                    if (evt.getNewValue() == SwingWorker.StateValue.DONE) {
-                        // TODO stop loading animation
-                        if (mdlFaces.isEmpty()) {
-                            // TODO show "no results"
-                        }
-                    }
-                });
-                currentSearchWorker.execute();
+                searchTimer.restart();
             }
         }
 
@@ -344,7 +343,29 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            txtSearch.setText(null);
+            var src = e.getSource();
+            if (src == btnClear) {
+                txtSearch.setText(null);
+            } else if (src == searchTimer) {
+                if (currentSearchWorker != null) {
+                    currentSearchWorker.cancel(true);
+                    currentSearchWorker = null;
+                }
+                final FaceCategory category = currentCategory;
+                final String query = currentSearchQuery;
+                lcrSearchResults.setHighlightedString(query);
+                mdlFaces.clear();
+                currentSearchWorker = new FaceSearchWorker(category, query, mdlFaces::addAll);
+                currentSearchWorker.getPropertyChangeSupport().addPropertyChangeListener("state", evt -> {
+                    if (evt.getNewValue() == SwingWorker.StateValue.DONE) {
+                        // TODO stop loading animation
+                        if (mdlFaces.isEmpty()) {
+                            // TODO show "no results"
+                        }
+                    }
+                });
+                currentSearchWorker.execute();
+            }
         }
 
         @Override
@@ -407,6 +428,14 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
         }
 
         @Override
+        public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+            if (currentSearchWorker != null) {
+                currentSearchWorker.cancel(true);
+                currentSearchWorker = null;
+            }
+        }
+
+        @Override
         public void mouseClicked(MouseEvent e) { }
 
         @Override
@@ -414,5 +443,11 @@ public final class FaceSelectionPanel extends JPanel implements ItemListener, Ga
 
         @Override
         public void changedUpdate(DocumentEvent e) { }
+
+        @Override
+        public void popupMenuWillBecomeVisible(PopupMenuEvent e) { }
+
+        @Override
+        public void popupMenuCanceled(PopupMenuEvent e) { }
     }
 }

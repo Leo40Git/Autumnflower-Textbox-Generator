@@ -33,13 +33,15 @@ public final class FaceSearchWorker extends SwingWorker<Void, Face> {
 
     @Override
     protected Void doInBackground() {
-        // FIXME check if Thread.interrupted()
         var lcch = new LowerCaseCacheHelper(sourceCategory.getFaces().size());
         List<Face> toSort = new ArrayList<>();
         for (Face face : sourceCategory.getFaces().values()) {
             if (lcch.toLowerCase(face.getName()).contains(queryString)) {
                 toSort.add(face);
             }
+        }
+        if (Thread.interrupted()) {
+            return null;
         }
         toSort.sort(Comparator.comparingInt(face -> lcch.toLowerCase(face.getName()).indexOf(queryString)));
         publish(toSort.toArray(Face[]::new));
