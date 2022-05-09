@@ -5,13 +5,17 @@
       "Blep": "faces/mercia/blep.png",
       "Confident": "faces/mercia/confident.png",
       "Huh": "faces/mercia/huh.png",
+      "Crying": "faces/mercia/crying.png",
+      "Cookie'd": "faces/mercia/cookie.png",
       "Biting Lip": "faces/mercia/lipbite.png",
       "Pog": "faces/mercia/pog.png"
     }
   },
   "Kyron": {
     "entries": {
-      "Huh": "faces/kyron/huh.png"
+      "Huh": "faces/kyron/huh.png",
+      "Glasses": "faces/kyron/glasses.png",
+      "Smug": "faces/kyron/smug.png"
     }
   },
   "Bailey": {
@@ -22,9 +26,7 @@
   },
   "Lif": {
     "entries": {
-      "Angry (Undisguised)": "faces/lif/angry_undisguised.png",
       "Flirty": "faces/lif/flirty.png",
-      "High": "faces/lif/high.png",
       "Shocked": "faces/lif/shocked.png",
       "Beconed": "faces/lif/cone.png"
     }
@@ -33,7 +35,7 @@
     "entries": {
       "Angry": "faces/sixty/angry.png",
       "Blushing": "faces/sixty/blush.png",
-      "Seriously?": "faces/sixty/srsly.png",
+      "Sigh": "faces/sixty/sigh.png",
       "Aheago": "faces/sixty/aheago.png"
     }
   }
