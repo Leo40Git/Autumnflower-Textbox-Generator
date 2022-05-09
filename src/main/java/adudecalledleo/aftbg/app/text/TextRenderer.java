@@ -79,9 +79,12 @@ public final class TextRenderer {
                     continue;
                 }
 
+                // make the text vertically centered
+                int yo = ma / 2 - g.getFontMetrics().getMaxAscent() / 2;
+
                 // generate an outline of the text
                 var layout = new TextLayout(text.getContents(), g.getFont(), g.getFontRenderContext());
-                tx.setToTranslation(x, y + ma);
+                tx.setToTranslation(x, y + ma - yo);
 
                 boolean flipH = gimmicks.flip().isHorizontal(), flipV = gimmicks.flip().isVertical();
 
@@ -93,7 +96,7 @@ public final class TextRenderer {
                     if (flipH) {
                         moveX += bounds.getWidth();
                     }
-                    double moveY = y + ma;
+                    double moveY = y + ma - yo;
                     if (flipV) {
                         moveY -= bounds.getHeight();
                     }
@@ -102,7 +105,7 @@ public final class TextRenderer {
                     outline = layout.getOutline(tx);
                     outline = tx2.createTransformedShape(outline);
                 } else {
-                    tx.setToTranslation(x, y + ma);
+                    tx.setToTranslation(x, y + ma - yo);
                     outline = layout.getOutline(tx);
                 }
 
