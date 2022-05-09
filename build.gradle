@@ -32,7 +32,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.jetbrains:annotations:22.0.0'
+    compileOnly 'org.jetbrains:annotations:23.0.0'
     implementation "com.google.code.gson:gson:${project.gson_version}"
     implementation "de.skuzzle:semantic-version:${project.semver_version}"
     implementation "org.commonmark:commonmark:${project.commonmark_version}"
@@ -41,8 +41,8 @@ dependencies {
     implementation "org.commonmark:commonmark-ext-gfm-strikethrough:${project.commonmark_version}"
     implementation "org.openjdk.nashorn:nashorn-core:${project.nashorn_version}"
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 }
 
 processResources {
