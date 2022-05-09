@@ -46,9 +46,9 @@
       "Smile": "faces/lif/smile.png",
       "Scowl": "faces/lif/scowl.png",
       "Suffering": "faces/lif/suffering.png",
-      "In Dress": "faces/lif/dress.png",
-      "In Underwear": "faces/lif/scandalous.png",
-      "Neutral (Undisguised)": "faces/lif/neutral_undisguised.png"
+      "Theater Dress": "faces/lif/theater_dress.png",
+      "Underwear": "faces/lif/scandalous.png",
+      "Undisguised": "faces/lif/undisguised.png"
     }
   },
   "Sixty": {
@@ -57,7 +57,8 @@
       "Neutral": "faces/sixty/neutral.png",
       "Open Mouth": "faces/sixty/open_mouth.png",
       "Sad": "faces/sixty/sad.png",
-      "Happy": "faces/sixty/happy.png"
+      "Happy": "faces/sixty/happy.png",
+      "Danish'd": "faces/sixty/danish.png"
     }
   },
   "Twelve": {
@@ -69,6 +70,7 @@
       "Happy": "faces/twelve/happy.png",
       "Very Happy": "faces/twelve/very_happy.png",
       "Blushing": "faces/twelve/blush.png",
+      "Tiled": "faces/twelve/tiled.png",
       "Naked": "faces/twelve/naked.png",
       "Mirror": "faces/twelve/mirror.png"
     }
@@ -83,6 +85,7 @@
       "Blackguard": "faces/dhunters/blackguard.png",
       "Blackguard (No Helmet)": "faces/dhunters/blackguard_nohelm.png",
       "Doormaster": "faces/dhunters/doormaster.png",
+      "Cornerhunter": "faces/dhunters/cornerhunter.png",
       "Tyra": "faces/dhunters/tyra.png",
       "Revna": "faces/dhunters/revna.png",
       "Revna (Talking)": "faces/dhunters/revna_squawk.png",
@@ -199,6 +202,7 @@
       "Renard": "faces/other/renard.png",
       "Reynard/Russet": "faces/other/reynard_russet.png",
       "Walnut/Alder/Copper": "faces/other/walnut_alder_copper.png",
+      "Walnut (Scarf)": "faces/other/walnut_scarf.png",
       "Riptide": "faces/other/riptide.png",
       "Rose": "faces/other/rose.png",
       "Russel": "faces/other/russel.png",
@@ -220,7 +224,8 @@
       "Wescott": "faces/other/wescott.png",
       "Zorro": "faces/other/zorro.png",
       "Lava Demon": "faces/other/lava_demon.png",
-      "Voice Demon": "faces/other/voice_demon.png"
+      "Voice Demon": "faces/other/voice_demon.png",
+      "One-Wing": "faces/other/one_wing.png"
     }
   },
   "Unused": {
