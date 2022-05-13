@@ -13,11 +13,13 @@ import adudecalledleo.aftbg.window.WindowContext;
 
 public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox>
         implements GameDefinitionUpdateListener {
+    private final StringBuilder sb;
     private final DataTracker parserCtx;
     private WindowContext winCtx;
 
     public TextboxListCellRenderer() {
         super();
+        sb = new StringBuilder();
         parserCtx = new DataTracker();
         setPreferredSize(new Dimension(72 * 4 + 4, 72));
         setMinimumSize(new Dimension(72 * 4 + 4, 72));
@@ -40,12 +42,49 @@ public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox>
             setForeground(winCtx == null ? Color.WHITE : winCtx.getColor(0));
         }
         setIcon(value.getFace().getIcon());
-        //String contents = NodeUtils.getTruncatedDisplay(textParser.parse(parserCtx, value.getText()), 50);
-        String contents = "(oops I broke this)"; // FIXME reimplement getTruncatedDisplay... hopefully without parsing?
+        String contents = makeTruncatedDisplay(value.getText(), 50);
         setText("<html>"
                 + "<b>Textbox " + (index + 1) + "</b><br>"
                 + contents
                 + "</html>");
         return this;
+    }
+
+    private static final String CONTENTS_EMPTY = "(empty)";
+    private String makeTruncatedDisplay(String contents, int maxLength) {
+        if (contents.isBlank()) {
+            return CONTENTS_EMPTY;
+        } else {
+            sb.setLength(0);
+            boolean skipSpaces = true, inTagBlock = false;
+            for (char c : contents.toCharArray()) {
+                if (inTagBlock) {
+                    if (c == ']') {
+                        inTagBlock = false;
+                    }
+                } else {
+                    if (c == '[') {
+                        inTagBlock = true;
+                    } else {
+                        // trim leading spaces
+                        if (c == ' ' && skipSpaces) {
+                            continue;
+                        } else {
+                            skipSpaces = false;
+                        }
+                        sb.append(c);
+                        if (sb.length() == maxLength - 1) {
+                            sb.append('…');
+                            break;
+                        }
+                    }
+                }
+            }
+            if (sb.length() == 0) {
+                return CONTENTS_EMPTY;
+            } else {
+                return "\"" + sb + "\"";
+            }
+        }
     }
 }
