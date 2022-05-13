@@ -11,8 +11,8 @@ import adudecalledleo.aftbg.app.text.TextParser;
 import adudecalledleo.aftbg.app.ui.LoadFrame;
 import adudecalledleo.aftbg.app.ui.MainPanel;
 import adudecalledleo.aftbg.app.ui.dialog.PreviewDialog;
-import adudecalledleo.aftbg.window.WindowColors;
 import adudecalledleo.aftbg.window.WindowContext;
+import adudecalledleo.aftbg.window.WindowPalette;
 
 public final class TextboxGenerator extends AbstractWorker {
     private final TextParser parser;
@@ -27,7 +27,7 @@ public final class TextboxGenerator extends AbstractWorker {
 
         this.parser = new TextParser();
         this.parserCtx = new TextParser.Context()
-                .put(WindowColors.class, TextboxGenerator.this.winCtx.getColors());
+                .put(WindowPalette.class, TextboxGenerator.this.winCtx.getColors());
     }
 
     @Override

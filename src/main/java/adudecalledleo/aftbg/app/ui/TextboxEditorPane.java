@@ -20,7 +20,9 @@ import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.app.text.TextParser;
 import adudecalledleo.aftbg.app.text.TextRenderer;
 import adudecalledleo.aftbg.app.text.modifier.*;
-import adudecalledleo.aftbg.app.text.node.*;
+import adudecalledleo.aftbg.app.text.node.Node;
+import adudecalledleo.aftbg.app.text.node.Span;
+import adudecalledleo.aftbg.app.text.node.TextNode;
 import adudecalledleo.aftbg.app.ui.dialog.modifier.ColorModifierDialog;
 import adudecalledleo.aftbg.app.ui.dialog.modifier.GimmickModifierDialog;
 import adudecalledleo.aftbg.app.ui.dialog.modifier.StyleModifierDialog;
@@ -29,8 +31,8 @@ import adudecalledleo.aftbg.app.ui.text.ZigZagHighlighter;
 import adudecalledleo.aftbg.app.ui.util.UnmodifiableAttributeSetView;
 import adudecalledleo.aftbg.app.util.ColorUtils;
 import adudecalledleo.aftbg.logging.Logger;
-import adudecalledleo.aftbg.window.WindowColors;
 import adudecalledleo.aftbg.window.WindowContext;
+import adudecalledleo.aftbg.window.WindowPalette;
 
 public final class TextboxEditorPane extends JEditorPane
         implements GameDefinitionUpdateListener, ActionListener {
@@ -357,7 +359,7 @@ public final class TextboxEditorPane extends JEditorPane
         setCaretColor(winCtx.getColor(0));
         StyleConstants.setForeground(styleNormal, winCtx.getColor(0));
         textParserCtx
-                .put(WindowColors.class, winCtx.getColors())
+                .put(WindowPalette.class, winCtx.getColors())
                 .put(FacePool.class, gameDef.faces());
         flushChanges(true);
     }

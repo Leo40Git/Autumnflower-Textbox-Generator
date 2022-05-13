@@ -10,8 +10,8 @@ import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.app.text.TextParser;
 import adudecalledleo.aftbg.app.text.node.NodeUtils;
-import adudecalledleo.aftbg.window.WindowColors;
 import adudecalledleo.aftbg.window.WindowContext;
+import adudecalledleo.aftbg.window.WindowPalette;
 
 public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox>
         implements GameDefinitionUpdateListener {
@@ -31,7 +31,7 @@ public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox>
     public void updateGameDefinition(GameDefinition gameDef) {
         this.winCtx = gameDef.winCtx();
         textParserCtx
-                .put(WindowColors.class, winCtx.getColors())
+                .put(WindowPalette.class, winCtx.getColors())
                 .put(FacePool.class, gameDef.faces());
     }
 

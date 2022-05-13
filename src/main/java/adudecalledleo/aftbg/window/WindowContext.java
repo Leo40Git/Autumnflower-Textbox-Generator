@@ -1,8 +1,7 @@
 package adudecalledleo.aftbg.window;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
+import java.awt.image.*;
 
 /**
  * <b>NOTE:</b> This class is <em>not safe</em> for multithreading.
@@ -13,17 +12,17 @@ import java.awt.image.ImageObserver;
 public final class WindowContext {
     private final WindowBackground background;
     private final WindowBorder border;
-    private final WindowColors colors;
+    private final WindowPalette colors;
     private final WindowArrow arrow;
 
     public WindowContext(BufferedImage window, WindowTint tint) {
         background = new WindowBackground(window, tint);
         border = new WindowBorder(window);
         arrow = new WindowArrow(window);
-        colors = new WindowColors(window);
+        colors = new WindowPalette(window);
     }
 
-    private WindowContext(WindowBackground background, WindowBorder border, WindowColors colors, WindowArrow arrow) {
+    private WindowContext(WindowBackground background, WindowBorder border, WindowPalette colors, WindowArrow arrow) {
         this.background = background;
         this.border = border;
         this.colors = colors;
@@ -46,7 +45,7 @@ public final class WindowContext {
         arrow.draw(g, boxX, boxY, boxWidth, boxHeight, frame, observer);
     }
 
-    public WindowColors getColors() {
+    public WindowPalette getColors() {
         return colors;
     }
 

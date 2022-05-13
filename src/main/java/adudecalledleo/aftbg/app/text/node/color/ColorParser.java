@@ -4,11 +4,11 @@ import java.awt.*;
 
 import adudecalledleo.aftbg.app.data.DataKey;
 import adudecalledleo.aftbg.app.data.DataTracker;
-import adudecalledleo.aftbg.window.WindowColors;
+import adudecalledleo.aftbg.window.WindowPalette;
 import org.jetbrains.annotations.Nullable;
 
 public final class ColorParser {
-    public static final DataKey<WindowColors> PALETTE = new DataKey<>(WindowColors.class, "palette");
+    public static final DataKey<WindowPalette> PALETTE = new DataKey<>(WindowPalette.class, "palette");
 
     private ColorParser() { }
 
@@ -62,8 +62,8 @@ public final class ColorParser {
                     } catch (NumberFormatException e) {
                         throw new IllegalArgumentException("failed to parse palette index", e);
                     }
-                    if (palIdx >= WindowColors.COUNT) {
-                        throw new IllegalArgumentException("palette index is out of bounds (must be below " + WindowColors.COUNT + ")");
+                    if (palIdx >= WindowPalette.COUNT) {
+                        throw new IllegalArgumentException("palette index is out of bounds (must be below " + WindowPalette.COUNT + ")");
                     }
                     return pal.get(palIdx);
                 } else if ("rgb".equals(value)) {

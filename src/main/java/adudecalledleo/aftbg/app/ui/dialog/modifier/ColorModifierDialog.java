@@ -11,8 +11,8 @@ import javax.swing.*;
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.text.TextRenderer;
 import adudecalledleo.aftbg.app.ui.WindowBackgroundPanel;
-import adudecalledleo.aftbg.window.WindowColors;
 import adudecalledleo.aftbg.window.WindowContext;
+import adudecalledleo.aftbg.window.WindowPalette;
 
 public final class ColorModifierDialog extends ModifierDialog {
     private static Result lastResult = null;
@@ -121,7 +121,7 @@ public final class ColorModifierDialog extends ModifierDialog {
                 selectedI = -1;
             }
 
-            for (int i = 0; i < WindowColors.COUNT; i++) {
+            for (int i = 0; i < WindowPalette.COUNT; i++) {
                 JRadioButton rb = new JRadioButton();
                 rb.setModel(new WindowColorButtonModel(i));
                 rb.addActionListener(this);
