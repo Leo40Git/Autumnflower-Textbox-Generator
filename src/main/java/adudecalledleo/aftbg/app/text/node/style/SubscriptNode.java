@@ -5,13 +5,19 @@ import java.util.Map;
 
 import adudecalledleo.aftbg.app.text.DOMParser;
 import adudecalledleo.aftbg.app.text.node.*;
+import adudecalledleo.aftbg.app.text.util.FontStyle;
 
-public final class SubscriptNode extends ContainerNode {
+public final class SubscriptNode extends ContainerNode implements FontStyleModifyingNode {
     public static final String NAME = "sub";
     public static final NodeHandler<SubscriptNode> HANDLER = new Handler();
 
     public SubscriptNode(Span openingSpan, Span closingSpan, Map<String, Attribute> attributes, List<Node> children) {
         super(NAME, openingSpan, closingSpan, attributes, children);
+    }
+
+    @Override
+    public FontStyle updateStyle(FontStyle style) {
+        return style.withSuperscript(FontStyle.Superscript.SUB);
     }
 
     private static final class Handler implements NodeHandler<SubscriptNode> {
@@ -20,6 +26,5 @@ public final class SubscriptNode extends ContainerNode {
                                    Span openingSpan, Span closingSpan, Map<String, Attribute> attributes, String contents) {
             return new SubscriptNode(openingSpan, closingSpan, attributes, ctx.parse(contents, offset, errors));
         }
-
     }
 }

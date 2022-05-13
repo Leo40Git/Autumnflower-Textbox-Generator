@@ -5,13 +5,19 @@ import java.util.Map;
 
 import adudecalledleo.aftbg.app.text.DOMParser;
 import adudecalledleo.aftbg.app.text.node.*;
+import adudecalledleo.aftbg.app.text.util.FontStyle;
 
-public final class SuperscriptNode extends ContainerNode {
+public final class SuperscriptNode extends ContainerNode implements FontStyleModifyingNode {
     public static final String NAME = "sup";
     public static final NodeHandler<SuperscriptNode> HANDLER = new Handler();
 
     public SuperscriptNode(Span openingSpan, Span closingSpan, Map<String, Attribute> attributes, List<Node> children) {
         super(NAME, openingSpan, closingSpan, attributes, children);
+    }
+
+    @Override
+    public FontStyle updateStyle(FontStyle style) {
+        return style.withSuperscript(FontStyle.Superscript.SUPER);
     }
 
     private static final class Handler implements NodeHandler<SuperscriptNode> {

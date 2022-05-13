@@ -13,19 +13,15 @@ import javax.swing.event.*;
 import javax.swing.text.*;
 
 import adudecalledleo.aftbg.app.AppResources;
+import adudecalledleo.aftbg.app.data.DataTracker;
 import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
-import adudecalledleo.aftbg.app.text.TextParser;
-import adudecalledleo.aftbg.app.text.TextRenderer;
-import adudecalledleo.aftbg.app.text.modifier.*;
+import adudecalledleo.aftbg.app.text.DOMRenderer;
 import adudecalledleo.aftbg.app.text.node.Node;
 import adudecalledleo.aftbg.app.text.node.Span;
 import adudecalledleo.aftbg.app.text.node.TextNode;
-import adudecalledleo.aftbg.app.ui.dialog.modifier.ColorModifierDialog;
-import adudecalledleo.aftbg.app.ui.dialog.modifier.GimmickModifierDialog;
-import adudecalledleo.aftbg.app.ui.dialog.modifier.StyleModifierDialog;
 import adudecalledleo.aftbg.app.ui.text.UnderlineHighlighter;
 import adudecalledleo.aftbg.app.ui.text.ZigZagHighlighter;
 import adudecalledleo.aftbg.app.ui.util.UnmodifiableAttributeSetView;
@@ -33,6 +29,8 @@ import adudecalledleo.aftbg.app.util.ColorUtils;
 import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.window.WindowContext;
 import adudecalledleo.aftbg.window.WindowPalette;
+import org.openjdk.nashorn.internal.ir.ErrorNode;
+import org.w3c.dom.NodeList;
 
 public final class TextboxEditorPane extends JEditorPane
         implements GameDefinitionUpdateListener, ActionListener {
@@ -48,8 +46,7 @@ public final class TextboxEditorPane extends JEditorPane
     private static final String AC_ADD_MOD_STYLE = "add_mod.style";
     private static final String AC_ADD_MOD_GIMMICK = "add_mod.gimmick";
 
-    private final TextParser textParser;
-    private final TextParser.Context textParserCtx;
+    private final DataTracker textParserCtx;
     private final Consumer<String> textUpdateConsumer;
     private final Timer updateTimer;
     private final Map<Object, Action> actions;
@@ -67,13 +64,12 @@ public final class TextboxEditorPane extends JEditorPane
         super();
         this.textUpdateConsumer = textUpdateConsumer;
 
-        textParser = new TextParser();
-        textParserCtx = new TextParser.Context();
+        textParserCtx = new DataTracker();
         errors = new HashMap<>();
 
         styleNormal = new SimpleAttributeSet();
-        StyleConstants.setFontFamily(styleNormal, TextRenderer.DEFAULT_FONT.getFamily());
-        StyleConstants.setFontSize(styleNormal, TextRenderer.DEFAULT_FONT.getSize());
+        StyleConstants.setFontFamily(styleNormal, DOMRenderer.DEFAULT_FONT.getFamily());
+        StyleConstants.setFontSize(styleNormal, DOMRenderer.DEFAULT_FONT.getSize());
         StyleConstants.setForeground(styleNormal, Color.WHITE);
         styleMod = new SimpleAttributeSet(styleNormal);
         StyleConstants.setForeground(styleMod, Color.GRAY);
@@ -91,7 +87,7 @@ public final class TextboxEditorPane extends JEditorPane
         actions = createActionTable();
 
         Graphics2D g = SCRATCH_IMAGE.createGraphics();
-        g.setFont(TextRenderer.DEFAULT_FONT);
+        g.setFont(DOMRenderer.DEFAULT_FONT);
         var fm = g.getFontMetrics();
         var size = new Dimension(816, fm.getHeight() * 4 + fm.getDescent());
         g.dispose();
