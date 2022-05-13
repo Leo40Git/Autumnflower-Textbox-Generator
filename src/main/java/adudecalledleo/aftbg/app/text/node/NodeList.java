@@ -7,7 +7,6 @@ import java.util.Spliterator;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 
-import adudecalledleo.aftbg.app.text.modifier.InterruptModifierNode;
 import org.jetbrains.annotations.NotNull;
 
 public final class NodeList implements Iterable<Node> {
@@ -73,25 +72,6 @@ public final class NodeList implements Iterable<Node> {
     public void checkForAdditionalErrors() {
         // use this instead of wrapped.size() so we don't pointlessly iterate over error nodes we add
         final int limit = wrapped.size() - 1;
-
-        // region Interrupt: check if at end of textbox
-        InterruptModifierNode lastInterruptNode = null;
-        for (int i = 0; i < limit; i++) {
-            Node node = wrapped.get(i);
-            if (node instanceof InterruptModifierNode interruptNode) {
-                if (lastInterruptNode != null) {
-                    add(new ErrorNode(lastInterruptNode.getStart(), lastInterruptNode.getLength(),
-                            InterruptModifierNode.Parser.ERROR_PREFIX + "Must be at end of textbox!"));
-                }
-                lastInterruptNode = interruptNode;
-            }
-        }
-
-        if (lastInterruptNode != null && wrapped.get(limit) != lastInterruptNode) {
-            add(new ErrorNode(lastInterruptNode.getStart(), lastInterruptNode.getLength(),
-                    InterruptModifierNode.Parser.ERROR_PREFIX + "Must be at end of textbox!"));
-        }
-        // endregion
     }
 
     public List<Node> asList() {

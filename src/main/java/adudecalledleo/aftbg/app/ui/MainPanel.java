@@ -32,7 +32,6 @@ import adudecalledleo.aftbg.app.ui.util.ListReorderTransferHandler;
 import adudecalledleo.aftbg.app.ui.util.MultilineBuilder;
 import adudecalledleo.aftbg.app.ui.worker.ExtensionDefinitionLoader;
 import adudecalledleo.aftbg.app.ui.worker.GameDefinitionLoader;
-import adudecalledleo.aftbg.app.ui.worker.TextboxAnimator;
 import adudecalledleo.aftbg.app.ui.worker.TextboxGenerator;
 import adudecalledleo.aftbg.logging.Logger;
 import com.google.gson.stream.JsonReader;
@@ -46,7 +45,6 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     private static final String AC_TEXTBOX_REMOVE = "textbox.remove";
 
     private static final String AC_GENERATE = "generate";
-    private static final String AC_GENERATE_ANIMATION = "generate_animation";
 
     public final JFrame frame;
 
@@ -143,29 +141,18 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     }
 
     private JPanel createTextboxEditorPanel() {
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(1, 2));
         JButton btnGenerate = new JButton("Generate");
         btnGenerate.setActionCommand(AC_GENERATE);
         btnGenerate.addActionListener(this);
         btnGenerate.setEnabled(false);
-        buttonPanel.add(btnGenerate);
-        JButton btnGenerateAnim = new JButton("Generate Animation");
-        btnGenerateAnim.setActionCommand(AC_GENERATE_ANIMATION);
-        btnGenerateAnim.addActionListener(this);
-        btnGenerateAnim.setEnabled(false);
-        buttonPanel.add(btnGenerateAnim);
 
-        updateListeners.add(gameDef -> {
-            btnGenerate.setEnabled(true);
-            btnGenerateAnim.setEnabled(true);
-        });
+        updateListeners.add(gameDef -> btnGenerate.setEnabled(true));
 
         JPanel textboxPanel = new JPanel();
         textboxPanel.setLayout(new BorderLayout());
         textboxPanel.add(faceSelection, BorderLayout.PAGE_START);
         textboxPanel.add(new JScrollPane(editorPane), BorderLayout.CENTER);
-        textboxPanel.add(buttonPanel, BorderLayout.PAGE_END);
+        textboxPanel.add(btnGenerate, BorderLayout.PAGE_END);
         return textboxPanel;
     }
 
@@ -237,24 +224,6 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                 frame.setEnabled(false);
                 LoadFrame loadFrame = new LoadFrame("Generating...", false);
                 var worker = new TextboxGenerator(this, loadFrame, gameDef, textboxesCopy);
-                worker.execute();
-            }
-            case AC_GENERATE_ANIMATION -> {
-                if (gameDef == null) {
-                    JOptionPane.showMessageDialog(this,
-                            "A game definition hasn't been loaded yet!",
-                            "Generate Animated", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                editorPane.flushChanges(false);
-                faceSelection.flushChanges();
-
-                List<Textbox> textboxesCopy = new ArrayList<>(textboxes);
-
-                frame.setEnabled(false);
-                LoadFrame loadFrame = new LoadFrame("Generating...", false);
-                var worker = new TextboxAnimator(this, loadFrame, gameDef, textboxesCopy);
                 worker.execute();
             }
             case AC_TEXTBOX_ADD -> {

@@ -21,7 +21,9 @@ import adudecalledleo.aftbg.app.text.TextParser;
 import adudecalledleo.aftbg.app.text.TextRenderer;
 import adudecalledleo.aftbg.app.text.modifier.*;
 import adudecalledleo.aftbg.app.text.node.*;
-import adudecalledleo.aftbg.app.ui.dialog.modifier.*;
+import adudecalledleo.aftbg.app.ui.dialog.modifier.ColorModifierDialog;
+import adudecalledleo.aftbg.app.ui.dialog.modifier.GimmickModifierDialog;
+import adudecalledleo.aftbg.app.ui.dialog.modifier.StyleModifierDialog;
 import adudecalledleo.aftbg.app.ui.text.UnderlineHighlighter;
 import adudecalledleo.aftbg.app.ui.text.ZigZagHighlighter;
 import adudecalledleo.aftbg.app.ui.util.UnmodifiableAttributeSetView;
@@ -43,10 +45,6 @@ public final class TextboxEditorPane extends JEditorPane
     private static final String AC_ADD_MOD_COLOR = "add_mod.color";
     private static final String AC_ADD_MOD_STYLE = "add_mod.style";
     private static final String AC_ADD_MOD_GIMMICK = "add_mod.gimmick";
-    private static final String AC_ADD_MOD_FACE = "add_mod.face";
-    private static final String AC_ADD_MOD_DELAY = "add_mod.delay";
-    private static final String AC_ADD_MOD_TEXT_SPEED = "add_mod.text_speed";
-    private static final String AC_ADD_MOD_INTERRUPT = "add_mod.interrupt";
 
     private final TextParser textParser;
     private final TextParser.Context textParserCtx;
@@ -200,32 +198,6 @@ public final class TextboxEditorPane extends JEditorPane
         item.setMnemonic(KeyEvent.VK_G);
         modsMenu.add(item);
 
-        modsMenu.addSeparator();
-
-        item = new JMenuItem("Animation Only!");
-        item.setEnabled(false);
-        modsMenu.add(item);
-        item = new JMenuItem("Face", AppResources.Icons.MOD_FACE.get());
-        item.setActionCommand(AC_ADD_MOD_FACE);
-        item.addActionListener(this);
-        item.setMnemonic(KeyEvent.VK_F);
-        modsMenu.add(item);
-        item = new JMenuItem("Delay", AppResources.Icons.MOD_DELAY.get());
-        item.setActionCommand(AC_ADD_MOD_DELAY);
-        item.addActionListener(this);
-        item.setMnemonic(KeyEvent.VK_D);
-        modsMenu.add(item);
-        item = new JMenuItem("Text Speed", AppResources.Icons.MOD_TEXT_SPEED.get());
-        item.setActionCommand(AC_ADD_MOD_TEXT_SPEED);
-        item.addActionListener(this);
-        item.setMnemonic(KeyEvent.VK_T);
-        modsMenu.add(item);
-        item = new JMenuItem("Interrupt");
-        item.setActionCommand(AC_ADD_MOD_INTERRUPT);
-        item.addActionListener(this);
-        item.setMnemonic(KeyEvent.VK_I);
-        modsMenu.add(item);
-
         menu.addSeparator();
         menu.add(modsMenu);
 
@@ -321,81 +293,6 @@ public final class TextboxEditorPane extends JEditorPane
                 newSpec = spec.difference(newSpec);
                 try {
                     replaceSelection(newSpec.toModifier());
-                    updateTimer.restart();
-                } finally {
-                    requestFocus();
-                }
-            }
-            case AC_ADD_MOD_FACE -> {
-                Face newFace;
-                try {
-                    forceCaretRendering = true;
-                    var dialog = new FaceModifierDialog(this, gameDef.faces(), textboxFace);
-                    dialog.setLocationRelativeTo(null);
-                    newFace = dialog.showDialog();
-                } finally {
-                    forceCaretRendering = false;
-                }
-                if (newFace == null) {
-                    requestFocus();
-                    break;
-                }
-                String mod = "\\" + FaceModifierNode.KEY;
-                if (newFace != Face.NONE) {
-                    mod = "\\%c[%s]".formatted(FaceModifierNode.KEY, newFace.getPath());
-                }
-                try {
-                    replaceSelection(mod);
-                    updateTimer.restart();
-                } finally {
-                    requestFocus();
-                }
-            }
-            case AC_ADD_MOD_DELAY -> {
-                Integer delayLength;
-                try {
-                    forceCaretRendering = true;
-                    var dialog = new DelayModifierDialog(this);
-                    dialog.setLocationRelativeTo(null);
-                    delayLength = dialog.showDialog();
-                } finally {
-                    forceCaretRendering = false;
-                }
-                if (delayLength == null) {
-                    requestFocus();
-                    break;
-                }
-                try {
-                    replaceSelection("\\%c[%d]".formatted(DelayModifierNode.KEY, delayLength));
-                    updateTimer.restart();
-                } finally {
-                    requestFocus();
-                }
-            }
-            case AC_ADD_MOD_TEXT_SPEED -> {
-                Integer newTextSpeed;
-                try {
-                    forceCaretRendering = true;
-                    var dialog = new TextSpeedModifierDialog(this);
-                    dialog.setLocationRelativeTo(null);
-                    newTextSpeed = dialog.showDialog();
-                } finally {
-                    forceCaretRendering = false;
-                }
-                if (newTextSpeed == null) {
-                    requestFocus();
-                    break;
-                }
-                try {
-                    replaceSelection("\\%c[%d]".formatted(TextSpeedModifierNode.KEY, newTextSpeed));
-                    updateTimer.restart();
-                } finally {
-                    requestFocus();
-                }
-            }
-            case AC_ADD_MOD_INTERRUPT -> {
-                try {
-                    replaceSelection("\\" + InterruptModifierNode.KEY);
                     updateTimer.restart();
                 } finally {
                     requestFocus();
