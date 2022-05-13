@@ -120,7 +120,7 @@ public final class DOMRenderer {
                         sb.setLength(0);
                     }
                     data.resetX();
-                    data.y += defaultMaxAscent;
+                    data.y += 36;
                 } else {
                     sb.append(c);
                 }
@@ -151,8 +151,6 @@ public final class DOMRenderer {
 
     private static int renderText(Graphics2D g, GraphicsState oldState, String text, int defaultMaxAscent, int x, int y,
                                   AffineTransform tx, AffineTransform tx2) {
-        // fudge Y a bit
-        y += 3;
         // make the text vertically centered
         final int yo = defaultMaxAscent / 2 - g.getFontMetrics().getMaxAscent() / 2;
 
