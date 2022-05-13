@@ -12,7 +12,7 @@ import adudecalledleo.aftbg.app.AppUpdateCheck;
 import adudecalledleo.aftbg.app.UncaughtExceptionHandler;
 import adudecalledleo.aftbg.app.game.DefinitionLoadException;
 import adudecalledleo.aftbg.app.game.GameDefinition;
-import adudecalledleo.aftbg.app.text.modifier.ModifierRegistry;
+import adudecalledleo.aftbg.app.text.node.NodeRegistry;
 import adudecalledleo.aftbg.app.ui.AppFrame;
 import adudecalledleo.aftbg.app.ui.LoadFrame;
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
@@ -42,7 +42,7 @@ public final class Main {
 
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
 
-        ModifierRegistry.init();
+        NodeRegistry.init();
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

@@ -5,18 +5,17 @@ import java.util.List;
 import javax.swing.*;
 
 import adudecalledleo.aftbg.app.TextboxRenderer;
+import adudecalledleo.aftbg.app.data.DataTracker;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.game.GameDefinition;
-import adudecalledleo.aftbg.app.text.TextParser;
+import adudecalledleo.aftbg.app.text.node.color.ColorParser;
 import adudecalledleo.aftbg.app.ui.LoadFrame;
 import adudecalledleo.aftbg.app.ui.MainPanel;
 import adudecalledleo.aftbg.app.ui.dialog.PreviewDialog;
 import adudecalledleo.aftbg.window.WindowContext;
-import adudecalledleo.aftbg.window.WindowPalette;
 
 public final class TextboxGenerator extends AbstractWorker {
-    private final TextParser parser;
-    private final TextParser.Context parserCtx;
+    private final DataTracker parserCtx;
     private final WindowContext winCtx;
     private final List<Textbox> textboxes;
 
@@ -25,14 +24,16 @@ public final class TextboxGenerator extends AbstractWorker {
         this.winCtx = gameDef.winCtx().copy();
         this.textboxes = textboxes;
 
-        this.parser = new TextParser();
-        this.parserCtx = new TextParser.Context()
-                .put(WindowPalette.class, TextboxGenerator.this.winCtx.getColors());
+        this.parserCtx = new DataTracker()
+                .set(ColorParser.PALETTE, TextboxGenerator.this.winCtx.getColors());
     }
 
     @Override
     protected Void doInBackground() {
-        var image = TextboxRenderer.render(winCtx, parser, parserCtx, textboxes);
+        // FIXME TextboxRenderer.render just hides errors!
+        //  Inline it, then report errors properly here.
+
+        var image = TextboxRenderer.render(winCtx, parserCtx, textboxes);
 
         if (image == null) {
             loadFrame.setAlwaysOnTop(false);

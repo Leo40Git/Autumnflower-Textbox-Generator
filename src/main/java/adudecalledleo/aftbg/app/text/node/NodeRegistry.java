@@ -24,6 +24,8 @@ public final class NodeRegistry {
         register(StyleNode.NAME, StyleNode.HANDLER);
     }
 
+    public static void init() { /* <clinit> */ }
+
     public static void register(String name, NodeHandler<?> handler) {
         if (HANDLERS.containsKey(name)) {
             throw new IllegalArgumentException("Node \"" + name + "\" is already registered");

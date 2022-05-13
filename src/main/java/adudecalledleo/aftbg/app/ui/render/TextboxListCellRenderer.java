@@ -4,25 +4,21 @@ import java.awt.*;
 
 import javax.swing.*;
 
+import adudecalledleo.aftbg.app.data.DataTracker;
 import adudecalledleo.aftbg.app.data.Textbox;
-import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
-import adudecalledleo.aftbg.app.text.TextParser;
-import adudecalledleo.aftbg.app.text.node.NodeUtils;
+import adudecalledleo.aftbg.app.text.node.color.ColorParser;
 import adudecalledleo.aftbg.window.WindowContext;
-import adudecalledleo.aftbg.window.WindowPalette;
 
 public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox>
         implements GameDefinitionUpdateListener {
-    private final TextParser textParser;
-    private final TextParser.Context textParserCtx;
+    private final DataTracker parserCtx;
     private WindowContext winCtx;
 
     public TextboxListCellRenderer() {
         super();
-        textParser = new TextParser();
-        textParserCtx = new TextParser.Context();
+        parserCtx = new DataTracker();
         setPreferredSize(new Dimension(72 * 4 + 4, 72));
         setMinimumSize(new Dimension(72 * 4 + 4, 72));
     }
@@ -30,9 +26,7 @@ public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox>
     @Override
     public void updateGameDefinition(GameDefinition gameDef) {
         this.winCtx = gameDef.winCtx();
-        textParserCtx
-                .put(WindowPalette.class, winCtx.getColors())
-                .put(FacePool.class, gameDef.faces());
+        parserCtx.set(ColorParser.PALETTE, winCtx.getColors());
     }
 
     @Override
@@ -46,7 +40,8 @@ public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox>
             setForeground(winCtx == null ? Color.WHITE : winCtx.getColor(0));
         }
         setIcon(value.getFace().getIcon());
-        String contents = NodeUtils.getTruncatedDisplay(textParser.parse(textParserCtx, value.getText()), 50);
+        //String contents = NodeUtils.getTruncatedDisplay(textParser.parse(parserCtx, value.getText()), 50);
+        String contents = "(oops I broke this)"; // FIXME reimplement getTruncatedDisplay... hopefully without parsing?
         setText("<html>"
                 + "<b>Textbox " + (index + 1) + "</b><br>"
                 + contents
