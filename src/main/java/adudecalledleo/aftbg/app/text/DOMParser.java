@@ -6,23 +6,22 @@ import java.util.List;
 import adudecalledleo.aftbg.app.data.DataTracker;
 import adudecalledleo.aftbg.app.text.node.Document;
 import adudecalledleo.aftbg.app.text.node.NodeParsingContext;
-import adudecalledleo.aftbg.app.text.node.NodeRegistry;
 
 public final class DOMParser {
     private DOMParser() { }
 
-    public static Result parse(NodeRegistry registry, String contents, DataTracker metadata, SpanTracker spanTracker) {
+    public static Result parse(String contents, DataTracker metadata, SpanTracker spanTracker) {
         if (contents.isEmpty()) {
             return new Result(new Document(), List.of());
         }
-        var ctx = new NodeParsingContext(registry, metadata, spanTracker);
+        var ctx = new NodeParsingContext(metadata, spanTracker);
         var errors = new LinkedList<DOMParser.Error>();
         var result = ctx.parse(DOMInputSanitizer.apply(contents), 0, errors);
         return new Result(new Document(result), errors);
     }
 
-    public static Result parse(NodeRegistry registry, String contents, DataTracker metadata) {
-        return parse(registry, contents, metadata, SpanTracker.NO_OP);
+    public static Result parse(String contents, DataTracker metadata) {
+        return parse(contents, metadata, SpanTracker.NO_OP);
     }
 
     public record Error(int start, int length, String message) {

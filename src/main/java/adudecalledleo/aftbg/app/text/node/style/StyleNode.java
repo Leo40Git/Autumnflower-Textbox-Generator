@@ -13,10 +13,6 @@ public final class StyleNode extends ContainerNode {
     public static final String NAME = "style";
     public static final NodeHandler<StyleNode> HANDLER = new Handler();
 
-    public static void register(NodeRegistry registry) {
-        registry.register(NAME, HANDLER);
-    }
-
     private final @Nullable Integer size;
     private final boolean colorSet;
     private final @Nullable Color color;

@@ -6,7 +6,7 @@ import adudecalledleo.aftbg.app.data.DataTracker;
 import adudecalledleo.aftbg.app.text.DOMParser;
 import adudecalledleo.aftbg.app.text.util.StringScanner;
 
-public record NodeParsingContext(NodeRegistry registry, DataTracker metadata, DOMParser.SpanTracker spanTracker) {
+public record NodeParsingContext(DataTracker metadata, DOMParser.SpanTracker spanTracker) {
     public List<Node> parse(String contents, int offset, List<DOMParser.Error> errors) {
         if (contents.isEmpty()) {
             return List.of();
@@ -91,7 +91,7 @@ public record NodeParsingContext(NodeRegistry registry, DataTracker metadata, DO
                         spanTracker.markNodeDeclOpening(name, openStart, openEnd);
                     }
 
-                    var handler = registry.getHandler(name);
+                    var handler = NodeRegistry.getHandler(name);
                     if (handler == null) {
                         int nameStart = openStart + 1;
                         int nameLength = 0;

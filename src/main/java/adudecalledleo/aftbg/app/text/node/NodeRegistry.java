@@ -4,56 +4,36 @@ import java.util.HashMap;
 import java.util.Map;
 
 import adudecalledleo.aftbg.app.text.node.color.ColorNode;
-import adudecalledleo.aftbg.app.text.node.style.BasicStyleNodes;
-import adudecalledleo.aftbg.app.text.node.style.StyleNode;
+import adudecalledleo.aftbg.app.text.node.style.*;
 import org.jetbrains.annotations.Nullable;
 
 public final class NodeRegistry {
-    private static final NodeRegistry DEFAULT;
+    private static final Map<String, NodeHandler<?>> HANDLERS;
 
     static {
-        DEFAULT = new NodeRegistry();
-        DEFAULT.registerDefaults();
-        DEFAULT.freeze();
-    }
-
-    public static NodeRegistry getDefault() {
-        return DEFAULT;
-    }
-
-    private Map<String, NodeHandler<?>> handlers;
-    private boolean frozen;
-
-    public NodeRegistry() {
-        this.handlers = new HashMap<>();
-        this.frozen = false;
+        HANDLERS = new HashMap<>();
         register(Document.NAME, Document.HANDLER);
         register(TextNode.NAME, TextNode.HANDLER);
+        register(BoldNode.NAME, BoldNode.HANDLER);
+        register(ItalicNode.NAME, ItalicNode.HANDLER);
+        register(UnderlineNode.NAME, UnderlineNode.HANDLER);
+        register(StrikethroughNode.NAME, StrikethroughNode.HANDLER);
+        register(SuperscriptNode.NAME, SuperscriptNode.HANDLER);
+        register(SubscriptNode.NAME, SubscriptNode.HANDLER);
+        register(ColorNode.NAME, ColorNode.HANDLER);
+        register(StyleNode.NAME, StyleNode.HANDLER);
     }
 
-    public void registerDefaults() {
-        BasicStyleNodes.register(this);
-        ColorNode.register(this);
-        StyleNode.register(this);
-    }
-
-    public void register(String name, NodeHandler<?> handler) {
-        if (frozen) {
-            throw new IllegalStateException("This registry is frozen!");
-        }
-
-        if (handlers.containsKey(name)) {
+    public static void register(String name, NodeHandler<?> handler) {
+        if (HANDLERS.containsKey(name)) {
             throw new IllegalArgumentException("Node \"" + name + "\" is already registered");
         }
-        handlers.put(name, handler);
+        HANDLERS.put(name, handler);
     }
 
-    public @Nullable NodeHandler<?> getHandler(String name) {
-        return handlers.get(name);
+    public static @Nullable NodeHandler<?> getHandler(String name) {
+        return HANDLERS.get(name);
     }
 
-    public void freeze() {
-        handlers = Map.copyOf(handlers);
-        frozen = true;
-    }
+    private NodeRegistry() { }
 }

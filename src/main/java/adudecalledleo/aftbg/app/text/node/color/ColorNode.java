@@ -12,10 +12,6 @@ public final class ColorNode extends ContainerNode {
     public static final String NAME = "color";
     public static final NodeHandler<ColorNode> HANDLER = new Handler();
 
-    public static void register(NodeRegistry registry) {
-        registry.register(NAME, HANDLER);
-    }
-
     private final @Nullable Color color;
 
     public ColorNode(@Nullable Color color, Span openingSpan, Span closingSpan, Map<String, Attribute> attributes, List<Node> children) {
