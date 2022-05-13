@@ -50,7 +50,7 @@ public final class ColorParser {
                 String argsStr = value.substring(obIdx + 1, value.indexOf(')')).trim();
                 value = value.substring(0, obIdx).trim();
                 /// function-like - value is function name
-                if ("palette".equals(value)) {
+                if ("palette".equals(value) || "pal".equals(value)) {
                     if (!ctx.containsKey(PALETTE)) {
                         throw new IllegalArgumentException("no palette exists");
                     }
