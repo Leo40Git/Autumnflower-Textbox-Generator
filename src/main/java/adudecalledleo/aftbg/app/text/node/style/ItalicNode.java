@@ -3,6 +3,8 @@ package adudecalledleo.aftbg.app.text.node.style;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.text.*;
+
 import adudecalledleo.aftbg.app.text.DOMParser;
 import adudecalledleo.aftbg.app.text.node.*;
 import adudecalledleo.aftbg.app.text.util.FontStyle;
@@ -18,6 +20,11 @@ public final class ItalicNode extends ContainerNode implements FontStyleModifyin
     @Override
     public FontStyle updateStyle(FontStyle style) {
         return style.withItalic(true);
+    }
+
+    @Override
+    public void updateSwingStyle(MutableAttributeSet style) {
+        StyleConstants.setItalic(style, true);
     }
 
     private static final class Handler implements NodeHandler<ItalicNode> {

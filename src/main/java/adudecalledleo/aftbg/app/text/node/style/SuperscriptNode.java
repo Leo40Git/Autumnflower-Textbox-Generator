@@ -3,6 +3,8 @@ package adudecalledleo.aftbg.app.text.node.style;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.text.*;
+
 import adudecalledleo.aftbg.app.text.DOMParser;
 import adudecalledleo.aftbg.app.text.node.*;
 import adudecalledleo.aftbg.app.text.util.FontStyle;
@@ -18,6 +20,12 @@ public final class SuperscriptNode extends ContainerNode implements FontStyleMod
     @Override
     public FontStyle updateStyle(FontStyle style) {
         return style.withSuperscript(FontStyle.Superscript.SUPER);
+    }
+
+    @Override
+    public void updateSwingStyle(MutableAttributeSet style) {
+        StyleConstants.setSubscript(style, false);
+        StyleConstants.setSuperscript(style, true);
     }
 
     private static final class Handler implements NodeHandler<SuperscriptNode> {
