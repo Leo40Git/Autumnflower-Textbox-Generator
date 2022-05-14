@@ -6,12 +6,13 @@ public final class StringScanner {
     public static final char EOF = 0;
 
     private final char[] chars;
-    private final StringBuilder tempSB;
+    private final StringBuilder tempSB, tempSB2;
     private int pos;
 
     public StringScanner(String string) {
         chars = string.toCharArray();
         tempSB = new StringBuilder();
+        tempSB2 = new StringBuilder();
         pos = 0;
     }
 
@@ -114,9 +115,11 @@ public final class StringScanner {
     public Optional<String> untilLast(String terminator) {
         final int oldPos = pos;
         tempSB.setLength(0);
-        boolean found = false, appendTerm = false;
+        tempSB2.setLength(0);
+        boolean foundOne = false, found;
         final char[] termChars = terminator.toCharArray();
         final int maxSearchPos = chars.length - termChars.length + 1;
+        int endPos = 0;
         for (; pos < maxSearchPos; pos++) {
             found = true;
             for (int termPos = 0; termPos < termChars.length; termPos++) {
@@ -126,16 +129,20 @@ public final class StringScanner {
                 }
             }
             if (found) {
-                if (appendTerm) {
+                if (foundOne) {
                     tempSB.append(terminator);
                 }
+                tempSB.append(tempSB2);
+                tempSB2.setLength(0);
                 pos += termChars.length - 1;
-                appendTerm = true;
+                endPos = pos + 1;
+                foundOne = true;
             } else {
-                tempSB.append(peek());
+                tempSB2.append(peek());
             }
         }
-        if (found) {
+        if (foundOne) {
+            pos = endPos;
             return Optional.of(tempSB.toString());
         } else {
             pos = oldPos;
