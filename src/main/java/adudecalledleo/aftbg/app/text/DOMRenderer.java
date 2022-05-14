@@ -11,10 +11,14 @@ import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.text.node.Node;
 import adudecalledleo.aftbg.app.text.node.TextNode;
 import adudecalledleo.aftbg.app.text.node.color.ColorNode;
+import adudecalledleo.aftbg.app.text.node.gimmick.GimmickNode;
+import adudecalledleo.aftbg.app.text.node.gimmick.TextFill;
+import adudecalledleo.aftbg.app.text.node.gimmick.TextFlip;
 import adudecalledleo.aftbg.app.text.node.style.FontStyleModifyingNode;
 import adudecalledleo.aftbg.app.text.node.style.StyleNode;
 import adudecalledleo.aftbg.app.text.util.FontStyle;
 import adudecalledleo.aftbg.app.util.GraphicsState;
+import adudecalledleo.aftbg.app.util.RainbowPaint;
 
 public final class DOMRenderer {
     public static final Color OUTLINE_COLOR = new Color(0, 0, 0, 127);
@@ -78,11 +82,13 @@ public final class DOMRenderer {
         public final GraphicsState oldState;
         public final int defaultMaxAscent;
         public final int startX;
-        public final StringBuilder stringBuilder;
+        public final StringBuilder sb;
         public final AffineTransform tx, tx2;
 
         public int x, y;
         public FontStyle fontStyle;
+        public TextFill textFill;
+        public TextFlip textFlip;
 
         public RendererData(Graphics2D graphics, GraphicsState oldState,
                             int defaultMaxAscent, int startX, int startY) {
@@ -91,10 +97,12 @@ public final class DOMRenderer {
             this.defaultMaxAscent = defaultMaxAscent;
             this.startX = x = startX;
             this.y = startY;
-            this.stringBuilder = new StringBuilder();
+            this.sb = new StringBuilder();
             this.tx = new AffineTransform();
             this.tx2 = new AffineTransform();
             this.fontStyle = FontStyle.DEFAULT;
+            this.textFill = TextFill.COLOR;
+            this.textFlip = TextFlip.NONE;
         }
 
         public void resetX() {
@@ -107,16 +115,14 @@ public final class DOMRenderer {
     }
 
     public static Optional<Void> render0(Node node, RendererData data) {
-        final var g = data.graphics;
-        final var oldState = data.oldState;
-        final int defaultMaxAscent = data.defaultMaxAscent;
-        final var sb = data.stringBuilder;
+        final Graphics2D g = data.graphics;
+        final StringBuilder sb = data.sb;
 
         if (node instanceof TextNode nText) {
             for (var c : nText.getContents().toCharArray()) {
                 if (c == '\n') {
                     if (!sb.isEmpty()) {
-                        renderText(g, oldState, sb.toString(), defaultMaxAscent, data.x, data.y, data.tx, data.tx2);
+                        renderText(data, sb.toString(), data.x, data.y);
                         sb.setLength(0);
                     }
                     data.resetX();
@@ -127,7 +133,7 @@ public final class DOMRenderer {
             }
 
             if (!sb.isEmpty()) {
-                data.x += renderText(g, oldState, sb.toString(), defaultMaxAscent, data.x, data.y, data.tx, data.tx2);
+                data.x += renderText(data, sb.toString(), data.x, data.y);
                 sb.setLength(0);
             }
         } else if (node instanceof ColorNode nColor) {
@@ -144,20 +150,31 @@ public final class DOMRenderer {
         } else if (node instanceof FontStyleModifyingNode nFSM) {
             data.fontStyle = nFSM.updateStyle(data.fontStyle);
             data.updateFont(g);
+        } else if (node instanceof GimmickNode nGimmick) {
+            if (nGimmick.getFill() != null) {
+                data.textFill = nGimmick.getFill();
+            }
+            if (nGimmick.getFlip() != null) {
+                data.textFlip = nGimmick.getFlip();
+            }
         }
 
         return Optional.empty();
     }
 
-    private static int renderText(Graphics2D g, GraphicsState oldState, String text, int defaultMaxAscent, int x, int y,
-                                  AffineTransform tx, AffineTransform tx2) {
+    private static int renderText(RendererData data, String text, int x, int y) {
+        final Graphics2D g = data.graphics;
+        final GraphicsState oldState = data.oldState;
+        final int defaultMaxAscent = data.defaultMaxAscent;
+        final AffineTransform tx = data.tx, tx2 = data.tx2;
+
         // make the text vertically centered
         final int yo = defaultMaxAscent / 2 - g.getFontMetrics().getMaxAscent() / 2;
 
         // generate an outline of the text
         var layout = new TextLayout(text, g.getFont(), g.getFontRenderContext());
 
-        boolean flipH = false, flipV = false; // FIXME gimmicks!
+        boolean flipH = data.textFlip.isHorizontal(), flipV = data.textFlip.isVertical();
 
         Shape outline;
 
@@ -185,122 +202,22 @@ public final class DOMRenderer {
         g.setStroke(OUTLINE_STROKE);
         g.setColor(OUTLINE_COLOR);
         g.draw(outline);
-        g.setColor(c);
-        // ...then draw a secondary outline...
-        g.setComposite(OUTLINE2_COMPOSITE);
-        g.setStroke(OUTLINE2_STROKE);
-        g.draw(outline);
-        // ...and then, fill in the text!
-        g.setComposite(oldState.composite());
+        switch (data.textFill) {
+            case COLOR -> {
+                g.setColor(c);
+                // ...then draw a secondary outline...
+                g.setComposite(OUTLINE2_COMPOSITE);
+                g.setStroke(OUTLINE2_STROKE);
+                g.draw(outline);
+                // ...and then, fill in the text!
+                g.setComposite(oldState.composite());
+            }
+            case RAINBOW -> g.setPaint(RainbowPaint.get());
+            default -> throw new IllegalStateException("Unsupported fill type " + data.textFill + "!");
+        }
         g.fill(outline);
         g.setColor(c);
 
         return (int) layout.getAdvance();
     }
-
-    /*
-    private static void draw(Graphics2D g, List<Node> nodes, int x, int y) {
-        // region Save current state
-        final var oldColor = g.getColor();
-        final var oldStroke = g.getStroke();
-        final var oldFont = g.getFont();
-        final var oldComposite = g.getComposite();
-        final var oldHints = g.getRenderingHints();
-        // endregion
-
-        g.setFont(DEFAULT_FONT);
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-        g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-
-        final int ma = g.getFontMetrics().getMaxAscent();
-        final int startX = x;
-        final AffineTransform tx = new AffineTransform(), tx2 = new AffineTransform();
-        StyleSpec style = StyleSpec.DEFAULT;
-        GimmickSpec gimmicks = GimmickSpec.DEFAULT;
-
-        for (Node node : nodes) {
-            if (node instanceof TextNode text) {
-                if (text.getContents().isEmpty()) {
-                    continue;
-                }
-
-                // make the text vertically centered
-                int yo = ma / 2 - g.getFontMetrics().getMaxAscent() / 2;
-
-                // generate an outline of the text
-                var layout = new TextLayout(text.getContents(), g.getFont(), g.getFontRenderContext());
-                tx.setToTranslation(x, y + ma - yo);
-
-                boolean flipH = gimmicks.flip().isHorizontal(), flipV = gimmicks.flip().isVertical();
-
-                Shape outline;
-
-                if (flipH || flipV) {
-                    var bounds = layout.getBounds();
-                    double moveX = x;
-                    if (flipH) {
-                        moveX += bounds.getWidth();
-                    }
-                    double moveY = y + ma - yo;
-                    if (flipV) {
-                        moveY -= bounds.getHeight();
-                    }
-                    tx.setToScale(flipH ? -1 : 1, flipV ? -1 : 1);
-                    tx2.setToTranslation(moveX, moveY);
-                    outline = layout.getOutline(tx);
-                    outline = tx2.createTransformedShape(outline);
-                } else {
-                    tx.setToTranslation(x, y + ma - yo);
-                    outline = layout.getOutline(tx);
-                }
-
-                // draw a transparent outline of the text...
-                var c = g.getColor(); // (save the actual text color for later)
-                g.setStroke(OUTLINE_STROKE);
-                g.setColor(OUTLINE_COLOR);
-                g.draw(outline);
-
-                switch (gimmicks.fill()) {
-                case DEFAULT, COLOR -> {
-                    g.setColor(c);
-                    // ...then draw a secondary outline...
-                    g.setComposite(OUTLINE2_COMPOSITE);
-                    g.setStroke(OUTLINE2_STROKE);
-                    g.draw(outline);
-                    // ...and then, fill in the text!
-                    g.setComposite(oldComposite);
-                }
-                case RAINBOW -> g.setPaint(RainbowPaint.get());
-                default -> throw new IllegalStateException("Unsupported fill type " + gimmicks.fill() + "!");
-                }
-
-                g.fill(outline);
-                g.setColor(c);
-
-                // advance X by "advance" (text width + padding, I think?)
-                x += layout.getAdvance();
-            } else if (node instanceof ColorModifierNode modColor) {
-                g.setColor(modColor.getColor());
-            } else if (node instanceof StyleModifierNode modStyle) {
-                style = style.add(modStyle.getSpec());
-                g.setFont(getStyledFont(style));
-            } else if (node instanceof GimmickModifierNode modGimmick) {
-                gimmicks = gimmicks.add(modGimmick.getSpec());
-            } else if (node instanceof LineBreakNode) {
-                x = startX;
-                y += 36;
-            }
-        }
-
-        // region Restore old state
-        g.setColor(oldColor);
-        g.setStroke(oldStroke);
-        g.setFont(oldFont);
-        g.setComposite(oldComposite);
-        g.setRenderingHints(oldHints);
-        // endregion
-    }
-     */
 }

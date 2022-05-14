@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import adudecalledleo.aftbg.app.text.node.color.ColorNode;
+import adudecalledleo.aftbg.app.text.node.gimmick.GimmickNode;
 import adudecalledleo.aftbg.app.text.node.style.*;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,6 +23,7 @@ public final class NodeRegistry {
         register(SubscriptNode.NAME, SubscriptNode.HANDLER);
         register(ColorNode.NAME, ColorNode.HANDLER);
         register(StyleNode.NAME, StyleNode.HANDLER);
+        register(GimmickNode.NAME, GimmickNode.HANDLER);
     }
 
     public static void init() { /* <clinit> */ }
