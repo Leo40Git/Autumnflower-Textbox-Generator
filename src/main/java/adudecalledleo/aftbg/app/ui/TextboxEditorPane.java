@@ -41,6 +41,8 @@ public final class TextboxEditorPane extends JEditorPane
     public static final String A_TOOLBAR_ITALIC = "toolbar.italic";
     public static final String A_TOOLBAR_UNDERLINE = "toolbar.underline";
     public static final String A_TOOLBAR_STRIKETHROUGH = "toolbar.strikethrough";
+    public static final String A_TOOLBAR_SUPERSCRIPT = "toolbar.superscript";
+    public static final String A_TOOLBAR_SUBSCRIPT = "toolbar.subscript";
 
     private static final BufferedImage SCRATCH_IMAGE = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
     private static final Highlighter.HighlightPainter HLP_ERROR = new ZigZagHighlighter(Color.RED);
@@ -194,11 +196,12 @@ public final class TextboxEditorPane extends JEditorPane
     public JToolBar createToolBar() {
         var bar = new JToolBar("Style");
         bar.setRollover(true);
-        // TODO add separate icons for b/i/u/s
-        bar.add(createToolBarButton(A_TOOLBAR_BOLD, "Bold", AppResources.Icons.MOD_STYLE));
-        bar.add(createToolBarButton(A_TOOLBAR_ITALIC, "Italic", AppResources.Icons.MOD_STYLE));
-        bar.add(createToolBarButton(A_TOOLBAR_UNDERLINE, "Underline", AppResources.Icons.MOD_STYLE));
-        bar.add(createToolBarButton(A_TOOLBAR_STRIKETHROUGH, "Strikethrough", AppResources.Icons.MOD_STYLE));
+        bar.add(createToolBarButton(A_TOOLBAR_BOLD, "Bold", AppResources.Icons.TOOLBAR_BOLD));
+        bar.add(createToolBarButton(A_TOOLBAR_ITALIC, "Italic", AppResources.Icons.TOOLBAR_ITALIC));
+        bar.add(createToolBarButton(A_TOOLBAR_UNDERLINE, "Underline", AppResources.Icons.TOOLBAR_UNDERLINE));
+        bar.add(createToolBarButton(A_TOOLBAR_STRIKETHROUGH, "Strikethrough", AppResources.Icons.TOOLBAR_STRIKETHROUGH));
+        bar.add(createToolBarButton(A_TOOLBAR_SUPERSCRIPT, "Superscript", AppResources.Icons.TOOLBAR_SUPERSCRIPT));
+        bar.add(createToolBarButton(A_TOOLBAR_SUBSCRIPT, "Subscript", AppResources.Icons.TOOLBAR_SUBSCRIPT));
         return bar;
     }
 
@@ -218,6 +221,8 @@ public final class TextboxEditorPane extends JEditorPane
             case A_TOOLBAR_ITALIC -> wrapSelectionInTag("i");
             case A_TOOLBAR_UNDERLINE -> wrapSelectionInTag("u");
             case A_TOOLBAR_STRIKETHROUGH -> wrapSelectionInTag("s");
+            case A_TOOLBAR_SUPERSCRIPT -> wrapSelectionInTag("sup");
+            case A_TOOLBAR_SUBSCRIPT -> wrapSelectionInTag("sub");
         }
     }
 
