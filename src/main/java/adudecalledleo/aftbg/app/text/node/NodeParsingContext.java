@@ -55,6 +55,14 @@ public record NodeParsingContext(DataTracker metadata, DOMParser.SpanTracker spa
                         continue;
                     }
 
+                    if (name.startsWith("/")) {
+                        name = name.substring(1);
+                        errors.add(new DOMParser.Error(offset + scanner.tell() - name.length() - 3, name.length() + 3,
+                                "unexpected closing tag for \"" + name + "\""));
+                        spanTracker.markNodeDeclClosing(name, offset + scanner.tell() - name.length() - 3, offset + scanner.tell());
+                        continue;
+                    }
+
                     final int openEnd = offset + scanner.tell();
                     final int openStart = openEnd - name.length() - 2;
                     final String openingTagContents = name;
@@ -76,16 +84,16 @@ public record NodeParsingContext(DataTracker metadata, DOMParser.SpanTracker spa
                         String attrString = name.substring(spIndex + 1);
                         name = name.substring(0, spIndex);
                         spanTracker.markNodeDeclOpening(name, openStart, openEnd);
-                        attrs = parseAttributes(errors, spanTracker, offset + openStart + spIndex + 2, name, sb, attrString);
+                        attrs = parseAttributes(errors, spanTracker, openStart + spIndex + 2, name, sb, attrString);
                     } else if (eqIndex >= 0) {
                         // compact [<tag>=<value>] (equal to [<tag> value="<value>"])
                         String value = name.substring(eqIndex + 1);
                         name = name.substring(0, eqIndex);
                         spanTracker.markNodeDeclOpening(name, openStart, openEnd);
                         attrs.put("value", new Attribute("value", Span.INVALID,
-                                value, new Span(offset + openStart + eqIndex + 2, value.length())));
+                                value, new Span(openStart + eqIndex + 2, value.length())));
                         spanTracker.markNodeDeclAttribute(name, "value", -1, -1, value,
-                                offset + openStart + eqIndex + 2, offset + openStart + eqIndex + 2 + value.length());
+                                openStart + eqIndex + 2, openStart + eqIndex + 2 + value.length());
                     } else {
                         // no attrs
                         spanTracker.markNodeDeclOpening(name, openStart, openEnd);
