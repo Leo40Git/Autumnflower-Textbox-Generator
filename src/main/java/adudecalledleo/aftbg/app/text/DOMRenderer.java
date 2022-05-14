@@ -5,9 +5,9 @@ import java.awt.font.*;
 import java.awt.geom.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import adudecalledleo.aftbg.app.AppResources;
+import adudecalledleo.aftbg.app.text.node.ContainerNode;
 import adudecalledleo.aftbg.app.text.node.Node;
 import adudecalledleo.aftbg.app.text.node.TextNode;
 import adudecalledleo.aftbg.app.text.node.color.ColorNode;
@@ -72,7 +72,7 @@ public final class DOMRenderer {
         final int defaultMaxAscent = g.getFontMetrics().getMaxAscent();
         var data = new RendererData(g, oldState, defaultMaxAscent, x, y);
 
-        root.visit(DOMRenderer::render0, data);
+        DOMRenderer.render0(root, data);
 
         oldState.restore(g);
     }
@@ -114,7 +114,7 @@ public final class DOMRenderer {
         }
     }
 
-    public static Optional<Void> render0(Node node, RendererData data) {
+    public static void render0(Node node, RendererData data) {
         final Graphics2D g = data.graphics;
         final StringBuilder sb = data.sb;
 
@@ -136,30 +136,62 @@ public final class DOMRenderer {
                 data.x += renderText(data, sb.toString(), data.x, data.y);
                 sb.setLength(0);
             }
-        } else if (node instanceof ColorNode nColor) {
-            g.setColor(nColor.getColor());
-        } else if (node instanceof StyleNode nStyle) {
-            if (nStyle.isColorSet()) {
-                g.setColor(nStyle.getColor());
+        } else if (node instanceof ContainerNode nContainer) {
+            boolean colorChanged = false;
+            Color oldColor = g.getColor();
+            boolean styleChanged = false;
+            FontStyle oldStyle = data.fontStyle;
+            boolean fillChanged = false;
+            TextFill oldFill = data.textFill;
+            boolean flipChanged = false;
+            TextFlip oldFlip = data.textFlip;
+
+            if (node instanceof ColorNode nColor) {
+                colorChanged = true;
+                g.setColor(nColor.getColor());
+            } else if (node instanceof StyleNode nStyle) {
+                if (nStyle.isColorSet()) {
+                    colorChanged = true;
+                    g.setColor(nStyle.getColor());
+                }
+                if (nStyle.getSize() != null) {
+                    styleChanged = true;
+                    data.fontStyle = data.fontStyle.withSizeAdjust(nStyle.getSize());
+                    data.updateFont(g);
+                }
+            } else if (node instanceof FontStyleModifyingNode nFSM) {
+                styleChanged = true;
+                data.fontStyle = nFSM.updateStyle(data.fontStyle);
+                data.updateFont(g);
+            } else if (node instanceof GimmickNode nGimmick) {
+                if (nGimmick.getFill() != null) {
+                    fillChanged = true;
+                    data.textFill = nGimmick.getFill();
+                }
+                if (nGimmick.getFlip() != null) {
+                    flipChanged = true;
+                    data.textFlip = nGimmick.getFlip();
+                }
             }
 
-            if (nStyle.getSize() != null) {
-                data.fontStyle = data.fontStyle.withSizeAdjust(nStyle.getSize());
+            for (var child : nContainer.getChildren()) {
+                render0(child, data);
+            }
+
+            if (colorChanged) {
+                g.setColor(oldColor);
+            }
+            if (styleChanged) {
+                data.fontStyle = oldStyle;
                 data.updateFont(g);
             }
-        } else if (node instanceof FontStyleModifyingNode nFSM) {
-            data.fontStyle = nFSM.updateStyle(data.fontStyle);
-            data.updateFont(g);
-        } else if (node instanceof GimmickNode nGimmick) {
-            if (nGimmick.getFill() != null) {
-                data.textFill = nGimmick.getFill();
+            if (fillChanged) {
+                data.textFill = oldFill;
             }
-            if (nGimmick.getFlip() != null) {
-                data.textFlip = nGimmick.getFlip();
+            if (flipChanged) {
+                data.textFlip = oldFlip;
             }
         }
-
-        return Optional.empty();
     }
 
     private static int renderText(RendererData data, String text, int x, int y) {
