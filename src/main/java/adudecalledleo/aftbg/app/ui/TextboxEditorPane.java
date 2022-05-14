@@ -37,6 +37,8 @@ import adudecalledleo.aftbg.window.WindowContext;
 
 public final class TextboxEditorPane extends JEditorPane
         implements GameDefinitionUpdateListener, ActionListener, DOMParser.SpanTracker {
+    public static final String A_TOOLBAR_BOLD = "toolbar.bold";
+
     private static final BufferedImage SCRATCH_IMAGE = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
     private static final Highlighter.HighlightPainter HLP_ERROR = new ZigZagHighlighter(Color.RED);
     private final Map<Color, UnderlineHighlighter> hlpEscapedColors = new HashMap<>();
@@ -186,8 +188,34 @@ public final class TextboxEditorPane extends JEditorPane
         return menu;
     }
 
+    public JToolBar createToolBar() {
+        var bar = new JToolBar();
+        bar.setRollover(true);
+        // TODO add separate icons for b/i/u/s
+        bar.add(createToolBarButton(A_TOOLBAR_BOLD, "Bold", AppResources.Icons.MOD_STYLE));
+        return bar;
+    }
+
+    private JButton createToolBarButton(String actionCmd, String text, AppResources.Icons icon) {
+        var btn = new JButton();
+        btn.setIcon(icon.get());
+        btn.setToolTipText(text);
+        btn.setActionCommand(actionCmd);
+        btn.addActionListener(this);
+        return btn;
+    }
+
     @Override
-    public void actionPerformed(ActionEvent e) { }
+    public void actionPerformed(ActionEvent e) {
+        switch (e.getActionCommand()) {
+            case A_TOOLBAR_BOLD -> {
+                var text = getSelectedText();
+                if (text != null) {
+                    replaceSelection("[b]" + text + "[/b]");
+                }
+            }
+        }
+    }
 
     @Override
     protected void paintComponent(Graphics g) {

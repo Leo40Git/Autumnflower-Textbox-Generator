@@ -148,10 +148,14 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
         updateListeners.add(gameDef -> btnGenerate.setEnabled(true));
 
+        JPanel contentsPanel = new JPanel(new BorderLayout());
+        contentsPanel.add(editorPane.createToolBar(), BorderLayout.PAGE_START);
+        contentsPanel.add(new JScrollPane(editorPane), BorderLayout.CENTER);
+
         JPanel textboxPanel = new JPanel();
         textboxPanel.setLayout(new BorderLayout());
         textboxPanel.add(faceSelection, BorderLayout.PAGE_START);
-        textboxPanel.add(new JScrollPane(editorPane), BorderLayout.CENTER);
+        textboxPanel.add(contentsPanel, BorderLayout.CENTER);
         textboxPanel.add(btnGenerate, BorderLayout.PAGE_END);
         return textboxPanel;
     }
