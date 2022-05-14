@@ -67,7 +67,10 @@ public final class StyleNode extends ContainerNode {
                 }
             }
 
-            var colorAttr = attributes.get("color");
+            var colorAttr = attributes.get("colour");
+            if (colorAttr == null) {
+                colorAttr = attributes.get("color");
+            }
             if (colorAttr != null) {
                 if (isAttributeBlank(colorAttr, errors)) {
                     return null;

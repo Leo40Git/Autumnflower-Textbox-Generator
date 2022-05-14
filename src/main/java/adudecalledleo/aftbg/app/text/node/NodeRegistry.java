@@ -22,6 +22,9 @@ public final class NodeRegistry {
         register(SuperscriptNode.NAME, SuperscriptNode.HANDLER);
         register(SubscriptNode.NAME, SubscriptNode.HANDLER);
         register(ColorNode.NAME, ColorNode.HANDLER);
+        for (var alias : ColorNode.getAliases()) {
+            register(alias, ColorNode.HANDLER);
+        }
         register(StyleNode.NAME, StyleNode.HANDLER);
         register(GimmickNode.NAME, GimmickNode.HANDLER);
     }
