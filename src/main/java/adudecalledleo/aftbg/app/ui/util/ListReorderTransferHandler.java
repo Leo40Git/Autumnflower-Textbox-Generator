@@ -5,6 +5,8 @@ import java.awt.dnd.*;
 
 import javax.swing.*;
 
+import org.jetbrains.annotations.NotNull;
+
 public final class ListReorderTransferHandler extends TransferHandler {
     public interface ReorderCallback {
         void move(JList<?> source, int oldIndex, int newIndex);
@@ -19,17 +21,15 @@ public final class ListReorderTransferHandler extends TransferHandler {
 
     private final JList<?> list;
     private final ReorderCallback reorderCallback;
-    private final String listHash;
 
     public ListReorderTransferHandler(JList<?> list, ReorderCallback reorderCallback) {
         this.list = list;
-        listHash = Integer.toHexString(System.identityHashCode(list));
         this.reorderCallback = reorderCallback;
     }
 
     @Override
     public boolean canImport(TransferHandler.TransferSupport support) {
-        if (!support.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+        if (!support.isDataFlavorSupported(ListSelection.FLAVOR)) {
             return false;
         }
         if (support.getDropLocation() instanceof JList.DropLocation dl) {
@@ -44,29 +44,24 @@ public final class ListReorderTransferHandler extends TransferHandler {
             return false;
         }
 
-        Transferable sel = support.getTransferable();
-        String indexString;
+        Transferable trans = support.getTransferable();
+        ListSelection sel;
         try {
-            indexString = (String) sel.getTransferData(DataFlavor.stringFlavor);
+            sel = (ListSelection) trans.getTransferData(ListSelection.FLAVOR);
         } catch (Exception e) {
             return false;
         }
 
-        String[] split = indexString.split(":");
-        if (split.length != 2) {
-            return false;
-        }
-        if (!listHash.equals(split[1])) {
+        if (sel.list() != list) {
             SwingUtilities.invokeLater(() -> {
-                JOptionPane.showMessageDialog(null,
+                JOptionPane.showMessageDialog(list,
                         "Can't move item to other list!",
                         "Error", JOptionPane.ERROR_MESSAGE);
             });
             return false;
         }
-        indexString = split[0];
 
-        int index = Integer.parseInt(indexString);
+        int index = sel.index;
         if (support.getDropLocation() instanceof JList.DropLocation dl) {
             int dropTargetIndex = dl.getIndex();
             var model = list.getModel();
@@ -81,21 +76,18 @@ public final class ListReorderTransferHandler extends TransferHandler {
 
     private static final class DragListenerImpl implements DragSourceListener, DragGestureListener {
         private final JList<?> list;
-        private final String listHash;
 
         private final DragSource ds;
 
         public DragListenerImpl(JList<?> list) {
             this.list = list;
-            listHash = Integer.toHexString(System.identityHashCode(list));
             ds = new DragSource();
             ds.createDefaultDragGestureRecognizer(list, DnDConstants.ACTION_MOVE, this);
         }
 
         @Override
         public void dragGestureRecognized(DragGestureEvent dge) {
-            // listHash is added to prevent accidentally shuffling another list
-            StringSelection sel = new StringSelection(list.getSelectedIndex() + ":" + listHash);
+            ListSelection sel = ListSelection.from(list);
             ds.startDrag(dge, DragSource.DefaultMoveDrop, sel, this);
         }
 
@@ -113,5 +105,33 @@ public final class ListReorderTransferHandler extends TransferHandler {
 
         @Override
         public void dragDropEnd(DragSourceDropEvent dsde) { }
+    }
+
+    private record ListSelection(JList<?> list, int index) implements Transferable {
+        public static final DataFlavor FLAVOR = new DataFlavor(ListSelection.class, "List selection");
+
+        public static ListSelection from(JList<?> list) {
+            return new ListSelection(list, list.getSelectedIndex());
+        }
+
+        @Override
+        public DataFlavor[] getTransferDataFlavors() {
+            return new DataFlavor[] { FLAVOR };
+        }
+
+        @Override
+        public boolean isDataFlavorSupported(DataFlavor flavor) {
+            return FLAVOR.equals(flavor);
+        }
+
+        @NotNull
+        @Override
+        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
+            if (FLAVOR.equals(flavor)) {
+                return this;
+            } else {
+                throw new UnsupportedFlavorException(flavor);
+            }
+        }
     }
 }
