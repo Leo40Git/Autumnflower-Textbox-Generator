@@ -2,7 +2,6 @@ package adudecalledleo.aftbg.app.text.node;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public abstract class Node {
     protected final String name;
@@ -39,13 +38,5 @@ public abstract class Node {
 
     public Map<String, Attribute> getAttributes() {
         return attributes;
-    }
-
-    public <T, R> Optional<R> visitSelf(NodeVisitor<T, R> visitor, T data) {
-        return visitor.visit(this, data);
-    }
-
-    public <T, R> Optional<R> visit(NodeVisitor<T, R> visitor, T data) {
-        return this.visitSelf(visitor, data);
     }
 }
