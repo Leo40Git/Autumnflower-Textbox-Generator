@@ -27,6 +27,7 @@ import adudecalledleo.aftbg.app.text.node.color.ColorNode;
 import adudecalledleo.aftbg.app.text.node.color.ColorParser;
 import adudecalledleo.aftbg.app.text.node.style.FontStyleModifyingNode;
 import adudecalledleo.aftbg.app.text.node.style.StyleNode;
+import adudecalledleo.aftbg.app.ui.dialog.modifier.ColorModifierDialog;
 import adudecalledleo.aftbg.app.ui.text.UnderlineHighlighter;
 import adudecalledleo.aftbg.app.ui.text.ZigZagHighlighter;
 import adudecalledleo.aftbg.app.ui.util.ErrorMessageBuilder;
@@ -43,6 +44,7 @@ public final class TextboxEditorPane extends JEditorPane
     public static final String A_TOOLBAR_STRIKETHROUGH = "toolbar.strikethrough";
     public static final String A_TOOLBAR_SUPERSCRIPT = "toolbar.superscript";
     public static final String A_TOOLBAR_SUBSCRIPT = "toolbar.subscript";
+    public static final String A_TOOLBAR_COLOR = "toolbar.color";
 
     private static final BufferedImage SCRATCH_IMAGE = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
     private static final Highlighter.HighlightPainter HLP_ERROR = new ZigZagHighlighter(Color.RED);
@@ -59,6 +61,7 @@ public final class TextboxEditorPane extends JEditorPane
     private final Map<Rectangle2D, String> errors;
     private final SimpleAttributeSet styleNormal, styleMod;
     private final JPopupMenu popupMenu;
+    private final JToolBar toolBar;
 
     private GameDefinition gameDef;
     private WindowContext winCtx;
@@ -156,6 +159,8 @@ public final class TextboxEditorPane extends JEditorPane
             }
         });
 
+        toolBar = createToolBar();
+
         this.defaultTextColor = Color.WHITE;
         this.forceCaretRendering = false;
         this.escapedSpans = new LinkedList<>();
@@ -193,7 +198,11 @@ public final class TextboxEditorPane extends JEditorPane
         return menu;
     }
 
-    public JToolBar createToolBar() {
+    public JToolBar getToolBar() {
+        return toolBar;
+    }
+
+    private JToolBar createToolBar() {
         var bar = new JToolBar("Style");
         bar.setRollover(true);
         bar.add(createToolBarButton(A_TOOLBAR_BOLD, "Bold", AppResources.Icons.TOOLBAR_BOLD));
@@ -202,6 +211,11 @@ public final class TextboxEditorPane extends JEditorPane
         bar.add(createToolBarButton(A_TOOLBAR_STRIKETHROUGH, "Strikethrough", AppResources.Icons.TOOLBAR_STRIKETHROUGH));
         bar.add(createToolBarButton(A_TOOLBAR_SUPERSCRIPT, "Superscript", AppResources.Icons.TOOLBAR_SUPERSCRIPT));
         bar.add(createToolBarButton(A_TOOLBAR_SUBSCRIPT, "Subscript", AppResources.Icons.TOOLBAR_SUBSCRIPT));
+
+        bar.addSeparator();
+
+        bar.add(createToolBarButton(A_TOOLBAR_COLOR, "Color", AppResources.Icons.TOOLBAR_COLOR));
+
         return bar;
     }
 
@@ -223,25 +237,50 @@ public final class TextboxEditorPane extends JEditorPane
             case A_TOOLBAR_STRIKETHROUGH -> wrapSelectionInTag("s");
             case A_TOOLBAR_SUPERSCRIPT -> wrapSelectionInTag("sup");
             case A_TOOLBAR_SUBSCRIPT -> wrapSelectionInTag("sub");
+            case A_TOOLBAR_COLOR -> {
+                if (winCtx == null) {
+                    UIManager.getLookAndFeel().provideErrorFeedback(this);
+                    Logger.info("Tried to open color modifier dialog without window context!");
+                    return;
+                }
+
+                try {
+                    forceCaretRendering = true;
+                    var result = new ColorModifierDialog(this, winCtx).showDialog();
+                    String value;
+                    if (result instanceof ColorModifierDialog.ConstantResult rConst) {
+                        var c = rConst.getColor();
+                        value = "%02X%02X%02X".formatted(c.getRed(), c.getGreen(), c.getBlue());
+                    } else if (result instanceof ColorModifierDialog.PaletteResult rPal) {
+                        value = "pal(%d)".formatted(rPal.getIndex());
+                    } else {
+                        UIManager.getLookAndFeel().provideErrorFeedback(this);
+                        Logger.info("Got unknown result " + result + "!");
+                        return;
+                    }
+                    wrapSelectionInTag("c=" + value, "c");
+                } finally {
+                    forceCaretRendering = false;
+                }
+            }
         }
     }
 
-    public void wrapSelectionInTag(String tagName) {
+    public void wrapSelectionInTag(String tagStart, String tagEnd) {
         final var doc = getDocument();
-        final int tagLength = tagName.length();
         int start = getSelectionStart();
         int end = getSelectionEnd();
         int length = end - start;
-        if (start == end) {
+        if (length <= 0) {
             // no selection! insert an empty tag, and move the caret into it
             try {
-                doc.insertString(start, "[%s][/%1$s]".formatted(tagName), styleNormal);
+                doc.insertString(start, "[%s][/%s]".formatted(tagStart, tagEnd), styleNormal);
             } catch (BadLocationException e) {
                 UIManager.getLookAndFeel().provideErrorFeedback(this);
                 Logger.info("Failed to insert empty tag!", e);
                 return;
             }
-            select(start + 2 + tagLength, 0);
+            select(start + 2 + tagStart.length(), 0);
         } else {
             // we have a selection! wrap it in a tag
             String selectedText;
@@ -252,7 +291,7 @@ public final class TextboxEditorPane extends JEditorPane
                 Logger.info("Failed to get selected text!", e);
                 return;
             }
-            String newText = "[%s]%s[/%1$s]".formatted(tagName, selectedText);
+            String newText = "[%s]%s[/%s]".formatted(tagStart, selectedText, tagEnd);
             try {
                 doc.remove(start, length);
                 doc.insertString(start, newText, styleNormal);
@@ -261,9 +300,13 @@ public final class TextboxEditorPane extends JEditorPane
                 Logger.info("Failed to replace selected text!", e);
                 return;
             }
-            select(start + 2 + tagLength, end + 2 + tagLength);
+            select(start + 2 + tagStart.length(), end + 2 + tagStart.length());
         }
         requestFocus();
+    }
+
+    public void wrapSelectionInTag(String tagName) {
+        wrapSelectionInTag(tagName, tagName);
     }
 
     @Override
@@ -276,6 +319,7 @@ public final class TextboxEditorPane extends JEditorPane
         if (popupMenu.isVisible() || forceCaretRendering) {
             // force caret to be drawn, so user knows where pasted text/modifiers will be inserted
             getCaret().setVisible(true);
+            getCaret().setSelectionVisible(true);
         }
 
         super.paintComponent(g);
