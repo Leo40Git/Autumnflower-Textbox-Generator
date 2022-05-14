@@ -38,6 +38,9 @@ import adudecalledleo.aftbg.window.WindowContext;
 public final class TextboxEditorPane extends JEditorPane
         implements GameDefinitionUpdateListener, ActionListener, DOMParser.SpanTracker {
     public static final String A_TOOLBAR_BOLD = "toolbar.bold";
+    public static final String A_TOOLBAR_ITALIC = "toolbar.italic";
+    public static final String A_TOOLBAR_UNDERLINE = "toolbar.underline";
+    public static final String A_TOOLBAR_STRIKETHROUGH = "toolbar.strikethrough";
 
     private static final BufferedImage SCRATCH_IMAGE = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
     private static final Highlighter.HighlightPainter HLP_ERROR = new ZigZagHighlighter(Color.RED);
@@ -189,10 +192,13 @@ public final class TextboxEditorPane extends JEditorPane
     }
 
     public JToolBar createToolBar() {
-        var bar = new JToolBar();
+        var bar = new JToolBar("Style");
         bar.setRollover(true);
         // TODO add separate icons for b/i/u/s
         bar.add(createToolBarButton(A_TOOLBAR_BOLD, "Bold", AppResources.Icons.MOD_STYLE));
+        bar.add(createToolBarButton(A_TOOLBAR_ITALIC, "Italic", AppResources.Icons.MOD_STYLE));
+        bar.add(createToolBarButton(A_TOOLBAR_UNDERLINE, "Underline", AppResources.Icons.MOD_STYLE));
+        bar.add(createToolBarButton(A_TOOLBAR_STRIKETHROUGH, "Strikethrough", AppResources.Icons.MOD_STYLE));
         return bar;
     }
 
@@ -208,13 +214,51 @@ public final class TextboxEditorPane extends JEditorPane
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
-            case A_TOOLBAR_BOLD -> {
-                var text = getSelectedText();
-                if (text != null) {
-                    replaceSelection("[b]" + text + "[/b]");
-                }
-            }
+            case A_TOOLBAR_BOLD -> wrapSelectionInTag("b");
+            case A_TOOLBAR_ITALIC -> wrapSelectionInTag("i");
+            case A_TOOLBAR_UNDERLINE -> wrapSelectionInTag("u");
+            case A_TOOLBAR_STRIKETHROUGH -> wrapSelectionInTag("s");
         }
+    }
+
+    public void wrapSelectionInTag(String tagName) {
+        final var doc = getDocument();
+        final int tagLength = tagName.length();
+        int start = getSelectionStart();
+        int end = getSelectionEnd();
+        int length = end - start;
+        if (start == end) {
+            // no selection! insert an empty tag, and move the caret into it
+            try {
+                doc.insertString(start, "[%s][/%1$s]".formatted(tagName), styleNormal);
+            } catch (BadLocationException e) {
+                UIManager.getLookAndFeel().provideErrorFeedback(this);
+                Logger.info("Failed to insert empty tag!", e);
+                return;
+            }
+            select(start + 2 + tagLength, 0);
+        } else {
+            // we have a selection! wrap it in a tag
+            String selectedText;
+            try {
+                selectedText = doc.getText(start, length);
+            } catch (BadLocationException e) {
+                UIManager.getLookAndFeel().provideErrorFeedback(this);
+                Logger.info("Failed to get selected text!", e);
+                return;
+            }
+            String newText = "[%s]%s[/%1$s]".formatted(tagName, selectedText);
+            try {
+                doc.remove(start, length);
+                doc.insertString(start, newText, styleNormal);
+            } catch (BadLocationException e) {
+                UIManager.getLookAndFeel().provideErrorFeedback(this);
+                Logger.info("Failed to replace selected text!", e);
+                return;
+            }
+            select(start + 2 + tagLength, end + 2 + tagLength);
+        }
+        requestFocus();
     }
 
     @Override
