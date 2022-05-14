@@ -110,4 +110,36 @@ public final class StringScanner {
             return Optional.empty();
         }
     }
+
+    public Optional<String> untilLast(String terminator) {
+        final int oldPos = pos;
+        tempSB.setLength(0);
+        boolean found = false, appendTerm = false;
+        final char[] termChars = terminator.toCharArray();
+        final int maxSearchPos = chars.length - termChars.length + 1;
+        for (; pos < maxSearchPos; pos++) {
+            found = true;
+            for (int termPos = 0; termPos < termChars.length; termPos++) {
+                if (chars[pos + termPos] != termChars[termPos]) {
+                    found = false;
+                    break;
+                }
+            }
+            if (found) {
+                if (appendTerm) {
+                    tempSB.append(terminator);
+                }
+                pos += termChars.length - 1;
+                appendTerm = true;
+            } else {
+                tempSB.append(peek());
+            }
+        }
+        if (found) {
+            return Optional.of(tempSB.toString());
+        } else {
+            pos = oldPos;
+            return Optional.empty();
+        }
+    }
 }

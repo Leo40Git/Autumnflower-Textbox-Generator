@@ -56,7 +56,7 @@ public record NodeParsingContext(DataTracker metadata, DOMParser.SpanTracker spa
                     }
 
                     final int openEnd = offset + scanner.tell();
-                    final int openStart = offset + openEnd - name.length() - 2;
+                    final int openStart = openEnd - name.length() - 2;
                     final String openingTagContents = name;
 
                     boolean autoCloseTag = false;
@@ -111,7 +111,7 @@ public record NodeParsingContext(DataTracker metadata, DOMParser.SpanTracker spa
                     if (autoCloseTag) {
                         myContents = "";
                     } else {
-                        myContents = scanner.until("[/%s]".formatted(name))
+                        myContents = scanner.untilLast("[/%s]".formatted(name))
                                 .orElseGet(() -> {
                                     errors.add(new DOMParser.Error(openStart, openEnd - openStart + scanner.remaining() + 1,
                                             "missing closing tag for \"" + nameF + "\""));
