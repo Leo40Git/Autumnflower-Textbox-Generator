@@ -30,7 +30,7 @@ public final class GimmickNode extends ContainerNode {
         return flip;
     }
 
-    private static final class Handler implements NodeHandler<GimmickNode> {
+    private static final class Handler extends NodeHandler<GimmickNode> {
         @Override
         public @Nullable GimmickNode parse(NodeParsingContext ctx, int offset, List<DOMParser.Error> errors,
                                            Span openingSpan, Span closingSpan, Map<String, Attribute> attributes, String contents) {

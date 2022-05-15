@@ -27,7 +27,7 @@ public final class BoldNode extends ContainerNode implements FontStyleModifyingN
         StyleConstants.setBold(style, true);
     }
 
-    private static final class Handler implements NodeHandler<BoldNode> {
+    private static final class Handler extends NodeHandler<BoldNode> {
         @Override
         public BoldNode parse(NodeParsingContext ctx, int offset, List<DOMParser.Error> errors,
                               Span openingSpan, Span closingSpan, Map<String, Attribute> attributes, String contents) {

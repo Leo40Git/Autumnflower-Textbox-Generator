@@ -27,7 +27,7 @@ public final class ColorNode extends ContainerNode {
         return color;
     }
 
-    private static final class Handler implements NodeHandler<ColorNode> {
+    private static final class Handler extends NodeHandler<ColorNode> {
         @Override
         public @Nullable ColorNode parse(NodeParsingContext ctx, int offset, List<DOMParser.Error> errors,
                                          Span openingSpan, Span closingSpan, Map<String, Attribute> attributes, String contents) {

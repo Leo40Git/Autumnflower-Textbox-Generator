@@ -27,7 +27,7 @@ public final class UnderlineNode extends ContainerNode implements FontStyleModif
         StyleConstants.setUnderline(style, true);
     }
 
-    private static final class Handler implements NodeHandler<UnderlineNode> {
+    private static final class Handler extends NodeHandler<UnderlineNode> {
         @Override
         public UnderlineNode parse(NodeParsingContext ctx, int offset, List<DOMParser.Error> errors,
                                    Span openingSpan, Span closingSpan, Map<String, Attribute> attributes, String contents) {

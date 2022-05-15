@@ -6,12 +6,11 @@ import java.util.Map;
 import adudecalledleo.aftbg.app.text.DOMParser;
 import org.jetbrains.annotations.Nullable;
 
-@FunctionalInterface
-public interface NodeHandler<T extends Node> {
-    @Nullable T parse(NodeParsingContext ctx, int offset, List<DOMParser.Error> errors,
+public abstract class NodeHandler<T extends Node> {
+    public abstract @Nullable T parse(NodeParsingContext ctx, int offset, List<DOMParser.Error> errors,
                       Span openingSpan, Span closingSpan, Map<String, Attribute> attributes, String contents);
 
-    default boolean isAttributeBlank(Attribute attr, List<DOMParser.Error> errors) {
+    protected final boolean isAttributeBlank(Attribute attr, List<DOMParser.Error> errors) {
         String attrStr = attr.value().trim();
         if (attrStr.isEmpty()) {
             int start = attr.keySpan().start();

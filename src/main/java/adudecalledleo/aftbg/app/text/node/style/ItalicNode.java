@@ -27,7 +27,7 @@ public final class ItalicNode extends ContainerNode implements FontStyleModifyin
         StyleConstants.setItalic(style, true);
     }
 
-    private static final class Handler implements NodeHandler<ItalicNode> {
+    private static final class Handler extends NodeHandler<ItalicNode> {
         @Override
         public ItalicNode parse(NodeParsingContext ctx, int offset, List<DOMParser.Error> errors,
                                 Span openingSpan, Span closingSpan, Map<String, Attribute> attributes, String contents) {

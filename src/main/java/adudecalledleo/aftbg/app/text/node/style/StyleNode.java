@@ -38,7 +38,7 @@ public final class StyleNode extends ContainerNode {
         return color;
     }
 
-    private static final class Handler implements NodeHandler<StyleNode> {
+    private static final class Handler extends NodeHandler<StyleNode> {
         @Override
         public StyleNode parse(NodeParsingContext ctx, int offset, List<DOMParser.Error> errors,
                                Span openingSpan, Span closingSpan, Map<String, Attribute> attributes, String contents) {

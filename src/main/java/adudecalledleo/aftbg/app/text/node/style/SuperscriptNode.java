@@ -28,7 +28,7 @@ public final class SuperscriptNode extends ContainerNode implements FontStyleMod
         StyleConstants.setSuperscript(style, true);
     }
 
-    private static final class Handler implements NodeHandler<SuperscriptNode> {
+    private static final class Handler extends NodeHandler<SuperscriptNode> {
         @Override
         public SuperscriptNode parse(NodeParsingContext ctx, int offset, List<DOMParser.Error> errors,
                                      Span openingSpan, Span closingSpan, Map<String, Attribute> attributes, String contents) {

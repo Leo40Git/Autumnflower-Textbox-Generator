@@ -28,7 +28,7 @@ public final class SubscriptNode extends ContainerNode implements FontStyleModif
         StyleConstants.setSubscript(style, true);
     }
 
-    private static final class Handler implements NodeHandler<SubscriptNode> {
+    private static final class Handler extends NodeHandler<SubscriptNode> {
         @Override
         public SubscriptNode parse(NodeParsingContext ctx, int offset, List<DOMParser.Error> errors,
                                    Span openingSpan, Span closingSpan, Map<String, Attribute> attributes, String contents) {

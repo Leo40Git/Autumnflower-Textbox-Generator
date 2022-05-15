@@ -4,7 +4,6 @@ import java.util.Map;
 
 public final class TextNode extends Node {
     public static final String NAME = "text";
-    public static final NodeHandler<TextNode> HANDLER = new ImplicitNodeHandler<>(NAME);
 
     private final String contents;
 

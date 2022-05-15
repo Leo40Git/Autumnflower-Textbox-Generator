@@ -27,7 +27,7 @@ public final class StrikethroughNode extends ContainerNode implements FontStyleM
         StyleConstants.setStrikeThrough(style, true);
     }
 
-    private static final class Handler implements NodeHandler<StrikethroughNode> {
+    private static final class Handler extends NodeHandler<StrikethroughNode> {
         @Override
         public StrikethroughNode parse(NodeParsingContext ctx, int offset, List<DOMParser.Error> errors,
                                        Span openingSpan, Span closingSpan, Map<String, Attribute> attributes, String contents) {
