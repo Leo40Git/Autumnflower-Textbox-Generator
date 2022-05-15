@@ -5,8 +5,6 @@ import java.awt.image.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.*;
-
 import adudecalledleo.aftbg.app.data.DataTracker;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.face.Face;
@@ -17,6 +15,7 @@ import adudecalledleo.aftbg.app.text.node.Node;
 import adudecalledleo.aftbg.app.text.node.color.ColorParser;
 import adudecalledleo.aftbg.app.ui.LoadFrame;
 import adudecalledleo.aftbg.app.ui.MainPanel;
+import adudecalledleo.aftbg.app.ui.dialog.ErrorReportDialog;
 import adudecalledleo.aftbg.app.ui.dialog.PreviewDialog;
 import adudecalledleo.aftbg.app.util.ColorUtils;
 import adudecalledleo.aftbg.app.util.Pair;
@@ -75,13 +74,10 @@ public final class TextboxGenerator extends AbstractWorker {
             cleanup();
             dialog.setVisible(true);
         } else {
-            loadFrame.setAlwaysOnTop(false);
-            // TODO more detailed error message
-            JOptionPane.showMessageDialog(mainPanel,
-                    "Seems like one or more of your textboxes have errors!\n"
-                            + "Correct this, then try generating again.",
-                    "Generate textbox(es)", JOptionPane.ERROR_MESSAGE);
+            var dialog = new ErrorReportDialog(mainPanel, errors);
+            dialog.setLocationRelativeTo(null);
             cleanup();
+            dialog.setVisible(true);
         }
 
         return null;
