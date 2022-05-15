@@ -13,6 +13,7 @@ public final class NodeRegistry {
 
     static {
         HANDLERS = new HashMap<>();
+        register(LineBreakNode.NAME, LineBreakNode.HANDLER);
         register(BoldNode.NAME, BoldNode.HANDLER);
         register(ItalicNode.NAME, ItalicNode.HANDLER);
         register(UnderlineNode.NAME, UnderlineNode.HANDLER);

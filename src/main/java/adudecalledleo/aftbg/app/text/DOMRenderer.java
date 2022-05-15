@@ -8,6 +8,7 @@ import java.util.Map;
 
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.text.node.ContainerNode;
+import adudecalledleo.aftbg.app.text.node.LineBreakNode;
 import adudecalledleo.aftbg.app.text.node.Node;
 import adudecalledleo.aftbg.app.text.node.TextNode;
 import adudecalledleo.aftbg.app.text.node.color.ColorNode;
@@ -82,7 +83,6 @@ public final class DOMRenderer {
         public final GraphicsState oldState;
         public final int defaultMaxAscent;
         public final int startX;
-        public final StringBuilder sb;
         public final AffineTransform tx, tx2;
 
         public int x, y;
@@ -97,7 +97,6 @@ public final class DOMRenderer {
             this.defaultMaxAscent = defaultMaxAscent;
             this.startX = x = startX;
             this.y = startY;
-            this.sb = new StringBuilder();
             this.tx = new AffineTransform();
             this.tx2 = new AffineTransform();
             this.fontStyle = FontStyle.DEFAULT;
@@ -116,26 +115,12 @@ public final class DOMRenderer {
 
     public static void render0(Node node, RendererData data) {
         final Graphics2D g = data.graphics;
-        final StringBuilder sb = data.sb;
 
         if (node instanceof TextNode nText) {
-            for (var c : nText.getContents().toCharArray()) {
-                if (c == '\n') {
-                    if (!sb.isEmpty()) {
-                        renderText(data, sb.toString(), data.x, data.y);
-                        sb.setLength(0);
-                    }
-                    data.resetX();
-                    data.y += 36;
-                } else {
-                    sb.append(c);
-                }
-            }
-
-            if (!sb.isEmpty()) {
-                data.x += renderText(data, sb.toString(), data.x, data.y);
-                sb.setLength(0);
-            }
+            data.x += renderText(data, nText.getContents(), data.x, data.y);
+        } else if (node instanceof LineBreakNode) {
+            data.resetX();
+            data.y += 36;
         } else if (node instanceof ContainerNode nContainer) {
             boolean colorChanged = false;
             Color oldColor = g.getColor();

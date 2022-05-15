@@ -10,6 +10,10 @@ public abstract class NodeHandler<T extends Node> {
     public abstract @Nullable T parse(NodeParsingContext ctx, int offset, List<DOMParser.Error> errors,
                       Span openingSpan, Span closingSpan, Map<String, Attribute> attributes, String contents);
 
+    public boolean isLeaf() {
+        return false;
+    }
+
     protected final boolean isAttributeBlank(Attribute attr, List<DOMParser.Error> errors) {
         String attrStr = attr.value().trim();
         if (attrStr.isEmpty()) {

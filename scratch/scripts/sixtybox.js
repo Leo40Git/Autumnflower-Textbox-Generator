@@ -17,7 +17,7 @@ function updateTextbox(faces, box) {
         str += "\u2591";
         lnCnt++;
         if (lnCnt >= lnLim) {
-            str += "\n";
+            str += "[br]\n";
             lnCnt = 0;
         }
     }

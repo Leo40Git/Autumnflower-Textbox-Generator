@@ -47,6 +47,9 @@ public final class DOMParser {
         default void markNodeDeclClosing(String node, int start, int end) {
             markNodeDecl(node, start, end);
         }
+        default void markNodeDeclLeaf(String node, int start, int end) {
+            markNodeDecl(node, start, end);
+        }
         default void markNodeDeclAttribute(String node, String key, int keyStart, int keyEnd, String value, int valueStart, int valueEnd) { }
     }
 }

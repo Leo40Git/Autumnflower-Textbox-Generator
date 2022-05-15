@@ -69,10 +69,10 @@ public record NodeParsingContext(DataTracker metadata, DOMParser.SpanTracker spa
 
                     boolean autoCloseTag = false;
                     if (name.endsWith("/")) {
-                        name = name.substring(0, name.length() - 2);
+                        name = name.substring(0, name.length() - 1);
                         autoCloseTag = true;
                     } else if (name.endsWith(" /")) {
-                        name = name.substring(0, name.length() - 3);
+                        name = name.substring(0, name.length() - 2);
                         autoCloseTag = true;
                     }
 
@@ -100,6 +100,7 @@ public record NodeParsingContext(DataTracker metadata, DOMParser.SpanTracker spa
                     }
 
                     var handler = NodeRegistry.getHandler(name);
+                    boolean leaf = false;
                     if (handler == null) {
                         int nameStart = openStart + 1;
                         int nameLength = 0;
@@ -112,46 +113,60 @@ public record NodeParsingContext(DataTracker metadata, DOMParser.SpanTracker spa
                         }
                         errors.add(new DOMParser.Error(nameStart, nameLength,
                                 "unknown tag \"" + name + "\""));
-                    }
-                    final int contentStart = scanner.tell();
-                    final String nameF = name;
-                    String myContents;
-                    if (autoCloseTag) {
-                        myContents = "";
                     } else {
-                        myContents = scanner.untilLast("[/%s]".formatted(name))
-                                .orElseGet(() -> {
-                                    errors.add(new DOMParser.Error(openStart, openEnd - openStart + scanner.remaining() + 1,
-                                            "missing closing tag for \"" + nameF + "\""));
-                                    return null;
-                                });
+                        leaf = handler.isLeaf();
                     }
 
-                    boolean success = false;
-                    if (handler != null && myContents != null) {
-                        Span openingSpan = new Span(openStart, openEnd - openStart);
-                        Span closingSpan;
-                        if (autoCloseTag) {
-                            closingSpan = openingSpan;
+                    if (leaf) {
+                        Span span = new Span(openStart, openEnd - openStart);
+                        var node = handler.parse(this, offset, errors, span, Span.INVALID, attrs, null);
+                        if (node == null) {
+                            sb.append('[').append(openingTagContents).append(']');
                         } else {
-                            closingSpan = new Span(offset + scanner.tell() - name.length() - 3, name.length() + 3);
-                        }
-                        var node = handler.parse(this, offset + contentStart, errors,
-                                openingSpan, closingSpan,
-                                attrs, myContents);
-                        if (node != null) {
-                            success = true;
                             nodes.add(node);
                         }
-                    }
-                    if (!success) {
-                        sb.append('[').append(openingTagContents).append(']');
-                        if (!autoCloseTag && myContents != null)
-                            sb.append(myContents).append("[/").append(name).append(']');
-                    }
+                        spanTracker.markNodeDeclLeaf(name, openStart, openEnd);
+                    } else {
+                        final int contentStart = scanner.tell();
+                        final String nameF = name;
+                        String myContents;
+                        if (autoCloseTag) {
+                            myContents = "";
+                        } else {
+                            myContents = scanner.untilLast("[/%s]".formatted(name))
+                                    .orElseGet(() -> {
+                                        errors.add(new DOMParser.Error(openStart, openEnd - openStart + scanner.remaining() + 1,
+                                                "missing closing tag for \"" + nameF + "\""));
+                                        return null;
+                                    });
+                        }
 
-                    if (myContents != null)
-                        spanTracker.markNodeDeclClosing(name, offset + scanner.tell() - name.length() - 3, offset + scanner.tell());
+                        boolean success = false;
+                        if (handler != null && myContents != null) {
+                            Span openingSpan = new Span(openStart, openEnd - openStart);
+                            Span closingSpan;
+                            if (autoCloseTag) {
+                                closingSpan = openingSpan;
+                            } else {
+                                closingSpan = new Span(offset + scanner.tell() - name.length() - 3, name.length() + 3);
+                            }
+                            var node = handler.parse(this, offset + contentStart, errors,
+                                    openingSpan, closingSpan,
+                                    attrs, myContents);
+                            if (node != null) {
+                                success = true;
+                                nodes.add(node);
+                            }
+                        }
+                        if (!success) {
+                            sb.append('[').append(openingTagContents).append(']');
+                            if (!autoCloseTag && myContents != null)
+                                sb.append(myContents).append("[/").append(name).append(']');
+                        }
+
+                        if (myContents != null)
+                            spanTracker.markNodeDeclClosing(name, offset + scanner.tell() - name.length() - 3, offset + scanner.tell());
+                    }
                 }
                 default -> {
                     sb.append(c);
