@@ -74,7 +74,7 @@ public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox>
                         }
                         sb.append(c);
                         if (sb.length() == maxLength - 1) {
-                            sb.append('…');
+                            sb.append('\u2026');
                             break;
                         }
                     }
