@@ -28,7 +28,7 @@ public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox>
     @Override
     public void updateGameDefinition(GameDefinition gameDef) {
         this.winCtx = gameDef.winCtx();
-        parserCtx.set(ColorParser.PALETTE, winCtx.getColors());
+        parserCtx.set(ColorParser.PALETTE, winCtx.getPalette());
     }
 
     @Override

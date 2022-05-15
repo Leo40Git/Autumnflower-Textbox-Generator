@@ -25,7 +25,7 @@ public final class TextboxGenerator extends AbstractWorker {
         this.textboxes = textboxes;
 
         this.parserCtx = new DataTracker()
-                .set(ColorParser.PALETTE, TextboxGenerator.this.winCtx.getColors());
+                .set(ColorParser.PALETTE, TextboxGenerator.this.winCtx.getPalette());
     }
 
     @Override

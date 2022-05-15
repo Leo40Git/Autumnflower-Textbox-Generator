@@ -379,7 +379,7 @@ public final class TextboxEditorPane extends JEditorPane
         this.winCtx = gameDef.winCtx().copy();
         setCaretColor(winCtx.getColor(0));
         StyleConstants.setForeground(styleNormal, winCtx.getColor(0));
-        var pal = winCtx.getColors();
+        var pal = winCtx.getPalette();
         defaultTextColor = pal.get(0);
         parserCtx.set(ColorParser.PALETTE, pal);
         flushChanges(true);
