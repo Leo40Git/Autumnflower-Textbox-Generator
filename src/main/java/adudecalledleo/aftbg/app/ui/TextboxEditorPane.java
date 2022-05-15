@@ -31,6 +31,7 @@ import adudecalledleo.aftbg.app.ui.dialog.modifier.ColorModifierDialog;
 import adudecalledleo.aftbg.app.ui.text.UnderlineHighlighter;
 import adudecalledleo.aftbg.app.ui.text.ZigZagHighlighter;
 import adudecalledleo.aftbg.app.ui.util.ErrorMessageBuilder;
+import adudecalledleo.aftbg.app.ui.util.IconWithArrow;
 import adudecalledleo.aftbg.app.ui.util.UnmodifiableAttributeSetView;
 import adudecalledleo.aftbg.app.util.ColorUtils;
 import adudecalledleo.aftbg.logging.Logger;
@@ -214,18 +215,22 @@ public final class TextboxEditorPane extends JEditorPane
 
         bar.addSeparator();
 
-        bar.add(createToolBarButton(A_TOOLBAR_COLOR, "Color", AppResources.Icons.TOOLBAR_COLOR));
+        bar.add(createToolBarButton(A_TOOLBAR_COLOR, "Color", new IconWithArrow(AppResources.Icons.TOOLBAR_COLOR.get())));
 
         return bar;
     }
 
-    private JButton createToolBarButton(String actionCmd, String text, AppResources.Icons icon) {
+    private JButton createToolBarButton(String actionCmd, String text, Icon icon) {
         var btn = new JButton();
-        btn.setIcon(icon.get());
+        btn.setIcon(icon);
         btn.setToolTipText(text);
         btn.setActionCommand(actionCmd);
         btn.addActionListener(this);
         return btn;
+    }
+
+    private JButton createToolBarButton(String actionCmd, String text, AppResources.Icons icon) {
+        return createToolBarButton(actionCmd, text, icon.get());
     }
 
     @Override
@@ -250,7 +255,7 @@ public final class TextboxEditorPane extends JEditorPane
                     String value;
                     if (result instanceof ColorModifierDialog.ConstantResult rConst) {
                         var c = rConst.getColor();
-                        value = "%02X%02X%02X".formatted(c.getRed(), c.getGreen(), c.getBlue());
+                        value = "#%02X%02X%02X".formatted(c.getRed(), c.getGreen(), c.getBlue());
                     } else if (result instanceof ColorModifierDialog.PaletteResult rPal) {
                         value = "pal(%d)".formatted(rPal.getIndex());
                     } else {

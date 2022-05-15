@@ -112,7 +112,7 @@ public final class ColorModifierDialog extends ModifierDialog {
                 if (i == selectedI) {
                     bgColors.setSelected(rb.getModel(), true);
                 }
-                JLabel lbl = new JLabel(new ColorIcon(winCtx.getColor(i), 32, 32));
+                JLabel lbl = new JLabel(new ColorIcon(winCtx.getColor(i), 24, 24));
                 int finalI = i;
                 lbl.addMouseListener(new MouseAdapter() {
                     @Override
@@ -188,7 +188,7 @@ public final class ColorModifierDialog extends ModifierDialog {
         }
 
         private void updateCustomColorPreview() {
-            lblCustomPreview.setIcon(new ColorIcon(customColor, 32, 32));
+            lblCustomPreview.setIcon(new ColorIcon(customColor, 24, 24));
         }
 
         private void updatePreview() {
