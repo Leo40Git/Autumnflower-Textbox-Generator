@@ -103,7 +103,7 @@ public record NodeParsingContext(DataTracker metadata, DOMParser.SpanTracker spa
                     boolean leaf = false;
                     if (handler == null) {
                         int nameStart = openStart + 1;
-                        int nameLength = 0;
+                        int nameLength;
                         if (spIndex > 0) {
                             nameLength = spIndex;
                         } else if (eqIndex > 0) {
@@ -160,8 +160,14 @@ public record NodeParsingContext(DataTracker metadata, DOMParser.SpanTracker spa
                         }
                         if (!success) {
                             sb.append('[').append(openingTagContents).append(']');
+                            if (myContents != null) {
+                                nodes.add(new TextNode(sb.toString()));
+                                sb.setLength(0);
+                                // parse the contents ourselves
+                                nodes.addAll(parse(myContents, offset + contentStart, errors));
+                            }
                             if (!autoCloseTag && myContents != null)
-                                sb.append(myContents).append("[/").append(name).append(']');
+                                sb.append("[/").append(name).append(']');
                         }
 
                         if (myContents != null)
