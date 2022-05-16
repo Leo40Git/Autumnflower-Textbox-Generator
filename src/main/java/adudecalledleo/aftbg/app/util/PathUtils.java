@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
@@ -23,20 +25,31 @@ public final class PathUtils {
     }
 
     /**
-     * Deletes a directory by recursively deleting its contents.
+     * Deletes a directory by deleting its contents.
      *
      * @param dir the path to the directory to delete
      * @throws IOException if an I/O error occurs
      */
     public static void deleteDirectory(Path dir) throws IOException {
-        if (Files.isDirectory(dir, LinkOption.NOFOLLOW_LINKS)) {
-            try (DirectoryStream<Path> entries = Files.newDirectoryStream(dir)) {
-                for (Path entry : entries) {
-                    deleteDirectory(entry);
-                }
-            }
+        Files.walkFileTree(dir, new DirectoryDeleter());
+    }
+
+    private static final class DirectoryDeleter extends SimpleFileVisitor<Path> {
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+            Objects.requireNonNull(file);
+            Files.delete(file);
+            return FileVisitResult.CONTINUE;
         }
-        Files.deleteIfExists(dir);
+
+        @Override
+        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+            Objects.requireNonNull(dir);
+            if (exc != null)
+                throw exc;
+            Files.delete(dir);
+            return FileVisitResult.CONTINUE;
+        }
     }
 
     /**
