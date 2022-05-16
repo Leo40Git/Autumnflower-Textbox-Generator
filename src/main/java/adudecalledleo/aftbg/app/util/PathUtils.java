@@ -90,10 +90,4 @@ public final class PathUtils {
             throw new InvalidPathURIException("Failed to convert URI \"%s\" into Path".formatted(uri), e);
         }
     }
-
-    public static class InvalidPathURIException extends Exception {
-        private InvalidPathURIException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
 }

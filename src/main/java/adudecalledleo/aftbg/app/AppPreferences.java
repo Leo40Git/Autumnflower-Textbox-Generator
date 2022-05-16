@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import adudecalledleo.aftbg.app.util.InvalidPathURIException;
 import adudecalledleo.aftbg.app.util.PathUtils;
 import adudecalledleo.aftbg.app.util.json.JsonStructureException;
 import adudecalledleo.aftbg.app.util.json.JsonType;
@@ -64,7 +65,7 @@ public final class AppPreferences {
                 if (elem instanceof JsonPrimitive prim && prim.isString()) {
                     try {
                         lastExtensions.add(PathUtils.fromRawUri(prim.getAsString()));
-                    } catch (URISyntaxException | PathUtils.InvalidPathURIException e) {
+                    } catch (URISyntaxException | InvalidPathURIException e) {
                         throw new JsonStructureException(("Expected element at index %d of array property \"%s\" to be a path URI, "
                                 + "but failed to convert it into a path!").formatted(i, Key.LAST_EXTENSIONS), e);
                     }

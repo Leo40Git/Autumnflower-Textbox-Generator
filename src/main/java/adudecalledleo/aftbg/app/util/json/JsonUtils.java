@@ -3,6 +3,7 @@ package adudecalledleo.aftbg.app.util.json;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
+import adudecalledleo.aftbg.app.util.InvalidPathURIException;
 import adudecalledleo.aftbg.app.util.PathUtils;
 import com.google.gson.*;
 import org.jetbrains.annotations.Nullable;
@@ -109,7 +110,7 @@ public final class JsonUtils {
         String rawUri = getString(obj, key);
         try {
             return PathUtils.fromRawUri(rawUri);
-        } catch (URISyntaxException | PathUtils.InvalidPathURIException e) {
+        } catch (URISyntaxException | InvalidPathURIException e) {
             throw new JsonStructureException(("Expected property \"%s\" to be a path URI, "
                     + "but failed to convert it into a path!").formatted(key), e);
         }
@@ -122,7 +123,7 @@ public final class JsonUtils {
         } else {
             try {
                 return PathUtils.fromRawUri(rawUri);
-            } catch (URISyntaxException | PathUtils.InvalidPathURIException e) {
+            } catch (URISyntaxException | InvalidPathURIException e) {
                 throw new JsonStructureException(("Expected property \"%s\" to be a path URI, "
                         + "but failed to convert it into a path!").formatted(key), e);
             }
