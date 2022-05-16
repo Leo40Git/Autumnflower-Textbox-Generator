@@ -9,7 +9,7 @@ import javax.swing.*;
 
 import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.face.FacePool;
-import adudecalledleo.aftbg.app.text.TextSanitizer;
+import adudecalledleo.aftbg.app.text.DOMInputSanitizer;
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -95,7 +95,7 @@ public final class TextboxListSerializer {
             out.name("face");
             out.value(textbox.getFace().getPath());
             out.name("text");
-            out.value(TextSanitizer.apply(textbox.getText()));
+            out.value(DOMInputSanitizer.apply(textbox.getText()));
             out.endObject();
         }
         out.endArray();

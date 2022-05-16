@@ -1,8 +1,7 @@
 package adudecalledleo.aftbg.window;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
+import java.awt.image.*;
 
 /**
  * <b>NOTE:</b> This class is <em>not safe</em> for multithreading.
@@ -13,25 +12,25 @@ import java.awt.image.ImageObserver;
 public final class WindowContext {
     private final WindowBackground background;
     private final WindowBorder border;
-    private final WindowColors colors;
+    private final WindowPalette palette;
     private final WindowArrow arrow;
 
     public WindowContext(BufferedImage window, WindowTint tint) {
         background = new WindowBackground(window, tint);
         border = new WindowBorder(window);
         arrow = new WindowArrow(window);
-        colors = new WindowColors(window);
+        palette = new WindowPalette(window);
     }
 
-    private WindowContext(WindowBackground background, WindowBorder border, WindowColors colors, WindowArrow arrow) {
+    private WindowContext(WindowBackground background, WindowBorder border, WindowPalette palette, WindowArrow arrow) {
         this.background = background;
         this.border = border;
-        this.colors = colors;
+        this.palette = palette;
         this.arrow = arrow;
     }
 
     public WindowContext copy() {
-        return new WindowContext(background.copy(), border, colors, arrow);
+        return new WindowContext(background.copy(), border, palette, arrow);
     }
 
     public void drawBackground(Graphics2D g, int x, int y, int width, int height, ImageObserver observer) {
@@ -46,11 +45,11 @@ public final class WindowContext {
         arrow.draw(g, boxX, boxY, boxWidth, boxHeight, frame, observer);
     }
 
-    public WindowColors getColors() {
-        return colors;
+    public WindowPalette getPalette() {
+        return palette;
     }
 
     public Color getColor(int index) {
-        return colors.get(index);
+        return palette.get(index);
     }
 }

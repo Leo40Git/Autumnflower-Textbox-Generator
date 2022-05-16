@@ -2,27 +2,25 @@ package adudecalledleo.aftbg.app.ui.dialog.modifier;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.*;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.*;
 
 import adudecalledleo.aftbg.app.AppResources;
-import adudecalledleo.aftbg.app.text.TextRenderer;
+import adudecalledleo.aftbg.app.text.DOMRenderer;
 import adudecalledleo.aftbg.app.ui.WindowBackgroundPanel;
-import adudecalledleo.aftbg.window.WindowColors;
+import adudecalledleo.aftbg.app.ui.util.ColorIcon;
 import adudecalledleo.aftbg.window.WindowContext;
+import adudecalledleo.aftbg.window.WindowPalette;
 
 public final class ColorModifierDialog extends ModifierDialog {
     private static Result lastResult = null;
 
     public sealed static class Result { }
 
-    public static final class WindowResult extends Result {
+    public static final class PaletteResult extends Result {
         private final int index;
 
-        public WindowResult(int index) {
+        public PaletteResult(int index) {
             this.index = index;
         }
 
@@ -43,26 +41,11 @@ public final class ColorModifierDialog extends ModifierDialog {
         }
     }
 
-    private static final class ColorIconCache {
-        private static final Map<Integer, ImageIcon> ICONS = new HashMap<>();
-
-        public static ImageIcon get(Color color) {
-            return ICONS.computeIfAbsent(color.getRGB() & 0xFFFFFF, i -> {
-                BufferedImage img = new BufferedImage(32, 32, BufferedImage.TYPE_INT_RGB);
-                Graphics g = img.createGraphics();
-                g.setColor(color);
-                g.fillRect(0, 0, 32, 32);
-                g.dispose();
-                return new ImageIcon(img);
-            });
-        }
-    }
-
     private final ContentPane pane;
 
     public ColorModifierDialog(Component owner, WindowContext winCtx) {
         super(owner);
-        setIconImage(AppResources.Icons.MOD_COLOR.getAsImage());
+        setIconImage(AppResources.Icons.TOOLBAR_COLOR.getAsImage());
         setTitle("Add color modifier");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -106,7 +89,7 @@ public final class ColorModifierDialog extends ModifierDialog {
             this.winCtx = winCtx;
 
             customColor = winCtx.getColor(0);
-            result = new WindowResult(0);
+            result = new PaletteResult(0);
 
             bgColors = new ButtonGroup();
 
@@ -114,14 +97,14 @@ public final class ColorModifierDialog extends ModifierDialog {
             winPanel.setLayout(new GridLayout(4, 8));
 
             int selectedI = 0;
-            if (lastResult instanceof WindowResult wr) {
+            if (lastResult instanceof PaletteResult wr) {
                 result = lastResult;
                 selectedI = wr.getIndex();
             } else if (lastResult instanceof ConstantResult) {
                 selectedI = -1;
             }
 
-            for (int i = 0; i < WindowColors.COUNT; i++) {
+            for (int i = 0; i < WindowPalette.COUNT; i++) {
                 JRadioButton rb = new JRadioButton();
                 rb.setModel(new WindowColorButtonModel(i));
                 rb.addActionListener(this);
@@ -129,13 +112,13 @@ public final class ColorModifierDialog extends ModifierDialog {
                 if (i == selectedI) {
                     bgColors.setSelected(rb.getModel(), true);
                 }
-                JLabel lbl = new JLabel(ColorIconCache.get(winCtx.getColor(i)));
+                JLabel lbl = new JLabel(new ColorIcon(winCtx.getColor(i), 24, 24));
                 int finalI = i;
                 lbl.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
                         bgColors.setSelected(rb.getModel(), true);
-                        result = new WindowResult(finalI);
+                        result = new PaletteResult(finalI);
                         updatePreview();
                     }
                 });
@@ -175,7 +158,7 @@ public final class ColorModifierDialog extends ModifierDialog {
             customPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
             lblPreview = new JLabel("Sample text");
-            lblPreview.setFont(TextRenderer.DEFAULT_FONT);
+            lblPreview.setFont(DOMRenderer.DEFAULT_FONT);
             updatePreview();
             JPanel previewPanel = new WindowBackgroundPanel(winCtx);
             previewPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.GRAY, 1),
@@ -205,11 +188,11 @@ public final class ColorModifierDialog extends ModifierDialog {
         }
 
         private void updateCustomColorPreview() {
-            lblCustomPreview.setIcon(ColorIconCache.get(customColor));
+            lblCustomPreview.setIcon(new ColorIcon(customColor, 24, 24));
         }
 
         private void updatePreview() {
-            if (result instanceof WindowResult winRes) {
+            if (result instanceof PaletteResult winRes) {
                 lblPreview.setForeground(winCtx.getColor(winRes.getIndex()));
             } else if (result instanceof ConstantResult constRes) {
                 lblPreview.setForeground(constRes.getColor());
@@ -249,7 +232,7 @@ public final class ColorModifierDialog extends ModifierDialog {
                 if (mdl == rbCustom.getModel()) {
                     result = new ConstantResult(customColor);
                 } else if (mdl instanceof WindowColorButtonModel wcbMdl) {
-                    result = new WindowResult(wcbMdl.getColorIndex());
+                    result = new PaletteResult(wcbMdl.getColorIndex());
                 }
                 updatePreview();
             }

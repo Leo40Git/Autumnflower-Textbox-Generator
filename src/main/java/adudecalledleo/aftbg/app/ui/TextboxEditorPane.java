@@ -4,74 +4,84 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
 import java.awt.image.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
+import javax.swing.Timer;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
 
 import adudecalledleo.aftbg.app.AppResources;
+import adudecalledleo.aftbg.app.data.DataTracker;
 import adudecalledleo.aftbg.app.face.Face;
-import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
-import adudecalledleo.aftbg.app.text.TextParser;
-import adudecalledleo.aftbg.app.text.TextRenderer;
-import adudecalledleo.aftbg.app.text.modifier.*;
-import adudecalledleo.aftbg.app.text.node.*;
+import adudecalledleo.aftbg.app.text.DOMParser;
+import adudecalledleo.aftbg.app.text.DOMRenderer;
+import adudecalledleo.aftbg.app.text.node.ContainerNode;
+import adudecalledleo.aftbg.app.text.node.Node;
+import adudecalledleo.aftbg.app.text.node.Span;
+import adudecalledleo.aftbg.app.text.node.color.ColorNode;
+import adudecalledleo.aftbg.app.text.node.color.ColorParser;
+import adudecalledleo.aftbg.app.text.node.style.FontStyleModifyingNode;
+import adudecalledleo.aftbg.app.text.node.style.StyleNode;
 import adudecalledleo.aftbg.app.ui.dialog.modifier.ColorModifierDialog;
-import adudecalledleo.aftbg.app.ui.dialog.modifier.GimmickModifierDialog;
-import adudecalledleo.aftbg.app.ui.dialog.modifier.StyleModifierDialog;
 import adudecalledleo.aftbg.app.ui.text.UnderlineHighlighter;
 import adudecalledleo.aftbg.app.ui.text.ZigZagHighlighter;
+import adudecalledleo.aftbg.app.ui.util.ErrorMessageBuilder;
+import adudecalledleo.aftbg.app.ui.util.IconWithArrow;
 import adudecalledleo.aftbg.app.ui.util.UnmodifiableAttributeSetView;
 import adudecalledleo.aftbg.app.util.ColorUtils;
 import adudecalledleo.aftbg.logging.Logger;
-import adudecalledleo.aftbg.window.WindowColors;
 import adudecalledleo.aftbg.window.WindowContext;
 
 public final class TextboxEditorPane extends JEditorPane
-        implements GameDefinitionUpdateListener, ActionListener {
+        implements GameDefinitionUpdateListener, ActionListener, DOMParser.SpanTracker {
+    public static final String A_TOOLBAR_BOLD = "toolbar.bold";
+    public static final String A_TOOLBAR_ITALIC = "toolbar.italic";
+    public static final String A_TOOLBAR_UNDERLINE = "toolbar.underline";
+    public static final String A_TOOLBAR_STRIKETHROUGH = "toolbar.strikethrough";
+    public static final String A_TOOLBAR_SUPERSCRIPT = "toolbar.superscript";
+    public static final String A_TOOLBAR_SUBSCRIPT = "toolbar.subscript";
+    public static final String A_TOOLBAR_COLOR = "toolbar.color";
+
     private static final BufferedImage SCRATCH_IMAGE = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
     private static final Highlighter.HighlightPainter HLP_ERROR = new ZigZagHighlighter(Color.RED);
-    private static final Map<Color, Highlighter.HighlightPainter> HLP_ESCAPED_COLORS = new HashMap<>();
+    private final Map<Color, UnderlineHighlighter> hlpEscapedColors = new HashMap<>();
 
-    private static Highlighter.HighlightPainter getEscapedColorHighlightPainter(Color color) {
-        return HLP_ESCAPED_COLORS.computeIfAbsent(color, UnderlineHighlighter::new);
+    private Highlighter.HighlightPainter getEscapedColorHighlightPainter(Color color) {
+        return hlpEscapedColors.computeIfAbsent(color, UnderlineHighlighter::new);
     }
 
-    private static final String AC_ADD_MOD_COLOR = "add_mod.color";
-    private static final String AC_ADD_MOD_STYLE = "add_mod.style";
-    private static final String AC_ADD_MOD_GIMMICK = "add_mod.gimmick";
-
-    private final TextParser textParser;
-    private final TextParser.Context textParserCtx;
+    private final DataTracker parserCtx;
     private final Consumer<String> textUpdateConsumer;
     private final Timer updateTimer;
     private final Map<Object, Action> actions;
     private final Map<Rectangle2D, String> errors;
     private final SimpleAttributeSet styleNormal, styleMod;
     private final JPopupMenu popupMenu;
+    private final JToolBar toolBar;
 
     private GameDefinition gameDef;
     private WindowContext winCtx;
+    private Color defaultTextColor;
     private boolean forceCaretRendering;
     private Face textboxFace;
-    private NodeList nodes;
+    private final List<Span> escapedSpans;
+    private final Set<Span> nodeDeclSpans;
 
     public TextboxEditorPane(Consumer<String> textUpdateConsumer) {
         super();
         this.textUpdateConsumer = textUpdateConsumer;
 
-        textParser = new TextParser();
-        textParserCtx = new TextParser.Context();
+        parserCtx = new DataTracker();
         errors = new HashMap<>();
 
         styleNormal = new SimpleAttributeSet();
-        StyleConstants.setFontFamily(styleNormal, TextRenderer.DEFAULT_FONT.getFamily());
-        StyleConstants.setFontSize(styleNormal, TextRenderer.DEFAULT_FONT.getSize());
+        StyleConstants.setFontFamily(styleNormal, DOMRenderer.DEFAULT_FONT.getFamily());
+        StyleConstants.setFontSize(styleNormal, DOMRenderer.DEFAULT_FONT.getSize());
         StyleConstants.setForeground(styleNormal, Color.WHITE);
         styleMod = new SimpleAttributeSet(styleNormal);
         StyleConstants.setForeground(styleMod, Color.GRAY);
@@ -89,7 +99,7 @@ public final class TextboxEditorPane extends JEditorPane
         actions = createActionTable();
 
         Graphics2D g = SCRATCH_IMAGE.createGraphics();
-        g.setFont(TextRenderer.DEFAULT_FONT);
+        g.setFont(DOMRenderer.DEFAULT_FONT);
         var fm = g.getFontMetrics();
         var size = new Dimension(816, fm.getHeight() * 4 + fm.getDescent());
         g.dispose();
@@ -149,7 +159,13 @@ public final class TextboxEditorPane extends JEditorPane
                 }
             }
         });
-        forceCaretRendering = false;
+
+        toolBar = createToolBar();
+
+        this.defaultTextColor = Color.WHITE;
+        this.forceCaretRendering = false;
+        this.escapedSpans = new LinkedList<>();
+        this.nodeDeclSpans = new HashSet<>();
 
         highlight();
     }
@@ -180,125 +196,122 @@ public final class TextboxEditorPane extends JEditorPane
         item.setIcon(AppResources.Icons.PASTE.get());
         menu.add(item);
 
-        JMenu modsMenu = new JMenu("Add Modifier...");
-        modsMenu.setMnemonic(KeyEvent.VK_M);
-        item = new JMenuItem("Color", AppResources.Icons.MOD_COLOR.get());
-        item.setActionCommand(AC_ADD_MOD_COLOR);
-        item.addActionListener(this);
-        item.setMnemonic(KeyEvent.VK_C);
-        modsMenu.add(item);
-        item = new JMenuItem("Style", AppResources.Icons.MOD_STYLE.get());
-        item.setActionCommand(AC_ADD_MOD_STYLE);
-        item.addActionListener(this);
-        item.setMnemonic(KeyEvent.VK_S);
-        modsMenu.add(item);
-        item = new JMenuItem("Gimmick", AppResources.Icons.MOD_GIMMICK.get());
-        item.setActionCommand(AC_ADD_MOD_GIMMICK);
-        item.addActionListener(this);
-        item.setMnemonic(KeyEvent.VK_G);
-        modsMenu.add(item);
-
-        menu.addSeparator();
-        menu.add(modsMenu);
-
         return menu;
+    }
+
+    public JToolBar getToolBar() {
+        return toolBar;
+    }
+
+    private JToolBar createToolBar() {
+        var bar = new JToolBar("Style");
+        bar.setRollover(true);
+        bar.add(createToolBarButton(A_TOOLBAR_BOLD, "Bold", AppResources.Icons.TOOLBAR_BOLD));
+        bar.add(createToolBarButton(A_TOOLBAR_ITALIC, "Italic", AppResources.Icons.TOOLBAR_ITALIC));
+        bar.add(createToolBarButton(A_TOOLBAR_UNDERLINE, "Underline", AppResources.Icons.TOOLBAR_UNDERLINE));
+        bar.add(createToolBarButton(A_TOOLBAR_STRIKETHROUGH, "Strikethrough", AppResources.Icons.TOOLBAR_STRIKETHROUGH));
+        bar.add(createToolBarButton(A_TOOLBAR_SUPERSCRIPT, "Superscript", AppResources.Icons.TOOLBAR_SUPERSCRIPT));
+        bar.add(createToolBarButton(A_TOOLBAR_SUBSCRIPT, "Subscript", AppResources.Icons.TOOLBAR_SUBSCRIPT));
+
+        bar.addSeparator();
+
+        bar.add(createToolBarButton(A_TOOLBAR_COLOR, "Color", new IconWithArrow(AppResources.Icons.TOOLBAR_COLOR.get())));
+
+        return bar;
+    }
+
+    private JButton createToolBarButton(String actionCmd, String text, Icon icon) {
+        var btn = new JButton();
+        btn.setIcon(icon);
+        btn.setToolTipText(text);
+        btn.setActionCommand(actionCmd);
+        btn.addActionListener(this);
+        return btn;
+    }
+
+    private JButton createToolBarButton(String actionCmd, String text, AppResources.Icons icon) {
+        return createToolBarButton(actionCmd, text, icon.get());
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
-            case AC_ADD_MOD_COLOR -> {
-                ColorModifierDialog.Result result;
+            case A_TOOLBAR_BOLD -> wrapSelectionInTag("b");
+            case A_TOOLBAR_ITALIC -> wrapSelectionInTag("i");
+            case A_TOOLBAR_UNDERLINE -> wrapSelectionInTag("u");
+            case A_TOOLBAR_STRIKETHROUGH -> wrapSelectionInTag("s");
+            case A_TOOLBAR_SUPERSCRIPT -> wrapSelectionInTag("sup");
+            case A_TOOLBAR_SUBSCRIPT -> wrapSelectionInTag("sub");
+            case A_TOOLBAR_COLOR -> {
+                if (winCtx == null) {
+                    UIManager.getLookAndFeel().provideErrorFeedback(this);
+                    Logger.info("Tried to open color modifier dialog without window context!");
+                    return;
+                }
+
                 try {
                     forceCaretRendering = true;
-                    var dialog = new ColorModifierDialog(this, winCtx);
-                    dialog.setLocationRelativeTo(null);
-                    result = dialog.showDialog();
-                } finally {
-                    forceCaretRendering = false;
-                }
-                if (result == null) {
-                    requestFocus();
-                    break;
-                }
-                String toInsert;
-                if (result instanceof ColorModifierDialog.WindowResult winResult) {
-                    toInsert = "\\" + ColorModifierNode.KEY + "[" + winResult.getIndex() + "]";
-                } else if (result instanceof ColorModifierDialog.ConstantResult constResult) {
-                    var col = constResult.getColor();
-                    toInsert = "\\%c[#%02X%02X%02X]".formatted(
-                            ColorModifierNode.KEY, col.getRed(), col.getGreen(), col.getBlue());
-                } else {
-                    throw new InternalError("Unhandled result type " + result + "?!");
-                }
-                try {
-                    replaceSelection(toInsert);
-                    updateTimer.restart();
-                } finally {
-                    requestFocus();
-                }
-            }
-            case AC_ADD_MOD_STYLE -> {
-                StyleSpec spec = StyleSpec.DEFAULT;
-                if (nodes != null) {
-                    for (var node : nodes) {
-                        if (node instanceof StyleModifierNode styleModNote) {
-                            spec = spec.add(styleModNote.getSpec());
-                        }
+                    var result = new ColorModifierDialog(this, winCtx).showDialog();
+                    String value;
+                    if (result instanceof ColorModifierDialog.ConstantResult rConst) {
+                        var c = rConst.getColor();
+                        value = "#%02X%02X%02X".formatted(c.getRed(), c.getGreen(), c.getBlue());
+                    } else if (result instanceof ColorModifierDialog.PaletteResult rPal) {
+                        value = "pal(%d)".formatted(rPal.getIndex());
+                    } else {
+                        UIManager.getLookAndFeel().provideErrorFeedback(this);
+                        Logger.info("Got unknown result " + result + "!");
+                        return;
                     }
-                }
-                StyleSpec newSpec;
-                try {
-                    forceCaretRendering = true;
-                    var dialog = new StyleModifierDialog(this, spec);
-                    dialog.setLocationRelativeTo(null);
-                    newSpec = dialog.showDialog();
+                    wrapSelectionInTag("c=" + value, "c");
                 } finally {
                     forceCaretRendering = false;
-                }
-                if (newSpec == null) {
-                    requestFocus();
-                    break;
-                }
-                newSpec = spec.difference(newSpec);
-                try {
-                    replaceSelection(newSpec.toModifier());
-                    updateTimer.restart();
-                } finally {
-                    requestFocus();
-                }
-            }
-            case AC_ADD_MOD_GIMMICK -> {
-                GimmickSpec spec = GimmickSpec.DEFAULT;
-                if (nodes != null) {
-                    for (var node : nodes) {
-                        if (node instanceof GimmickModifierNode gimmickModNote) {
-                            spec = spec.add(gimmickModNote.getSpec());
-                        }
-                    }
-                }
-                GimmickSpec newSpec;
-                try {
-                    forceCaretRendering = true;
-                    var dialog = new GimmickModifierDialog(this, winCtx, spec);
-                    dialog.setLocationRelativeTo(null);
-                    newSpec = dialog.showDialog();
-                } finally {
-                    forceCaretRendering = false;
-                }
-                if (newSpec == null) {
-                    requestFocus();
-                    break;
-                }
-                newSpec = spec.difference(newSpec);
-                try {
-                    replaceSelection(newSpec.toModifier());
-                    updateTimer.restart();
-                } finally {
-                    requestFocus();
                 }
             }
         }
+    }
+
+    public void wrapSelectionInTag(String tagStart, String tagEnd) {
+        final var doc = getDocument();
+        int start = getSelectionStart();
+        int end = getSelectionEnd();
+        int length = end - start;
+        if (length <= 0) {
+            // no selection! insert an empty tag, and move the caret into it
+            try {
+                doc.insertString(start, "[%s][/%s]".formatted(tagStart, tagEnd), styleNormal);
+            } catch (BadLocationException e) {
+                UIManager.getLookAndFeel().provideErrorFeedback(this);
+                Logger.info("Failed to insert empty tag!", e);
+                return;
+            }
+            select(start + 2 + tagStart.length(), 0);
+        } else {
+            // we have a selection! wrap it in a tag
+            String selectedText;
+            try {
+                selectedText = doc.getText(start, length);
+            } catch (BadLocationException e) {
+                UIManager.getLookAndFeel().provideErrorFeedback(this);
+                Logger.info("Failed to get selected text!", e);
+                return;
+            }
+            String newText = "[%s]%s[/%s]".formatted(tagStart, selectedText, tagEnd);
+            try {
+                doc.remove(start, length);
+                doc.insertString(start, newText, styleNormal);
+            } catch (BadLocationException e) {
+                UIManager.getLookAndFeel().provideErrorFeedback(this);
+                Logger.info("Failed to replace selected text!", e);
+                return;
+            }
+            select(start + 2 + tagStart.length(), end + 2 + tagStart.length());
+        }
+        requestFocus();
+    }
+
+    public void wrapSelectionInTag(String tagName) {
+        wrapSelectionInTag(tagName, tagName);
     }
 
     @Override
@@ -311,22 +324,30 @@ public final class TextboxEditorPane extends JEditorPane
         if (popupMenu.isVisible() || forceCaretRendering) {
             // force caret to be drawn, so user knows where pasted text/modifiers will be inserted
             getCaret().setVisible(true);
+            getCaret().setSelectionVisible(true);
         }
 
         super.paintComponent(g);
-
-        //getHighlighter().paint(g);
     }
 
     @Override
     public String getToolTipText(MouseEvent event) {
+        ErrorMessageBuilder emb = null;
         var point = event.getPoint();
         for (var entry : errors.entrySet()) {
             if (entry.getKey().contains(point.x, point.y)) {
-                return entry.getValue();
+                if (emb == null) {
+                    emb = new ErrorMessageBuilder(entry.getValue());
+                } else {
+                    emb.add(entry.getValue());
+                }
             }
         }
-        return null;
+        if (emb == null) {
+            return null;
+        } else {
+            return emb.toString();
+        }
     }
 
     public void flushChanges(boolean highlight) {
@@ -352,121 +373,176 @@ public final class TextboxEditorPane extends JEditorPane
 
     @Override
     public void updateGameDefinition(GameDefinition gameDef) {
+        hlpEscapedColors.clear();
+
         this.gameDef = gameDef;
         this.winCtx = gameDef.winCtx().copy();
         setCaretColor(winCtx.getColor(0));
         StyleConstants.setForeground(styleNormal, winCtx.getColor(0));
-        textParserCtx
-                .put(WindowColors.class, winCtx.getColors())
-                .put(FacePool.class, gameDef.faces());
+        var pal = winCtx.getPalette();
+        defaultTextColor = pal.get(0);
+        parserCtx.set(ColorParser.PALETTE, pal);
         flushChanges(true);
     }
 
-    private static final boolean DUMP_NODES = false;
-
     private void highlight() {
-        Highlighter highlighter = getHighlighter();
+        errors.clear();
+        escapedSpans.clear();
         if (getDocument() instanceof StyledDocument doc) {
             MutableAttributeSet style = styleNormal, styleEscaped = styleMod;
             doc.setParagraphAttributes(0, doc.getLength(), style, true);
             doc.setCharacterAttributes(0, doc.getLength(), style, true);
-            highlighter.removeAllHighlights();
+            getHighlighter().removeAllHighlights();
 
-            if (winCtx == null) {
-                return;
-            }
+            var result = DOMParser.parse(getText(), parserCtx, this);
 
-            nodes = null;
-            try {
-                nodes = textParser.parse(textParserCtx, doc.getText(0, doc.getLength()));
-            } catch (BadLocationException e) {
-                Logger.error("Failed to get text to parse!", e);
-                return;
-            }
+            highlight0(doc, result.document().getChildren(), style, styleEscaped);
+            highlightTrackedSpans(doc);
 
-            // region NODE DUMP
-            if (DUMP_NODES) {
-                Logger.trace("=== NODE DUMP START ===");
-                for (Node node : nodes) {
-                    Logger.trace(node.toString());
-                }
-                Logger.trace("=== NODE DUMP  END  ===");
-            }
-            // endregion
-
-            StyleSpec styleSpec = StyleSpec.DEFAULT;
-
-            for (Node node : nodes) {
-                if (node instanceof ColorModifierNode modCol) {
-                    doc.setCharacterAttributes(modCol.getStart(), modCol.getLength(), styleMod, true);
-                    Color c = modCol.getColor();
-                    style = new SimpleAttributeSet(style);
-                    StyleConstants.setForeground(style, c);
-
-                    var style2 = new SimpleAttributeSet(styleNormal);
-                    StyleConstants.setForeground(style2, c);
-                    Span argSpan = modCol.getArgSpans()[0];
-                    doc.setCharacterAttributes(argSpan.start(), argSpan.length(), style2, true);
-                } else if (node instanceof StyleModifierNode modStyle) {
-                    doc.setCharacterAttributes(modStyle.getStart(), modStyle.getLength(), styleMod, true);
-                    styleSpec = styleSpec.add(modStyle.getSpec());
-                    style = modifyStyleToSpec(style, styleSpec);
-                    styleEscaped = modifyStyleToSpec(styleEscaped, styleSpec);
-                } else if (node instanceof ModifierNode) {
-                    doc.setCharacterAttributes(node.getStart(), node.getLength(), styleMod, true);
-                } else if (node instanceof TextNode.Escaped) {
+            if (result.hasErrors()) {
+                for (var error : result.errors()) {
                     try {
-                        highlighter.addHighlight(node.getStart(), node.getStart() + node.getLength(),
-                                getEscapedColorHighlightPainter(StyleConstants.getForeground(style)));
-                        doc.setCharacterAttributes(node.getStart(), node.getLength(), styleEscaped, true);
+                        Rectangle2D startRect, endRect;
+
+                        startRect = modelToView2D(error.start());
+                        endRect = modelToView2D(error.end());
+
+                        var errorRect = new Rectangle2D.Double(startRect.getX(), startRect.getY(),
+                                endRect.getX() - startRect.getX(), Math.max(startRect.getHeight(), endRect.getHeight()));
+                        errors.put(errorRect, error.message() + " (" + (error.start() + 1) + "-" + (error.end() + 1) + ")");
                     } catch (BadLocationException e) {
-                        Logger.error("Failed to properly highlight escaped text!", e);
+                        Logger.info("Failed to generate tooltip bounds for error", e);
                     }
-                } else {
-                    doc.setCharacterAttributes(node.getStart(), node.getLength(), style, true);
-                }
-            }
 
-            errors.clear();
-
-            for (ErrorNode err : nodes.getErrors()) {
-                final int end = err.getStart() + err.getLength();
-
-                try {
-                    Rectangle2D startRect, endRect;
-
-                    startRect = modelToView2D(err.getStart());
-                    endRect = modelToView2D(end);
-
-                    errors.put(new Rectangle2D.Double(startRect.getX(), startRect.getY(),
-                                    endRect.getX() - startRect.getX(), Math.max(startRect.getHeight(), endRect.getHeight())),
-                            err.getMessage());
-                } catch (BadLocationException e) {
-                    Logger.error("Failed to generate tooltip bounds for error!", e);
-                }
-
-                try {
-                    highlighter.addHighlight(err.getStart(), end, HLP_ERROR);
-                    doc.setCharacterAttributes(err.getStart(), err.getLength(), styleNormal, true);
-                } catch (BadLocationException e) {
-                    Logger.error("Failed to properly highlight error!", e);
+                    try {
+                        getHighlighter().addHighlight(error.start(), error.end(), HLP_ERROR);
+                    } catch (BadLocationException e) {
+                        Logger.info("Failed to properly highlight error", e);
+                    }
                 }
             }
         }
-
-        SwingUtilities.invokeLater(this::repaint);
     }
 
-    private MutableAttributeSet modifyStyleToSpec(MutableAttributeSet style, StyleSpec styleSpec) {
-        style = new SimpleAttributeSet(style);
-        StyleConstants.setBold(style, styleSpec.isBold());
-        StyleConstants.setItalic(style, styleSpec.isItalic());
-        StyleConstants.setUnderline(style, styleSpec.isUnderline());
-        StyleConstants.setStrikeThrough(style, styleSpec.isStrikethrough());
-        StyleConstants.setSuperscript(style, styleSpec.superscript() == StyleSpec.Superscript.SUPER);
-        StyleConstants.setSubscript(style, styleSpec.superscript() == StyleSpec.Superscript.SUB);
-        StyleConstants.setFontSize(style, StyleConstants.getFontSize(styleNormal) + styleSpec.getRealSizeAdjust());
-        return style;
+    @Override
+    public void markEscaped(int start, int end) {
+        Logger.trace("adding escaped span - %d, %d".formatted(start, end));
+        this.escapedSpans.add(new Span(start, end - start));
+    }
+
+    @Override
+    public void markNodeDecl(String node, int start, int end) {
+        this.nodeDeclSpans.add(new Span(start, end - start));
+    }
+
+    private void highlight0(StyledDocument doc, List<Node> nodes, MutableAttributeSet style, MutableAttributeSet styleEscaped) {
+        var oldStyle = style;
+        var oldStyleEscaped = styleEscaped;
+        for (var node : nodes) {
+            style = oldStyle;
+            styleEscaped = oldStyleEscaped;
+
+            var opening = node.getOpeningSpan();
+            var closing = node.getClosingSpan();
+            if (!opening.isValid() || !closing.isValid()) {
+                continue;
+            }
+            nodeDeclSpans.remove(opening);
+            nodeDeclSpans.remove(closing);
+            doc.setCharacterAttributes(opening.start(), opening.length(), styleMod, true);
+            doc.setCharacterAttributes(closing.start(), closing.length(), styleMod, true);
+            if (node instanceof ColorNode nColor) {
+                var color = nColor.getColor();
+                if (color == null) {
+                    color = defaultTextColor;
+                }
+
+                var attr = nColor.getAttributes().get("value");
+                if (attr != null) {
+                    var attrStyle = new SimpleAttributeSet(styleMod);
+                    StyleConstants.setForeground(attrStyle, color);
+                    doc.setCharacterAttributes(attr.valueSpan().start(), attr.valueSpan().length(),
+                            attrStyle, true);
+                }
+
+                style = new SimpleAttributeSet(style);
+                StyleConstants.setForeground(style, color);
+            } else if (node instanceof StyleNode nStyle) {
+                Integer size = nStyle.getSize();
+                Color color = null;
+                if (nStyle.isColorSet()) {
+                    color = nStyle.getColor();
+                    if (color == null) {
+                        color = defaultTextColor;
+                    }
+
+                    var colorAttr = nStyle.getAttributes().get("color");
+                    if (colorAttr != null) {
+                        var attrStyle = new SimpleAttributeSet(styleMod);
+                        StyleConstants.setForeground(attrStyle, color);
+                        doc.setCharacterAttributes(colorAttr.valueSpan().start(), colorAttr.valueSpan().length(),
+                                attrStyle, true);
+                    }
+                }
+
+                boolean escapedModified = size != null;
+                boolean normalModified = escapedModified || color != null;
+                if (normalModified) style = new SimpleAttributeSet(style);
+                if (escapedModified) styleEscaped = new SimpleAttributeSet(styleEscaped);
+
+                if (size != null) {
+                    final int newSize = StyleConstants.getFontSize(styleNormal) + size;
+                    StyleConstants.setFontSize(style, newSize);
+                    StyleConstants.setFontSize(styleEscaped, newSize);
+                }
+
+                if (color != null) {
+                    StyleConstants.setForeground(style, color);
+                }
+            } else if (node instanceof FontStyleModifyingNode nFSM) {
+                style = new SimpleAttributeSet(style);
+                nFSM.updateSwingStyle(style);
+            }
+
+            final Span contentSpan = node.getContentSpan();
+            doc.setCharacterAttributes(contentSpan.start(), contentSpan.length(), style, true);
+            final Color contentColor = StyleConstants.getForeground(style);
+            var it = escapedSpans.iterator();
+            while (it.hasNext()) {
+                var escapedSpan = it.next();
+                if (escapedSpan.isIn(contentSpan)) {
+                    it.remove();
+                    doc.setCharacterAttributes(escapedSpan.start(), escapedSpan.length(), styleEscaped, true);
+                    try {
+                        getHighlighter().addHighlight(escapedSpan.start(), escapedSpan.end(), getEscapedColorHighlightPainter(contentColor));
+                    } catch (BadLocationException e) {
+                        Logger.info("Failed to add highlighter for escaped color", e);
+                    }
+                }
+            }
+
+            if (node instanceof ContainerNode container) {
+                highlight0(doc, container.getChildren(), style, styleEscaped);
+            }
+        }
+    }
+
+    private void highlightTrackedSpans(StyledDocument doc) {
+        var hl = getEscapedColorHighlightPainter(defaultTextColor);
+        for (var span : escapedSpans) {
+            doc.setCharacterAttributes(span.start(), span.length(), styleMod, true);
+            try {
+                getHighlighter().addHighlight(span.start(), span.end(), hl);
+            } catch (BadLocationException e) {
+                Logger.info("Failed to add highlighter for escaped color", e);
+            }
+        }
+        escapedSpans.clear();
+
+        for (var span : nodeDeclSpans) {
+            doc.setCharacterAttributes(span.start(), span.length(), styleMod, true);
+        }
+        nodeDeclSpans.clear();
     }
 
     private static final class StyledDocumentImpl extends DefaultStyledDocument {

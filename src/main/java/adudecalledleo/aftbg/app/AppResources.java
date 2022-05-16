@@ -14,8 +14,9 @@ import adudecalledleo.aftbg.logging.Logger;
 public final class AppResources {
     public enum Icons {
         TEXTBOX_ADD, TEXTBOX_REMOVE, TEXTBOX_INSERT_BEFORE, TEXTBOX_INSERT_AFTER, TEXTBOX_CLONE, EDIT_FACE_POOL,
-        MOD_STYLE, MOD_COLOR, CUT, COPY, PASTE, MOD_FACE, MOD_DELAY, MOD_TEXT_SPEED, MOD_GIMMICK, PREVIEW,
-        PREFS, PROJECT_NEW, PROJECT_LOAD, PROJECT_SAVE, PROJECT_SAVE_AS, ABOUT;
+        TOOLBAR_BOLD, TOOLBAR_COLOR, CUT, COPY, PASTE, TOOLBAR_ITALIC, TOOLBAR_UNDERLINE, TOOLBAR_STRIKETHROUGH,
+        MOD_GIMMICK, PREVIEW, PREFS, PROJECT_NEW, PROJECT_LOAD, PROJECT_SAVE, PROJECT_SAVE_AS, ABOUT,
+        TOOLBAR_SUPERSCRIPT, TOOLBAR_SUBSCRIPT;
 
         private ImageIcon imageIcon;
 
@@ -32,6 +33,7 @@ public final class AppResources {
     }
 
     private static Font font;
+    private static ImageIcon arrowIcon;
 
     private static StyleSheet updateStyleSheet;
 
@@ -61,6 +63,12 @@ public final class AppResources {
     }
 
     private static void loadIcons() throws IOException {
+        BufferedImage arrowImage;
+        try (InputStream in = openResourceStream("/arrow.png")) {
+            arrowImage = ImageIO.read(in);
+        }
+        arrowIcon = new ImageIcon(arrowImage);
+
         BufferedImage iconSheet;
         try (InputStream in = openResourceStream("/icons.png")) {
             iconSheet = ImageIO.read(in);
@@ -81,6 +89,13 @@ public final class AppResources {
             throw new IllegalStateException("Font hasn't been loaded!");
         }
         return font;
+    }
+
+    public static ImageIcon getArrowIcon() {
+        if (arrowIcon == null) {
+            throw new IllegalStateException("Arrow hasn't been loaded!");
+        }
+        return arrowIcon;
     }
 
     public static StyleSheet getUpdateStyleSheet() {

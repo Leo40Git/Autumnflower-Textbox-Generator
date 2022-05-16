@@ -9,7 +9,7 @@ public abstract class ModalDialog extends JDialog {
         super(getWindowAncestor(owner), DEFAULT_MODALITY_TYPE);
     }
 
-    private static Window getWindowAncestor(Component c) {
+    public static Window getWindowAncestor(Component c) {
         if (c instanceof Window w) {
             return w;
         } else if (c == null) {

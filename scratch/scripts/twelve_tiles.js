@@ -28,11 +28,11 @@ var xlat = {
 };
 
 function updateTextbox(faces, box) {
-    var text = input.getString("Enter text (case insensitive, A-Z only):", "scrabble is fun");
+    var text = input.getString("Enter text (case insensitive):", "scrabble is fun");
 
     box.face = faces.get("Twelve", "Tiled");
 
-    str = "Twelve:\n\\c[9]";
+    str = "Twelve:\n[color=pal(9)]";
     for (var i = 0; i < text.length; i++) {
         var xlated = xlat[text.charAt(i).toLowerCase()];
         if (xlated === undefined) {
@@ -41,5 +41,6 @@ function updateTextbox(faces, box) {
             str += xlated;
         }
     }
+    str += "[/color]";
     box.text = str;
 }

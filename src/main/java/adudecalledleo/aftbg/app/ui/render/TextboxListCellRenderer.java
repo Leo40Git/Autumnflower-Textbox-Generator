@@ -4,25 +4,23 @@ import java.awt.*;
 
 import javax.swing.*;
 
+import adudecalledleo.aftbg.app.data.DataTracker;
 import adudecalledleo.aftbg.app.data.Textbox;
-import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
-import adudecalledleo.aftbg.app.text.TextParser;
-import adudecalledleo.aftbg.app.text.node.NodeUtils;
-import adudecalledleo.aftbg.window.WindowColors;
+import adudecalledleo.aftbg.app.text.node.color.ColorParser;
 import adudecalledleo.aftbg.window.WindowContext;
 
 public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox>
         implements GameDefinitionUpdateListener {
-    private final TextParser textParser;
-    private final TextParser.Context textParserCtx;
+    private final StringBuilder sb;
+    private final DataTracker parserCtx;
     private WindowContext winCtx;
 
     public TextboxListCellRenderer() {
         super();
-        textParser = new TextParser();
-        textParserCtx = new TextParser.Context();
+        sb = new StringBuilder();
+        parserCtx = new DataTracker();
         setPreferredSize(new Dimension(72 * 4 + 4, 72));
         setMinimumSize(new Dimension(72 * 4 + 4, 72));
     }
@@ -30,9 +28,7 @@ public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox>
     @Override
     public void updateGameDefinition(GameDefinition gameDef) {
         this.winCtx = gameDef.winCtx();
-        textParserCtx
-                .put(WindowColors.class, winCtx.getColors())
-                .put(FacePool.class, gameDef.faces());
+        parserCtx.set(ColorParser.PALETTE, winCtx.getPalette());
     }
 
     @Override
@@ -46,11 +42,49 @@ public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox>
             setForeground(winCtx == null ? Color.WHITE : winCtx.getColor(0));
         }
         setIcon(value.getFace().getIcon());
-        String contents = NodeUtils.getTruncatedDisplay(textParser.parse(textParserCtx, value.getText()), 50);
+        String contents = makeTruncatedDisplay(value.getText(), 50);
         setText("<html>"
                 + "<b>Textbox " + (index + 1) + "</b><br>"
                 + contents
                 + "</html>");
         return this;
+    }
+
+    private static final String CONTENTS_EMPTY = "(empty)";
+    private String makeTruncatedDisplay(String contents, int maxLength) {
+        if (contents.isBlank()) {
+            return CONTENTS_EMPTY;
+        } else {
+            sb.setLength(0);
+            boolean skipSpaces = true, inTagBlock = false;
+            for (char c : contents.toCharArray()) {
+                if (inTagBlock) {
+                    if (c == ']') {
+                        inTagBlock = false;
+                    }
+                } else {
+                    if (c == '[') {
+                        inTagBlock = true;
+                    } else {
+                        // trim leading spaces
+                        if (c == ' ' && skipSpaces) {
+                            continue;
+                        } else {
+                            skipSpaces = false;
+                        }
+                        sb.append(c);
+                        if (sb.length() == maxLength - 1) {
+                            sb.append('\u2026');
+                            break;
+                        }
+                    }
+                }
+            }
+            if (sb.length() == 0) {
+                return CONTENTS_EMPTY;
+            } else {
+                return "\"" + sb + "\"";
+            }
+        }
     }
 }
