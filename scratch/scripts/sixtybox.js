@@ -11,7 +11,7 @@ function updateTextbox(faces, box) {
     box.face = addFace ? faces.get("Sixty", "Neutral") : faces.blank;
     var lnLim = addFace ? 22 : 28;
 
-    str = "Sixty:\n[color=pal(10)]";
+    str = "Sixty:[br]\n[color=pal(10)]";
     lnCnt = 0;
     for (var i = 0; i < textLength; i++) {
         str += "\u2591";
