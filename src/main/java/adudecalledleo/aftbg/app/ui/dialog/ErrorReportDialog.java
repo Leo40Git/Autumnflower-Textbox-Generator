@@ -10,9 +10,9 @@ import javax.swing.table.*;
 import adudecalledleo.aftbg.app.text.DOMParser;
 import adudecalledleo.aftbg.app.util.Pair;
 
-public final class ErrorReportDialog extends ModalDialog {
+public final class ErrorReportDialog extends JDialog {
     public ErrorReportDialog(Component owner, List<Pair<Integer, DOMParser.Error>> errors) {
-        super(owner);
+        super(ModalDialog.getWindowAncestor(owner), ModalityType.MODELESS);
         setTitle("Textbox error(s)");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -45,14 +45,19 @@ public final class ErrorReportDialog extends ModalDialog {
 
             JTable tblErrors = new JTable();
             tblErrors.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            // TODO make "Description" the largest column
-            // TODO minimum sizes
-            tblErrors.addColumn(createColumn(0, "Box #"));
-            tblErrors.addColumn(createColumn(1, "Description"));
-            tblErrors.addColumn(createColumn(2, "From"));
-            tblErrors.addColumn(createColumn(3, "To"));
+            TableColumn[] tblErrorsCols = createColumns("B#", "Description", "S", "E");
+            for (var col : tblErrorsCols) {
+                tblErrors.addColumn(col);
+            }
+            tblErrors.getTableHeader().setReorderingAllowed(false);
             tblErrors.setAutoCreateColumnsFromModel(false);
             tblErrors.setModel(mdlErrors);
+
+            tblErrors.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+            lockColumnSize(tblErrors, tblErrorsCols[0]);
+            lockColumnSize(tblErrors, tblErrorsCols[3]);
+            tblErrorsCols[2].setMinWidth(tblErrorsCols[3].getMinWidth());
+            tblErrorsCols[2].setMaxWidth(tblErrorsCols[3].getMaxWidth());
 
             btnOK = new JButton("OK");
             btnOK.addActionListener(this);
@@ -67,10 +72,36 @@ public final class ErrorReportDialog extends ModalDialog {
             add(bottomPanel, BorderLayout.PAGE_END);
         }
 
-        private TableColumn createColumn(int index, String title) {
-            var col = new TableColumn(index);
-            col.setHeaderValue(title);
-            return col;
+        private TableColumn[] createColumns(String... titles) {
+            var cols = new TableColumn[titles.length];
+            for (int i = 0; i < cols.length; i++) {
+                cols[i] = new TableColumn(i);
+                cols[i].setHeaderValue(titles[i]);
+            }
+            return cols;
+        }
+
+        private void lockColumnSize(JTable table, TableColumn col) {
+            final var model = table.getModel();
+            final int colInd = col.getModelIndex();
+            var headerRenderer = col.getHeaderRenderer();
+            if (headerRenderer == null) {
+                headerRenderer = table.getTableHeader().getDefaultRenderer();
+            }
+            int width = headerRenderer
+                    .getTableCellRendererComponent(table, col.getHeaderValue(), false, false, 0, colInd)
+                    .getPreferredSize().width;
+            var renderer = col.getCellRenderer();
+            if (renderer == null) {
+                renderer = table.getDefaultRenderer(model.getColumnClass(colInd));
+            }
+            for (int i = 0; i < model.getRowCount(); i++) {
+                width = Math.max(width,
+                        renderer.getTableCellRendererComponent(table, model.getValueAt(i, colInd), false, false, i, colInd)
+                                .getPreferredSize().width);
+            }
+            col.setMinWidth(width);
+            col.setMaxWidth(width);
         }
 
         @Override
