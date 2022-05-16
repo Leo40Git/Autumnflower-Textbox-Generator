@@ -11,8 +11,10 @@ import java.nio.file.Paths;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import adudecalledleo.aftbg.app.util.JsonUtils;
 import adudecalledleo.aftbg.app.util.PathUtils;
+import adudecalledleo.aftbg.app.util.json.JsonStructureException;
+import adudecalledleo.aftbg.app.util.json.JsonType;
+import adudecalledleo.aftbg.app.util.json.JsonUtils;
 import adudecalledleo.aftbg.logging.Logger;
 import com.google.gson.*;
 import org.jetbrains.annotations.Nullable;
@@ -45,7 +47,7 @@ public final class AppPreferences {
         lastExtensions = new LinkedHashSet<>();
     }
 
-    public void read(JsonObject obj) throws JsonUtils.StructureException {
+    public void read(JsonObject obj) throws JsonStructureException {
         int version = JsonUtils.getInt(obj, Key.VERSION);
         // in the future, the "version" property will determine how to read preferences from the object
         //  to allow for backwards compatibility with older preferences files
@@ -63,11 +65,11 @@ public final class AppPreferences {
                     try {
                         lastExtensions.add(PathUtils.fromRawUri(prim.getAsString()));
                     } catch (URISyntaxException | PathUtils.InvalidPathURIException e) {
-                        throw new JsonUtils.StructureException(("Expected element at index %d of array property \"%s\" to be a path URI, "
+                        throw new JsonStructureException(("Expected element at index %d of array property \"%s\" to be a path URI, "
                                 + "but failed to convert it into a path!").formatted(i, Key.LAST_EXTENSIONS), e);
                     }
                 } else {
-                    throw JsonUtils.createWrongTypeException(Key.LAST_EXTENSIONS, i, JsonUtils.ElementType.STRING, elem);
+                    throw JsonUtils.createWrongTypeException(Key.LAST_EXTENSIONS, i, JsonType.STRING, elem);
                 }
             }
         }
@@ -95,7 +97,7 @@ public final class AppPreferences {
             try {
                 instance = new AppPreferences();
                 instance.read(obj);
-            } catch (JsonUtils.StructureException e) {
+            } catch (JsonStructureException e) {
                 throw new IOException("Invalid preferences file", e);
             }
         } else {
