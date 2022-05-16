@@ -37,7 +37,7 @@ public final class JsonUtils {
 
     public static boolean getBoolean(JsonObject obj, String key, boolean def) throws JsonStructureException {
         JsonElement elem = obj.get(key);
-        if (elem == null || elem.isJsonNull()) {
+        if (elem == null) {
             return def;
         } else if (elem instanceof JsonPrimitive prim && prim.isBoolean()) {
             return prim.getAsBoolean();
@@ -57,7 +57,7 @@ public final class JsonUtils {
 
     public static int getInt(JsonObject obj, String key, int def) throws JsonStructureException {
         JsonElement elem = obj.get(key);
-        if (elem == null || elem.isJsonNull()) {
+        if (elem == null) {
             return def;
         } else if (elem instanceof JsonPrimitive prim && prim.isNumber()) {
             return prim.getAsInt();
