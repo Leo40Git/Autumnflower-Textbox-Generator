@@ -48,7 +48,7 @@ public final class WindowBackground {
             Graphics2D sg = scratchBuf.createGraphics();
 
             // draw stretched and tinted base
-            sg.setComposite(new WindowTintComposite(color));
+            sg.setComposite(new WindowBackgroundBaseComposite(color));
             sg.drawImage(base, 0, 0, width, height, 0, 0, base.getWidth(), base.getHeight(), null);
             // draw tiled overlay
             sg.setComposite(AlphaComposite.SrcOver);
