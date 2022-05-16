@@ -56,10 +56,13 @@ public final class Main {
 
         NodeRegistry.init();
 
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
-            logger.error("Failed to set system L&F", e);
+        if (!Boolean.getBoolean("skipSystemLookAndFeel")) {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+                     UnsupportedLookAndFeelException e) {
+                logger.error("Failed to set system L&F", e);
+            }
         }
 
         LoadFrame loadFrame = new LoadFrame("Loading...", true);
