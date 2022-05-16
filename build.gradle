@@ -27,6 +27,13 @@ runtime {
 
 group 'adudecalledleo'
 
+sourceSets {
+    dev {
+        compileClasspath += sourceSets.main.runtimeClasspath
+        runtimeClasspath += sourceSets.main.runtimeClasspath
+    }
+}
+
 repositories {
     mavenCentral()
 }
@@ -40,6 +47,8 @@ dependencies {
     implementation "org.commonmark:commonmark-ext-ins:${project.commonmark_version}"
     implementation "org.commonmark:commonmark-ext-gfm-strikethrough:${project.commonmark_version}"
     implementation "org.openjdk.nashorn:nashorn-core:${project.nashorn_version}"
+
+    devRuntimeOnly "org.fusesource.jansi:jansi:${project.jansi_version}"
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'

@@ -15,13 +15,17 @@ import org.jetbrains.annotations.Nullable;
 
 public final class BuildInfo {
     private static boolean loaded = false;
-    private static boolean isDev = false;
+    private static boolean isDevelopment = false;
     private static String name, abbreviatedName;
     private static Version version;
     private static @Nullable URL updateJsonUrl, homepageUrl, issuesUrl, sourceUrl;
     private static String[] credits;
 
     private BuildInfo() { }
+
+    public static void setDevelopment() {
+        isDevelopment = true;
+    }
 
     public static void load() throws IOException {
         if (loaded) {
@@ -58,8 +62,11 @@ public final class BuildInfo {
         String verStr = Objects.requireNonNull(jsonRep.version, "version");
 
         if ("${version}".equals(verStr)) {
-            isDev = true;
-            version = Version.ZERO.withPreRelease("dev");
+            if (isDevelopment) {
+                version = Version.ZERO.withPreRelease("dev");
+            } else {
+                throw new IOException("Version placeholder wasn't filled in?!");
+            }
         } else {
             try {
                 version = Version.parseVersion(verStr, true);
@@ -98,7 +105,7 @@ public final class BuildInfo {
 
     public static boolean isDevelopment() {
         assertLoaded();
-        return isDev;
+        return isDevelopment;
     }
 
     public static String name() {
