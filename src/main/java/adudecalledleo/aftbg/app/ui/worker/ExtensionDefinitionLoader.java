@@ -4,12 +4,12 @@ import java.nio.file.Path;
 
 import javax.swing.*;
 
+import adudecalledleo.aftbg.Main;
 import adudecalledleo.aftbg.app.game.DefinitionLoadException;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.ui.LoadFrame;
 import adudecalledleo.aftbg.app.ui.MainPanel;
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
-import adudecalledleo.aftbg.logging.Logger;
 
 public final class ExtensionDefinitionLoader extends AbstractWorker {
     private final GameDefinition gameDef;
@@ -26,7 +26,7 @@ public final class ExtensionDefinitionLoader extends AbstractWorker {
         try {
             gameDef.loadExtension(extPath);
         } catch (DefinitionLoadException e) {
-            Logger.error("Failed to load extension definition!", e);
+            Main.logger().error("Failed to load extension definition!", e);
             loadFrame.setAlwaysOnTop(false);
             DialogUtils.showErrorDialog(null, "Failed to load extension!", "Load Extension");
             cleanup();

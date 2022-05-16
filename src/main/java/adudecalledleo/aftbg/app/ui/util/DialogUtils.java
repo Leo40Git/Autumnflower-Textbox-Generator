@@ -7,13 +7,11 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 
-import adudecalledleo.aftbg.logging.Logger;
-
 public final class DialogUtils {
     private DialogUtils() { }
 
     public static String logFileInstruction() {
-        return "See \"" + Logger.logFile() + "\" for more details.";
+        return "See \"app.log\" for more details.";
     }
 
     public static void showErrorDialog(Component parent, String message, String title) {

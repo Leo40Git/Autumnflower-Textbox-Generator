@@ -5,9 +5,9 @@ import java.util.List;
 
 import javax.swing.*;
 
+import adudecalledleo.aftbg.Main;
 import adudecalledleo.aftbg.app.ui.LoadFrame;
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
-import adudecalledleo.aftbg.logging.Logger;
 
 public final class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
     private static final String[] OPTIONS = { "Continue", "Abort" };
@@ -16,7 +16,7 @@ public final class UncaughtExceptionHandler implements Thread.UncaughtExceptionH
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        Logger.error("Uncaught exception in thread \"" + t.getName() + "\"", e);
+        Main.logger().error("Uncaught exception in thread \"" + t.getName() + "\"", e);
         List<Boolean> oldAOTValues = new ArrayList<>();
         for (var frame : LoadFrame.ACTIVE_FRAMES) {
             oldAOTValues.add(frame.isAlwaysOnTop());

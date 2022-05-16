@@ -1,8 +1,8 @@
 package adudecalledleo.aftbg.app.util;
 
-import adudecalledleo.aftbg.logging.Logger;
-
 import java.util.Locale;
+
+import adudecalledleo.aftbg.Main;
 
 public enum OperatingSystem {
     WINDOWS, MAC, LINUX, UNKNOWN;
@@ -35,7 +35,7 @@ public enum OperatingSystem {
     private static OperatingSystem detect() {
         String osName = System.getProperty("os.name");
         if (osName == null) {
-            Logger.error("System property \"os.name\" has no value! Something is seriously wrong with this JVM!");
+            Main.logger().error("System property \"os.name\" has no value! Something is seriously wrong with this JVM!");
             return UNKNOWN;
         }
 
@@ -48,7 +48,7 @@ public enum OperatingSystem {
             return LINUX;
         }
 
-        Logger.warn("Unknown (and possibly unsupported) operating system, os.name is \"%s\""
+        Main.logger().warn("Unknown (and possibly unsupported) operating system, os.name is \"%s\""
                 .formatted(System.getProperty("os.name")));
         return UNKNOWN;
     }

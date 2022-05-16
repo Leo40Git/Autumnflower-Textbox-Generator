@@ -6,8 +6,8 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.*;
 
+import adudecalledleo.aftbg.Main;
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
-import adudecalledleo.aftbg.logging.Logger;
 
 public final class BrowseWorker extends SwingWorker<Void, Void> {
     private final URI uri;
@@ -27,7 +27,7 @@ public final class BrowseWorker extends SwingWorker<Void, Void> {
         try {
             get();
         } catch (InterruptedException | ExecutionException e) {
-            Logger.error("Failed to browse to URI \"%s\"".formatted(uri), e);
+            Main.logger().error("Failed to browse to URI \"%s\"".formatted(uri), e);
             DialogUtils.showErrorDialog(null, "Failed to open link in your default browser!",
                     "Browse to link");
         }

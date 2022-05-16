@@ -34,8 +34,9 @@ import adudecalledleo.aftbg.app.ui.util.ErrorMessageBuilder;
 import adudecalledleo.aftbg.app.ui.util.IconWithArrow;
 import adudecalledleo.aftbg.app.ui.util.UnmodifiableAttributeSetView;
 import adudecalledleo.aftbg.app.util.ColorUtils;
-import adudecalledleo.aftbg.logging.Logger;
 import adudecalledleo.aftbg.window.WindowContext;
+
+import static adudecalledleo.aftbg.Main.logger;
 
 public final class TextboxEditorPane extends JEditorPane
         implements GameDefinitionUpdateListener, ActionListener, DOMParser.SpanTracker {
@@ -245,7 +246,7 @@ public final class TextboxEditorPane extends JEditorPane
             case A_TOOLBAR_COLOR -> {
                 if (winCtx == null) {
                     UIManager.getLookAndFeel().provideErrorFeedback(this);
-                    Logger.info("Tried to open color modifier dialog without window context!");
+                    logger().info("Tried to open color modifier dialog without window context!");
                     return;
                 }
 
@@ -260,7 +261,7 @@ public final class TextboxEditorPane extends JEditorPane
                         value = "pal(%d)".formatted(rPal.getIndex());
                     } else {
                         UIManager.getLookAndFeel().provideErrorFeedback(this);
-                        Logger.info("Got unknown result " + result + "!");
+                        logger().info("Got unknown result " + result + "!");
                         return;
                     }
                     wrapSelectionInTag("c=" + value, "c");
@@ -282,7 +283,7 @@ public final class TextboxEditorPane extends JEditorPane
                 doc.insertString(start, "[%s][/%s]".formatted(tagStart, tagEnd), styleNormal);
             } catch (BadLocationException e) {
                 UIManager.getLookAndFeel().provideErrorFeedback(this);
-                Logger.info("Failed to insert empty tag!", e);
+                logger().info("Failed to insert empty tag!", e);
                 return;
             }
             select(start + 2 + tagStart.length(), 0);
@@ -293,7 +294,7 @@ public final class TextboxEditorPane extends JEditorPane
                 selectedText = doc.getText(start, length);
             } catch (BadLocationException e) {
                 UIManager.getLookAndFeel().provideErrorFeedback(this);
-                Logger.info("Failed to get selected text!", e);
+                logger().info("Failed to get selected text!", e);
                 return;
             }
             String newText = "[%s]%s[/%s]".formatted(tagStart, selectedText, tagEnd);
@@ -302,7 +303,7 @@ public final class TextboxEditorPane extends JEditorPane
                 doc.insertString(start, newText, styleNormal);
             } catch (BadLocationException e) {
                 UIManager.getLookAndFeel().provideErrorFeedback(this);
-                Logger.info("Failed to replace selected text!", e);
+                logger().info("Failed to replace selected text!", e);
                 return;
             }
             select(start + 2 + tagStart.length(), end + 2 + tagStart.length());
@@ -411,13 +412,13 @@ public final class TextboxEditorPane extends JEditorPane
                                 endRect.getX() - startRect.getX(), Math.max(startRect.getHeight(), endRect.getHeight()));
                         errors.put(errorRect, error.message() + " (" + (error.start() + 1) + "-" + (error.end() + 1) + ")");
                     } catch (BadLocationException e) {
-                        Logger.info("Failed to generate tooltip bounds for error", e);
+                        logger().info("Failed to generate tooltip bounds for error", e);
                     }
 
                     try {
                         getHighlighter().addHighlight(error.start(), error.end(), HLP_ERROR);
                     } catch (BadLocationException e) {
-                        Logger.info("Failed to properly highlight error", e);
+                        logger().info("Failed to properly highlight error", e);
                     }
                 }
             }
@@ -426,7 +427,7 @@ public final class TextboxEditorPane extends JEditorPane
 
     @Override
     public void markEscaped(int start, int end) {
-        Logger.trace("adding escaped span - %d, %d".formatted(start, end));
+        logger().trace("adding escaped span - %d, %d".formatted(start, end));
         this.escapedSpans.add(new Span(start, end - start));
     }
 
@@ -516,7 +517,7 @@ public final class TextboxEditorPane extends JEditorPane
                     try {
                         getHighlighter().addHighlight(escapedSpan.start(), escapedSpan.end(), getEscapedColorHighlightPainter(contentColor));
                     } catch (BadLocationException e) {
-                        Logger.info("Failed to add highlighter for escaped color", e);
+                        logger().info("Failed to add highlighter for escaped color", e);
                     }
                 }
             }
@@ -534,7 +535,7 @@ public final class TextboxEditorPane extends JEditorPane
             try {
                 getHighlighter().addHighlight(span.start(), span.end(), hl);
             } catch (BadLocationException e) {
-                Logger.info("Failed to add highlighter for escaped color", e);
+                logger().info("Failed to add highlighter for escaped color", e);
             }
         }
         escapedSpans.clear();

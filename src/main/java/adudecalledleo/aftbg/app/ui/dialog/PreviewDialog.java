@@ -16,7 +16,8 @@ import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
 import adudecalledleo.aftbg.app.ui.util.TransferableImage;
 import adudecalledleo.aftbg.app.util.OperatingSystem;
-import adudecalledleo.aftbg.logging.Logger;
+
+import static adudecalledleo.aftbg.Main.logger;
 
 public final class PreviewDialog extends ModalDialog {
     private final BufferedImage image;
@@ -119,7 +120,7 @@ public final class PreviewDialog extends ModalDialog {
                     try {
                         cb.setContents(new TransferableImage(imageToCopy), null);
                     } catch (Exception ex) {
-                        Logger.error("Error while copying image to clipboard!", ex);
+                        logger().error("Error while copying image to clipboard!", ex);
                         DialogUtils.showErrorDialog(this,
                                 "An exception occurred while copying the image to the clipboard:\n" + ex,
                                 "Couldn't copy image to clipboard!");
@@ -143,7 +144,7 @@ public final class PreviewDialog extends ModalDialog {
                         try {
                             Files.delete(sel.toPath());
                         } catch (IOException ex) {
-                            Logger.error("Error while deleting file!", ex);
+                            logger().error("Error while deleting file!", ex);
                             DialogUtils.showErrorDialog(this,
                                     "Could not delete file.",
                                     "Could not overwrite file.");
@@ -153,7 +154,7 @@ public final class PreviewDialog extends ModalDialog {
                     try {
                         ImageIO.write(image, "png", sel);
                     } catch (IOException ex) {
-                        Logger.error("Error while saving image!", ex);
+                        logger().error("Error while saving image!", ex);
                         DialogUtils.showErrorDialog(this,
                                 "An exception occurred while saving the image:\n" + ex,
                                 "Couldn't save image!");

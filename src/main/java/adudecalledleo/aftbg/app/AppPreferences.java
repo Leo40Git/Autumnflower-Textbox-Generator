@@ -11,12 +11,12 @@ import java.nio.file.Paths;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import adudecalledleo.aftbg.Main;
 import adudecalledleo.aftbg.app.util.InvalidPathURIException;
 import adudecalledleo.aftbg.app.util.PathUtils;
 import adudecalledleo.aftbg.app.util.json.JsonStructureException;
 import adudecalledleo.aftbg.app.util.json.JsonType;
 import adudecalledleo.aftbg.app.util.json.JsonUtils;
-import adudecalledleo.aftbg.logging.Logger;
 import com.google.gson.*;
 import org.jetbrains.annotations.Nullable;
 
@@ -118,7 +118,7 @@ public final class AppPreferences {
         try (BufferedWriter writer = Files.newBufferedWriter(SAVE_PATH, StandardCharsets.UTF_8)) {
             GSON.toJson(obj, writer);
         } catch (IOException | JsonIOException e) {
-            Logger.error("Failed to flush preferences!", e);
+            Main.logger().error("Failed to flush preferences!", e);
         }
     }
 

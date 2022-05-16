@@ -33,9 +33,10 @@ import adudecalledleo.aftbg.app.ui.util.MultilineBuilder;
 import adudecalledleo.aftbg.app.ui.worker.ExtensionDefinitionLoader;
 import adudecalledleo.aftbg.app.ui.worker.GameDefinitionLoader;
 import adudecalledleo.aftbg.app.ui.worker.TextboxGenerator;
-import adudecalledleo.aftbg.logging.Logger;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+
+import static adudecalledleo.aftbg.Main.logger;
 
 public final class MainPanel extends JPanel implements ActionListener, ListSelectionListener, ListReorderTransferHandler.ReorderCallback {
     private static final String AC_TEXTBOX_ADD = "textbox.add";
@@ -453,7 +454,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                             try {
                                 script.run(gameDef.faces(), box);
                             } catch (Exception e) {
-                                Logger.error("Failed to run script!", e);
+                                logger().error("Failed to run script!", e);
                                 DialogUtils.showErrorDialog(MainPanel.this, "Failed to run script!", "Script Error");
                                 return;
                             }
@@ -481,7 +482,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     try {
                         return saveProject(false);
                     } catch (IOException | IllegalStateException e) {
-                        Logger.error("Failed to write project!", e);
+                        logger().error("Failed to write project!", e);
                         JOptionPane.showMessageDialog(MainPanel.this,
                                 "Failed to write project!\n" + e + "\n"
                                         + DialogUtils.logFileInstruction() + "\n"
@@ -524,7 +525,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     } catch (TextboxListSerializer.ReadCancelledException ignored) {
                         break;
                     } catch (IOException | IllegalStateException e) {
-                        Logger.error("Failed to read project!", e);
+                        logger().error("Failed to read project!", e);
                         DialogUtils.showErrorDialog(MainPanel.this,
                                 "Failed to read project!\n" + e, "Load Project");
                         break;
@@ -544,7 +545,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     try {
                         saveProject(false);
                     } catch (IOException | IllegalStateException e) {
-                        Logger.error("Failed to write project!", e);
+                        logger().error("Failed to write project!", e);
                         DialogUtils.showErrorDialog(MainPanel.this,
                                 "Failed to write project!\n" + e, "Save Project");
                     }
@@ -553,7 +554,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     try {
                         saveProject(true);
                     } catch (IOException | IllegalStateException e) {
-                        Logger.error("Failed to write project!", e);
+                        logger().error("Failed to write project!", e);
                         DialogUtils.showErrorDialog(MainPanel.this,
                                 "Failed to write project!\n" + e, "Save Project");
                     }

@@ -23,7 +23,7 @@ public final class BuildInfo {
 
     private BuildInfo() { }
 
-    public static void setDevelopment() {
+    static void setDevelopment() {
         isDevelopment = true;
     }
 

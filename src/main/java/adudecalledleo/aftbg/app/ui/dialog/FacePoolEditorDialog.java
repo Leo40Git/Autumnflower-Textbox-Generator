@@ -25,7 +25,8 @@ import adudecalledleo.aftbg.app.ui.render.FaceListCellRenderer;
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
 import adudecalledleo.aftbg.app.ui.util.ListReorderTransferHandler;
 import adudecalledleo.aftbg.app.util.PathUtils;
-import adudecalledleo.aftbg.logging.Logger;
+
+import static adudecalledleo.aftbg.Main.logger;
 
 public final class FacePoolEditorDialog extends ModalDialog {
     private Path filePath;
@@ -86,7 +87,7 @@ public final class FacePoolEditorDialog extends ModalDialog {
         try (BufferedWriter writer = Files.newBufferedWriter(filePath)) {
             Definition.GSON.toJson(pool, writer);
         } catch (Exception e) {
-            Logger.error("Failed to write face pool", e);
+            logger().error("Failed to write face pool", e);
             DialogUtils.showErrorDialog(this,
                     "Failed to write face pool!\n" + e, "Save Pool");
             return false;
@@ -152,7 +153,7 @@ public final class FacePoolEditorDialog extends ModalDialog {
                         newPool = Definition.GSON.fromJson(reader, FacePool.class);
                         newPool.loadAll(newFilePath.getParent());
                     } catch (Exception e) {
-                        Logger.error("Failed to read face pool for editing", e);
+                        logger().error("Failed to read face pool for editing", e);
                         DialogUtils.showErrorDialog(this,
                                 "Failed to read face pool!\n" + e, "Load Pool");
                         return;
@@ -380,7 +381,7 @@ public final class FacePoolEditorDialog extends ModalDialog {
                     try {
                         newFace.loadImage(filePath.getParent());
                     } catch (FaceLoadException ex) {
-                        Logger.error("Failed to load new face", ex);
+                        logger().error("Failed to load new face", ex);
                         DialogUtils.showErrorDialog(this,
                                 "Failed to load new face \"" + newName + "\":\n" + ex,
                                 "Add Face");
@@ -502,7 +503,7 @@ public final class FacePoolEditorDialog extends ModalDialog {
                         try {
                             newFace.loadImage(filePath.getParent());
                         } catch (FaceLoadException ex) {
-                            Logger.error("Failed to load new face", ex);
+                            logger().error("Failed to load new face", ex);
                             DialogUtils.showErrorDialog(this,
                                     "Failed to load new face \"" + faceName + "\":\n" + ex,
                                     "Add Entire Folder");
@@ -546,8 +547,8 @@ public final class FacePoolEditorDialog extends ModalDialog {
         }
     }
 
-    private static final Pattern TRIMSTART_PATTERN = Pattern.compile("^_*([\\w])");
-    private static final Pattern DESNAKE_PATTERN = Pattern.compile("_([\\w])");
+    private static final Pattern TRIMSTART_PATTERN = Pattern.compile("^_*(\\w)");
+    private static final Pattern DESNAKE_PATTERN = Pattern.compile("_(\\w)");
     public static String processImageName(String name) {
         if (name.length() > 0) {
             int lastDotIndex = name.lastIndexOf('.');

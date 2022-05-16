@@ -4,10 +4,10 @@ import java.awt.*;
 
 import javax.swing.*;
 
+import adudecalledleo.aftbg.Main;
 import adudecalledleo.aftbg.app.AppUpdateCheck;
 import adudecalledleo.aftbg.app.ui.LoadFrame;
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
-import adudecalledleo.aftbg.logging.Logger;
 
 public final class UpdateCheckWorker extends SwingWorker<Void, Void> {
     private final Component parent;
@@ -24,7 +24,7 @@ public final class UpdateCheckWorker extends SwingWorker<Void, Void> {
             loadFrame.setLoadString("Checking for updates...");
             AppUpdateCheck.doCheck(parent, loadFrame);
         } catch (AppUpdateCheck.CheckFailedException e) {
-            Logger.error("Update check failed!", e);
+            Main.logger().error("Update check failed!", e);
             loadFrame.setAlwaysOnTop(false);
             DialogUtils.showErrorDialog(parent, "Failed to check for updates!", "Failed to check for updates");
             loadFrame.setAlwaysOnTop(true);

@@ -16,9 +16,16 @@ import adudecalledleo.aftbg.app.text.node.NodeRegistry;
 import adudecalledleo.aftbg.app.ui.AppFrame;
 import adudecalledleo.aftbg.app.ui.LoadFrame;
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
-import adudecalledleo.aftbg.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class Main {
+    private static Logger logger;
+
+    public static Logger logger() {
+        return logger;
+    }
+
     public static void main(String[] args) {
         try {
             BuildInfo.load();
@@ -30,12 +37,17 @@ public final class Main {
         }
 
         try {
-            Logger.init();
+            logger = LogManager.getLogger(BuildInfo.abbreviatedName());
         } catch (Exception e) {
             System.err.println("Failed to initialize logger!");
             e.printStackTrace();
             System.exit(1);
             return;
+        }
+
+        logger.info("{} v{} is now initializing...", BuildInfo.name(), BuildInfo.version().toString());
+        if (BuildInfo.isDevelopment()) {
+            logger.info(" === DEVELOPMENT MODE! === ");
         }
 
         Runtime.getRuntime().addShutdownHook(new Thread(Main::cleanup, "cleanup"));
@@ -47,7 +59,7 @@ public final class Main {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
-            Logger.error("Failed to set system L&F", e);
+            logger.error("Failed to set system L&F", e);
         }
 
         LoadFrame loadFrame = new LoadFrame("Loading...", true);
@@ -55,7 +67,7 @@ public final class Main {
         try {
             AppPreferences.init();
         } catch (IOException e) {
-            Logger.error("Failed to initialize preferences!", e);
+            logger.error("Failed to initialize preferences!", e);
             loadFrame.setAlwaysOnTop(false);
             DialogUtils.showErrorDialog(null, "Failed to initialize preferences!", "Failed to launch");
             System.exit(1);
@@ -66,7 +78,7 @@ public final class Main {
                 loadFrame.setLoadString("Checking for updates...");
                 AppUpdateCheck.doCheck(null, loadFrame);
             } catch (AppUpdateCheck.CheckFailedException e) {
-                Logger.error("Update check failed!", e);
+                logger.error("Update check failed!", e);
                 loadFrame.setAlwaysOnTop(false);
                 DialogUtils.showErrorDialog(null, "Failed to check for updates!", "Failed to check for updates");
                 loadFrame.setAlwaysOnTop(true);
@@ -78,7 +90,7 @@ public final class Main {
         try {
             AppResources.load();
         } catch (IOException e) {
-            Logger.error("Failed to load app resources!", e);
+            logger.error("Failed to load app resources!", e);
             loadFrame.setAlwaysOnTop(false);
             DialogUtils.showErrorDialog(null, "Failed to load app resources!", "Failed to launch");
             System.exit(1);
@@ -103,7 +115,7 @@ public final class Main {
         try {
             gameDef = GameDefinition.load(defPath);
         } catch (DefinitionLoadException e) {
-            Logger.error("Failed to load game definition from \"%s\"!".formatted(defPath), e);
+            logger.error("Failed to load game definition from \"%s\"!".formatted(defPath), e);
             loadFrame.setAlwaysOnTop(false);
             DialogUtils.showErrorDialog(null, "Failed to load game definition from\n%s!".formatted(defPath),
                     "Failed to launch");
@@ -117,7 +129,7 @@ public final class Main {
             try {
                 gameDef.loadExtension(extPath);
             } catch (DefinitionLoadException e) {
-                Logger.error("Failed to auto-load extension from \"%s\"!".formatted(defPath), e);
+                logger.error("Failed to auto-load extension from \"%s\"!".formatted(defPath), e);
                 loadFrame.setAlwaysOnTop(false);
                 DialogUtils.showErrorDialog(null, "Failed to auto-load extension from:\n%s".formatted(defPath),
                         "Failed to auto-load extension");
@@ -137,8 +149,5 @@ public final class Main {
     // (hopefully) called by shutdown hook, so we're moments before the app dies
     private static void cleanup() {
         AppPreferences.flush();
-
-        // logger is shut down last, in case things need to log errors beforehand
-        Logger.shutdown();
     }
 }

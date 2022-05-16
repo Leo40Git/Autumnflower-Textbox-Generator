@@ -10,6 +10,7 @@ import java.util.List;
 import javax.swing.*;
 
 import adudecalledleo.aftbg.BuildInfo;
+import adudecalledleo.aftbg.Main;
 import adudecalledleo.aftbg.app.AppPreferences;
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.AppUpdateCheck;
@@ -21,7 +22,6 @@ import adudecalledleo.aftbg.app.ui.MainPanel;
 import adudecalledleo.aftbg.app.ui.render.StringListCellRenderer;
 import adudecalledleo.aftbg.app.ui.worker.BrowseWorker;
 import adudecalledleo.aftbg.app.ui.worker.UpdateCheckWorker;
-import adudecalledleo.aftbg.logging.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public final class AboutDialog extends ModalDialog {
@@ -280,7 +280,7 @@ public final class AboutDialog extends ModalDialog {
             try {
                 uri = url.toURI();
             } catch (URISyntaxException e) {
-                Logger.error("Failed to convert URL \"%s\" to URI".formatted(url), e);
+                Main.logger().error("Failed to convert URL \"%s\" to URI".formatted(url), e);
                 return;
             }
 

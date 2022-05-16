@@ -13,8 +13,9 @@ import javax.swing.text.html.*;
 
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
-import adudecalledleo.aftbg.logging.Logger;
 import org.jetbrains.annotations.Nullable;
+
+import static adudecalledleo.aftbg.Main.logger;
 
 public final class UpdateAvailableDialog extends ModalDialog {
     public UpdateAvailableDialog(Component owner, String changelogHtml, @Nullable URL dlUrl) {
@@ -64,7 +65,7 @@ public final class UpdateAvailableDialog extends ModalDialog {
                 try {
                     uri = dlUrl.toURI();
                 } catch (URISyntaxException e) {
-                    Logger.error("Failed to convert URL to URI for browsing", e);
+                    logger().error("Failed to convert URL to URI for browsing", e);
                 }
                 dlUri = uri;
             }
@@ -108,7 +109,7 @@ public final class UpdateAvailableDialog extends ModalDialog {
                     try {
                         Desktop.getDesktop().browse(dlUri);
                     } catch (IOException ex) {
-                        Logger.error("Failed to open link", ex);
+                        logger().error("Failed to open link", ex);
                         DialogUtils.showErrorDialog(this, "Failed to open link in your default browser!", "Browse to Download");
                     }
                     UpdateAvailableDialog.this.setVisible(false);
@@ -129,7 +130,7 @@ public final class UpdateAvailableDialog extends ModalDialog {
                     var uri = url.toURI();
                     Desktop.getDesktop().browse(uri);
                 } catch (URISyntaxException | IOException e) {
-                    Logger.error("Failed to open link", e);
+                    logger().error("Failed to open link", e);
                     DialogUtils.showErrorDialog(this, "Failed to open link in your default browser!", "Browse to link");
                 }
             }

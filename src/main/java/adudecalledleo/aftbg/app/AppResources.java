@@ -9,7 +9,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.text.html.*;
 
-import adudecalledleo.aftbg.logging.Logger;
+import adudecalledleo.aftbg.Main;
 
 public final class AppResources {
     public enum Icons {
@@ -112,7 +112,7 @@ public final class AppResources {
              BufferedReader reader = new BufferedReader(isr)) {
             updateStyleSheet.loadRules(reader, null);
         } catch (IOException e) {
-            Logger.error("Failed to load update stylesheet, using default stylesheet instead", e);
+            Main.logger().error("Failed to load update stylesheet, using default stylesheet instead", e);
         }
     }
 }
