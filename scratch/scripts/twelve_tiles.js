@@ -32,7 +32,7 @@ function updateTextbox(faces, box) {
 
     box.face = faces.get("Twelve", "Tiled");
 
-    str = "Twelve:\n[color=pal(9)]";
+    str = "Twelve:[br]\n[color=pal(9)]";
     for (var i = 0; i < text.length; i++) {
         var xlated = xlat[text.charAt(i).toLowerCase()];
         if (xlated === undefined) {
