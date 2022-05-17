@@ -2,6 +2,8 @@ package adudecalledleo.aftbg.app.ui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -38,7 +40,8 @@ import com.google.gson.stream.JsonWriter;
 
 import static adudecalledleo.aftbg.Main.logger;
 
-public final class MainPanel extends JPanel implements ActionListener, ListSelectionListener, ListReorderTransferHandler.ReorderCallback {
+public final class MainPanel extends JPanel implements ActionListener, ListSelectionListener,
+        PropertyChangeListener, ListReorderTransferHandler.ReorderCallback {
     private static final String AC_TEXTBOX_ADD = "textbox.add";
     private static final String AC_TEXTBOX_CLONE = "textbox.clone";
     private static final String AC_TEXTBOX_INSERT_BEFORE = "textbox.insert.before";
@@ -57,7 +60,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     private File currentProject;
 
     private final JList<Textbox> textboxSelector;
-    private final FaceSelectionPanel faceSelection;
+    private final SelectFacePanel faceSelection;
     private final TextboxEditorPane editorPane;
 
     private GameDefinition gameDef;
@@ -74,7 +77,8 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         currentTextbox = 0;
         projectSerializer = new TextboxListSerializer(this);
 
-        faceSelection = new FaceSelectionPanel(this::onFaceChanged);
+        faceSelection = new SelectFacePanel();
+        faceSelection.addPropertyChangeListener("selectedFace", this);
         updateListeners.add(faceSelection);
         editorPane = new TextboxEditorPane(this::onTextUpdated);
         updateListeners.add(editorPane);
@@ -186,26 +190,19 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         textboxSelector.ensureIndexIsVisible(currentTextbox);
     }
 
-    public void onFaceChanged(Face newFace) {
-        textboxes.get(currentTextbox).setFace(newFace);
-        editorPane.setTextboxFace(newFace);
-        textboxSelector.repaint();
-    }
-
     public void onTextUpdated(String newText) {
         textboxes.get(currentTextbox).setText(newText);
         textboxSelector.repaint();
     }
 
     public void flushChanges() {
-        faceSelection.flushChanges();
         editorPane.flushChanges(false);
         textboxSelector.repaint();
     }
 
     public void updateTextboxEditors() {
         var box = textboxes.get(currentTextbox);
-        faceSelection.setFace(box.getFace());
+        faceSelection.setSelectedFace(box.getFace());
         editorPane.setTextboxFace(box.getFace());
         editorPane.setText(box.getText());
     }
@@ -222,7 +219,6 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                 }
 
                 editorPane.flushChanges(false);
-                faceSelection.flushChanges();
 
                 List<Textbox> textboxesCopy = new ArrayList<>(textboxes);
 
@@ -285,6 +281,16 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                 updateTextboxEditors();
                 updateTextboxSelectorModel();
             }
+        }
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getSource() == faceSelection && "selectedFace".equals(evt.getPropertyName())) {
+            var newFace = faceSelection.getSelectedFace();
+            textboxes.get(currentTextbox).setFace(newFace);
+            editorPane.setTextboxFace(newFace);
+            textboxSelector.repaint();
         }
     }
 
