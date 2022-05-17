@@ -11,9 +11,7 @@ import javax.swing.*;
 import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.face.FaceCategory;
 import adudecalledleo.aftbg.app.util.ColorUtils;
-import org.jetbrains.annotations.Nullable;
 
-// TODO key navigation?
 public final class FaceGrid extends JComponent implements Scrollable, MouseListener, MouseMotionListener {
     public static final Color COLOR_GRID = UIManager.getColor("List.background");
     public static final Color COLOR_GRID_2 = ColorUtils.darker(COLOR_GRID, 0.9);
@@ -21,6 +19,16 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
     public static final Color COLOR_GRID_HOVERED = new Color(COLOR_GRID_SELECTED.getRed(), COLOR_GRID_SELECTED.getGreen(), COLOR_GRID_SELECTED.getBlue(), 127);
 
     private static final Dimension DEFAULT_SIZE = new Dimension(72 * 5, 72 * 8);
+
+    public static Dimension getDefaultSize(Dimension rv) {
+        rv.width = DEFAULT_SIZE.width;
+        rv.height = DEFAULT_SIZE.height;
+        return rv;
+    }
+
+    public static Dimension getDefaultSize() {
+        return getDefaultSize(new Dimension());
+    }
 
     private final List<Face> faceList;
     private FaceCategory category;
@@ -35,9 +43,9 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
 
         setOpaque(true);
         setAutoscrolls(true);
-        setFocusable(true);
         addMouseListener(this);
         addMouseMotionListener(this);
+        setupKeyboardActions();
         ToolTipManager.sharedInstance().registerComponent(this);
 
         setSize(DEFAULT_SIZE);
@@ -186,12 +194,13 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
         scrollRectToVisible(rect);
     }
 
-    private void tryUpdateSelectedIndex(int newIndex, @Nullable InputEvent e) {
-        if (newIndex < faceList.size()) {
+    private void tryUpdateSelectedIndex(int newIndex, boolean ensureVisible) {
+        if (newIndex >= 0 && newIndex < faceList.size()) {
             selectedIndex = newIndex;
+            if (ensureVisible) {
+                ensureIndexIsVisible(selectedIndex);
+            }
             setSelectedFace(faceList.get(selectedIndex));
-            if (e != null)
-                e.consume();
             repaint();
         }
     }
@@ -199,8 +208,8 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
     @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getSource() == this) {
-            int newIndex = calculateFaceIndex(e);
-            tryUpdateSelectedIndex(newIndex, e);
+            requestFocusInWindow();
+            tryUpdateSelectedIndex(calculateFaceIndex(e), false);
         }
     }
 
@@ -225,7 +234,7 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
     @Override
     public void mouseDragged(MouseEvent e) {
         hoveredIndex = calculateFaceIndex(e);
-        tryUpdateSelectedIndex(hoveredIndex, e);
+        tryUpdateSelectedIndex(hoveredIndex, false);
         repaint();
     }
 
@@ -233,5 +242,68 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
     public void mouseMoved(MouseEvent e) {
         hoveredIndex = calculateFaceIndex(e);
         repaint();
+    }
+
+    private void setupKeyboardActions() {
+        var actions = getActionMap();
+        actions.put(ACTION_SELECT_FACE_NEXT, new SelectNextFaceAction());
+        actions.put(ACTION_SELECT_FACE_PREVIOUS, new SelectPreviousFaceAction());
+        actions.put(ACTION_SELECT_FACE_ABOVE, new SelectAboveFaceAction());
+        actions.put(ACTION_SELECT_FACE_BELOW, new SelectBelowFaceAction());
+
+        var inputs = getInputMap(WHEN_FOCUSED);
+        inputs.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), ACTION_SELECT_FACE_ABOVE);
+        inputs.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), ACTION_SELECT_FACE_BELOW);
+        inputs.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), ACTION_SELECT_FACE_PREVIOUS);
+        inputs.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), ACTION_SELECT_FACE_NEXT);
+    }
+
+    private static final String ACTION_SELECT_FACE_NEXT = "select_face.next";
+    private static final String ACTION_SELECT_FACE_PREVIOUS = "select_face.previous";
+    private static final String ACTION_SELECT_FACE_ABOVE = "select_face.above";
+    private static final String ACTION_SELECT_FACE_BELOW = "select_face.below";
+
+    private final class SelectNextFaceAction extends AbstractAction {
+        public SelectNextFaceAction() {
+            super("Select next face");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            tryUpdateSelectedIndex(selectedIndex + 1, true);
+        }
+    }
+
+    private final class SelectPreviousFaceAction extends AbstractAction {
+        public SelectPreviousFaceAction() {
+            super("Select previous face");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            tryUpdateSelectedIndex(selectedIndex - 1, true);
+        }
+    }
+
+    private final class SelectAboveFaceAction extends AbstractAction {
+        public SelectAboveFaceAction() {
+            super("Select above face");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            tryUpdateSelectedIndex(selectedIndex - 5, true);
+        }
+    }
+
+    private final class SelectBelowFaceAction extends AbstractAction {
+        public SelectBelowFaceAction() {
+            super("Select below face");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            tryUpdateSelectedIndex(selectedIndex + 5, true);
+        }
     }
 }
