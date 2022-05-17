@@ -13,4 +13,8 @@ public final class ColorUtils {
                 Math.max((int)(original.getBlue() * factor), 0),
                 original.getAlpha());
     }
+
+    public static Color withAlpha(Color orig, int newAlpha) {
+        return new Color(orig.getRed(), orig.getGreen(), orig.getBlue(), newAlpha);
+    }
 }
