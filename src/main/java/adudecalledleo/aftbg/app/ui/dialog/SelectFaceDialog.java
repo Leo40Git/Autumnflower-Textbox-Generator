@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -15,6 +16,7 @@ import adudecalledleo.aftbg.app.ui.FaceGrid;
 import adudecalledleo.aftbg.app.ui.PlaceholderTextField;
 import adudecalledleo.aftbg.app.ui.render.FaceCategoryListCellRenderer;
 import adudecalledleo.aftbg.app.ui.render.FaceSearchListCellRenderer;
+import adudecalledleo.aftbg.app.ui.worker.FaceSearchWorker;
 
 public final class SelectFaceDialog extends DialogWithResult<Face> {
     public SelectFaceDialog(Component owner, FacePool faces, Face currentFace) {
@@ -35,12 +37,17 @@ public final class SelectFaceDialog extends DialogWithResult<Face> {
         private final JList<FaceCategory> lstCategories;
 
         private final JPanel pnlMain;
+
         private final JPanel pnlSearch;
         private final PlaceholderTextField txtSearch;
+        private final Timer searchUpdateTimer;
         private final JButton btnSearchClear;
+
         private final Box boxNoneCategory;
+
         private final FaceGrid faceGrid;
         private final JScrollPane faceGridScroller;
+
         private final DefaultListModel<Face> mdlFilteredFaces;
         private final JList<Face> lstFilteredFaces;
         private final FaceSearchListCellRenderer lstFilteredFacesRenderer;
@@ -50,6 +57,7 @@ public final class SelectFaceDialog extends DialogWithResult<Face> {
         private final JButton btnCancel;
 
         private volatile boolean txtSearch_suppressUpdate;
+        private FaceSearchWorker currentSearchWorker;
 
         public ContentPane(FacePool faces) {
             super(new BorderLayout());
@@ -84,6 +92,9 @@ public final class SelectFaceDialog extends DialogWithResult<Face> {
             txtSearch.setPlaceholder("Search by name...");
             txtSearch.getDocument().addDocumentListener(this);
             btnSearchClear = createBtn("x");
+
+            searchUpdateTimer = new Timer(250, this);
+            searchUpdateTimer.setRepeats(false);
 
             btnOK = createBtn("OK");
             btnCancel = createBtn("Cancel");
@@ -145,6 +156,30 @@ public final class SelectFaceDialog extends DialogWithResult<Face> {
                 } finally {
                     txtSearch_suppressUpdate = false;
                 }
+            } else if (src == searchUpdateTimer) {
+                // TODO add loading animation
+                var text = txtSearch.getText().trim();
+                mdlFilteredFaces.clear();
+                lstFilteredFacesRenderer.setHighlightedString(text);
+                currentSearchWorker = new FaceSearchWorker(lstCategories.getSelectedValue(), text) {
+                    @Override
+                    protected void process(List<Face> chunks) {
+                        if (isCancelled()) {
+                            return;
+                        }
+
+                        SwingUtilities.invokeLater(() -> {
+                            mdlFilteredFaces.addAll(chunks);
+                            lstFilteredFaces.setSelectedValue(result, true);
+                        });
+                    }
+                };
+                currentSearchWorker.execute();
+                pnlMain.remove(faceGridScroller);
+                pnlMain.remove(boxNoneCategory);
+                pnlMain.add(lstFilteredFacesScroller, BorderLayout.CENTER);
+                pnlMain.validate();
+                pnlMain.repaint();
             }
         }
 
@@ -161,7 +196,10 @@ public final class SelectFaceDialog extends DialogWithResult<Face> {
                     txtSearch_suppressUpdate = false;
                 }
             } else if (src == lstFilteredFaces) {
-                result = lstFilteredFaces.getSelectedValue();
+                var face = lstFilteredFaces.getSelectedValue();
+                if (face != null) {
+                    result = face;
+                }
             }
         }
 
@@ -175,6 +213,9 @@ public final class SelectFaceDialog extends DialogWithResult<Face> {
                 if (categoryChanged) {
                     faceGrid.setCategory(cat);
                     faceGridScroller.setViewportView(faceGrid); // to resync scrollbar
+                }
+                if (result != null) {
+                    faceGrid.setSelectedFace(result);
                 }
                 pnlMain.remove(boxNoneCategory);
                 pnlMain.add(faceGridScroller, BorderLayout.CENTER);
@@ -210,10 +251,15 @@ public final class SelectFaceDialog extends DialogWithResult<Face> {
             try {
                 var text = txtSearch.getText().trim();
                 if (text.isEmpty()) {
+                    searchUpdateTimer.stop();
+                    if (currentSearchWorker != null) {
+                        currentSearchWorker.cancel(true);
+                        currentSearchWorker = null;
+                    }
                     pnlMain.remove(lstFilteredFacesScroller);
                     pnlMain_updateActive(false);
                 } else {
-                    // TODO actually implement searching
+                    searchUpdateTimer.restart();
                 }
             } finally {
                 txtSearch_suppressUpdate = false;
