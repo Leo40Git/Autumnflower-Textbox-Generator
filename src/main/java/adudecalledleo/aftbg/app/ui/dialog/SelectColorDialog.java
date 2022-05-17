@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.app.ui.dialog.modifier;
+package adudecalledleo.aftbg.app.ui.dialog;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -12,7 +12,7 @@ import adudecalledleo.aftbg.app.ui.util.ColorIcon;
 import adudecalledleo.aftbg.window.WindowContext;
 import adudecalledleo.aftbg.window.WindowPalette;
 
-public final class ColorModifierDialog extends ModifierDialog {
+public final class SelectColorDialog extends DialogWithResult<SelectColorDialog.Result> {
     private static Result lastResult = null;
 
     public sealed static class Result { }
@@ -43,7 +43,7 @@ public final class ColorModifierDialog extends ModifierDialog {
 
     private final ContentPane pane;
 
-    public ColorModifierDialog(Component owner, WindowContext winCtx) {
+    public SelectColorDialog(Component owner, WindowContext winCtx) {
         super(owner);
         setIconImage(AppResources.Icons.TOOLBAR_COLOR.getAsImage());
         setTitle("Add color modifier");
@@ -52,16 +52,6 @@ public final class ColorModifierDialog extends ModifierDialog {
         setContentPane(pane = new ContentPane(winCtx));
         pack();
         getRootPane().setDefaultButton(pane.btnAdd);
-    }
-
-    public Result showDialog() {
-        setVisible(true);
-        return pane.result;
-    }
-
-    @Override
-    public void windowClosing(WindowEvent e) {
-        pane.result = null;
     }
 
     private static final class WindowColorButtonModel extends JToggleButton.ToggleButtonModel {
@@ -83,7 +73,6 @@ public final class ColorModifierDialog extends ModifierDialog {
         final JLabel lblCustomPreview, lblPreview;
         final JButton btnCustom, btnCancel, btnAdd;
         Color customColor;
-        Result result;
 
         private ContentPane(WindowContext winCtx) {
             this.winCtx = winCtx;
@@ -221,12 +210,12 @@ public final class ColorModifierDialog extends ModifierDialog {
                 updatePreview();
             } if (btnAdd.equals(src)) {
                 lastResult = result;
-                ColorModifierDialog.this.setVisible(false);
-                ColorModifierDialog.this.dispose();
+                SelectColorDialog.this.setVisible(false);
+                SelectColorDialog.this.dispose();
             } else if (btnCancel.equals(src)) {
                 result = null;
-                ColorModifierDialog.this.setVisible(false);
-                ColorModifierDialog.this.dispose();
+                SelectColorDialog.this.setVisible(false);
+                SelectColorDialog.this.dispose();
             } else {
                 var mdl = bgColors.getSelection();
                 if (mdl == rbCustom.getModel()) {

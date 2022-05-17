@@ -27,7 +27,7 @@ import adudecalledleo.aftbg.app.text.node.color.ColorNode;
 import adudecalledleo.aftbg.app.text.node.color.ColorParser;
 import adudecalledleo.aftbg.app.text.node.style.FontStyleModifyingNode;
 import adudecalledleo.aftbg.app.text.node.style.StyleNode;
-import adudecalledleo.aftbg.app.ui.dialog.modifier.ColorModifierDialog;
+import adudecalledleo.aftbg.app.ui.dialog.SelectColorDialog;
 import adudecalledleo.aftbg.app.ui.text.UnderlineHighlighter;
 import adudecalledleo.aftbg.app.ui.text.ZigZagHighlighter;
 import adudecalledleo.aftbg.app.ui.util.ErrorMessageBuilder;
@@ -252,12 +252,12 @@ public final class TextboxEditorPane extends JEditorPane
 
                 try {
                     forceCaretRendering = true;
-                    var result = new ColorModifierDialog(this, winCtx).showDialog();
+                    var result = new SelectColorDialog(this, winCtx).showDialog();
                     String value;
-                    if (result instanceof ColorModifierDialog.ConstantResult rConst) {
+                    if (result instanceof SelectColorDialog.ConstantResult rConst) {
                         var c = rConst.getColor();
                         value = "#%02X%02X%02X".formatted(c.getRed(), c.getGreen(), c.getBlue());
-                    } else if (result instanceof ColorModifierDialog.PaletteResult rPal) {
+                    } else if (result instanceof SelectColorDialog.PaletteResult rPal) {
                         value = "pal(%d)".formatted(rPal.getIndex());
                     } else {
                         UIManager.getLookAndFeel().provideErrorFeedback(this);
