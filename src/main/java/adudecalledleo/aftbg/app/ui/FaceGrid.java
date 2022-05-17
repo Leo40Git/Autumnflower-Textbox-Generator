@@ -147,10 +147,10 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
             }
 
             int newHeight = faceList.size();
-            if (newHeight % 8 == 0) {
-                newHeight /= 8;
+            if (newHeight % 5 == 0) {
+                newHeight /= 5;
             } else {
-                newHeight = (newHeight / 8) + 1;
+                newHeight = (newHeight / 5) + 1;
             }
             newHeight *= 72;
             var size = new Dimension(72 * 5, Math.max(72 * 8, newHeight));
