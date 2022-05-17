@@ -20,7 +20,7 @@ public final class LoadFrame extends JFrame {
         setDefaultCloseOperation(important ? JFrame.EXIT_ON_CLOSE : WindowConstants.DO_NOTHING_ON_CLOSE);
         setAlwaysOnTop(true);
         setUndecorated(true);
-        final Dimension size = new Dimension(320, 120);
+        final Dimension size = new Dimension(360, 160);
         setPreferredSize(size);
         setMaximumSize(size);
         setMinimumSize(size);
@@ -34,7 +34,7 @@ public final class LoadFrame extends JFrame {
         loadLabel.setHorizontalAlignment(SwingConstants.CENTER);
         loadLabel.setVerticalAlignment(SwingConstants.CENTER);
         LoadAnimLabel animLabel = new LoadAnimLabel();
-        animLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 40));
+        animLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 48));
         animLabel.setHorizontalAlignment(SwingConstants.CENTER);
         animLabel.setVerticalAlignment(SwingConstants.CENTER);
         JLabel brandLabel = new JLabel(BuildInfo.name() + " v" + BuildInfo.version());

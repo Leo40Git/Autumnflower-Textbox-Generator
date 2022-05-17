@@ -93,6 +93,7 @@ public final class Main {
             }
         }
 
+        loadFrame.setLoadString("Loading resources...");
         try {
             AppResources.load();
         } catch (IOException e) {
@@ -117,6 +118,7 @@ public final class Main {
             loadFrame.setAlwaysOnTop(true);
         }
 
+        loadFrame.setLoadString("Loading game definition...");
         GameDefinition gameDef;
         try {
             gameDef = GameDefinition.load(defPath);
@@ -130,6 +132,7 @@ public final class Main {
         }
         AppPreferences.setLastGameDefinition(gameDef.filePath());
 
+        loadFrame.setLoadString("Loading extensions...");
         for (var extPath : AppPreferences.getLastExtensions()) {
             extPath = extPath.toAbsolutePath();
             try {
@@ -143,6 +146,7 @@ public final class Main {
             }
         }
 
+        loadFrame.setLoadString("Opening...!");
         SwingUtilities.invokeLater(() -> {
             AppFrame frame = new AppFrame(gameDef);
             loadFrame.dispose();
