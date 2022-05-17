@@ -55,10 +55,14 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
         final int lastTile = 8 * ((getHeight() / 8) + 1);
         for (int i = 0; i < lastTile; i++) {
             Color c;
-            if (i < faceCount && i == selectedIndex) {
-                c = DefaultListColors.getSelectionBackground();
+            if (i < faceCount) {
+                if (i == selectedIndex) {
+                    c = DefaultListColors.getSelectionBackground();
+                } else {
+                    c = (i % 2 == 0) ? DefaultListColors.getBackground() : DefaultListColors.getDarkerBackground();
+                }
             } else {
-                c = (i % 2 == 0) ? DefaultListColors.getBackground() : DefaultListColors.getDarkerBackground();
+                c = (i % 2 == 0) ? DefaultListColors.getDisabledBackground() : DefaultListColors.getDarkerDisabledBackground();
             }
             g.setColor(c);
             g.fillRect((i % 5) * 72, (i / 5) * 72, 72, 72);
