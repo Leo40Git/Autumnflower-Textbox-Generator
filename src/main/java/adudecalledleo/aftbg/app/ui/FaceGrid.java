@@ -11,9 +11,10 @@ import javax.swing.*;
 import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.face.FaceCategory;
 import adudecalledleo.aftbg.app.util.ColorUtils;
+import org.jetbrains.annotations.Nullable;
 
-// TODO key navigation
-public final class FaceGrid extends JComponent implements MouseListener, MouseMotionListener {
+// TODO key navigation?
+public final class FaceGrid extends JComponent implements Scrollable, MouseListener, MouseMotionListener {
     public static final Color COLOR_GRID = UIManager.getColor("List.background");
     public static final Color COLOR_GRID_2 = ColorUtils.darker(COLOR_GRID, 0.9);
     public static final Color COLOR_GRID_SELECTED = UIManager.getColor("List.selectionBackground");
@@ -33,6 +34,8 @@ public final class FaceGrid extends JComponent implements MouseListener, MouseMo
         selectedIndex = hoveredIndex = -1;
 
         setOpaque(true);
+        setAutoscrolls(true);
+        setFocusable(true);
         addMouseListener(this);
         addMouseMotionListener(this);
         ToolTipManager.sharedInstance().registerComponent(this);
@@ -68,6 +71,31 @@ public final class FaceGrid extends JComponent implements MouseListener, MouseMo
                 }
             }
         }
+    }
+
+    @Override
+    public Dimension getPreferredScrollableViewportSize() {
+        return new Dimension(DEFAULT_SIZE);
+    }
+
+    @Override
+    public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+        return 72;
+    }
+
+    @Override
+    public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+        return 72 * 5;
+    }
+
+    @Override
+    public boolean getScrollableTracksViewportWidth() {
+        return true;
+    }
+
+    @Override
+    public boolean getScrollableTracksViewportHeight() {
+        return false;
     }
 
     private int calculateFaceIndex(int mx, int my) {
@@ -145,6 +173,7 @@ public final class FaceGrid extends JComponent implements MouseListener, MouseMo
         if (!Objects.equals(oldSelectedFace, selectedFace)) {
             if (selectedFace != null) {
                 selectedIndex = faceList.indexOf(selectedFace);
+                ensureIndexIsVisible(selectedIndex);
             }
             repaint();
 
@@ -152,11 +181,17 @@ public final class FaceGrid extends JComponent implements MouseListener, MouseMo
         }
     }
 
-    private void tryUpdateSelectedIndex(MouseEvent e, int newIndex) {
+    private void ensureIndexIsVisible(int index) {
+        var rect = new Rectangle((index % 5) * 72, (index / 5) * 72, 72, 72);
+        scrollRectToVisible(rect);
+    }
+
+    private void tryUpdateSelectedIndex(int newIndex, @Nullable InputEvent e) {
         if (newIndex < faceList.size()) {
             selectedIndex = newIndex;
             setSelectedFace(faceList.get(selectedIndex));
-            e.consume();
+            if (e != null)
+                e.consume();
             repaint();
         }
     }
@@ -165,7 +200,7 @@ public final class FaceGrid extends JComponent implements MouseListener, MouseMo
     public void mouseClicked(MouseEvent e) {
         if (e.getSource() == this) {
             int newIndex = calculateFaceIndex(e);
-            tryUpdateSelectedIndex(e, newIndex);
+            tryUpdateSelectedIndex(newIndex, e);
         }
     }
 
@@ -190,7 +225,7 @@ public final class FaceGrid extends JComponent implements MouseListener, MouseMo
     @Override
     public void mouseDragged(MouseEvent e) {
         hoveredIndex = calculateFaceIndex(e);
-        tryUpdateSelectedIndex(e, hoveredIndex);
+        tryUpdateSelectedIndex(hoveredIndex, e);
         repaint();
     }
 

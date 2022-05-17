@@ -72,7 +72,6 @@ public final class SelectFaceDialog extends DialogWithResult<Face> {
             faceGrid.addPropertyChangeListener("selectedFace", this);
             faceGridScroller = new JScrollPane(faceGrid);
             faceGridScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-            faceGridScroller.getVerticalScrollBar().setUnitIncrement(72);
 
             mdlFilteredFaces = new DefaultListModel<>();
             lstFilteredFaces = new JList<>(mdlFilteredFaces);
