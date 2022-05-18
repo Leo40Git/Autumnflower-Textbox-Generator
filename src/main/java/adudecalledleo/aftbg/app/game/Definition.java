@@ -25,17 +25,23 @@ public sealed abstract class Definition permits GameDefinition, ExtensionDefinit
             .registerTypeAdapter(TextboxScriptSet.class, new TextboxScriptSet.Adapter())
             .create();
 
+    protected final String id;
     protected final String name;
     protected final String[] description;
     protected final String[] credits;
     protected final Path filePath, basePath;
 
-    public Definition(String name, String[] description, String[] credits, Path filePath, Path basePath) {
+    public Definition(String id, String name, String[] description, String[] credits, Path filePath, Path basePath) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.credits = credits;
         this.filePath = filePath;
         this.basePath = basePath;
+    }
+
+    public String id() {
+        return id;
     }
 
     public String name() {

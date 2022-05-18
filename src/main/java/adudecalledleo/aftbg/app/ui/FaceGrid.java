@@ -10,7 +10,8 @@ import javax.swing.*;
 
 import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.face.FaceCategory;
-import adudecalledleo.aftbg.app.ui.render.DefaultListColors;
+import adudecalledleo.aftbg.app.ui.render.UIColor;
+import adudecalledleo.aftbg.app.ui.render.UIColors;
 
 public final class FaceGrid extends JComponent implements Scrollable, MouseListener, MouseMotionListener {
     private static final Dimension DEFAULT_SIZE = new Dimension(72 * 5, 72 * 8);
@@ -54,21 +55,21 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
         final int faceCount = faceList.size();
         final int lastTile = 8 * ((getHeight() / 8) + 1);
         for (int i = 0; i < lastTile; i++) {
-            Color c;
+            UIColor c;
             if (i < faceCount) {
                 if (i == selectedIndex) {
-                    c = DefaultListColors.getSelectionBackground();
+                    c = UIColors.List.getSelectionBackground();
                 } else {
-                    c = (i % 2 == 0) ? DefaultListColors.getBackground() : DefaultListColors.getDarkerBackground();
+                    c = (i % 2 == 0) ? UIColors.List.getBackground() : UIColors.List.getDarkerBackground();
                 }
             } else {
-                c = (i % 2 == 0) ? DefaultListColors.getDisabledBackground() : DefaultListColors.getDarkerDisabledBackground();
+                c = (i % 2 == 0) ? UIColors.List.getDisabledBackground() : UIColors.List.getDarkerDisabledBackground();
             }
-            g.setColor(c);
+            g.setColor(c.get());
             g.fillRect((i % 5) * 72, (i / 5) * 72, 72, 72);
             if (i < faceCount) {
                 if (i == hoveredIndex) {
-                    g.setColor(DefaultListColors.getHoveredBackground());
+                    g.setColor(UIColors.List.getHoveredBackground().get());
                     g.fillRect((i % 5) * 72, (i / 5) * 72, 72, 72);
                 }
 

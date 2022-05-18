@@ -30,10 +30,10 @@ public final class GameDefinition extends Definition {
     private final FacePool allFaces;
     private final TextboxScriptSet allScripts;
 
-    private GameDefinition(String name, String[] description, String[] credits,
+    private GameDefinition(String id, String name, String[] description, String[] credits,
                           Path filePath, Path basePath,
                           WindowContext winCtx, FacePool baseFaces, TextboxScriptSet baseScripts) {
-        super(name, description, credits, filePath, basePath);
+        super(id, name, description, credits, filePath, basePath);
 
         this.winCtx = winCtx;
         this.baseFaces = baseFaces;
@@ -125,7 +125,8 @@ public final class GameDefinition extends Definition {
             throw new DefinitionLoadException("Failed to load baseScripts", e);
         }
 
-        return new GameDefinition(jsonRep.name, jsonRep.description, jsonRep.credits, filePath, basePath, winCtx, faces, scripts);
+        return new GameDefinition(jsonRep.id, jsonRep.name, jsonRep.description, jsonRep.credits, filePath, basePath,
+                winCtx, faces, scripts);
     }
 
     @Override
@@ -146,6 +147,12 @@ public final class GameDefinition extends Definition {
         }
 
         var ext = ExtensionDefinition.load(extPath);
+
+        if (!this.id.equals(ext.baseDefinition())) {
+            throw new DefinitionLoadException("Extension depends on game definition \"%s\", but we are \"%s\"!"
+                    .formatted(ext.baseDefinition(), this.id));
+        }
+
         if (reload) {
             extensions.set(i, ext);
         } else {
@@ -197,6 +204,7 @@ public final class GameDefinition extends Definition {
     }
 
     private static final class JsonRep {
+        public String id;
         public String name;
         public String[] description = DEFAULT_DESCRIPTION;
         public String[] credits = DEFAULT_CREDITS;

@@ -15,7 +15,7 @@ import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.text.node.NodeRegistry;
 import adudecalledleo.aftbg.app.ui.AppFrame;
 import adudecalledleo.aftbg.app.ui.LoadFrame;
-import adudecalledleo.aftbg.app.ui.render.DefaultListColors;
+import adudecalledleo.aftbg.app.ui.render.UIColors;
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,7 +66,7 @@ public final class Main {
             }
         }
 
-        DefaultListColors.update();
+        UIColors.update();
 
         LoadFrame loadFrame = new LoadFrame("Loading...", true);
 

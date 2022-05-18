@@ -14,12 +14,14 @@ import adudecalledleo.aftbg.Main;
 import adudecalledleo.aftbg.app.AppPreferences;
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.AppUpdateCheck;
+import adudecalledleo.aftbg.app.game.Definition;
 import adudecalledleo.aftbg.app.game.ExtensionDefinition;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.app.ui.LoadFrame;
 import adudecalledleo.aftbg.app.ui.MainPanel;
 import adudecalledleo.aftbg.app.ui.render.StringListCellRenderer;
+import adudecalledleo.aftbg.app.ui.render.UIColors;
 import adudecalledleo.aftbg.app.ui.worker.BrowseWorker;
 import adudecalledleo.aftbg.app.ui.worker.UpdateCheckWorker;
 import org.jetbrains.annotations.Nullable;
@@ -127,9 +129,8 @@ public final class AboutDialog extends ModalDialog {
 
         private Component createGameDefInfo() {
             Box box = new Box(BoxLayout.PAGE_AXIS);
-            JLabel lblName = new JLabel(gameDef.name());
-            lblName.setFont(lblName.getFont().deriveFont(Font.BOLD));
-            box.add(lblName);
+
+            box.add(mkLabelNameId(gameDef));
             for (String desc : gameDef.description()) {
                 box.add(new JLabel(desc));
             }
@@ -143,6 +144,12 @@ public final class AboutDialog extends ModalDialog {
                 }
             }
             return box;
+        }
+
+        private JLabel mkLabelNameId(Definition def) {
+            return new JLabel(("<html><b>%s</b> " +
+                    "<span style=\"color: %s;\">(<span style=\"font-family: monospace;\">%s</span>)</span></html>")
+                    .formatted(def.name(), UIColors.Label.getDisabledForeground().getAsCSS(), def.id()));
         }
 
         private static final int EXT_LIST_WIDTH = 200;
@@ -248,9 +255,7 @@ public final class AboutDialog extends ModalDialog {
             } else {
                 btnUnloadExt.setEnabled(true);
                 var ext = exts.get(i);
-                JLabel lblName = new JLabel(ext.name());
-                lblName.setFont(lblName.getFont().deriveFont(Font.BOLD));
-                descBox.add(lblName);
+                descBox.add(mkLabelNameId(ext));
                 for (String desc : ext.description()) {
                     descBox.add(new JLabel(desc));
                 }

@@ -12,14 +12,16 @@ import adudecalledleo.aftbg.app.util.PathUtils;
 import org.jetbrains.annotations.Nullable;
 
 public final class ExtensionDefinition extends Definition {
+    private final String baseDefinition;
     private final @Nullable FacePool faces;
     private final @Nullable TextboxScriptSet scripts;
 
-    private ExtensionDefinition(String name, String[] description, String[] credits,
-                                Path filePath, Path basePath,
+    private ExtensionDefinition(String id, String name, String[] description, String[] credits,
+                                Path filePath, Path basePath, String baseDefinition,
                                 @Nullable FacePool faces, @Nullable TextboxScriptSet scripts) {
-        super(name, description, credits, filePath, basePath);
+        super(id, name, description, credits, filePath, basePath);
 
+        this.baseDefinition = baseDefinition;
         this.faces = faces;
         this.scripts = scripts;
 
@@ -87,12 +89,17 @@ public final class ExtensionDefinition extends Definition {
             }
         }
 
-        return new ExtensionDefinition(jsonRep.name, jsonRep.description, jsonRep.credits, filePath, basePath, faces, scripts);
+        return new ExtensionDefinition(jsonRep.id, jsonRep.name, jsonRep.description, jsonRep.credits, filePath,
+                basePath, jsonRep.baseDefinition, faces, scripts);
     }
 
     @Override
     public String qualifiedName() {
         return "[ext] " + name;
+    }
+
+    public String baseDefinition() {
+        return baseDefinition;
     }
 
     public @Nullable FacePool faces() {
@@ -104,6 +111,8 @@ public final class ExtensionDefinition extends Definition {
     }
 
     private static final class JsonRep {
+        public String id;
+        public String baseDefinition;
         public String name;
         public String[] description = DEFAULT_DESCRIPTION;
         public String[] credits = DEFAULT_CREDITS;
