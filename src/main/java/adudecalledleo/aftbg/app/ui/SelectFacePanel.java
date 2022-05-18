@@ -13,6 +13,8 @@ import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.app.ui.dialog.SelectFaceDialog;
 
 public final class SelectFacePanel extends JPanel implements GameDefinitionUpdateListener, MouseListener, ActionListener {
+    private static final String TOOLTIP = "Click to select new face...";
+
     private final JLabel lblIconAndCat, lblSeparator, lblName;
     private final JButton btnChange;
 
@@ -29,6 +31,7 @@ public final class SelectFacePanel extends JPanel implements GameDefinitionUpdat
         lblSeparator.setEnabled(false);
         lblName = new JLabel();
         btnChange = new JButton("...");
+        btnChange.setToolTipText(TOOLTIP);
 
         JPanel displayPanel = new JPanel();
         displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.LINE_AXIS));
@@ -61,15 +64,15 @@ public final class SelectFacePanel extends JPanel implements GameDefinitionUpdat
             if (selectedFace == Face.NONE) {
                 lblSeparator.setVisible(false);
                 lblName.setVisible(false);
-                setToolTipText(null);
+                setToolTipText(TOOLTIP);
             } else {
                 lblSeparator.setVisible(true);
                 lblName.setVisible(true);
                 var src = selectedFace.getSource();
                 if (src == null) {
-                    setToolTipText("(src == null?!)");
+                    setToolTipText("<html>(src == null?!)<br>%s</html>".formatted(TOOLTIP));
                 } else {
-                    setToolTipText("<html><b>From:</b> %s</html>".formatted(src.qualifiedName()));
+                    setToolTipText("<html><b>From:</b> %s<br>%s</html>".formatted(src.qualifiedName(), TOOLTIP));
                 }
             }
             repaint();
