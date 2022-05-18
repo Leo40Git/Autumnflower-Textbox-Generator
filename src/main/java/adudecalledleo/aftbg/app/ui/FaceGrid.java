@@ -208,13 +208,16 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
     @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getSource() == this) {
-            requestFocusInWindow();
             tryUpdateSelectedIndex(calculateFaceIndex(e), false);
         }
     }
 
     @Override
-    public void mousePressed(MouseEvent e) { }
+    public void mousePressed(MouseEvent e) {
+        if (e.getSource() == this) {
+            requestFocusInWindow();
+        }
+    }
 
     @Override
     public void mouseReleased(MouseEvent e) { }
