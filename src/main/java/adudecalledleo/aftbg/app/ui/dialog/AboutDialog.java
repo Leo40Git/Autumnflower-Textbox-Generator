@@ -64,8 +64,7 @@ public final class AboutDialog extends ModalDialog {
             namePanel.add(label, BorderLayout.CENTER);
             label = new JLabel("v" + BuildInfo.version());
             label.setFont(label.getFont().deriveFont(Font.PLAIN, 10));
-            Color foreground = label.getForeground();
-            label.setForeground(new Color(foreground.getRed(), foreground.getGreen(), foreground.getBlue(), 158));
+            label.setEnabled(false);
             label.setVerticalAlignment(JLabel.TOP);
             label.setAlignmentY(TOP_ALIGNMENT);
             namePanel.add(label, BorderLayout.LINE_END);

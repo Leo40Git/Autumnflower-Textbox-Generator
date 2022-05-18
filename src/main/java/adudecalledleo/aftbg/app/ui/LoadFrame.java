@@ -39,8 +39,7 @@ public final class LoadFrame extends JFrame {
         animLabel.setVerticalAlignment(SwingConstants.CENTER);
         JLabel brandLabel = new JLabel(BuildInfo.name() + " v" + BuildInfo.version());
         brandLabel.setFont(brandLabel.getFont().deriveFont(Font.PLAIN, 12));
-        Color brandFg = brandLabel.getForeground();
-        brandLabel.setForeground(new Color(brandFg.getRed(), brandFg.getGreen(), brandFg.getBlue(), 158));
+        brandLabel.setEnabled(false);
         brandLabel.setHorizontalAlignment(SwingConstants.CENTER);
         brandLabel.setVerticalAlignment(SwingConstants.CENTER);
         panel.add(loadLabel, BorderLayout.PAGE_START);
