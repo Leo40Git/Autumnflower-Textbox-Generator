@@ -13,6 +13,7 @@ import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.face.FaceCategory;
 import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.ui.FaceGrid;
+import adudecalledleo.aftbg.app.ui.LoadAnimLabel;
 import adudecalledleo.aftbg.app.ui.PlaceholderTextField;
 import adudecalledleo.aftbg.app.ui.render.FaceCategoryListCellRenderer;
 import adudecalledleo.aftbg.app.ui.render.FaceSearchListCellRenderer;
@@ -22,7 +23,7 @@ public final class SelectFaceDialog extends DialogWithResult<Face> {
     public SelectFaceDialog(Component owner, FacePool faces, Face currentFace) {
         super(owner);
         setTitle("Select face");
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setResizable(false);
         ContentPane pane;
         setContentPane(pane = new ContentPane(faces));
@@ -48,10 +49,12 @@ public final class SelectFaceDialog extends DialogWithResult<Face> {
         private final FaceGrid faceGrid;
         private final JScrollPane faceGridScroller;
 
+        private final LoadAnimLabel lblSearchAnim;
         private final DefaultListModel<Face> mdlFilteredFaces;
         private final JList<Face> lstFilteredFaces;
-        private final FaceSearchListCellRenderer lstFilteredFacesRenderer;
         private final JScrollPane lstFilteredFacesScroller;
+        private final FaceSearchListCellRenderer lstFilteredFacesRenderer;
+        private final JLabel lblSearchNoResults;
 
         final JButton btnOK;
         private final JButton btnCancel;
@@ -81,12 +84,22 @@ public final class SelectFaceDialog extends DialogWithResult<Face> {
             faceGridScroller = new JScrollPane(faceGrid);
             faceGridScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
+            lblSearchAnim = new LoadAnimLabel();
+            lblSearchAnim.setFont(new Font(Font.MONOSPACED, Font.BOLD, 48));
+            lblSearchAnim.setHorizontalAlignment(JLabel.CENTER);
+            lblSearchAnim.setVerticalAlignment(JLabel.CENTER);
+
             mdlFilteredFaces = new DefaultListModel<>();
             lstFilteredFaces = new JList<>(mdlFilteredFaces);
             lstFilteredFaces.setCellRenderer(lstFilteredFacesRenderer = new FaceSearchListCellRenderer());
             lstFilteredFaces.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             lstFilteredFaces.addListSelectionListener(this);
             lstFilteredFacesScroller = new JScrollPane(lstFilteredFaces);
+
+            lblSearchNoResults = new JLabel("(no results!)");
+            lblSearchNoResults.setFont(lblSearchNoResults.getFont().deriveFont(Font.BOLD, 24));
+            lblSearchNoResults.setHorizontalAlignment(JLabel.CENTER);
+            lblSearchNoResults.setVerticalAlignment(JLabel.CENTER);
 
             txtSearch = new PlaceholderTextField();
             txtSearch.setPlaceholder("Search by name...");
@@ -151,14 +164,13 @@ public final class SelectFaceDialog extends DialogWithResult<Face> {
                 txtSearch_suppressUpdate = true;
                 try {
                     txtSearch.setText(null);
-                    pnlMain.remove(lstFilteredFacesScroller);
-                    pnlMain_updateActive(false);
+                    cancelSearch(false);
                 } finally {
                     txtSearch_suppressUpdate = false;
                 }
             } else if (src == searchUpdateTimer) {
-                // TODO add loading animation
                 var text = txtSearch.getText().trim();
+                lstFilteredFaces.setEnabled(false);
                 mdlFilteredFaces.clear();
                 lstFilteredFacesRenderer.setHighlightedString(text);
                 currentSearchWorker = new FaceSearchWorker(lstCategories.getSelectedValue(), text) {
@@ -169,15 +181,29 @@ public final class SelectFaceDialog extends DialogWithResult<Face> {
                         }
 
                         SwingUtilities.invokeLater(() -> {
-                            mdlFilteredFaces.addAll(chunks);
-                            lstFilteredFaces.setSelectedValue(result, true);
+                            pnlMain.remove(lblSearchAnim);
+                            lblSearchAnim.stopAnimating();
+                            if (chunks.isEmpty()) {
+                                pnlMain.remove(lstFilteredFacesScroller);
+                                pnlMain.add(lblSearchNoResults, BorderLayout.CENTER);
+                            } else {
+                                pnlMain.remove(lblSearchNoResults);
+                                mdlFilteredFaces.addAll(chunks);
+                                lstFilteredFaces.setSelectedValue(result, true);
+                                lstFilteredFaces.setEnabled(true);
+                                pnlMain.add(lstFilteredFacesScroller, BorderLayout.CENTER);
+                            }
+                            pnlMain.validate();
+                            pnlMain.repaint();
                         });
                     }
                 };
                 currentSearchWorker.execute();
                 pnlMain.remove(faceGridScroller);
                 pnlMain.remove(boxNoneCategory);
-                pnlMain.add(lstFilteredFacesScroller, BorderLayout.CENTER);
+                pnlMain.remove(lblSearchNoResults);
+                pnlMain.add(lblSearchAnim, BorderLayout.CENTER);
+                lblSearchAnim.startAnimating();
                 pnlMain.validate();
                 pnlMain.repaint();
             }
@@ -190,8 +216,7 @@ public final class SelectFaceDialog extends DialogWithResult<Face> {
                 txtSearch_suppressUpdate = true;
                 try {
                     txtSearch.setText(null);
-                    pnlMain.remove(lstFilteredFacesScroller);
-                    pnlMain_updateActive(true);
+                    cancelSearch(true);
                 } finally {
                     txtSearch_suppressUpdate = false;
                 }
@@ -251,19 +276,26 @@ public final class SelectFaceDialog extends DialogWithResult<Face> {
             try {
                 var text = txtSearch.getText().trim();
                 if (text.isEmpty()) {
-                    searchUpdateTimer.stop();
-                    if (currentSearchWorker != null) {
-                        currentSearchWorker.cancel(true);
-                        currentSearchWorker = null;
-                    }
-                    pnlMain.remove(lstFilteredFacesScroller);
-                    pnlMain_updateActive(false);
+                    cancelSearch(false);
                 } else {
                     searchUpdateTimer.restart();
                 }
             } finally {
                 txtSearch_suppressUpdate = false;
             }
+        }
+
+        private void cancelSearch(boolean categoryChanged) {
+            searchUpdateTimer.stop();
+            if (currentSearchWorker != null) {
+                currentSearchWorker.cancel(true);
+                currentSearchWorker = null;
+            }
+            pnlMain.remove(lblSearchAnim);
+            lblSearchAnim.stopAnimating();
+            pnlMain.remove(lstFilteredFacesScroller);
+            pnlMain.remove(lblSearchNoResults);
+            pnlMain_updateActive(categoryChanged);
         }
 
         @Override
