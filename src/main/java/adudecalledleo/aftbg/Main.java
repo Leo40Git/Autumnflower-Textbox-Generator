@@ -1,5 +1,7 @@
 package adudecalledleo.aftbg;
 
+import java.awt.*;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -19,6 +21,7 @@ import adudecalledleo.aftbg.app.ui.render.UIColors;
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 public final class Main {
     private static Logger logger;
@@ -105,55 +108,143 @@ public final class Main {
         }
 
         Path defPath = AppPreferences.getLastGameDefinition();
-        if (defPath == null) {
-            // TODO first start experience
-            AppPreferences.getLastExtensions().clear();
-            loadFrame.setAlwaysOnTop(false);
-            File defFile = DialogUtils.fileOpenDialog(null, "Load game definition", DialogUtils.FILTER_JSON_FILES);
-            if (defFile == null) {
-                System.exit(0);
-                return;
+        GameDefinition gameDef = null;
+        GameDefinitionChooser gameDefChooser = null;
+
+        while (gameDef == null) {
+            if (defPath == null) {
+                AppPreferences.getLastExtensions().clear();
+
+                if (gameDefChooser == null) {
+                    gameDefChooser = new GameDefinitionChooser();
+                }
+
+                loadFrame.setVisible(false);
+
+                defPath = gameDefChooser.show();
+                if (defPath == null) {
+                    // user cancelled chooser
+                    AppPreferences.setLastGameDefinition(null);
+                    System.exit(0);
+                }
+
+                loadFrame.restartAnimation();
+                loadFrame.setVisible(true);
+                loadFrame.requestFocus();
             }
-            defPath = defFile.toPath().toAbsolutePath();
-            loadFrame.setAlwaysOnTop(true);
+
+            loadFrame.setLoadString("Loading game definition...");
+            try {
+                gameDef = GameDefinition.load(defPath);
+            } catch (DefinitionLoadException e) {
+                logger.error("Failed to load game definition from \"%s\"!".formatted(defPath), e);
+                loadFrame.setAlwaysOnTop(false);
+                JOptionPane.showMessageDialog(null, ("""
+                                Failed to load game definition from:
+                                %s
+                                %s
+                                Please select another game definition to load.""")
+                                .formatted(defPath, DialogUtils.logFileInstruction()),
+                        "Failed to load game definition", JOptionPane.ERROR_MESSAGE);
+                defPath = null;
+            }
         }
 
-        loadFrame.setLoadString("Loading game definition...");
-        GameDefinition gameDef;
-        try {
-            gameDef = GameDefinition.load(defPath);
-        } catch (DefinitionLoadException e) {
-            logger.error("Failed to load game definition from \"%s\"!".formatted(defPath), e);
-            loadFrame.setAlwaysOnTop(false);
-            DialogUtils.showErrorDialog(null, "Failed to load game definition from\n%s!".formatted(defPath),
-                    "Failed to launch");
-            System.exit(1);
-            return;
+        if (gameDefChooser != null) {
+            gameDefChooser.dispose();
         }
+
         AppPreferences.setLastGameDefinition(gameDef.filePath());
 
         loadFrame.setLoadString("Loading extensions...");
-        for (var extPath : AppPreferences.getLastExtensions()) {
-            extPath = extPath.toAbsolutePath();
+        var extIt = AppPreferences.getLastExtensions().iterator();
+        while (extIt.hasNext()) {
+            var extPath = extIt.next().toAbsolutePath();
             try {
                 gameDef.loadExtension(extPath);
             } catch (DefinitionLoadException e) {
+                extIt.remove();
                 logger.error("Failed to auto-load extension from \"%s\"!".formatted(defPath), e);
                 loadFrame.setAlwaysOnTop(false);
-                DialogUtils.showErrorDialog(null, "Failed to auto-load extension from:\n%s".formatted(defPath),
-                        "Failed to auto-load extension");
+                JOptionPane.showMessageDialog(null, ("""
+                                Failed to auto-load extension from:
+                                %s
+                                %s
+                                This extension has been removed from the auto-load list.""")
+                                .formatted(defPath, DialogUtils.logFileInstruction()),
+                        "Failed to auto-load extension", JOptionPane.ERROR_MESSAGE);
                 loadFrame.setAlwaysOnTop(true);
             }
         }
 
         loadFrame.setLoadString("Opening...!");
-        SwingUtilities.invokeLater(() -> {
-            AppFrame frame = new AppFrame(gameDef);
-            loadFrame.dispose();
+        AppFrame frame = new AppFrame(gameDef);
+        loadFrame.dispose();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+        frame.requestFocus();
+    }
+
+    private static final class GameDefinitionChooser implements ActionListener {
+        private final JFrame frame;
+
+        private volatile boolean done;
+        private volatile Path defPath;
+
+        public GameDefinitionChooser() {
+            var fc = new JFileChooser();
+            fc.setDialogType(JFileChooser.OPEN_DIALOG);
+            fc.setMultiSelectionEnabled(false);
+            fc.setAcceptAllFileFilterUsed(false);
+            fc.setCurrentDirectory(new File(System.getProperty("user.dir")));
+            fc.setFileFilter(DialogUtils.FILTER_JSON_FILES);
+            fc.addActionListener(this);
+
+            // using frame instead of just calling JFileChooser.showOpenDialog
+            //  so that the "dialog" actually gets shown in the taskbar
+            frame = new JFrame("Load game definition");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setComponentOrientation(fc.getComponentOrientation());
+            frame.setResizable(false);
+            var contentPane = frame.getContentPane();
+            contentPane.setLayout(new BorderLayout());
+            contentPane.add(fc, BorderLayout.CENTER);
+
+            if (JDialog.isDefaultLookAndFeelDecorated() && UIManager.getLookAndFeel().getSupportsWindowDecorations()) {
+                frame.getRootPane().setWindowDecorationStyle(JRootPane.FILE_CHOOSER_DIALOG);
+            }
+
+            frame.pack();
             frame.setLocationRelativeTo(null);
+        }
+
+        public @Nullable Path show() {
+            done = false;
+            defPath = null;
             frame.setVisible(true);
             frame.requestFocus();
-        });
+            while (!done) { } // idle until user selects file
+            frame.setVisible(false);
+            return defPath;
+        }
+
+        public void dispose() {
+            frame.dispose();
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            switch (e.getActionCommand()) {
+                case JFileChooser.APPROVE_SELECTION -> {
+                    defPath = ((JFileChooser) e.getSource()).getSelectedFile().toPath();
+                    done = true;
+                }
+                case JFileChooser.CANCEL_SELECTION -> {
+                    defPath = null;
+                    done = true;
+                }
+            }
+        }
     }
 
     // (hopefully) called by shutdown hook, so we're moments before the app dies

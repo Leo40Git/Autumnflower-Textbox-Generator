@@ -15,6 +15,7 @@ public final class LoadFrame extends JFrame {
     public static final List<LoadFrame> ACTIVE_FRAMES = Collections.unmodifiableList(ACTIVE_FRAMES_INTERNAL);
 
     private final JLabel loadLabel;
+    private final LoadAnimLabel animLabel;
 
     public LoadFrame(String loadString, boolean important) {
         setDefaultCloseOperation(important ? JFrame.EXIT_ON_CLOSE : WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -33,7 +34,7 @@ public final class LoadFrame extends JFrame {
         loadLabel.setFont(loadLabel.getFont().deriveFont(Font.BOLD, 24));
         loadLabel.setHorizontalAlignment(SwingConstants.CENTER);
         loadLabel.setVerticalAlignment(SwingConstants.CENTER);
-        LoadAnimLabel animLabel = new LoadAnimLabel();
+        animLabel = new LoadAnimLabel();
         animLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 48));
         animLabel.setHorizontalAlignment(SwingConstants.CENTER);
         animLabel.setVerticalAlignment(SwingConstants.CENTER);
@@ -57,6 +58,11 @@ public final class LoadFrame extends JFrame {
     public void setLoadString(String loadString) {
         setTitle(loadString + " - " + BuildInfo.name());
         loadLabel.setText(loadString);
+    }
+
+    public void restartAnimation() {
+        animLabel.stopAnimating();
+        animLabel.startAnimating();
     }
 
     @Override
