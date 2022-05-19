@@ -111,6 +111,7 @@ public final class UpdateAvailableDialog extends ModalDialog {
                     } catch (IOException ex) {
                         logger().error("Failed to open link", ex);
                         DialogUtils.showErrorDialog(this, "Failed to open link in your default browser!", "Browse to Download");
+                        return;
                     }
                     UpdateAvailableDialog.this.setVisible(false);
                     UpdateAvailableDialog.this.dispose();
@@ -131,7 +132,8 @@ public final class UpdateAvailableDialog extends ModalDialog {
                     Desktop.getDesktop().browse(uri);
                 } catch (URISyntaxException | IOException e) {
                     logger().error("Failed to open link", e);
-                    DialogUtils.showErrorDialog(this, "Failed to open link in your default browser!", "Browse to link");
+                    DialogUtils.showErrorDialog(this, "Failed to open link in your default browser:\n" + url,
+                            "Browse to link");
                 }
             }
         }
