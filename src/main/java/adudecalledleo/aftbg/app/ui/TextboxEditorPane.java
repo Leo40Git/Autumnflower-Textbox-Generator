@@ -213,7 +213,7 @@ public final class TextboxEditorPane extends JEditorPane
         bar.setRollover(true);
 
         bar.add(createToolBarButton(A_TOOLBAR_FORMATTING_HELP, "Formatting Help", AppResources.Icons.ABOUT));
-        bar.add(createToolBarButton(A_TOOLBAR_LINE_BREAK, "New Line", AppResources.Icons.MOD_GIMMICK));
+        bar.add(createToolBarButton(A_TOOLBAR_LINE_BREAK, "New Line", AppResources.Icons.TOOLBAR_LINE_BREAK));
 
         bar.addSeparator();
 
@@ -258,6 +258,7 @@ public final class TextboxEditorPane extends JEditorPane
             case A_TOOLBAR_LINE_BREAK -> {
                 try {
                     getDocument().insertString(getSelectionStart(), "[br]", styleNormal);
+                    requestFocus();
                 } catch (BadLocationException ex) {
                     UIManager.getLookAndFeel().provideErrorFeedback(this);
                     logger().info("Failed to insert [br] tag!", ex);
