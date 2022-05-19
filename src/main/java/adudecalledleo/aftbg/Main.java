@@ -82,7 +82,7 @@ public final class Main {
         if (AppUpdateCheck.isAvailable() && !BuildInfo.isDevelopment() && AppPreferences.isAutoUpdateCheckEnabled()) {
             try {
                 loadFrame.setLoadString("Checking for updates...");
-                AppUpdateCheck.doCheck(null, loadFrame);
+                AppUpdateCheck.doCheck(null, loadFrame, true);
             } catch (AppUpdateCheck.CheckFailedException e) {
                 logger.error("Update check failed!", e);
                 loadFrame.setAlwaysOnTop(false);

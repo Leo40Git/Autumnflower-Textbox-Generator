@@ -22,11 +22,12 @@ public final class UpdateCheckWorker extends SwingWorker<Void, Void> {
     protected Void doInBackground() {
         try {
             loadFrame.setLoadString("Checking for updates...");
-            AppUpdateCheck.doCheck(parent, loadFrame);
+            AppUpdateCheck.doCheck(parent, loadFrame, false);
         } catch (AppUpdateCheck.CheckFailedException e) {
             Main.logger().error("Update check failed!", e);
             loadFrame.setAlwaysOnTop(false);
-            DialogUtils.showErrorDialog(parent, "Failed to check for updates!", "Failed to check for updates");
+            DialogUtils.showErrorDialog(parent, "Failed to check for updates:\n" + e,
+                    "Failed to check for updates");
             loadFrame.setAlwaysOnTop(true);
         } finally {
             loadFrame.dispose();

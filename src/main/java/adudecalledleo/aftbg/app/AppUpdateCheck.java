@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.swing.*;
+
 import adudecalledleo.aftbg.BuildInfo;
 import adudecalledleo.aftbg.app.ui.LoadFrame;
 import adudecalledleo.aftbg.app.ui.dialog.UpdateAvailableDialog;
@@ -94,7 +96,7 @@ public final class AppUpdateCheck {
         }
     }
 
-    public static void doCheck(Component parent, LoadFrame loadFrame) throws CheckFailedException {
+    public static void doCheck(Component parent, LoadFrame loadFrame, boolean automatic) throws CheckFailedException {
         if (BuildInfo.updateJsonUrl() == null) {
             return;
         }
@@ -159,6 +161,12 @@ public final class AppUpdateCheck {
             var dialog = new UpdateAvailableDialog(parent, renderedBlock, dlUrl);
             dialog.setLocationRelativeTo(null);
             dialog.setVisible(true);
+            loadFrame.setAlwaysOnTop(wasAOT);
+        } else if (!automatic) {
+            boolean wasAOT = loadFrame.isAlwaysOnTop();
+            loadFrame.setAlwaysOnTop(false);
+            JOptionPane.showMessageDialog(parent, "Application is up to date!",
+                    "Check for Updates", JOptionPane.INFORMATION_MESSAGE);
             loadFrame.setAlwaysOnTop(wasAOT);
         }
     }
