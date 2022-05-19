@@ -24,8 +24,6 @@ import org.commonmark.Extension;
 import org.commonmark.ext.autolink.AutolinkExtension;
 import org.commonmark.ext.gfm.strikethrough.Strikethrough;
 import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
-import org.commonmark.ext.ins.Ins;
-import org.commonmark.ext.ins.InsExtension;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.NodeRenderer;
@@ -51,16 +49,15 @@ public final class AppUpdateCheck {
         }
     }
 
-    // apparently Swing won't style unknown tags, so this class makes <del> and <ins> tags
-    //  render as <span> tags with the del/ins class
-    private static final class InsDelWorkaround implements HtmlNodeRendererFactory {
+    // apparently Swing won't style unknown tags, so this class makes <del> tags render as <span class="del"> tags
+    private static final class DelWorkaround implements HtmlNodeRendererFactory {
         @Override
         public NodeRenderer create(HtmlNodeRendererContext context) {
             return new Renderer(context);
         }
 
         private record Renderer(HtmlNodeRendererContext ctx) implements NodeRenderer {
-            private static final Set<Class<? extends Node>> NODE_TYPES = Set.of(Strikethrough.class, Ins.class);
+            private static final Set<Class<? extends Node>> NODE_TYPES = Set.of(Strikethrough.class);
 
             @Override
             public Set<Class<? extends Node>> getNodeTypes() {
@@ -69,16 +66,7 @@ public final class AppUpdateCheck {
 
             @Override
             public void render(Node node) {
-                String tagName;
-                if (node instanceof Strikethrough) {
-                    tagName = "del";
-                } else if (node instanceof Ins) {
-                    tagName = "ins";
-                } else {
-                    return;
-                }
-
-                Map<String, String> attrs = ctx.extendAttributes(node, tagName, Map.of("class", tagName));
+                Map<String, String> attrs = ctx.extendAttributes(node, "span", Map.of("class", "del"));
                 var writer = ctx.getWriter();
                 writer.tag("span", attrs);
                 renderChildren(node);
@@ -137,14 +125,13 @@ public final class AppUpdateCheck {
             // parse and render changelogs for dialog
             List<Extension> extensions = List.of(
                     AutolinkExtension.create(),
-                    StrikethroughExtension.create(),
-                    InsExtension.create()
+                    StrikethroughExtension.create()
             );
             Parser parser = Parser.builder()
                     .extensions(extensions)
                     .build();
             HtmlRenderer renderer = HtmlRenderer.builder()
-                    .nodeRendererFactory(new InsDelWorkaround()) // must be higher than the actual ins/del extensions
+                    .nodeRendererFactory(new DelWorkaround()) // must be higher than the actual del extension
                     .extensions(extensions)
                     .escapeHtml(true)
                     .sanitizeUrls(true)

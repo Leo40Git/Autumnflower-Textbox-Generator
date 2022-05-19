@@ -45,7 +45,6 @@ dependencies {
     implementation "de.skuzzle:semantic-version:${project.semver_version}"
     implementation "org.commonmark:commonmark:${project.commonmark_version}"
     implementation "org.commonmark:commonmark-ext-autolink:${project.commonmark_version}"
-    implementation "org.commonmark:commonmark-ext-ins:${project.commonmark_version}"
     implementation "org.commonmark:commonmark-ext-gfm-strikethrough:${project.commonmark_version}"
     implementation "org.openjdk.nashorn:nashorn-core:${project.nashorn_version}"
 
