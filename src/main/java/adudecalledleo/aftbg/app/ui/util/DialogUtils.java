@@ -51,7 +51,7 @@ public final class DialogUtils {
         return fc;
     }
 
-    public static File fileOpenDialog(Component parent, String title, FileNameExtensionFilter filter) {
+    public static File fileOpenDialog(Component parent, String title, FileFilter filter) {
         FC_OPEN.setDialogTitle(title);
         FC_OPEN.setFileFilter(filter);
         final int ret = FC_OPEN.showOpenDialog(parent);

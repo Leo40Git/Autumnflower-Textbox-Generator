@@ -8,10 +8,7 @@ import java.nio.file.Path;
 
 import javax.swing.*;
 
-import adudecalledleo.aftbg.app.AppPreferences;
-import adudecalledleo.aftbg.app.AppResources;
-import adudecalledleo.aftbg.app.AppUpdateCheck;
-import adudecalledleo.aftbg.app.UncaughtExceptionHandler;
+import adudecalledleo.aftbg.app.*;
 import adudecalledleo.aftbg.app.game.DefinitionLoadException;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.text.node.NodeRegistry;
@@ -197,7 +194,7 @@ public final class Main {
             fc.setMultiSelectionEnabled(false);
             fc.setAcceptAllFileFilterUsed(false);
             fc.setCurrentDirectory(new File(System.getProperty("user.dir")));
-            fc.setFileFilter(DialogUtils.FILTER_JSON_FILES);
+            fc.setFileFilter(AppFileExtensions.FILTER_GAME_DEFINITION);
             fc.addActionListener(this);
 
             // using frame instead of just calling JFileChooser.showOpenDialog

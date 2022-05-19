@@ -16,6 +16,7 @@ import java.util.Set;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import adudecalledleo.aftbg.app.AppFileExtensions;
 import adudecalledleo.aftbg.app.AppPreferences;
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.data.Textbox;
@@ -355,7 +356,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     }
 
     public void promptLoadExtension() {
-        File extFile = DialogUtils.fileOpenDialog(this, "Load extension definition", DialogUtils.FILTER_JSON_FILES);
+        File extFile = DialogUtils.fileOpenDialog(this, "Load extension definition", AppFileExtensions.FILTER_EXTENSION);
         if (extFile == null) {
             return;
         }
@@ -576,7 +577,8 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         }
                     }
 
-                    File defFile = DialogUtils.fileOpenDialog(MainPanel.this, "Load game definition", DialogUtils.FILTER_JSON_FILES);
+                    File defFile = DialogUtils.fileOpenDialog(MainPanel.this, "Load game definition",
+                            AppFileExtensions.FILTER_GAME_DEFINITION);
                     if (defFile == null) {
                         break;
                     }
