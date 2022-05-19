@@ -138,6 +138,7 @@ public final class SelectFaceDialog extends DialogWithResult<Face> {
             lstCategories.setSelectedValue(cat, true);
             if (cat != FaceCategory.NONE) {
                 faceGrid.setSelectedFace(currentFace);
+                faceGrid.requestFocusInWindow();
             }
         }
 
