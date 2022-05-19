@@ -228,13 +228,13 @@
       "One-Wing": "faces/other/one_wing.png"
     }
   },
-  "Unused": {
+  "Unknown": {
     "icon": "Aristocrat Fox",
     "entries": {
-      "Aristocrat Fox": "faces/unused/aristocrat_fox.png",
-      "Lizard (Brown)": "faces/unused/lizard_brown.png",
-      "Lizard (Green)": "faces/unused/lizard_green.png",
-      "Shirtless Guy": "faces/unused/shirtless_guy.png"
+      "Aristocrat Fox": "faces/unknown/aristocrat_fox.png",
+      "Lizard (Brown)": "faces/unknown/lizard_brown.png",
+      "Lizard (Green)": "faces/unknown/lizard_green.png",
+      "Shirtless Guy": "faces/unknown/shirtless_guy.png"
     }
   }
 }
