@@ -1,0 +1,73 @@
+<html>
+    <body>
+        <h2>Formatting Help</h2>
+        <p>This generator uses a BBCode-style <em>tag</em> format. Tag are written like so:</p>
+        <code>[name attr1=&lt;value&gt; attr2=&lt;value&gt;]contents[/name]</code>
+        <ul>
+            <li><code>[name &lt;attributes...&gt;]</code> is the <em>opening tag</em>.</li>
+            <li><code>attr1</code> and <code>attr2</code> are <em>attributes</em>, and they allow you to provide
+                more information to the generator.</li>
+            <li><code>[/name]</code> is the <em>closing tag</em>.</li>
+        </ul>
+        <hr>
+        <p>Certain tags will only require one attribute, and they can be written as such:
+            <code>[name=&lt;value&gt;]contents[/name]</code></p>
+        <p>This expands into <code>[name value=&lt;value&gt;]contents[/name]</code>.</p>
+        <hr>
+        <p>Additionally, certain tags are <em>leaf tags</em> - tags that do not allow content.<br>
+        These can be written <em>without a closing tag</em>, as such: <code>[name &lt;attributes...&gt;]</code></p>
+        <hr>
+        <p>Here is a list of all the tags this generator currently supports:</p>
+        <ul>
+            <li>
+                Normal new lines are <em>ignored</em>. To add a new line, use a <code>br</code> tag.<br>
+                <code>br</code> nodes are <em>leaf tag</em> - nodes without any contents,
+                and can be written simply as <code>[br].</code>
+            </li>
+            <li><p>To <strong>make text bold</strong>, wrap it in a <code>b</code> tag.</p></li>
+            <li><p>To <em>make text italic</em>, wrap it in a <code>i</code> tag.</p></li>
+            <li><p>To <span class="ins">add an underline to text</span>, wrap it in a <code>u</code> tag.</p></li>
+            <li><p>To <span class="del">strike through text</span>, wrap it in a <code>s</code> tag.</p></li>
+            <li><p>To make text appear in <sup>superscript</sup>, wrap it in a <code>sup</code> tag.</p></li>
+            <li><p>To make text appear in <sub>subscript</sub>, wrap it in a <code>sub</code> tag.</p></li>
+            <li>
+                <p>To change the text color, wrap it in a <code>color</code> tag.
+                    You can also use a <code>c</code> tag, as it maps to <code>color.</code></p>
+                <p>Color nodes are written like so:<br>
+                    <code>[color=&lt;value&gt;]contents[/color]</code></p>
+                <code>&lt;value&gt;</code> can be in one of these formats:
+                <ul>
+                    <li><code>#RRGGBB</code> - hex format</li>
+                    <li><code>#RGB</code> - 3-digit hex format, expands to <code>#RRGGBB</code></li>
+                    <li><code>rgb(red, green, blue)</code> - CSS format</li>
+                    <li><code>palette(index)</code> - palette color reference - every game definition has its own palette</li>
+                </ul>
+            </li>
+            <li>
+                <p>To change the text size, wrap it in a <code>style</code> tag:<br>
+                    <code>[style size=&lt;+/-number&gt;]contents[/style]</code></p>
+                <p><code>&lt;+/-number&gt;</code> can be either <code>+number</code> or <code>-number</code>,
+                    and controls how bigger or smaller the wrapped text is from other text.</p>
+                <p>You can also add a <code>color</code> attribute to change the text's color, which uses the same format
+                    as the <code>color</code> tag's value.</p>
+            </li>
+            <li>
+                <p>You can also add miscellaneous text effects by wrapping the text in a <code>gimmick</code> tag:<br>
+                    <code>[gimmick fill=&lt;fill&gt; flip=&lt;flip&gt;]contents[/gimmick]</code></p>
+                <code>&lt;fill&gt;</code> can be one of:
+                <ul>
+                    <li><code>color</code>, or <code>colour</code> - default, uses text color
+                        as defined by a <code>color</code>/<code>style</code> tag</li>
+                    <li><code>rainbow</code> - makes text rainbow!</li>
+                </ul>
+                <code>&lt;flip&gt;</code> can be one of:
+                <ul>
+                    <li><code>none</code> - default</li>
+                    <li><code>horizontal</code>, or <code>horiz</code>/<code>horz</code>/<code>h</code></li>
+                    <li><code>vertical</code>, or <code>vert</code>/<code>v</code></li>
+                    <li><code>both</code>, or <code>h&v</code>/<code>hv</code></li>
+                </ul>
+            </li>
+        </ul>
+    </body>
+</html>

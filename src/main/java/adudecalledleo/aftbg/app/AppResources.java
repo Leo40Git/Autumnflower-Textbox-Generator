@@ -9,8 +9,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.text.html.*;
 
-import adudecalledleo.aftbg.Main;
-
 public final class AppResources {
     public enum Icons {
         TEXTBOX_ADD, TEXTBOX_REMOVE, TEXTBOX_INSERT_BEFORE, TEXTBOX_INSERT_AFTER, TEXTBOX_CLONE, EDIT_FACE_POOL,
@@ -34,14 +32,16 @@ public final class AppResources {
 
     private static Font font;
     private static ImageIcon arrowIcon;
-
-    private static StyleSheet updateStyleSheet;
+    private static StyleSheet styleSheet;
+    private static String formattingHelpContents;
 
     private AppResources() { }
 
     public static void load() throws IOException {
         loadFont();
         loadIcons();
+        loadStyleSheet();
+        loadFormattingHelpContents();
     }
 
     private static InputStream openResourceStream(String path) throws IOException {
@@ -84,6 +84,32 @@ public final class AppResources {
         }
     }
 
+    private static void loadStyleSheet() throws IOException {
+        try (InputStream in = openResourceStream("/style.css");
+             InputStreamReader isr = new InputStreamReader(in, StandardCharsets.UTF_8);
+             BufferedReader reader = new BufferedReader(isr)) {
+            styleSheet = new StyleSheet();
+            styleSheet.loadRules(reader, null);
+        }
+    }
+
+    private static void loadFormattingHelpContents() throws IOException {
+        try (InputStream in = openResourceStream("/formatting_help.html");
+             InputStreamReader isr = new InputStreamReader(in, StandardCharsets.UTF_8);
+             BufferedReader reader = new BufferedReader(isr)) {
+            StringBuilder sb = new StringBuilder();
+            String line = reader.readLine();
+            while (line != null) {
+                sb.append(line);
+                line = reader.readLine();
+                if (line != null) {
+                    sb.append(System.lineSeparator());
+                }
+            }
+            formattingHelpContents = sb.toString();
+        }
+    }
+
     public static Font getFont() {
         if (font == null) {
             throw new IllegalStateException("Font hasn't been loaded!");
@@ -98,21 +124,17 @@ public final class AppResources {
         return arrowIcon;
     }
 
-    public static StyleSheet getUpdateStyleSheet() {
-        if (updateStyleSheet == null) {
-            loadUpdateStyleSheet();
+    public static StyleSheet getStyleSheet() {
+        if (styleSheet == null) {
+            throw new IllegalStateException("Style sheet hasn't been loaded!");
         }
-        return updateStyleSheet;
+        return styleSheet;
     }
 
-    private static void loadUpdateStyleSheet() {
-        updateStyleSheet = new StyleSheet();
-        try (InputStream in = openResourceStream("/update.css");
-             InputStreamReader isr = new InputStreamReader(in, StandardCharsets.UTF_8);
-             BufferedReader reader = new BufferedReader(isr)) {
-            updateStyleSheet.loadRules(reader, null);
-        } catch (IOException e) {
-            Main.logger().error("Failed to load update stylesheet, using default stylesheet instead", e);
+    public static String getFormattingHelpContents() {
+        if (formattingHelpContents == null) {
+            throw new IllegalStateException("Formatting help contents haven't been loaded!");
         }
+        return formattingHelpContents;
     }
 }

@@ -60,3 +60,7 @@ a {
     text-decoration: underline;
     color: blue;
 }
+
+code {
+    font-family: Consolas, New Courier, monospace;
+}

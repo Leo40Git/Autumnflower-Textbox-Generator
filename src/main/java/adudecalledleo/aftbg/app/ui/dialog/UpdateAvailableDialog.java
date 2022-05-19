@@ -9,10 +9,9 @@ import java.net.URL;
 
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.text.html.*;
 
-import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
+import adudecalledleo.aftbg.app.ui.util.StyledHTMLEditorKit;
 import org.jetbrains.annotations.Nullable;
 
 import static adudecalledleo.aftbg.Main.logger;
@@ -28,22 +27,6 @@ public final class UpdateAvailableDialog extends ModalDialog {
 
         var dim = getSize();
         setSize(Math.max(dim.width, 480), Math.max(dim.height, 400));
-    }
-
-    private static final class UpdateHTMLEditorKit extends HTMLEditorKit {
-        private final StyleSheet styleSheet;
-
-        public UpdateHTMLEditorKit() {
-            styleSheet = AppResources.getUpdateStyleSheet();
-        }
-
-        @Override
-        public StyleSheet getStyleSheet() {
-            return styleSheet;
-        }
-
-        @Override
-        public void setStyleSheet(StyleSheet s) { }
     }
 
     private final class ContentPane extends JPanel implements ActionListener, HyperlinkListener {
@@ -76,7 +59,7 @@ public final class UpdateAvailableDialog extends ModalDialog {
 
             JTextPane changelogPane = new JTextPane();
             changelogPane.setEditable(false);
-            changelogPane.setEditorKit(new UpdateHTMLEditorKit());
+            changelogPane.setEditorKit(new StyledHTMLEditorKit());
             changelogPane.setText(changelogHtml);
             if (canBrowse) {
                 changelogPane.addHyperlinkListener(this);

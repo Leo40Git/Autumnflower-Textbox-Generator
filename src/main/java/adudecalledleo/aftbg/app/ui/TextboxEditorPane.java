@@ -27,6 +27,7 @@ import adudecalledleo.aftbg.app.text.node.color.ColorNode;
 import adudecalledleo.aftbg.app.text.node.color.ColorParser;
 import adudecalledleo.aftbg.app.text.node.style.FontStyleModifyingNode;
 import adudecalledleo.aftbg.app.text.node.style.StyleNode;
+import adudecalledleo.aftbg.app.ui.dialog.FormattingHelpDialog;
 import adudecalledleo.aftbg.app.ui.dialog.SelectColorDialog;
 import adudecalledleo.aftbg.app.ui.text.UnderlineHighlighter;
 import adudecalledleo.aftbg.app.ui.text.ZigZagHighlighter;
@@ -40,6 +41,8 @@ import static adudecalledleo.aftbg.Main.logger;
 
 public final class TextboxEditorPane extends JEditorPane
         implements GameDefinitionUpdateListener, ActionListener, DOMParser.SpanTracker {
+    public static final String A_TOOLBAR_FORMATTING_HELP = "toolbar.formatting_help";
+    public static final String A_TOOLBAR_LINE_BREAK = "toolbar.line_break";
     public static final String A_TOOLBAR_BOLD = "toolbar.bold";
     public static final String A_TOOLBAR_ITALIC = "toolbar.italic";
     public static final String A_TOOLBAR_UNDERLINE = "toolbar.underline";
@@ -64,6 +67,7 @@ public final class TextboxEditorPane extends JEditorPane
     private final SimpleAttributeSet styleNormal, styleMod;
     private final JPopupMenu popupMenu;
     private final JToolBar toolBar;
+    private FormattingHelpDialog dlgFormattingHelp;
 
     private GameDefinition gameDef;
     private WindowContext winCtx;
@@ -207,6 +211,12 @@ public final class TextboxEditorPane extends JEditorPane
     private JToolBar createToolBar() {
         var bar = new JToolBar("Style");
         bar.setRollover(true);
+
+        bar.add(createToolBarButton(A_TOOLBAR_FORMATTING_HELP, "Formatting Help", AppResources.Icons.ABOUT));
+        bar.add(createToolBarButton(A_TOOLBAR_LINE_BREAK, "New Line", AppResources.Icons.MOD_GIMMICK));
+
+        bar.addSeparator();
+
         bar.add(createToolBarButton(A_TOOLBAR_BOLD, "Bold", AppResources.Icons.TOOLBAR_BOLD));
         bar.add(createToolBarButton(A_TOOLBAR_ITALIC, "Italic", AppResources.Icons.TOOLBAR_ITALIC));
         bar.add(createToolBarButton(A_TOOLBAR_UNDERLINE, "Underline", AppResources.Icons.TOOLBAR_UNDERLINE));
@@ -237,6 +247,22 @@ public final class TextboxEditorPane extends JEditorPane
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
+            case A_TOOLBAR_FORMATTING_HELP -> {
+                if (dlgFormattingHelp == null) {
+                    dlgFormattingHelp = new FormattingHelpDialog(this);
+                    dlgFormattingHelp.setLocationRelativeTo(null);
+                }
+                dlgFormattingHelp.setVisible(true);
+                dlgFormattingHelp.requestFocus();
+            }
+            case A_TOOLBAR_LINE_BREAK -> {
+                try {
+                    getDocument().insertString(getSelectionStart(), "[br]", styleNormal);
+                } catch (BadLocationException ex) {
+                    UIManager.getLookAndFeel().provideErrorFeedback(this);
+                    logger().info("Failed to insert [br] tag!", ex);
+                }
+            }
             case A_TOOLBAR_BOLD -> wrapSelectionInTag("b");
             case A_TOOLBAR_ITALIC -> wrapSelectionInTag("i");
             case A_TOOLBAR_UNDERLINE -> wrapSelectionInTag("u");
