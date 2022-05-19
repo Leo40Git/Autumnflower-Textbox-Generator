@@ -137,7 +137,7 @@ public final class SelectFaceDialog extends DialogWithResult<Face> {
             var cat = faces.getCategory(currentFace.getCategory());
             lstCategories.setSelectedValue(cat, true);
             if (cat != FaceCategory.NONE) {
-                faceGrid.setSelectedFace(currentFace);
+                faceGrid.setSelectedFace(currentFace, true);
                 faceGrid.requestFocusInWindow();
             }
         }
@@ -241,7 +241,7 @@ public final class SelectFaceDialog extends DialogWithResult<Face> {
                     faceGridScroller.setViewportView(faceGrid); // to resync scrollbar
                 }
                 if (result != null) {
-                    faceGrid.setSelectedFace(result);
+                    faceGrid.setSelectedFace(result, true);
                 }
                 pnlMain.remove(boxNoneCategory);
                 pnlMain.add(faceGridScroller, BorderLayout.CENTER);

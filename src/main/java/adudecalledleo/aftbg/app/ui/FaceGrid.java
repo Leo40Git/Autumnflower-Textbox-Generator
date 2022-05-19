@@ -141,9 +141,9 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
             faceList.clear();
             faceList.addAll(category.getFaces().values());
             if (selectedIndex >= 0 && selectedIndex < faceList.size()) {
-                setSelectedFace(faceList.get(selectedIndex));
+                setSelectedFace(faceList.get(selectedIndex), true);
             } else {
-                setSelectedFace(null);
+                setSelectedFace(null, false);
             }
 
             int newHeight = faceList.size();
@@ -169,7 +169,7 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
         return selectedFace;
     }
 
-    public void setSelectedFace(Face selectedFace) {
+    public void setSelectedFace(Face selectedFace, boolean shouldScroll) {
         Objects.requireNonNull(category, "category");
 
         if (selectedFace != null && !category.getFaces().containsValue(selectedFace)) {
@@ -181,7 +181,9 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
         if (!Objects.equals(oldSelectedFace, selectedFace)) {
             if (selectedFace != null) {
                 selectedIndex = faceList.indexOf(selectedFace);
-                ensureIndexIsVisible(selectedIndex);
+                if (shouldScroll) {
+                    ensureIndexIsVisible(selectedIndex);
+                }
             }
             repaint();
 
@@ -189,9 +191,12 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
         }
     }
 
-    private void ensureIndexIsVisible(int index) {
-        var rect = new Rectangle((index % 5) * 72, (index / 5) * 72, 72, 72);
-        scrollRectToVisible(rect);
+    public Rectangle getCellBounds(int index) {
+        return new Rectangle((index % 5) * 72, (index / 5) * 72, 72, 72);
+    }
+
+    public void ensureIndexIsVisible(int index) {
+        scrollRectToVisible(getCellBounds(index));
     }
 
     private void tryUpdateSelectedIndex(int newIndex, boolean ensureVisible) {
@@ -200,7 +205,7 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
             if (ensureVisible) {
                 ensureIndexIsVisible(selectedIndex);
             }
-            setSelectedFace(faceList.get(selectedIndex));
+            setSelectedFace(faceList.get(selectedIndex), true);
             repaint();
         }
     }
