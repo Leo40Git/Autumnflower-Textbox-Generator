@@ -1,10 +1,6 @@
 package adudecalledleo.aftbg.app;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,19 +8,14 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import adudecalledleo.aftbg.Main;
-import adudecalledleo.aftbg.app.util.InvalidPathURIException;
-import adudecalledleo.aftbg.app.util.PathUtils;
-import adudecalledleo.aftbg.app.util.json.JsonStructureException;
-import adudecalledleo.aftbg.app.util.json.JsonType;
-import adudecalledleo.aftbg.app.util.json.JsonUtils;
-import com.google.gson.*;
+import adudecalledleo.aftbg.json.JsonReadUtils;
+import adudecalledleo.aftbg.json.JsonWriteUtils;
 import org.jetbrains.annotations.Nullable;
 
+import org.quiltmc.json5.JsonReader;
+import org.quiltmc.json5.JsonWriter;
+
 public final class AppPreferences {
-    private static final Gson GSON = new GsonBuilder()
-            .setLenient()
-            .setPrettyPrinting()
-            .create();
     private static final int CURRENT_VERSION = 1;
     private static final Path SAVE_PATH = Paths.get(".", "prefs.json").toAbsolutePath();
 
@@ -48,61 +39,77 @@ public final class AppPreferences {
         lastExtensions = new LinkedHashSet<>();
     }
 
-    public void read(JsonObject obj) throws JsonStructureException {
-        int version = JsonUtils.getInt(obj, Key.VERSION);
+    public void read(int version, JsonReader reader) throws IOException {
         // in the future, the "version" property will determine how to read preferences from the object
         //  to allow for backwards compatibility with older preferences files
         // currently, though, there's only one version - the current one
 
-        autoUpdateCheckEnabled = JsonUtils.getBoolean(obj, Key.AUTO_UPDATE_CHECK_ENABLED);
-        lastGameDefinition = JsonUtils.getPathNullable(obj, Key.LAST_GAME_DEFINITION);
-
         lastExtensions.clear();
-        var lastExtsArr = JsonUtils.getArrayNullable(obj, Key.LAST_EXTENSIONS);
-        if (lastExtsArr != null) {
-            for (int i = 0, size = lastExtsArr.size(); i < size; i++) {
-                var elem = lastExtsArr.get(i);
-                if (elem instanceof JsonPrimitive prim && prim.isString()) {
-                    try {
-                        lastExtensions.add(PathUtils.fromRawUri(prim.getAsString()));
-                    } catch (URISyntaxException | InvalidPathURIException e) {
-                        throw new JsonStructureException(("Expected element at index %d of array property \"%s\" to be a path URI, "
-                                + "but failed to convert it into a path!").formatted(i, Key.LAST_EXTENSIONS), e);
-                    }
-                } else {
-                    throw JsonUtils.createWrongTypeException(Key.LAST_EXTENSIONS, i, JsonType.STRING, elem);
+        while (reader.hasNext()) {
+            String field = reader.nextName();
+            switch (field) {
+                case Key.VERSION -> reader.skipValue(); // known, but handled elsewhere - simply skip the value
+                case Key.AUTO_UPDATE_CHECK_ENABLED -> autoUpdateCheckEnabled = reader.nextBoolean();
+                case Key.LAST_GAME_DEFINITION -> lastGameDefinition = JsonReadUtils.readNullable(reader, JsonReadUtils::readPath);
+                case Key.LAST_EXTENSIONS -> JsonReadUtils.readNullableArray(reader, JsonReadUtils::readPath, lastExtensions::add);
+                default -> {
+                    Main.logger().info("Unknown preferences field \"{}\"{}", field, reader.locationString());
+                    reader.skipValue();
                 }
             }
         }
     }
 
-    public void write(JsonObject obj) {
-        obj.addProperty(Key.VERSION, CURRENT_VERSION);
-        obj.addProperty(Key.AUTO_UPDATE_CHECK_ENABLED, autoUpdateCheckEnabled);
-        JsonUtils.putPath(obj, Key.LAST_GAME_DEFINITION, lastGameDefinition);
-        JsonArray lastExtsArr = new JsonArray();
-        for (var path : lastExtensions) {
-            lastExtsArr.add(path.toUri().toString());
-        }
-        obj.add(Key.LAST_EXTENSIONS, lastExtsArr);
+    public void write(JsonWriter writer) throws IOException {
+        writer.name(Key.VERSION);
+        writer.value(CURRENT_VERSION);
+        writer.value(Key.AUTO_UPDATE_CHECK_ENABLED);
+        writer.value(autoUpdateCheckEnabled);
+        writer.name(Key.LAST_GAME_DEFINITION);
+        JsonWriteUtils.writeNullable(writer, JsonWriteUtils::writePath, lastGameDefinition);
+        writer.name(Key.LAST_EXTENSIONS);
+        JsonWriteUtils.writeNullable(writer,
+                (writer1, value) -> JsonWriteUtils.writeArray(writer1, JsonWriteUtils::writePath, value),
+                lastExtensions);
     }
 
     public static void init() throws IOException {
+        instance = new AppPreferences();
+
         if (Files.exists(SAVE_PATH)) {
-            JsonObject obj;
-            try (BufferedReader reader = Files.newBufferedReader(SAVE_PATH, StandardCharsets.UTF_8)) {
-                obj = GSON.fromJson(reader, JsonObject.class);
-            } catch (JsonParseException e) {
-                throw new IOException("Failed to parse JSON", e);
+            boolean gotVersion = false, needToReopen = false;
+            int version = 0;
+            try (JsonReader reader = JsonReader.json5(SAVE_PATH)) {
+                reader.beginObject();
+                while (reader.hasNext()) {
+                    String field = reader.nextName();
+                    if ("version".equals(field)) {
+                        version = reader.nextInt();
+                        gotVersion = true;
+                        break;
+                    }
+                    // version wasn't first entry, need to reopen file after we find it
+                    needToReopen = true;
+                }
+
+                if (!gotVersion) {
+                    throw new IOException("Missing version field!");
+                }
+
+                if (!needToReopen) {
+                    instance.read(version, reader);
+                    reader.endObject();
+                }
             }
-            try {
-                instance = new AppPreferences();
-                instance.read(obj);
-            } catch (JsonStructureException e) {
-                throw new IOException("Invalid preferences file", e);
+
+            if (needToReopen) {
+                try (JsonReader reader = JsonReader.json5(SAVE_PATH)) {
+                    reader.beginObject();
+                    instance.read(version, reader);
+                    reader.endObject();
+                }
             }
         } else {
-            instance = new AppPreferences();
             flush();
         }
     }
@@ -112,12 +119,11 @@ public final class AppPreferences {
             return;
         }
 
-        JsonObject obj = new JsonObject();
-        instance.write(obj);
-
-        try (BufferedWriter writer = Files.newBufferedWriter(SAVE_PATH, StandardCharsets.UTF_8)) {
-            GSON.toJson(obj, writer);
-        } catch (IOException | JsonIOException e) {
+        try (JsonWriter writer = JsonWriter.json5(SAVE_PATH)) {
+            writer.beginObject();
+            instance.write(writer);
+            writer.endObject();
+        } catch (IOException e) {
             Main.logger().error("Failed to flush preferences!", e);
         }
     }
