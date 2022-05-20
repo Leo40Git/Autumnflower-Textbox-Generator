@@ -4,14 +4,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.GsonBuilder;
+import adudecalledleo.aftbg.json.JsonReadUtils;
 import de.skuzzle.semantic.Version;
 import org.jetbrains.annotations.Nullable;
+
+import org.quiltmc.json5.JsonReader;
 
 public final class BuildInfo {
     private static boolean loaded = false;
@@ -32,34 +33,42 @@ public final class BuildInfo {
             return;
         }
 
-        JsonRep jsonRep;
+        String verStr = null;
         try (InputStream in = openJsonStream();
-             InputStreamReader reader = new InputStreamReader(in)) {
-            jsonRep = new GsonBuilder()
-                    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                    .create()
-                    .fromJson(reader, JsonRep.class);
+             InputStreamReader isr = new InputStreamReader(in);
+             JsonReader reader = JsonReader.json5(isr)) {
+            reader.beginObject();
+            while (reader.hasNext()) {
+                String field = reader.nextName();
+                switch (field) {
+                    case "name" -> name = reader.nextString();
+                    case "abbreviated_name" -> abbreviatedName = reader.nextString();
+                    case "version" -> verStr = reader.nextString();
+                    case "urls" -> readURLs(reader);
+                    case "credits" -> credits = JsonReadUtils.readStringArray(reader);
+                }
+            }
+            reader.endObject();
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {
             throw new IOException("Failed to parse JSON", e);
         }
 
-        name = Objects.requireNonNull(jsonRep.name, "name");
-        abbreviatedName = Objects.requireNonNull(jsonRep.abbreviatedName, "abbreviated_name");
-        credits = Objects.requireNonNull(jsonRep.credits, "credits");
-        if (jsonRep.urls == null) {
-            updateJsonUrl = null;
-            homepageUrl = null;
-            issuesUrl = null;
-            sourceUrl = null;
-        } else {
-            updateJsonUrl = parseUrl("update JSON", jsonRep.urls.updateJson);
-            homepageUrl = parseUrl("homepage", jsonRep.urls.homepage);
-            issuesUrl = parseUrl("issue tracker", jsonRep.urls.issues);
-            sourceUrl = parseUrl("source code", jsonRep.urls.source);
+        List<String> missingFields = new ArrayList<>();
+        if (name == null) {
+            missingFields.add("name");
         }
-        String verStr = Objects.requireNonNull(jsonRep.version, "version");
+        if (abbreviatedName == null) {
+            missingFields.add("abbreviated_name");
+        }
+        if (verStr == null) {
+            missingFields.add("version");
+        }
+
+        if (!missingFields.isEmpty()) {
+            throw new IOException("Build info is missing following fields: %s".formatted(String.join(", ", missingFields)));
+        }
 
         if ("${version}".equals(verStr)) {
             if (isDevelopment) {
@@ -86,15 +95,18 @@ public final class BuildInfo {
         return in;
     }
 
-    private static @Nullable URL parseUrl(String name, @Nullable String url) throws IOException {
-        if (url == null) {
-            return null;
+    private static void readURLs(JsonReader reader) throws IOException {
+        reader.beginObject();
+        while (reader.hasNext()) {
+            String field = reader.nextName();
+            switch (field) {
+                case "update_json" -> updateJsonUrl = JsonReadUtils.readNullableURL(reader);
+                case "homepage" -> homepageUrl = JsonReadUtils.readNullableURL(reader);
+                case "issues" -> issuesUrl = JsonReadUtils.readNullableURL(reader);
+                case "source" -> sourceUrl = JsonReadUtils.readNullableURL(reader);
+            }
         }
-        try {
-            return new URL(url);
-        } catch (MalformedURLException e) {
-            throw new IOException("Failed to parse %s URL".formatted(name), e);
-        }
+        reader.endObject();
     }
 
     private static void assertLoaded() {
@@ -146,15 +158,5 @@ public final class BuildInfo {
     public static String[] credits() {
         assertLoaded();
         return credits.clone();
-    }
-
-    private static final class JsonRep {
-        public String name, abbreviatedName, version;
-        public URLs urls;
-        public String[] credits;
-
-        private static final class URLs {
-            public String updateJson, homepage, source, issues;
-        }
     }
 }
