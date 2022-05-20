@@ -220,7 +220,10 @@ public final class Main {
             defPath = null;
             frame.setVisible(true);
             frame.requestFocus();
-            while (!done) { } // idle until user selects file
+            // idle until user selects file
+            while (!done) {
+                Thread.onSpinWait();
+            }
             frame.setVisible(false);
             return defPath;
         }
