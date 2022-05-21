@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
@@ -48,6 +49,137 @@ public final class JsonReadUtils {
         Set<T> set = new LinkedHashSet<>(); // essentially a List that doesn't allow duplicate elements
         readArray(reader, delegate, set::add);
         return set;
+    }
+
+    public interface KeyParser<N> {
+        N parse(String name) throws Exception;
+    }
+
+    /**
+     * Reads a map from JSON. This method uses the simple object format:
+     * <pre><code>
+     * {
+     *   "key1": "value1",
+     *   "key2": "value2"
+     * }
+     * </code></pre>
+     *
+     * As such, this method can only be used if the type of the key can be parsed from a string.
+     *
+     * @param reader JSON reader
+     * @param keyParser parser of key objects
+     * @param valueDelegate delegate to read value objects
+     * @param consumer consumer to accept every read entry
+     * @param <K> type of key
+     * @param <V> type of value
+     * @throws IOException if an I/O exception occurs.
+     */
+    public static <K, V> void readSimpleMap(JsonReader reader,
+                                            KeyParser<K> keyParser, JsonReadDelegate<V> valueDelegate,
+                                            BiConsumer<K, V> consumer) throws IOException {
+        reader.beginObject();
+        while (reader.hasNext()) {
+            String name = reader.nextName();
+            K key;
+            try {
+                key = keyParser.parse(name);
+            } catch (Exception e) {
+                throw new IOException("Failed to parse key \"%s\"%s".formatted(name, reader.locationString()), e);
+            }
+            consumer.accept(key, valueDelegate.read(reader));
+        }
+        reader.endObject();
+    }
+
+    /**
+     * Reads a map from JSON. This method uses the simple object format:
+     * <pre><code>
+     * {
+     *   "key1": "value1",
+     *   "key2": "value2"
+     * }
+     * </code></pre>
+     *
+     * This method is a specialization of {@link #readSimpleMap(JsonReader, KeyParser, JsonReadDelegate, BiConsumer)},
+     * for maps with string keys.
+     *
+     * @param reader JSON reader
+     * @param valueDelegate delegate to read value objects
+     * @param consumer consumer to accept entries
+     * @param <V> type of value
+     * @throws IOException if an I/O exception occurs.
+     */
+    public static <V> void readSimpleMap(JsonReader reader, JsonReadDelegate<V> valueDelegate, BiConsumer<String, V> consumer)
+        throws IOException {
+        reader.beginObject();
+        while (reader.hasNext()) {
+            consumer.accept(reader.nextName(), valueDelegate.read(reader));
+        }
+        reader.endObject();
+    }
+
+    /**
+     * Reads a map from JSON. This method uses a complex format of an array of entry objects:
+     * <pre><code>
+     * [
+     *   {
+     *     "key": {
+     *       ...
+     *     }
+     *     "value": {
+     *       ...
+     *     }
+     *   }
+     * ]
+     * </code></pre>
+     *
+     * @param reader JSON reader
+     * @param keyDelegate delegate to read key objects
+     * @param valueDelegate delegate to read value objects
+     * @param consumer consumer to accept entries
+     * @param <K> type of key
+     * @param <V> type of value
+     * @throws IOException if an I/O exception occurs.
+     */
+    public static <K, V> void readComplexMap(JsonReader reader,
+                                             JsonReadDelegate<K> keyDelegate, JsonReadDelegate<V> valueDelegate,
+                                             BiConsumer<K, V> consumer) throws IOException {
+        List<String> missingFields = new ArrayList<>();
+
+        reader.beginArray();
+        while (reader.hasNext()) {
+            reader.beginObject();
+            K key = null;
+            boolean gotValue = false;
+            V value = null;
+            while (reader.hasNext()) {
+                String field = reader.nextName();
+                switch (field) {
+                    case "key" -> key = keyDelegate.read(reader);
+                    case "value" -> {
+                        value = valueDelegate.read(reader);
+                        gotValue = true;
+                    }
+                    default -> reader.skipValue();
+                }
+            }
+            reader.endObject();
+
+            if (key == null) {
+                missingFields.add("key");
+            }
+            if (!gotValue) {
+                missingFields.add("value");
+            }
+
+            if (!missingFields.isEmpty()) {
+                throw new IOException("Map entry%sismissing following fields: %s"
+                        .formatted(reader.locationString(), String.join(", ", missingFields)));
+            }
+
+            consumer.accept(key, value);
+        }
+        reader.endArray();
     }
 
     public static <T> @Nullable T readNullable(JsonReader reader, JsonReadDelegate<T> delegate) throws IOException {
