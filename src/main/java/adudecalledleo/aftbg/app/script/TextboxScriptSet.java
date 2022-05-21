@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import adudecalledleo.aftbg.app.util.PathUtils;
+import adudecalledleo.aftbg.json.MissingFieldsException;
 
 import org.quiltmc.json5.JsonReader;
 import org.quiltmc.json5.JsonToken;
@@ -81,7 +82,7 @@ public final class TextboxScriptSet {
                 }
 
                 if (path == null) {
-                    throw new IllegalStateException("Script declaration '" + scrName + "' missing required value 'path'");
+                    throw new MissingFieldsException(in, "Script declaration \"%s\"".formatted(scrName), "path");
                 }
                 set.scripts.add(new TextboxScript(scrName, path, desc));
             }

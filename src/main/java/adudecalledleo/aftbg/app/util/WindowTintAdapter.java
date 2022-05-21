@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import adudecalledleo.aftbg.json.MissingFieldsException;
 import adudecalledleo.aftbg.window.WindowTint;
 
 import org.quiltmc.json5.JsonReader;
@@ -48,7 +49,7 @@ public final class WindowTintAdapter {
         }
 
         if (!missingFields.isEmpty()) {
-            throw new IOException("Window tint is missing following fields: %s".formatted(String.join(", ", missingFields)));
+            throw new MissingFieldsException(in, "Window tint", missingFields);
         }
 
         return new WindowTint(red, green, blue);

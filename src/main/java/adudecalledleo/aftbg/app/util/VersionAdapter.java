@@ -2,6 +2,7 @@ package adudecalledleo.aftbg.app.util;
 
 import java.io.IOException;
 
+import adudecalledleo.aftbg.json.MalformedJsonException;
 import de.skuzzle.semantic.Version;
 
 import org.quiltmc.json5.JsonReader;
@@ -13,7 +14,7 @@ public final class VersionAdapter {
         try {
             return Version.parseVersion(in.nextString(), true);
         } catch (Version.VersionFormatException e) {
-            throw new IOException("Invalid version \"%s\"%s".formatted(s, in.locationString()), e);
+            throw new MalformedJsonException(in, "Invalid version \"%s\"".formatted(s), e);
         }
     }
 

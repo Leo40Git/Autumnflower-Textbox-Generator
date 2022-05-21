@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import adudecalledleo.aftbg.app.util.PathUtils;
+import adudecalledleo.aftbg.json.MalformedJsonException;
 import org.jetbrains.annotations.ApiStatus;
 
 import org.quiltmc.json5.JsonReader;
@@ -99,10 +100,12 @@ public final class FacePool {
             while (in.hasNext()) {
                 String name = in.nextName();
                 if (FaceCategory.NONE.getName().equals(name)) {
-                    throw new IllegalStateException("Category name \"" + FaceCategory.NONE.getName() + "\" is reserved!");
+                    throw new MalformedJsonException(in, "Tried to use reserve category name \"%s\""
+                            .formatted(FaceCategory.NONE.getName()));
                 }
                 if (name.contains("/")) {
-                    throw new IllegalStateException("Category name cannot contain slashes (/)!");
+                    throw new MalformedJsonException(in, "Tried to use invalid category name \"%s\" (contains slashes)"
+                            .formatted(name));
                 }
                 FaceCategory cat = pool.categories.computeIfAbsent(name, FaceCategory::new);
                 in.beginObject();
