@@ -19,7 +19,7 @@ public final class FacePoolShim {
         if (cat == null) {
             return null;
         }
-        Face face = cat.get(name);
+        Face face = cat.getFace(name);
         if (face == null) {
             return null;
         }

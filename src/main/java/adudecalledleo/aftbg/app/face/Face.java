@@ -14,32 +14,28 @@ import adudecalledleo.aftbg.app.util.ColorUtils;
 import adudecalledleo.aftbg.app.util.PathUtils;
 
 public final class Face extends DefinitionObject {
-    private static final BufferedImage BLANK = new BufferedImage(144, 144, BufferedImage.TYPE_INT_ARGB);
-
-    public static final Face NONE = new Face("(none)", "None", null, BLANK);
-
-    static {
-        Graphics2D g = BLANK.createGraphics();
-        g.setBackground(ColorUtils.TRANSPARENT);
-        g.clearRect(0, 0, 144, 144);
-        g.dispose();
-    }
+    public static final Face BLANK = new Face("Blank", "None", null,
+            new BufferedImage(144, 144, BufferedImage.TYPE_INT_ARGB));
 
     private final String name;
     private final String category;
     private final String imagePath;
-    BufferedImage image;
+    private BufferedImage image;
     private ImageIcon icon;
 
-    Face(String name, String category, String imagePath, BufferedImage image) {
+    private Face(String name, String category, String imagePath, BufferedImage image) {
         this.name = name;
         this.category = category;
         this.imagePath = imagePath;
         this.image = image;
     }
 
-    Face(String name, String category, String imagePath) {
+    public Face(String name, String category, String imagePath) {
         this(name, category, imagePath, null);
+    }
+
+    public boolean isBlank() {
+        return this == BLANK;
     }
 
     public String getName() {
@@ -51,15 +47,15 @@ public final class Face extends DefinitionObject {
     }
 
     public String getPath() {
-        return category + "/" + name;
+        if (isBlank()) {
+            return category;
+        } else {
+            return category + "/" + name;
+        }
     }
 
     public String getImagePath() {
         return imagePath;
-    }
-
-    public boolean isBlank() {
-        return image == BLANK;
     }
 
     public BufferedImage getImage() {
@@ -81,8 +77,11 @@ public final class Face extends DefinitionObject {
 
     public void loadImage(Path basePath) throws FaceLoadException {
         if (imagePath == null) {
-            image = BLANK;
-            return;
+            if (isBlank()) {
+                return;
+            } else {
+                throw new IllegalStateException("imagePath == null?!");
+            }
         }
 
         Path path = PathUtils.tryResolve(basePath, imagePath, "image", FaceLoadException::new).toAbsolutePath();

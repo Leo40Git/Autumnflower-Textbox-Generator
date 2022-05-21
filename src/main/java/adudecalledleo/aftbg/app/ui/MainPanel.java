@@ -74,7 +74,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         updateListeners = new ArrayList<>();
 
         textboxes = new ArrayList<>();
-        textboxes.add(new Textbox(Face.NONE, ""));
+        textboxes.add(new Textbox(Face.BLANK, ""));
         currentTextbox = 0;
         projectSerializer = new TextboxListAdapter(this);
 
@@ -274,7 +274,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                 }
                 textboxes.remove(box);
                 if (textboxes.size() == 0)
-                    textboxes.add(new Textbox(Face.NONE, ""));
+                    textboxes.add(new Textbox(Face.BLANK, ""));
                 if (currentTextbox == textboxes.size())
                     currentTextbox--;
                 if (currentTextbox < 0)
@@ -512,7 +512,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     currentProject = null;
                     currentTextbox = 0;
                     textboxes.clear();
-                    textboxes.add(new Textbox(Face.NONE, ""));
+                    textboxes.add(new Textbox(Face.BLANK, ""));
                     updateTextboxEditors();
                     updateTextboxSelectorModel();
                 }
@@ -543,7 +543,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     textboxes.clear();
                     textboxes.addAll(newTextboxes);
                     if (textboxes.isEmpty()) {
-                        textboxes.add(new Textbox(Face.NONE, ""));
+                        textboxes.add(new Textbox(Face.BLANK, ""));
                     }
                     updateTextboxEditors();
                     updateTextboxSelectorModel();

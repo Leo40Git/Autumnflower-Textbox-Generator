@@ -17,7 +17,7 @@ public final class ShimHelpers {
     static {
         FACE_SHIM_MAP = new WeakHashMap<>();
 
-        FACE_NONE = wrap(Face.NONE);
+        FACE_NONE = wrap(Face.BLANK);
     }
 
     public static FaceShim wrap(Face face) {

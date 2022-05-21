@@ -370,7 +370,7 @@ public final class FacePoolEditorDialog extends ModalDialog {
                                 "Add Face", JOptionPane.ERROR_MESSAGE);
                         break;
                     }
-                    if (selectedCat.get(newName) != null) {
+                    if (selectedCat.getFace(newName) != null) {
                         JOptionPane.showMessageDialog(this,
                                 "Face name \"" + newName + "\" is already taken!",
                                 "Add Face", JOptionPane.ERROR_MESSAGE);
@@ -384,7 +384,7 @@ public final class FacePoolEditorDialog extends ModalDialog {
                         DialogUtils.showErrorDialog(this,
                                 "Failed to load new face \"" + newName + "\":\n" + ex,
                                 "Add Face");
-                        selectedCat.remove(newFace);
+                        selectedCat.removeFace(newFace);
                         break;
                     }
                     updateFacesModel();
@@ -422,7 +422,7 @@ public final class FacePoolEditorDialog extends ModalDialog {
                             JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) != JOptionPane.YES_OPTION) {
                         break;
                     }
-                    selectedCat.remove(selectedFace);
+                    selectedCat.removeFace(selectedFace);
                     updateFacesModel();
                     String iconName = selectedCat.getIconName();
                     if (iconName != null && iconName.equals(selectedFace.getName())) {
@@ -492,7 +492,7 @@ public final class FacePoolEditorDialog extends ModalDialog {
                         Path imagePath = filePath.getParent().relativize(file.toPath());
                         String faceName = imagePath.getFileName().toString();
                         faceName = processImageName(faceName);
-                        if (newCat.get(faceName) != null) {
+                        if (newCat.getFace(faceName) != null) {
                             JOptionPane.showMessageDialog(this,
                                     "Face name \"" + faceName + "\" is already taken!",
                                     "Add Entire Folder", JOptionPane.ERROR_MESSAGE);
@@ -506,7 +506,7 @@ public final class FacePoolEditorDialog extends ModalDialog {
                             DialogUtils.showErrorDialog(this,
                                     "Failed to load new face \"" + faceName + "\":\n" + ex,
                                     "Add Entire Folder");
-                            newCat.remove(newFace);
+                            newCat.removeFace(newFace);
                         }
                     }
                     updateCategoriesModel();
@@ -519,11 +519,10 @@ public final class FacePoolEditorDialog extends ModalDialog {
         public void move(JList<?> source, int oldIndex, int newIndex) {
             if (catList.equals(source)) {
                 var values = new ArrayList<>(pool.getCategories().values());
-                values.remove(FaceCategory.NONE); // so model indexes sync up with list indexes
                 values.add(newIndex, values.remove(oldIndex));
                 pool.clear();
                 for (var value : values) {
-                    pool.getCategoriesMutable().put(value.getName(), value);
+                    pool.getCategories().put(value.getName(), value);
                 }
                 updateCategoriesModel();
                 catList.setSelectedIndex(newIndex);
@@ -535,9 +534,9 @@ public final class FacePoolEditorDialog extends ModalDialog {
                 }
                 var values = new ArrayList<>(selectedCat.getFaces().values());
                 values.add(newIndex, values.remove(oldIndex));
-                selectedCat.getFacesMutable().clear();
+                selectedCat.getFaces().clear();
                 for (var value : values) {
-                    selectedCat.getFacesMutable().put(value.getName(), value);
+                    selectedCat.getFaces().put(value.getName(), value);
                 }
                 updateFacesModel();
                 faceList.setSelectedIndex(newIndex);

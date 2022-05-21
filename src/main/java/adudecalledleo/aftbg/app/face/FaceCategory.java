@@ -1,31 +1,26 @@
 package adudecalledleo.aftbg.app.face;
 
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.jetbrains.annotations.ApiStatus;
-
 public final class FaceCategory {
-    public static final FaceCategory NONE = new FaceCategory(Face.NONE.getCategory());
+    public static final FaceCategory NONE = new FaceCategory(Face.BLANK.getCategory());
 
     static {
-        NONE.faces.put(Face.NONE.getName(), Face.NONE);
+        NONE.faces.put(Face.BLANK.getName(), Face.BLANK);
     }
 
     private final String name;
     private String iconName;
-    final Map<String, Face> faces, facesU;
+    private final Map<String, Face> faces;
 
     FaceCategory(String name) {
         this.name = name;
         iconName = null;
         faces = new LinkedHashMap<>();
-        facesU = Collections.unmodifiableMap(faces);
     }
 
-    @SuppressWarnings("CopyConstructorMissesField") // intentional
     FaceCategory(FaceCategory other) {
         this(other.name);
         iconName = other.iconName;
@@ -48,15 +43,15 @@ public final class FaceCategory {
         }
     }
 
-    public boolean remove(Face face) {
+    public boolean removeFace(Face face) {
         return faces.remove(face.getName(), face);
     }
 
-    public Face remove(String name) {
+    public Face removeFace(String name) {
         return faces.remove(name);
     }
 
-    public Face get(String name) {
+    public Face getFace(String name) {
         return faces.get(name);
     }
 
@@ -76,11 +71,6 @@ public final class FaceCategory {
     }
 
     public Map<String, Face> getFaces() {
-        return facesU;
-    }
-
-    @ApiStatus.Internal
-    public Map<String, Face> getFacesMutable() {
         return faces;
     }
 

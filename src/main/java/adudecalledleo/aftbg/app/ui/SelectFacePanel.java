@@ -44,7 +44,7 @@ public final class SelectFacePanel extends JPanel implements GameDefinitionUpdat
 
         addMouseListener(this);
         btnChange.addActionListener(this);
-        setSelectedFace(Face.NONE);
+        setSelectedFace(Face.BLANK);
 
         setPreferredSize(new Dimension(0, 72));
     }
@@ -61,7 +61,7 @@ public final class SelectFacePanel extends JPanel implements GameDefinitionUpdat
             lblIconAndCat.setIcon(selectedFace.getIcon());
             lblIconAndCat.setText(selectedFace.getCategory());
             lblName.setText(selectedFace.getName());
-            if (selectedFace == Face.NONE) {
+            if (selectedFace.isBlank()) {
                 lblSeparator.setVisible(false);
                 lblName.setVisible(false);
                 setToolTipText(TOOLTIP);

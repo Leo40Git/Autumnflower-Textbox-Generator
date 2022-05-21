@@ -2,27 +2,22 @@ package adudecalledleo.aftbg.app.face;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import adudecalledleo.aftbg.app.util.PathUtils;
 import adudecalledleo.aftbg.json.MalformedJsonException;
-import org.jetbrains.annotations.ApiStatus;
 
 import org.quiltmc.json5.JsonReader;
 import org.quiltmc.json5.JsonWriter;
 
 public final class FacePool {
-    private final Map<String, FaceCategory> categories, categoriesU;
+    private final Map<String, FaceCategory> categories;
 
     public FacePool() {
         categories = new LinkedHashMap<>();
-        categories.put(FaceCategory.NONE.getName(), FaceCategory.NONE);
-        categoriesU = Collections.unmodifiableMap(categories);
     }
 
-    @SuppressWarnings("CopyConstructorMissesField")
     public FacePool(FacePool other) {
         this();
         addFrom(other);
@@ -49,6 +44,10 @@ public final class FacePool {
     }
 
     public Face getByPath(String path) {
+        if (FaceCategory.NONE.getName().equals(path)) {
+            return Face.BLANK;
+        }
+
         int index = path.indexOf('/');
         if (index < 0) {
             throw new IllegalArgumentException("Path \"" + path + "\" is invalid: No separator between category and name!");
@@ -57,7 +56,7 @@ public final class FacePool {
         if (cat == null) {
             return null;
         }
-        return cat.get(path.substring(index + 1));
+        return cat.getFace(path.substring(index + 1));
     }
 
     public FaceCategory getCategory(String name) {
@@ -77,11 +76,6 @@ public final class FacePool {
     }
 
     public Map<String, FaceCategory> getCategories() {
-        return categoriesU;
-    }
-
-    @ApiStatus.Internal
-    public Map<String, FaceCategory> getCategoriesMutable() {
         return categories;
     }
 
@@ -151,7 +145,7 @@ public final class FacePool {
                 }
                 out.name("entries");
                 out.beginObject();
-                for (var entry : cat.faces.entrySet()) {
+                for (var entry : cat.getFaces().entrySet()) {
                     final Face face = entry.getValue();
                     out.name(face.getName());
                     out.value(PathUtils.sanitize(face.getImagePath()));

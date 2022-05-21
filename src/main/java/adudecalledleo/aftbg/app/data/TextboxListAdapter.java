@@ -66,7 +66,7 @@ public final class TextboxListAdapter {
             Face face = facePool.getByPath(facePath);
             if (face == null) {
                 if (ignoreFaceErrors) {
-                    face = Face.NONE;
+                    face = Face.BLANK;
                 } else {
                     int result = DialogUtils.showCustomConfirmDialog(parent, "Textbox " + textboxIndex
                                     + " specifies a face that isn't currently loaded: \"" + facePath + "\"\n"
@@ -83,7 +83,7 @@ public final class TextboxListAdapter {
                         case IGNORE_ALL_OPTION:
                             ignoreFaceErrors = true;
                         case IGNORE_OPTION:
-                            face = Face.NONE;
+                            face = Face.BLANK;
                             break;
                     }
                 }

@@ -69,6 +69,7 @@ public final class SelectFaceDialog extends DialogWithResult<Face> {
             txtSearch_suppressUpdate = false;
 
             DefaultListModel<FaceCategory> mdlCategories = new DefaultListModel<>();
+            mdlCategories.addElement(FaceCategory.NONE);
             mdlCategories.addAll(faces.getCategories().values());
             lstCategories = new JList<>(mdlCategories);
             lstCategories.setCellRenderer(new FaceCategoryListCellRenderer());
@@ -153,7 +154,7 @@ public final class SelectFaceDialog extends DialogWithResult<Face> {
             var src = e.getSource();
             if (src == btnOK) {
                 if (lstCategories.getSelectedValue() == FaceCategory.NONE) {
-                    SelectFaceDialog.this.result = Face.NONE;
+                    SelectFaceDialog.this.result = Face.BLANK;
                 }
                 SelectFaceDialog.this.setVisible(false);
                 SelectFaceDialog.this.dispose();

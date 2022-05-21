@@ -25,9 +25,9 @@ public class ScriptingTest {
 
 
         List<Textbox> textboxes = List.of(
-                new Textbox(Face.NONE, "Test1"),
-                new Textbox(Face.NONE, "Test2"),
-                new Textbox(Face.NONE, "Test3")
+                new Textbox(Face.BLANK, "Test1"),
+                new Textbox(Face.BLANK, "Test2"),
+                new Textbox(Face.BLANK, "Test3")
         );
 
         Bindings bindings = engine.createBindings();
