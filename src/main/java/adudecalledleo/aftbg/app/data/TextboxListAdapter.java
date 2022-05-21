@@ -11,10 +11,12 @@ import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.text.DOMInputSanitizer;
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+import adudecalledleo.aftbg.json.MissingFieldsException;
 
-public final class TextboxListSerializer {
+import org.quiltmc.json5.JsonReader;
+import org.quiltmc.json5.JsonWriter;
+
+public final class TextboxListAdapter {
     private static final String[] OPTIONS = { "Abort", "Ignore", "Ignore All" };
     private static final int ABORT_OPTION = 0;
     private static final int IGNORE_OPTION = 1;
@@ -22,7 +24,7 @@ public final class TextboxListSerializer {
 
     private final Component parent;
 
-    public TextboxListSerializer(Component parent) {
+    public TextboxListAdapter(Component parent) {
         this.parent = parent;
     }
 
@@ -33,6 +35,7 @@ public final class TextboxListSerializer {
     }
 
     public List<Textbox> read(JsonReader in, FacePool facePool) throws IOException, ReadCancelledException {
+        List<String> missingFields = new ArrayList<>();
         boolean ignoreFaceErrors = false;
 
         in.beginArray();
@@ -48,12 +51,18 @@ public final class TextboxListSerializer {
                     default -> in.skipValue();
                 }
             }
+
             if (facePath == null) {
-                throw new IllegalStateException("Textbox missing required value 'face");
+                missingFields.add("face");
             }
             if (text == null) {
-                throw new IllegalStateException("Textbox missing required value 'text");
+                missingFields.add("text");
             }
+
+            if (!missingFields.isEmpty()) {
+                throw new MissingFieldsException(in, "Textbox", missingFields);
+            }
+
             Face face = facePool.getByPath(facePath);
             if (face == null) {
                 if (ignoreFaceErrors) {

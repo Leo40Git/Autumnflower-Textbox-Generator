@@ -20,7 +20,7 @@ import adudecalledleo.aftbg.app.AppFileExtensions;
 import adudecalledleo.aftbg.app.AppPreferences;
 import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.data.Textbox;
-import adudecalledleo.aftbg.app.data.TextboxListSerializer;
+import adudecalledleo.aftbg.app.data.TextboxListAdapter;
 import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.game.Definition;
 import adudecalledleo.aftbg.app.game.GameDefinition;
@@ -57,7 +57,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
     private final List<Textbox> textboxes;
     private int currentTextbox;
-    private final TextboxListSerializer projectSerializer;
+    private final TextboxListAdapter projectSerializer;
     private File currentProject;
 
     private final JList<Textbox> textboxSelector;
@@ -76,7 +76,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         textboxes = new ArrayList<>();
         textboxes.add(new Textbox(Face.NONE, ""));
         currentTextbox = 0;
-        projectSerializer = new TextboxListSerializer(this);
+        projectSerializer = new TextboxListAdapter(this);
 
         faceSelection = new SelectFacePanel();
         faceSelection.addPropertyChangeListener("selectedFace", this);
@@ -529,7 +529,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     try (FileReader fr = new FileReader(src);
                          JsonReader in = Definition.GSON.newJsonReader(fr)) {
                         newTextboxes = projectSerializer.read(in, gameDef.faces());
-                    } catch (TextboxListSerializer.ReadCancelledException ignored) {
+                    } catch (TextboxListAdapter.ReadCancelledException ignored) {
                         break;
                     } catch (IOException | IllegalStateException e) {
                         logger().error("Failed to read project!", e);
