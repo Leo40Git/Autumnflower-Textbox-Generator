@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.app.data;
+package adudecalledleo.aftbg.app.util;
 
 import java.awt.*;
 import java.io.IOException;
@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.swing.*;
 
+import adudecalledleo.aftbg.app.Textbox;
 import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.text.DOMInputSanitizer;

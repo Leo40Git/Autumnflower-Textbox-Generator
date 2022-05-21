@@ -18,8 +18,7 @@ import javax.swing.event.*;
 import adudecalledleo.aftbg.app.AppFileExtensions;
 import adudecalledleo.aftbg.app.AppPreferences;
 import adudecalledleo.aftbg.app.AppResources;
-import adudecalledleo.aftbg.app.data.Textbox;
-import adudecalledleo.aftbg.app.data.TextboxListAdapter;
+import adudecalledleo.aftbg.app.Textbox;
 import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
@@ -34,6 +33,7 @@ import adudecalledleo.aftbg.app.ui.util.MultilineBuilder;
 import adudecalledleo.aftbg.app.ui.worker.ExtensionDefinitionLoader;
 import adudecalledleo.aftbg.app.ui.worker.GameDefinitionLoader;
 import adudecalledleo.aftbg.app.ui.worker.TextboxGenerator;
+import adudecalledleo.aftbg.app.util.TextboxListAdapter;
 
 import org.quiltmc.json5.JsonReader;
 import org.quiltmc.json5.JsonWriter;

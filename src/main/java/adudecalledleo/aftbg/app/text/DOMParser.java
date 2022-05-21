@@ -3,14 +3,13 @@ package adudecalledleo.aftbg.app.text;
 import java.util.LinkedList;
 import java.util.List;
 
-import adudecalledleo.aftbg.app.data.DataTracker;
 import adudecalledleo.aftbg.app.text.node.Document;
 import adudecalledleo.aftbg.app.text.node.NodeParsingContext;
 
 public final class DOMParser {
     private DOMParser() { }
 
-    public static Result parse(String contents, DataTracker metadata, SpanTracker spanTracker) {
+    public static Result parse(String contents, DOMParserData metadata, SpanTracker spanTracker) {
         if (contents.isEmpty()) {
             return new Result(new Document(), List.of());
         }
@@ -20,7 +19,7 @@ public final class DOMParser {
         return new Result(new Document(result), errors);
     }
 
-    public static Result parse(String contents, DataTracker metadata) {
+    public static Result parse(String contents, DOMParserData metadata) {
         return parse(contents, metadata, SpanTracker.NO_OP);
     }
 

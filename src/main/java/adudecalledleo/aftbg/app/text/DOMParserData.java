@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.app.data;
+package adudecalledleo.aftbg.app.text;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -7,12 +7,18 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.NotNull;
 
-public class DataTracker {
-    public record Entry<T>(DataKey<T> key, T value) { }
+public final class DOMParserData {
+    public record Key<T>(Class<? extends T> type, String name) { }
 
-    private final Map<DataKey<?>, Object> values;
+    public static <T> Key<T> key(Class<? extends T> type, String name) {
+        return new Key<>(type, name);
+    }
 
-    public DataTracker() {
+    public record Entry<T>(Key<T> key, T value) { }
+
+    private final Map<Key<?>, Object> values;
+
+    public DOMParserData() {
         this.values = new HashMap<>();
     }
 
@@ -20,7 +26,7 @@ public class DataTracker {
         return values.size();
     }
 
-    public <T> Optional<T> get(DataKey<T> key) {
+    public <T> Optional<T> get(Key<T> key) {
         Object rawValue = values.get(key);
         if (!key.type().isInstance(rawValue)) {
             return Optional.empty();
@@ -28,12 +34,12 @@ public class DataTracker {
         return Optional.of(key.type().cast(rawValue));
     }
 
-    public <T> DataTracker set(DataKey<T> key, T value) {
+    public <T> DOMParserData set(Key<T> key, T value) {
         values.put(key, value);
         return this;
     }
 
-    public DataTracker remove(DataKey<?> key) {
+    public DOMParserData remove(Key<?> key) {
         values.remove(key);
         return this;
     }
@@ -42,7 +48,7 @@ public class DataTracker {
         values.clear();
     }
 
-    public boolean containsKey(DataKey<?> key) {
+    public boolean containsKey(Key<?> key) {
         return values.containsKey(key);
     }
 
@@ -57,20 +63,12 @@ public class DataTracker {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof DataTracker tracker) {
-            if (size() != tracker.size()) {
-                return false;
-            }
-            var it1 = iterator();
-            var it2 = tracker.iterator();
-            while (it1.hasNext() && it2.hasNext()) {
-                if (!it1.next().equals(it2.next())) {
-                    return false;
-                }
-            }
-            return !it1.hasNext() && !it2.hasNext();
-        }
-        return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DOMParserData that = (DOMParserData) o;
+
+        return values.equals(that.values);
     }
 
     @Override
@@ -79,9 +77,9 @@ public class DataTracker {
     }
 
     protected static class EntryIterator implements Iterator<Entry<?>> {
-        protected final Iterator<Map.Entry<DataKey<?>, Object>> wrapped;
+        protected final Iterator<Map.Entry<Key<?>, Object>> wrapped;
 
-        public EntryIterator(Iterator<Map.Entry<DataKey<?>, Object>> wrapped) {
+        public EntryIterator(Iterator<Map.Entry<Key<?>, Object>> wrapped) {
             this.wrapped = wrapped;
         }
 
@@ -94,7 +92,7 @@ public class DataTracker {
         @Override
         public Entry<?> next() {
             var entry = wrapped.next();
-            return new Entry<>((DataKey<Object>) entry.getKey(), entry.getValue());
+            return new Entry<>((Key<Object>) entry.getKey(), entry.getValue());
         }
     }
 }

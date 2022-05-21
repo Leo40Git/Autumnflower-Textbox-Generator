@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.app.data;
+package adudecalledleo.aftbg.app;
 
 import adudecalledleo.aftbg.app.face.Face;
 

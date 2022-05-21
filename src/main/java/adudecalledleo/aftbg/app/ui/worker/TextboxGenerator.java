@@ -5,11 +5,11 @@ import java.awt.image.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import adudecalledleo.aftbg.app.data.DataTracker;
-import adudecalledleo.aftbg.app.data.Textbox;
+import adudecalledleo.aftbg.app.Textbox;
 import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.text.DOMParser;
+import adudecalledleo.aftbg.app.text.DOMParserData;
 import adudecalledleo.aftbg.app.text.DOMRenderer;
 import adudecalledleo.aftbg.app.text.node.Node;
 import adudecalledleo.aftbg.app.text.node.color.ColorParser;
@@ -22,7 +22,7 @@ import adudecalledleo.aftbg.app.util.Pair;
 import adudecalledleo.aftbg.window.WindowContext;
 
 public final class TextboxGenerator extends AbstractWorker {
-    private final DataTracker parserCtx;
+    private final DOMParserData parserCtx;
     private final WindowContext winCtx;
     private final List<Textbox> textboxes;
 
@@ -31,7 +31,7 @@ public final class TextboxGenerator extends AbstractWorker {
         this.winCtx = gameDef.winCtx().copy();
         this.textboxes = textboxes;
 
-        this.parserCtx = new DataTracker()
+        this.parserCtx = new DOMParserData()
                 .set(ColorParser.PALETTE, TextboxGenerator.this.winCtx.getPalette());
     }
 

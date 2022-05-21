@@ -2,11 +2,11 @@ package adudecalledleo.aftbg.app.text.node;
 
 import java.util.*;
 
-import adudecalledleo.aftbg.app.data.DataTracker;
 import adudecalledleo.aftbg.app.text.DOMParser;
+import adudecalledleo.aftbg.app.text.DOMParserData;
 import adudecalledleo.aftbg.app.text.util.StringScanner;
 
-public record NodeParsingContext(DataTracker metadata, DOMParser.SpanTracker spanTracker) {
+public record NodeParsingContext(DOMParserData data, DOMParser.SpanTracker spanTracker) {
     public List<Node> parse(String contents, int offset, List<DOMParser.Error> errors) {
         if (contents.isEmpty()) {
             return List.of();

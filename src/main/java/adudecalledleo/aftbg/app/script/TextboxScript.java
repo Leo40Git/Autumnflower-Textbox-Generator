@@ -10,7 +10,7 @@ import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
-import adudecalledleo.aftbg.app.data.Textbox;
+import adudecalledleo.aftbg.app.Textbox;
 import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.game.DefinitionObject;
 import adudecalledleo.aftbg.app.script.shim.ShimHelpers;

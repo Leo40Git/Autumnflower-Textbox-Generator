@@ -3,7 +3,7 @@ package adudecalledleo.aftbg.app.script.shim;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import adudecalledleo.aftbg.app.data.Textbox;
+import adudecalledleo.aftbg.app.Textbox;
 import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.face.FacePool;
 

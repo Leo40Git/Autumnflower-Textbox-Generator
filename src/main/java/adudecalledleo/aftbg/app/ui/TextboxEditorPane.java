@@ -14,11 +14,11 @@ import javax.swing.event.*;
 import javax.swing.text.*;
 
 import adudecalledleo.aftbg.app.AppResources;
-import adudecalledleo.aftbg.app.data.DataTracker;
 import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.app.text.DOMParser;
+import adudecalledleo.aftbg.app.text.DOMParserData;
 import adudecalledleo.aftbg.app.text.DOMRenderer;
 import adudecalledleo.aftbg.app.text.node.ContainerNode;
 import adudecalledleo.aftbg.app.text.node.Node;
@@ -59,7 +59,7 @@ public final class TextboxEditorPane extends JEditorPane
         return hlpEscapedColors.computeIfAbsent(color, UnderlineHighlighter::new);
     }
 
-    private final DataTracker parserCtx;
+    private final DOMParserData parserData;
     private final Consumer<String> textUpdateConsumer;
     private final Timer updateTimer;
     private final Map<Object, Action> actions;
@@ -81,7 +81,7 @@ public final class TextboxEditorPane extends JEditorPane
         super();
         this.textUpdateConsumer = textUpdateConsumer;
 
-        parserCtx = new DataTracker();
+        parserData = new DOMParserData();
         errors = new HashMap<>();
 
         styleNormal = new SimpleAttributeSet();
@@ -409,7 +409,7 @@ public final class TextboxEditorPane extends JEditorPane
         StyleConstants.setForeground(styleNormal, winCtx.getColor(0));
         var pal = winCtx.getPalette();
         defaultTextColor = pal.get(0);
-        parserCtx.set(ColorParser.PALETTE, pal);
+        parserData.set(ColorParser.PALETTE, pal);
         flushChanges(true);
     }
 
@@ -422,7 +422,7 @@ public final class TextboxEditorPane extends JEditorPane
             doc.setCharacterAttributes(0, doc.getLength(), style, true);
             getHighlighter().removeAllHighlights();
 
-            var result = DOMParser.parse(getText(), parserCtx, this);
+            var result = DOMParser.parse(getText(), parserData, this);
 
             highlight0(doc, result.document().getChildren(), style, styleEscaped);
             highlightTrackedSpans(doc);

@@ -2,17 +2,16 @@ package adudecalledleo.aftbg.app.text.node.color;
 
 import java.awt.*;
 
-import adudecalledleo.aftbg.app.data.DataKey;
-import adudecalledleo.aftbg.app.data.DataTracker;
+import adudecalledleo.aftbg.app.text.DOMParserData;
 import adudecalledleo.aftbg.window.WindowPalette;
 import org.jetbrains.annotations.Nullable;
 
 public final class ColorParser {
-    public static final DataKey<WindowPalette> PALETTE = new DataKey<>(WindowPalette.class, "palette");
+    public static final DOMParserData.Key<WindowPalette> PALETTE = DOMParserData.key(WindowPalette.class, "palette");
 
     private ColorParser() { }
 
-    public static @Nullable Color parseColor(DataTracker ctx, String value) {
+    public static @Nullable Color parseColor(DOMParserData data, String value) {
         if (value.startsWith("#")) {
             value = value.substring(1);
             int hexLen = value.length();
@@ -51,11 +50,11 @@ public final class ColorParser {
                 value = value.substring(0, obIdx).trim();
                 /// function-like - value is function name
                 if ("palette".equals(value) || "pal".equals(value)) {
-                    if (!ctx.containsKey(PALETTE)) {
+                    if (!data.containsKey(PALETTE)) {
                         throw new IllegalArgumentException("no palette exists");
                     }
                     @SuppressWarnings("OptionalGetWithoutIsPresent") // checked above
-                    var pal = ctx.get(PALETTE).get();
+                    var pal = data.get(PALETTE).get();
                     int palIdx;
                     try {
                         palIdx = Integer.parseUnsignedInt(argsStr);

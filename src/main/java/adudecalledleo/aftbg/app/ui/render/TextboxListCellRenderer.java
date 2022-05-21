@@ -4,23 +4,23 @@ import java.awt.*;
 
 import javax.swing.*;
 
-import adudecalledleo.aftbg.app.data.DataTracker;
-import adudecalledleo.aftbg.app.data.Textbox;
+import adudecalledleo.aftbg.app.Textbox;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
+import adudecalledleo.aftbg.app.text.DOMParserData;
 import adudecalledleo.aftbg.app.text.node.color.ColorParser;
 import adudecalledleo.aftbg.window.WindowContext;
 
 public final class TextboxListCellRenderer extends BaseListCellRenderer<Textbox>
         implements GameDefinitionUpdateListener {
     private final StringBuilder sb;
-    private final DataTracker parserCtx;
+    private final DOMParserData parserCtx;
     private WindowContext winCtx;
 
     public TextboxListCellRenderer() {
         super();
         sb = new StringBuilder();
-        parserCtx = new DataTracker();
+        parserCtx = new DOMParserData();
         setPreferredSize(new Dimension(72 * 4 + 4, 72));
         setMinimumSize(new Dimension(72 * 4 + 4, 72));
     }
