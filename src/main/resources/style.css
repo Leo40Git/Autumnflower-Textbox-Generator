@@ -34,10 +34,21 @@ h6 {
 }
 
 ul {
-    margin-left-ltr: 10px;
-    margin-right-rtl: 10px;
+    margin-left-ltr: 16px;
+    margin-right-rtl: 16px;
     list-style-type: disc;
-    -bullet-gap: 10px;
+    -bullet-gap: 16px;
+}
+
+li ul {
+    list-style-type: circle;
+}
+
+ol {
+    margin-left-ltr: 16px;
+    margin-right-rtl: 16px;
+    list-style-type: decimal;
+    -bullet-gap: 16px;
 }
 
 em {
