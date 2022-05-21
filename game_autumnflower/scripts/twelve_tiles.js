@@ -29,6 +29,9 @@ var xlat = {
 
 function updateTextbox(faces, box) {
     var text = input.getString("Enter text (case insensitive):", "scrabble is fun");
+    if (text == null) {
+        return
+    }
 
     box.face = faces.get("Twelve", "Tiled");
 

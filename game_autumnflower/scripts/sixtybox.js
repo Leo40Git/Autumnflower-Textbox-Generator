@@ -5,7 +5,7 @@ function updateTextbox(faces, box) {
     }
     var textLength = input.getInt("Enter character count:");
     if (textLength == null) {
-         return;
+        return;
     }
 
     box.face = addFace ? faces.get("Sixty", "Neutral") : faces.blank;
