@@ -84,6 +84,7 @@ public final class FacePoolEditorDialog extends ModalDialog {
         }
 
         try (JsonWriter writer = JsonWriter.json5(filePath)) {
+            writer.setIndent("  ");
             FacePool.Adapter.write(writer, pool);
         } catch (Exception e) {
             logger().error("Failed to write face pool", e);
@@ -376,8 +377,14 @@ public final class FacePoolEditorDialog extends ModalDialog {
                                 "Add Face", JOptionPane.ERROR_MESSAGE);
                         break;
                     }
-                    // TODO add dialog for comments
-                    var newFace = selectedCat.add(newName, Face.DEFAULT_COMMENTS,
+                    String commentsRaw = DialogUtils.showMultilineInputDialog(this,
+                            "Enter comments for new face:",
+                            "Add Face", JOptionPane.INFORMATION_MESSAGE);
+                    String[] comments = Face.DEFAULT_COMMENTS;
+                    if (commentsRaw != null) {
+                        comments = commentsRaw.split("\n");
+                    }
+                    var newFace = selectedCat.add(newName, comments,
                             PathUtils.sanitize(imagePath.toString()));
                     try {
                         newFace.loadImage(filePath.getParent());

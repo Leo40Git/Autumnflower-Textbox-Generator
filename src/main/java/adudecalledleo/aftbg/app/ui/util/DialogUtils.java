@@ -1,6 +1,7 @@
 package adudecalledleo.aftbg.app.ui.util;
 
 import java.awt.*;
+import java.awt.event.*;
 import java.io.File;
 
 import javax.imageio.ImageIO;
@@ -86,6 +87,24 @@ public final class DialogUtils {
             return FC_OPEN_FOLDER.getSelectedFile();
         }
         return null;
+    }
+
+    public static String showMultilineInputDialog(Component parent, String message, String title, int messageType) {
+        JTextArea textArea = new JTextArea(5, 10);
+        textArea.addHierarchyListener(he -> {
+            if ((he.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
+                if (textArea.isShowing()) {
+                    SwingUtilities.invokeLater(textArea::requestFocus);
+                }
+            }
+        });
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        if (JOptionPane.showOptionDialog(parent, new Object[] { message, scrollPane }, title,
+                JOptionPane.OK_CANCEL_OPTION, messageType, null, null, textArea) == JOptionPane.OK_OPTION) {
+            return textArea.getText();
+        } else {
+            return null;
+        }
     }
 }
 

@@ -174,9 +174,6 @@ public final class FacePool {
 
             out.beginObject();
             for (var cat : value.categories.values()) {
-                if (cat == FaceCategory.NONE) {
-                    continue;
-                }
                 out.name(cat.getName());
                 out.beginObject();
                 if (cat.getIconName() != null) {
