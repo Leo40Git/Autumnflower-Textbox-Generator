@@ -22,7 +22,6 @@ import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.data.Textbox;
 import adudecalledleo.aftbg.app.data.TextboxListAdapter;
 import adudecalledleo.aftbg.app.face.Face;
-import adudecalledleo.aftbg.app.game.Definition;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
 import adudecalledleo.aftbg.app.script.TextboxScriptSet;
@@ -36,8 +35,9 @@ import adudecalledleo.aftbg.app.ui.util.MultilineBuilder;
 import adudecalledleo.aftbg.app.ui.worker.ExtensionDefinitionLoader;
 import adudecalledleo.aftbg.app.ui.worker.GameDefinitionLoader;
 import adudecalledleo.aftbg.app.ui.worker.TextboxGenerator;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+
+import org.quiltmc.json5.JsonReader;
+import org.quiltmc.json5.JsonWriter;
 
 import static adudecalledleo.aftbg.Main.logger;
 
@@ -349,7 +349,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             currentProject = sel;
         }
         try (FileWriter fw = new FileWriter(currentProject);
-             JsonWriter out = Definition.GSON.newJsonWriter(fw)) {
+             JsonWriter out = JsonWriter.json(fw)) {
             projectSerializer.write(textboxes, out);
         }
         return true;
@@ -527,7 +527,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
 
                     List<Textbox> newTextboxes;
                     try (FileReader fr = new FileReader(src);
-                         JsonReader in = Definition.GSON.newJsonReader(fr)) {
+                         JsonReader in = JsonReader.json5(fr)) {
                         newTextboxes = projectSerializer.read(in, gameDef.faces());
                     } catch (TextboxListAdapter.ReadCancelledException ignored) {
                         break;
