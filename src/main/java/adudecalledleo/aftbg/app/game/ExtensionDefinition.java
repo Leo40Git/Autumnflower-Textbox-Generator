@@ -1,15 +1,19 @@
 package adudecalledleo.aftbg.app.game;
 
-import java.io.BufferedReader;
-import java.nio.file.Files;
+import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import adudecalledleo.aftbg.app.face.FaceLoadException;
 import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.script.ScriptLoadException;
 import adudecalledleo.aftbg.app.script.TextboxScriptSet;
 import adudecalledleo.aftbg.app.util.PathUtils;
+import adudecalledleo.aftbg.json.JsonReadUtils;
 import org.jetbrains.annotations.Nullable;
+
+import org.quiltmc.json5.JsonReader;
 
 public final class ExtensionDefinition extends Definition {
     private final String baseDefinition;
@@ -38,24 +42,52 @@ public final class ExtensionDefinition extends Definition {
                     .formatted(filePath));
         }
 
-        JsonRep jsonRep;
-        try (BufferedReader reader = Files.newBufferedReader(filePath)) {
-            jsonRep = GSON.fromJson(reader, JsonRep.class);
-        } catch (Exception e) {
-            throw new DefinitionLoadException("Failed to read definition from \"%s\""
-                    .formatted(filePath));
+        String id = null, baseDefinition = null, name = null;
+        String[] description = DEFAULT_DESCRIPTION, credits = DEFAULT_CREDITS;
+        @Nullable String facesPathRaw = null;
+        @Nullable String scriptsPathRaw = null;
+        try (JsonReader reader = JsonReader.json5(filePath)) {
+            reader.beginObject();
+            while (reader.hasNext()) {
+                String field = reader.nextName();
+                switch (field) {
+                case "id" -> id = reader.nextString();
+                case "base_def", "base_definition" -> baseDefinition = reader.nextString();
+                case "name" -> name = reader.nextString();
+                case "desc", "description" -> description = JsonReadUtils.readStringArray(reader);
+                case "credits" -> credits = JsonReadUtils.readStringArray(reader);
+                case "faces_path" -> facesPathRaw = reader.nextString();
+                case "scripts_path" -> scriptsPathRaw = reader.nextString();
+                default -> reader.skipValue();
+                }
+            }
+            reader.endObject();
+        } catch (IOException e) {
+            throw new DefinitionLoadException("Failed to read definition from \"%s\"".formatted(filePath), e);
         }
 
-        if (jsonRep.name == null) {
-            throw new DefinitionLoadException("Name is missing!");
+        List<String> missingFields = new ArrayList<>();
+        if (id == null) {
+            missingFields.add("id");
+        }
+        if (name == null) {
+            missingFields.add("name");
+        }
+        if (baseDefinition == null) {
+            missingFields.add("base_definition");
+        }
+
+        if (!missingFields.isEmpty()) {
+            throw new DefinitionLoadException("Extension definition is missing following fields: %s"
+                    .formatted(String.join(", ", missingFields)));
         }
 
         FacePool faces = null;
-        if (jsonRep.facesPath != null) {
-            Path facesPath = PathUtils.tryResolve(basePath, jsonRep.facesPath, "face pool definition",
+        if (facesPathRaw != null) {
+            Path facesPath = PathUtils.tryResolve(basePath, facesPathRaw, "face pool definition",
                     DefinitionLoadException::new);
-            try (BufferedReader reader = Files.newBufferedReader(facesPath)) {
-                faces = GSON.fromJson(reader, FacePool.class);
+            try (JsonReader reader = JsonReader.json5(facesPath)) {
+                faces = FacePool.Adapter.read(reader);
             } catch (Exception e) {
                 throw new DefinitionLoadException("Failed to read face pool definition from \"%s\""
                         .formatted(facesPath));
@@ -63,11 +95,11 @@ public final class ExtensionDefinition extends Definition {
         }
 
         TextboxScriptSet scripts = null;
-        if (jsonRep.scriptsPath != null) {
-            Path scriptsPath = PathUtils.tryResolve(basePath, jsonRep.scriptsPath, "scripts definition",
+        if (scriptsPathRaw != null) {
+            Path scriptsPath = PathUtils.tryResolve(basePath, scriptsPathRaw, "scripts definition",
                     DefinitionLoadException::new);
-            try (BufferedReader reader = Files.newBufferedReader(scriptsPath)) {
-                scripts = GSON.fromJson(reader, TextboxScriptSet.class);
+            try (JsonReader reader = JsonReader.json5(scriptsPath)) {
+                scripts = TextboxScriptSet.Adapter.read(reader);
             } catch (Exception e) {
                 throw new DefinitionLoadException("Failed to read scripts definition from \"%s\""
                         .formatted(scriptsPath));
@@ -89,8 +121,8 @@ public final class ExtensionDefinition extends Definition {
             }
         }
 
-        return new ExtensionDefinition(jsonRep.id, jsonRep.name, jsonRep.description, jsonRep.credits, filePath,
-                basePath, jsonRep.baseDefinition, faces, scripts);
+        return new ExtensionDefinition(id, name, description, credits, filePath,
+                basePath, baseDefinition, faces, scripts);
     }
 
     @Override
@@ -108,15 +140,5 @@ public final class ExtensionDefinition extends Definition {
 
     public @Nullable TextboxScriptSet scripts() {
         return scripts;
-    }
-
-    private static final class JsonRep {
-        public String id;
-        public String baseDefinition;
-        public String name;
-        public String[] description = DEFAULT_DESCRIPTION;
-        public String[] credits = DEFAULT_CREDITS;
-        public @Nullable String facesPath;
-        public @Nullable String scriptsPath;
     }
 }

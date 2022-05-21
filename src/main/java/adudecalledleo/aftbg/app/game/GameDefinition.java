@@ -1,7 +1,6 @@
 package adudecalledleo.aftbg.app.game;
 
 import java.awt.image.*;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -17,9 +16,13 @@ import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.script.ScriptLoadException;
 import adudecalledleo.aftbg.app.script.TextboxScriptSet;
 import adudecalledleo.aftbg.app.util.PathUtils;
+import adudecalledleo.aftbg.app.util.WindowTintAdapter;
+import adudecalledleo.aftbg.json.JsonReadUtils;
 import adudecalledleo.aftbg.window.WindowContext;
 import adudecalledleo.aftbg.window.WindowTint;
 import org.jetbrains.annotations.Nullable;
+
+import org.quiltmc.json5.JsonReader;
 
 public final class GameDefinition extends Definition {
     private final WindowContext winCtx;
@@ -58,52 +61,80 @@ public final class GameDefinition extends Definition {
                     .formatted(filePath));
         }
 
-        JsonRep jsonRep;
-        try (BufferedReader reader = Files.newBufferedReader(filePath)) {
-            jsonRep = GSON.fromJson(reader, JsonRep.class);
-        } catch (Exception e) {
-            throw new DefinitionLoadException("Failed to read definition from \"%s\""
-                    .formatted(filePath), e);
+        String id = null, name = null;
+        String[] description = DEFAULT_DESCRIPTION, credits = DEFAULT_CREDITS;
+        String windowPathRaw = null;
+        WindowTint windowTint = null;
+        String facesPathRaw = null;
+        @Nullable String scriptsPathRaw = null;
+        try (JsonReader reader = JsonReader.json5(filePath)) {
+            reader.beginObject();
+            while (reader.hasNext()) {
+                String field = reader.nextName();
+                switch (field) {
+                    case "id" -> id = reader.nextString();
+                    case "name" -> name = reader.nextString();
+                    case "desc", "description" -> description = JsonReadUtils.readStringArray(reader);
+                    case "credits" -> credits = JsonReadUtils.readStringArray(reader);
+                    case "window_path" -> windowPathRaw = reader.nextString();
+                    case "window_tint" -> windowTint = WindowTintAdapter.read(reader);
+                    case "faces_path" -> facesPathRaw = reader.nextString();
+                    case "scripts_path" -> scriptsPathRaw = reader.nextString();
+                    default -> reader.skipValue();
+                }
+            }
+            reader.endObject();
+        } catch (IOException e) {
+            throw new DefinitionLoadException("Failed to read definition from \"%s\"".formatted(filePath), e);
         }
 
-        if (jsonRep.name == null) {
-            throw new DefinitionLoadException("Name is missing!");
+        List<String> missingFields = new ArrayList<>();
+        if (id == null) {
+            missingFields.add("id");
         }
-        if (jsonRep.windowPath == null) {
-            throw new DefinitionLoadException("Window path is missing!");
+        if (name == null) {
+            missingFields.add("name");
         }
-        if (jsonRep.windowTint == null) {
-            throw new DefinitionLoadException("Window tint is missing!");
+        if (windowPathRaw == null) {
+            missingFields.add("window_path");
         }
-        if (jsonRep.facesPath == null) {
-            throw new DefinitionLoadException("Face pool definition path is missing!");
+        if (windowTint == null) {
+            missingFields.add("window_tint");
+        }
+        if (facesPathRaw == null) {
+            missingFields.add("faces_path");
         }
 
-        Path facesPath = PathUtils.tryResolve(basePath, jsonRep.facesPath, "face pool definition",
+        if (!missingFields.isEmpty()) {
+            throw new DefinitionLoadException("Game definition is missing following fields: %s"
+                    .formatted(String.join(", ", missingFields)));
+        }
+
+        Path facesPath = PathUtils.tryResolve(basePath, facesPathRaw, "face pool definition",
                 DefinitionLoadException::new);
         FacePool faces;
-        try (BufferedReader reader = Files.newBufferedReader(facesPath)) {
-            faces = GSON.fromJson(reader, FacePool.class);
+        try (JsonReader reader = JsonReader.json5(facesPath)) {
+            faces = FacePool.Adapter.read(reader);
         } catch (Exception e) {
             throw new DefinitionLoadException("Failed to read face pool definition from \"%s\""
                     .formatted(facesPath), e);
         }
 
         TextboxScriptSet scripts;
-        if (jsonRep.scriptsPath == null) {
+        if (scriptsPathRaw == null) {
             scripts = new TextboxScriptSet();
         } else {
-            Path scriptsPath = PathUtils.tryResolve(basePath, jsonRep.scriptsPath, "scripts definition",
+            Path scriptsPath = PathUtils.tryResolve(basePath, scriptsPathRaw, "scripts definition",
                     DefinitionLoadException::new);
-            try (BufferedReader reader = Files.newBufferedReader(scriptsPath)) {
-                scripts = GSON.fromJson(reader, TextboxScriptSet.class);
+            try (JsonReader reader = JsonReader.json5(scriptsPath)) {
+                scripts = TextboxScriptSet.Adapter.read(reader);
             } catch (Exception e) {
                 throw new DefinitionLoadException("Failed to read scripts definition from \"%s\""
                         .formatted(scriptsPath), e);
             }
         }
 
-        Path windowPath = PathUtils.tryResolve(basePath, jsonRep.windowPath, "Window image",
+        Path windowPath = PathUtils.tryResolve(basePath, windowPathRaw, "Window image",
                 DefinitionLoadException::new);
         BufferedImage windowImage;
         try (InputStream input = Files.newInputStream(windowPath)) {
@@ -113,7 +144,7 @@ public final class GameDefinition extends Definition {
                     .formatted(windowPath), e);
         }
 
-        WindowContext winCtx = new WindowContext(windowImage, jsonRep.windowTint);
+        WindowContext winCtx = new WindowContext(windowImage, windowTint);
         try {
             faces.loadAll(basePath);
         } catch (FaceLoadException e) {
@@ -125,8 +156,7 @@ public final class GameDefinition extends Definition {
             throw new DefinitionLoadException("Failed to load baseScripts", e);
         }
 
-        return new GameDefinition(jsonRep.id, jsonRep.name, jsonRep.description, jsonRep.credits, filePath, basePath,
-                winCtx, faces, scripts);
+        return new GameDefinition(id, name, description, credits, filePath, basePath, winCtx, faces, scripts);
     }
 
     @Override
@@ -201,16 +231,5 @@ public final class GameDefinition extends Definition {
 
     public List<ExtensionDefinition> extensions() {
         return extensionsU;
-    }
-
-    private static final class JsonRep {
-        public String id;
-        public String name;
-        public String[] description = DEFAULT_DESCRIPTION;
-        public String[] credits = DEFAULT_CREDITS;
-        public String windowPath;
-        public WindowTint windowTint;
-        public String facesPath;
-        public @Nullable String scriptsPath;
     }
 }
