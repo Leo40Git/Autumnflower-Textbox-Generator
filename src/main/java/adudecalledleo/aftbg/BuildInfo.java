@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import adudecalledleo.aftbg.json.JsonReadUtils;
+import adudecalledleo.aftbg.json.MalformedJsonException;
 import de.skuzzle.semantic.Version;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,6 +47,7 @@ public final class BuildInfo {
                     case "version" -> verStr = reader.nextString();
                     case "urls" -> readURLs(reader);
                     case "credits" -> credits = JsonReadUtils.readStringArray(reader);
+                    default -> throw new MalformedJsonException(reader, "Unknown field " + field);
                 }
             }
             reader.endObject();
@@ -104,6 +106,7 @@ public final class BuildInfo {
                 case "homepage" -> homepageUrl = JsonReadUtils.readNullableURL(reader);
                 case "issues" -> issuesUrl = JsonReadUtils.readNullableURL(reader);
                 case "source" -> sourceUrl = JsonReadUtils.readNullableURL(reader);
+                default -> throw new MalformedJsonException(reader, "Unknown field " + field);
             }
         }
         reader.endObject();
