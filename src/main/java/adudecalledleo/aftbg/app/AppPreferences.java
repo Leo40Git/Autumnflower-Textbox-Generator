@@ -59,7 +59,7 @@ public final class AppPreferences {
     public void write(JsonWriter writer) throws IOException {
         writer.name(Key.VERSION);
         writer.value(CURRENT_VERSION);
-        writer.value(Key.AUTO_UPDATE_CHECK_ENABLED);
+        writer.name(Key.AUTO_UPDATE_CHECK_ENABLED);
         writer.value(autoUpdateCheckEnabled);
         writer.name(Key.LAST_GAME_DEFINITION);
         JsonWriteUtils.writeNullable(writer, JsonWriteUtils::writePath, lastGameDefinition);
@@ -119,7 +119,7 @@ public final class AppPreferences {
             writer.beginObject();
             instance.write(writer);
             writer.endObject();
-        } catch (IOException e) {
+        } catch (Exception e) {
             Main.logger().error("Failed to flush preferences!", e);
         }
     }
