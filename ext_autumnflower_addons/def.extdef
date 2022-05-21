@@ -1,12 +1,12 @@
 {
-  "id": "autumnflower.addons",
-  "base_definition": "autumnflower",
-  "name": "Autumnflower Addons",
-  "description": [
+  id: "autumnflower.addons",
+  base_definition: "autumnflower",
+  name: "Autumnflower Addons",
+  description: [
     "Community-made addons for the Autumnflower game definition."
   ],
-  "credits": [
+  credits: [
     "Faces by ADudeCalledLeo/Leo40Git"
   ],
-  "faces_path": "faces.json"
+  faces_path: "faces.json"
 }
