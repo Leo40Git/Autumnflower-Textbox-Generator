@@ -1,10 +1,10 @@
 {
   "Make Sixty Textbox": {
     "path": "scripts/sixtybox.js",
-    "description": "Creates a textbox of Sixty noises."
+    "desc": "Creates a textbox of Sixty noises."
   },
   "Twelve's Tiles": {
     "path": "scripts/twelve_tiles.js",
-    "description": "Creates a textbox of Twelve using tiles to communicate."
+    "desc": "Creates a textbox of Twelve using tiles to communicate."
   }
 }

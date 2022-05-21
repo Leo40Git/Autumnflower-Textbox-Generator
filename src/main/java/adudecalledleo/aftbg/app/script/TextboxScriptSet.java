@@ -7,10 +7,10 @@ import java.util.Collections;
 import java.util.List;
 
 import adudecalledleo.aftbg.app.util.PathUtils;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
+
+import org.quiltmc.json5.JsonReader;
+import org.quiltmc.json5.JsonToken;
+import org.quiltmc.json5.JsonWriter;
 
 public final class TextboxScriptSet {
     private final List<TextboxScript> scripts;
@@ -39,16 +39,12 @@ public final class TextboxScriptSet {
         scripts.clear();
     }
 
-    public static final class Adapter extends TypeAdapter<TextboxScriptSet> {
+    public static final class Adapter {
         private static final String[] EMPTY_DESCRIPTION = new String[0];
 
-        @Override
-        public TextboxScriptSet read(JsonReader in) throws IOException {
-            if (in.peek() == JsonToken.NULL) {
-                in.nextNull();
-                return null;
-            }
+        private Adapter() { }
 
+        public static TextboxScriptSet read(JsonReader in) throws IOException {
             TextboxScriptSet set = new TextboxScriptSet();
             in.beginObject();
 
@@ -63,7 +59,7 @@ public final class TextboxScriptSet {
                         String name = in.nextName();
                         switch (name) {
                             case "path" -> path = in.nextString();
-                            case "description" -> {
+                            case "desc", "description" -> {
                                 if (in.peek() == JsonToken.BEGIN_ARRAY) {
                                     List<String> lines = new ArrayList<>();
                                     in.beginArray();
@@ -94,13 +90,7 @@ public final class TextboxScriptSet {
             return set;
         }
 
-        @Override
-        public void write(JsonWriter out, TextboxScriptSet value) throws IOException {
-            if (value == null) {
-                out.nullValue();
-                return;
-            }
-
+        public static void write(JsonWriter out, TextboxScriptSet value) throws IOException {
             out.beginObject();
             for (var script : value.scripts) {
                 out.name(script.getName());
@@ -112,7 +102,7 @@ public final class TextboxScriptSet {
                     out.beginObject();
                     out.name("path");
                     out.value(path);
-                    out.name("description");
+                    out.name("desc");
                     if (desc.length == 1) {
                         out.value(desc[0]);
                     } else {

@@ -5,25 +5,11 @@ import java.nio.file.Path;
 import adudecalledleo.aftbg.app.face.FaceCategory;
 import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.script.TextboxScriptSet;
-import adudecalledleo.aftbg.app.util.WindowTintAdapter;
-import adudecalledleo.aftbg.window.WindowTint;
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.jetbrains.annotations.Nullable;
 
 public sealed abstract class Definition permits GameDefinition, ExtensionDefinition {
     public static final String[] DEFAULT_DESCRIPTION = new String[] { "(no description)" };
     public static final String[] DEFAULT_CREDITS = new String[0];
-
-    public static final Gson GSON = new GsonBuilder()
-            .setLenient()
-            .setPrettyPrinting()
-            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-            .registerTypeAdapter(WindowTint.class, new WindowTintAdapter())
-            .registerTypeAdapter(FacePool.class, new FacePool.Adapter())
-            .registerTypeAdapter(TextboxScriptSet.class, new TextboxScriptSet.Adapter())
-            .create();
 
     protected final String id;
     protected final String name;
