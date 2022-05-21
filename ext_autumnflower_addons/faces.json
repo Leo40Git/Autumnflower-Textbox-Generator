@@ -31,7 +31,10 @@
       },
       {
         name: "Pog",
-        path: "faces/mercia/pog.png"
+        path: "faces/mercia/pog.png",
+        comments: [
+          "By TamLin"
+        ]
       }
     ]
   },
@@ -55,7 +58,10 @@
     entries: [
       {
         name: "Horny",
-        path: "faces/bailey/horny.png"
+        path: "faces/bailey/horny.png",
+        comments: [
+          "Creator unknown"
+        ]
       },
       {
         name: "Huh",
@@ -75,7 +81,10 @@
       },
       {
         name: "Beconed",
-        path: "faces/lif/cone.png"
+        path: "faces/lif/cone.png",
+        comments: [
+          "Creator unknown"
+        ]
       }
     ]
   },
@@ -103,7 +112,10 @@
     entries: [
       {
         name: "Tiled (Smug)",
-        path: "faces/twelve/tiled_smug.png"
+        path: "faces/twelve/tiled_smug.png",
+        comments: [
+          "By Kazerad"
+        ]
       }
     ]
   }
