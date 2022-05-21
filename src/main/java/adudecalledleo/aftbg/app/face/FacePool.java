@@ -2,13 +2,18 @@ package adudecalledleo.aftbg.app.face;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import adudecalledleo.aftbg.app.util.PathUtils;
+import adudecalledleo.aftbg.json.JsonReadUtils;
 import adudecalledleo.aftbg.json.MalformedJsonException;
+import adudecalledleo.aftbg.json.MissingFieldsException;
 
 import org.quiltmc.json5.JsonReader;
+import org.quiltmc.json5.JsonToken;
 import org.quiltmc.json5.JsonWriter;
 
 public final class FacePool {
@@ -88,6 +93,7 @@ public final class FacePool {
         private Adapter() { }
 
         public static FacePool read(JsonReader in) throws IOException {
+            List<String> missingFields = new ArrayList<>();
             FacePool pool = new FacePool();
             in.beginObject();
 
@@ -106,7 +112,7 @@ public final class FacePool {
                 while (in.hasNext()) {
                     switch (in.nextName()) {
                         case "icon" -> cat.setIconName(in.nextString());
-                        case "entries" -> readCategoryEntries(cat, in);
+                        case "entries" -> readCategoryEntries(cat, in, missingFields);
                     }
                 }
                 in.endObject();
@@ -116,14 +122,48 @@ public final class FacePool {
             return pool;
         }
 
-        private static void readCategoryEntries(FaceCategory cat, JsonReader in) throws IOException {
-            in.beginObject();
-            while (in.hasNext()) {
-                String name = in.nextName();
-                String imagePath = in.nextString();
-                cat.add(name, imagePath);
+        private static void readCategoryEntries(FaceCategory cat, JsonReader in, List<String> missingFields)
+                throws IOException {
+            if (in.peek() == JsonToken.BEGIN_OBJECT) {
+                in.beginObject();
+                while (in.hasNext()) {
+                    String name = in.nextName();
+                    String imagePath = in.nextString();
+                    cat.add(name, Face.DEFAULT_COMMENTS, imagePath);
+                }
+                in.endObject();
+            } else {
+                in.beginArray();
+                while (in.hasNext()) {
+                    in.beginObject();
+                    String name = null;
+                    String[] comments = Face.DEFAULT_COMMENTS;
+                    String imagePath = null;
+                    while (in.hasNext()) {
+                        String field = in.nextName();
+                        switch (field) {
+                            case "name" -> name = in.nextString();
+                            case "comments" -> comments = JsonReadUtils.readStringArray(in);
+                            case "path" -> imagePath = in.nextString();
+                            default -> in.skipValue();
+                        }
+                    }
+                    in.endObject();
+
+                    if (name == null) {
+                        missingFields.add("name");
+                    }
+                    if (imagePath == null) {
+                        missingFields.add("path");
+                    }
+                    if (!missingFields.isEmpty()) {
+                        throw new MissingFieldsException(in, "Face", missingFields);
+                    }
+
+                    cat.add(name, comments, imagePath);
+                }
+                in.endArray();
             }
-            in.endObject();
         }
 
         public static void write(JsonWriter out, FacePool value) throws IOException {
@@ -144,13 +184,26 @@ public final class FacePool {
                     out.value(cat.getIconName());
                 }
                 out.name("entries");
-                out.beginObject();
+                out.beginArray();
                 for (var entry : cat.getFaces().entrySet()) {
                     final Face face = entry.getValue();
-                    out.name(face.getName());
+                    out.beginObject();
+                    out.name("name");
+                    out.value(face.getName());
+                    out.name("path");
                     out.value(PathUtils.sanitize(face.getImagePath()));
+                    final String[] comments = face.getComments();
+                    if (comments.length > 0) {
+                        out.name("comments");
+                        out.beginArray();
+                        for (String comment : comments) {
+                            out.value(comment);
+                        }
+                        out.endArray();
+                    }
+                    out.endObject();
                 }
-                out.endObject();
+                out.endArray();
                 out.endObject();
             }
             out.endObject();

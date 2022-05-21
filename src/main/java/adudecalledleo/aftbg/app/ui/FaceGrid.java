@@ -119,12 +119,7 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
         int index = calculateFaceIndex(event);
         if (index < faceList.size()) {
             var face = faceList.get(index);
-            var src = face.getSource();
-            if (src == null) {
-                return "<html>%s<br>(src == null?!)</html>".formatted(face.getName());
-            } else {
-                return "<html>%s<br><b>From:</b> %s</html>".formatted(face.getName(), src.qualifiedName());
-            }
+            return "<html>" + face.toToolTipText(true) + "</html>";
         }
         return null;
     }

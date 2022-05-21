@@ -376,7 +376,9 @@ public final class FacePoolEditorDialog extends ModalDialog {
                                 "Add Face", JOptionPane.ERROR_MESSAGE);
                         break;
                     }
-                    var newFace = selectedCat.add(newName, PathUtils.sanitize(imagePath.toString()));
+                    // TODO add dialog for comments
+                    var newFace = selectedCat.add(newName, Face.DEFAULT_COMMENTS,
+                            PathUtils.sanitize(imagePath.toString()));
                     try {
                         newFace.loadImage(filePath.getParent());
                     } catch (FaceLoadException ex) {
@@ -498,7 +500,8 @@ public final class FacePoolEditorDialog extends ModalDialog {
                                     "Add Entire Folder", JOptionPane.ERROR_MESSAGE);
                             continue;
                         }
-                        var newFace = newCat.add(faceName, PathUtils.sanitize(imagePath.toString()));
+                        var newFace = newCat.add(faceName, Face.DEFAULT_COMMENTS,
+                                PathUtils.sanitize(imagePath.toString()));
                         try {
                             newFace.loadImage(filePath.getParent());
                         } catch (FaceLoadException ex) {

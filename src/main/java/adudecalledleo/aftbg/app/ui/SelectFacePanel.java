@@ -68,12 +68,7 @@ public final class SelectFacePanel extends JPanel implements GameDefinitionUpdat
             } else {
                 lblSeparator.setVisible(true);
                 lblName.setVisible(true);
-                var src = selectedFace.getSource();
-                if (src == null) {
-                    setToolTipText("<html>(src == null?!)<br>%s</html>".formatted(TOOLTIP));
-                } else {
-                    setToolTipText("<html><b>From:</b> %s<br>%s</html>".formatted(src.qualifiedName(), TOOLTIP));
-                }
+                setToolTipText("<html>%s<br>%s</html>".formatted(selectedFace.toToolTipText(true), TOOLTIP));
             }
             repaint();
 

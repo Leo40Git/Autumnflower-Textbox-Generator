@@ -29,16 +29,15 @@ public final class FaceListCellRenderer extends BaseListCellRenderer<Face> {
         setIcon(value.getIcon());
         if (showImagePath) {
             setText("<html>%s<br><i>%s</i></html>".formatted(value.getName(), value.getImagePath()));
-            setToolTipText(null);
-        } else {
-            setText(value.getName());
-
-            var src = value.getSource();
-            if (src == null) {
+            String tooltip = value.createCommentToolTip();
+            if (tooltip.isEmpty()) {
                 setToolTipText(null);
             } else {
-                setToolTipText("<html><b>From:</b> %s</html>".formatted(src.qualifiedName()));
+                setToolTipText("<html>" + tooltip + "</html>");
             }
+        } else {
+            setText(value.getName());
+            setToolTipText("<html>" + value.toToolTipText(false) + "</html>");
         }
         return this;
     }

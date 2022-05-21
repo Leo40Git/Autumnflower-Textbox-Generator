@@ -14,24 +14,28 @@ import adudecalledleo.aftbg.app.util.ColorUtils;
 import adudecalledleo.aftbg.app.util.PathUtils;
 
 public final class Face extends DefinitionObject {
-    public static final Face BLANK = new Face("Blank", "None", null,
-            new BufferedImage(144, 144, BufferedImage.TYPE_INT_ARGB));
+    public static final String[] DEFAULT_COMMENTS = new String[0];
+
+    public static final Face BLANK = new Face("Blank", "None", DEFAULT_COMMENTS,
+            null, new BufferedImage(144, 144, BufferedImage.TYPE_INT_ARGB));
 
     private final String name;
     private final String category;
+    private final String[] comments;
     private final String imagePath;
     private BufferedImage image;
     private ImageIcon icon;
 
-    private Face(String name, String category, String imagePath, BufferedImage image) {
+    private Face(String name, String category, String[] comments, String imagePath, BufferedImage image) {
         this.name = name;
         this.category = category;
+        this.comments = comments;
         this.imagePath = imagePath;
         this.image = image;
     }
 
-    public Face(String name, String category, String imagePath) {
-        this(name, category, imagePath, null);
+    public Face(String name, String category, String[] comments, String imagePath) {
+        this(name, category, comments, imagePath, null);
     }
 
     public boolean isBlank() {
@@ -44,6 +48,10 @@ public final class Face extends DefinitionObject {
 
     public String getCategory() {
         return category;
+    }
+
+    public String[] getComments() {
+        return comments.clone();
     }
 
     public String getPath() {
@@ -111,5 +119,36 @@ public final class Face extends DefinitionObject {
     @Override
     public String toString() {
         return getPath();
+    }
+
+    public String createCommentToolTip() {
+        return String.join("<br>", comments);
+    }
+
+    public String toToolTipText(boolean includeName) {
+        if (isBlank()) {
+            return category;
+        } else {
+            String commentBlock = createCommentToolTip();
+            String sourceBlock;
+            if (source == null) {
+                sourceBlock = "(source == null?!)";
+            } else {
+                sourceBlock = "<b>From:</b> " + source.qualifiedName();
+            }
+            if (includeName) {
+                if (commentBlock.isEmpty()) {
+                    return "%s<br>%s".formatted(name, sourceBlock);
+                } else {
+                    return "%s<br>%s<br>%s".formatted(name, commentBlock, sourceBlock);
+                }
+            } else {
+                if (commentBlock.isEmpty()) {
+                    return sourceBlock;
+                } else {
+                    return commentBlock + "<br>" + sourceBlock;
+                }
+            }
+        }
     }
 }
