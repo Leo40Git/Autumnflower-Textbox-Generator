@@ -2,30 +2,22 @@ package adudecalledleo.aftbg.app.util;
 
 import java.io.IOException;
 
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
 import de.skuzzle.semantic.Version;
 
-public final class VersionAdapter extends TypeAdapter<Version> {
-    @Override
-    public Version read(JsonReader in) throws IOException {
-        if (in.peek() == JsonToken.NULL) {
-            in.skipValue();
-            return null;
-        }
+import org.quiltmc.json5.JsonReader;
+import org.quiltmc.json5.JsonWriter;
 
-        return Version.parseVersion(in.nextString(), true);
+public final class VersionAdapter {
+    public static Version read(JsonReader in) throws IOException {
+        var s = in.nextString();
+        try {
+            return Version.parseVersion(in.nextString(), true);
+        } catch (Version.VersionFormatException e) {
+            throw new IOException("Invalid version \"%s\"%s".formatted(s, in.locationString()), e);
+        }
     }
 
-    @Override
-    public void write(JsonWriter out, Version value) throws IOException {
-        if (value == null) {
-            out.nullValue();
-            return;
-        }
-
+    public static void write(JsonWriter out, Version value) throws IOException {
         out.value(value.toString());
     }
 }

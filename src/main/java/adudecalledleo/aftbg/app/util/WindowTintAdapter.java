@@ -1,22 +1,21 @@
 package adudecalledleo.aftbg.app.util;
 
-import adudecalledleo.aftbg.window.WindowTint;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
-
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public final class WindowTintAdapter extends TypeAdapter<WindowTint> {
-    @Override
-    public WindowTint read(JsonReader in) throws IOException {
-        if (in.peek() == JsonToken.NULL) {
-            in.nextNull();
-            return null;
-        }
+import adudecalledleo.aftbg.window.WindowTint;
+
+import org.quiltmc.json5.JsonReader;
+import org.quiltmc.json5.JsonWriter;
+
+public final class WindowTintAdapter {
+    private WindowTintAdapter() { }
+
+    public static WindowTint read(JsonReader in) throws IOException {
         boolean gotRed = false, gotGreen = false, gotBlue = false;
         int red = 0, green = 0, blue = 0;
+
         in.beginObject();
         while (in.hasNext()) {
             switch (in.nextName()) {
@@ -36,23 +35,26 @@ public final class WindowTintAdapter extends TypeAdapter<WindowTint> {
             }
         }
         in.endObject();
+
+        List<String> missingFields = new ArrayList<>();
         if (!gotRed) {
-            throw new IllegalStateException("Window tint missing required value 'red'");
-        } else if (!gotGreen) {
-            throw new IllegalStateException("Window tint missing required value 'green'");
-        } else if (!gotBlue) {
-            throw new IllegalStateException("Window tint missing required value 'blue'");
-        } else {
-            return new WindowTint(red, green, blue);
+            missingFields.add("red");
         }
+        if (!gotGreen) {
+            missingFields.add("green");
+        }
+        if (!gotBlue) {
+            missingFields.add("blue");
+        }
+
+        if (!missingFields.isEmpty()) {
+            throw new IOException("Window tint is missing following fields: %s".formatted(String.join(", ", missingFields)));
+        }
+
+        return new WindowTint(red, green, blue);
     }
 
-    @Override
-    public void write(JsonWriter out, WindowTint value) throws IOException {
-        if (value == null) {
-            out.nullValue();
-            return;
-        }
+    public static void write(JsonWriter out, WindowTint value) throws IOException {
         out.beginObject();
         out.name("red");
         out.value(value.red());
