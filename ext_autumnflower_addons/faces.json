@@ -1,47 +1,110 @@
 {
   Mercia: {
-    entries: {
-      Awkward: "faces/mercia/awkward.png",
-      Blep: "faces/mercia/blep.png",
-      Confident: "faces/mercia/confident.png",
-      Huh: "faces/mercia/huh.png",
-      Crying: "faces/mercia/crying.png",
-      "Cookie'd": "faces/mercia/cookie.png",
-      "Biting Lip": "faces/mercia/lipbite.png",
-      Pog: "faces/mercia/pog.png"
-    }
+    entries: [
+      {
+        name: "Awkward",
+        path: "faces/mercia/awkward.png"
+      },
+      {
+        name: "Blep",
+        path: "faces/mercia/blep.png"
+      },
+      {
+        name: "Confident",
+        path: "faces/mercia/confident.png"
+      },
+      {
+        name: "Huh",
+        path: "faces/mercia/huh.png"
+      },
+      {
+        name: "Crying",
+        path: "faces/mercia/crying.png"
+      },
+      {
+        name: "Cookie'd",
+        path: "faces/mercia/cookie.png"
+      },
+      {
+        name: "Biting Lip",
+        path: "faces/mercia/lipbite.png"
+      },
+      {
+        name: "Pog",
+        path: "faces/mercia/pog.png"
+      }
+    ]
   },
   Kyron: {
-    entries: {
-      Huh: "faces/kyron/huh.png",
-      Glasses: "faces/kyron/glasses.png",
-      Smug: "faces/kyron/smug.png"
-    }
+    entries: [
+      {
+        name: "Huh",
+        path: "faces/kyron/huh.png"
+      },
+      {
+        name: "Glasses",
+        path: "faces/kyron/glasses.png"
+      },
+      {
+        name: "Smug",
+        path: "faces/kyron/smug.png"
+      }
+    ]
   },
   Bailey: {
-    entries: {
-      Horny: "faces/bailey/horny.png",
-      Huh: "faces/bailey/huh.png"
-    }
+    entries: [
+      {
+        name: "Horny",
+        path: "faces/bailey/horny.png"
+      },
+      {
+        name: "Huh",
+        path: "faces/bailey/huh.png"
+      }
+    ]
   },
   Lif: {
-    entries: {
-      Flirty: "faces/lif/flirty.png",
-      Shocked: "faces/lif/shocked.png",
-      Beconed: "faces/lif/cone.png"
-    }
+    entries: [
+      {
+        name: "Flirty",
+        path: "faces/lif/flirty.png"
+      },
+      {
+        name: "Shocked",
+        path: "faces/lif/shocked.png"
+      },
+      {
+        name: "Beconed",
+        path: "faces/lif/cone.png"
+      }
+    ]
   },
   Sixty: {
-    entries: {
-      Angry: "faces/sixty/angry.png",
-      Blushing: "faces/sixty/blush.png",
-      Sigh: "faces/sixty/sigh.png",
-      Aheago: "faces/sixty/aheago.png"
-    }
+    entries: [
+      {
+        name: "Angry",
+        path: "faces/sixty/angry.png"
+      },
+      {
+        name: "Blushing",
+        path: "faces/sixty/blush.png"
+      },
+      {
+        name: "Sigh",
+        path: "faces/sixty/sigh.png"
+      },
+      {
+        name: "Aheago",
+        path: "faces/sixty/aheago.png"
+      }
+    ]
   },
   Twelve: {
-    entries: {
-      "Tiled (Smug)": "faces/twelve/tiled_smug.png"
-    }
+    entries: [
+      {
+        name: "Tiled (Smug)",
+        path: "faces/twelve/tiled_smug.png"
+      }
+    ]
   }
 }

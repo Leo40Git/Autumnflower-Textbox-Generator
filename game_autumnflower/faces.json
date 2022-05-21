@@ -1,240 +1,804 @@
 {
   Mercia: {
     icon: "Neutral",
-    entries: {
-      Neutral: "faces/mercia/neutral.png",
-      Sad: "faces/mercia/sad.png",
-      Angry: "faces/mercia/angry.png",
-      "Mouth Full": "faces/mercia/mouth_full.png",
-      "Theater Disguise": "faces/mercia/kalith.png",
-      "X-Ray": "faces/mercia/xray.png",
-      "Darkened Eyes": "faces/mercia/gimmick.png",
-      Lizardspeak: "faces/mercia/lizardspeak.png",
-      Undyed: "faces/mercia/undyed.png",
-      "Child (Sad)": "faces/mercia/tiny_sad.png",
-      "Child (Happy)": "faces/mercia/tiny_happy.png",
-      "Child (Mallowed)": "faces/mercia/tiny_mallowed.png",
-      "Child (Crying)": "faces/mercia/tiny_crying.png"
-    }
+    entries: [
+      {
+        name: "Neutral",
+        path: "faces/mercia/neutral.png"
+      },
+      {
+        name: "Sad",
+        path: "faces/mercia/sad.png"
+      },
+      {
+        name: "Angry",
+        path: "faces/mercia/angry.png"
+      },
+      {
+        name: "Mouth Full",
+        path: "faces/mercia/mouth_full.png"
+      },
+      {
+        name: "Theater Disguise",
+        path: "faces/mercia/kalith.png"
+      },
+      {
+        name: "X-Ray",
+        path: "faces/mercia/xray.png"
+      },
+      {
+        name: "Darkened Eyes",
+        path: "faces/mercia/gimmick.png"
+      },
+      {
+        name: "Lizardspeak",
+        path: "faces/mercia/lizardspeak.png"
+      },
+      {
+        name: "Undyed",
+        path: "faces/mercia/undyed.png"
+      },
+      {
+        name: "Child (Sad)",
+        path: "faces/mercia/tiny_sad.png"
+      },
+      {
+        name: "Child (Happy)",
+        path: "faces/mercia/tiny_happy.png"
+      },
+      {
+        name: "Child (Mallowed)",
+        path: "faces/mercia/tiny_mallowed.png"
+      },
+      {
+        name: "Child (Crying)",
+        path: "faces/mercia/tiny_crying.png"
+      }
+    ]
   },
   Kyron: {
     icon: "Neutral",
-    entries: {
-      Neutral: "faces/kyron/neutral.png",
-      Sad: "faces/kyron/sad.png",
-      Angry: "faces/kyron/angry.png",
-      Happy: "faces/kyron/happy.png",
-      "Demonform (Sixty)": "faces/kyron/demonform_sixty.png",
-      "Demonform (Twelve)": "faces/kyron/demonform_twelve.png"
-    }
+    entries: [
+      {
+        name: "Neutral",
+        path: "faces/kyron/neutral.png"
+      },
+      {
+        name: "Sad",
+        path: "faces/kyron/sad.png"
+      },
+      {
+        name: "Angry",
+        path: "faces/kyron/angry.png"
+      },
+      {
+        name: "Happy",
+        path: "faces/kyron/happy.png"
+      },
+      {
+        name: "Demonform (Sixty)",
+        path: "faces/kyron/demonform_sixty.png"
+      },
+      {
+        name: "Demonform (Twelve)",
+        path: "faces/kyron/demonform_twelve.png"
+      }
+    ]
   },
   Bailey: {
     icon: "Default",
-    entries: {
-      Default: "faces/bailey/default.png",
-      Neutral: "faces/bailey/neutral.png",
-      Sad: "faces/bailey/sad.png",
-      Happy: "faces/bailey/happy.png",
-      Masked: "faces/bailey/masked.png",
-      "Demonform (Twelve)": "faces/bailey/demonform_twelve.png"
-    }
+    entries: [
+      {
+        name: "Default",
+        path: "faces/bailey/default.png"
+      },
+      {
+        name: "Neutral",
+        path: "faces/bailey/neutral.png"
+      },
+      {
+        name: "Sad",
+        path: "faces/bailey/sad.png"
+      },
+      {
+        name: "Happy",
+        path: "faces/bailey/happy.png"
+      },
+      {
+        name: "Masked",
+        path: "faces/bailey/masked.png"
+      },
+      {
+        name: "Demonform (Twelve)",
+        path: "faces/bailey/demonform_twelve.png"
+      }
+    ]
   },
   Lif: {
     icon: "Neutral",
-    entries: {
-      Neutral: "faces/lif/neutral.png",
-      Smile: "faces/lif/smile.png",
-      Scowl: "faces/lif/scowl.png",
-      Suffering: "faces/lif/suffering.png",
-      "Theater Dress": "faces/lif/theater_dress.png",
-      Underwear: "faces/lif/underwear.png",
-      Undisguised: "faces/lif/undisguised.png"
-    }
+    entries: [
+      {
+        name: "Neutral",
+        path: "faces/lif/neutral.png"
+      },
+      {
+        name: "Smile",
+        path: "faces/lif/smile.png"
+      },
+      {
+        name: "Scowl",
+        path: "faces/lif/scowl.png"
+      },
+      {
+        name: "Suffering",
+        path: "faces/lif/suffering.png"
+      },
+      {
+        name: "Theater Dress",
+        path: "faces/lif/theater_dress.png"
+      },
+      {
+        name: "Underwear",
+        path: "faces/lif/underwear.png"
+      },
+      {
+        name: "Undisguised",
+        path: "faces/lif/undisguised.png"
+      }
+    ]
   },
   Sixty: {
     icon: "Neutral",
-    entries: {
-      Neutral: "faces/sixty/neutral.png",
-      "Open Mouth": "faces/sixty/open_mouth.png",
-      Sad: "faces/sixty/sad.png",
-      Happy: "faces/sixty/happy.png",
-      "Danish'd": "faces/sixty/danish.png"
-    }
+    entries: [
+      {
+        name: "Neutral",
+        path: "faces/sixty/neutral.png"
+      },
+      {
+        name: "Open Mouth",
+        path: "faces/sixty/open_mouth.png"
+      },
+      {
+        name: "Sad",
+        path: "faces/sixty/sad.png"
+      },
+      {
+        name: "Happy",
+        path: "faces/sixty/happy.png"
+      },
+      {
+        name: "Danish'd",
+        path: "faces/sixty/danish.png"
+      }
+    ]
   },
   Twelve: {
     icon: "Neutral",
-    entries: {
-      Neutral: "faces/twelve/neutral.png",
-      Sad: "faces/twelve/sad.png",
-      Angry: "faces/twelve/angry.png",
-      Happy: "faces/twelve/happy.png",
-      "Very Happy": "faces/twelve/very_happy.png",
-      Blushing: "faces/twelve/blush.png",
-      Tiled: "faces/twelve/tiled.png",
-      Naked: "faces/twelve/naked.png",
-      Mirror: "faces/twelve/mirror.png"
-    }
+    entries: [
+      {
+        name: "Neutral",
+        path: "faces/twelve/neutral.png"
+      },
+      {
+        name: "Sad",
+        path: "faces/twelve/sad.png"
+      },
+      {
+        name: "Angry",
+        path: "faces/twelve/angry.png"
+      },
+      {
+        name: "Happy",
+        path: "faces/twelve/happy.png"
+      },
+      {
+        name: "Very Happy",
+        path: "faces/twelve/very_happy.png"
+      },
+      {
+        name: "Blushing",
+        path: "faces/twelve/blush.png"
+      },
+      {
+        name: "Tiled",
+        path: "faces/twelve/tiled.png"
+      },
+      {
+        name: "Naked",
+        path: "faces/twelve/naked.png"
+      },
+      {
+        name: "Mirror",
+        path: "faces/twelve/mirror.png"
+      }
+    ]
   },
   "Demon Hunters": {
     icon: "Sniper",
-    entries: {
-      Sniper: "faces/dhunters/sniper.png",
-      Striker: "faces/dhunters/striker.png",
-      Slayer: "faces/dhunters/slayer.png",
-      Knight: "faces/dhunters/knight.png",
-      Blackguard: "faces/dhunters/blackguard.png",
-      "Blackguard (No Helmet)": "faces/dhunters/blackguard_nohelm.png",
-      Doormaster: "faces/dhunters/doormaster.png",
-      Cornerhunter: "faces/dhunters/cornerhunter.png",
-      Tyra: "faces/dhunters/tyra.png",
-      Revna: "faces/dhunters/revna.png",
-      "Revna (Talking)": "faces/dhunters/revna_squawk.png",
-      "Revna (Nervous)": "faces/dhunters/revna_ohdear.png",
-      "Revna (Eating)": "faces/dhunters/revna_nom.png",
-      "Scry Wolf": "faces/dhunters/scry_wolf.png",
-      Blister: "faces/dhunters/blister.png",
-      "Master Scryer": "faces/dhunters/master_scryer.png",
-      Silencer: "faces/dhunters/rk_silencer.png",
-      Necromancer: "faces/dhunters/rk_necromancer.png",
-      Embla: "faces/dhunters/rk_embla.png",
-      "Embla (Wet)": "faces/dhunters/rk_embla_wet.png",
-      "Embla (Demonform)": "faces/dhunters/rk_embla_demon.png",
-      Arbalist: "faces/dhunters/arbalist.png",
-      "Unnamed Scryer": "faces/dhunters/scryer_cronch.png",
-      Annikka: "faces/dhunters/annikka.png",
-      "Annikka (Smiling)": "faces/dhunters/annikka_smile.png",
-      "Annikka (Talking)": "faces/dhunters/annikka_squawk.png"
-    }
+    entries: [
+      {
+        name: "Sniper",
+        path: "faces/dhunters/sniper.png"
+      },
+      {
+        name: "Striker",
+        path: "faces/dhunters/striker.png"
+      },
+      {
+        name: "Slayer",
+        path: "faces/dhunters/slayer.png"
+      },
+      {
+        name: "Knight",
+        path: "faces/dhunters/knight.png"
+      },
+      {
+        name: "Blackguard",
+        path: "faces/dhunters/blackguard.png"
+      },
+      {
+        name: "Blackguard (No Helmet)",
+        path: "faces/dhunters/blackguard_nohelm.png"
+      },
+      {
+        name: "Doormaster",
+        path: "faces/dhunters/doormaster.png"
+      },
+      {
+        name: "Cornerhunter",
+        path: "faces/dhunters/cornerhunter.png"
+      },
+      {
+        name: "Tyra",
+        path: "faces/dhunters/tyra.png"
+      },
+      {
+        name: "Revna",
+        path: "faces/dhunters/revna.png"
+      },
+      {
+        name: "Revna (Talking)",
+        path: "faces/dhunters/revna_squawk.png"
+      },
+      {
+        name: "Revna (Nervous)",
+        path: "faces/dhunters/revna_ohdear.png"
+      },
+      {
+        name: "Revna (Eating)",
+        path: "faces/dhunters/revna_nom.png"
+      },
+      {
+        name: "Scry Wolf",
+        path: "faces/dhunters/scry_wolf.png"
+      },
+      {
+        name: "Blister",
+        path: "faces/dhunters/blister.png"
+      },
+      {
+        name: "Master Scryer",
+        path: "faces/dhunters/master_scryer.png"
+      },
+      {
+        name: "Silencer",
+        path: "faces/dhunters/rk_silencer.png"
+      },
+      {
+        name: "Necromancer",
+        path: "faces/dhunters/rk_necromancer.png"
+      },
+      {
+        name: "Embla",
+        path: "faces/dhunters/rk_embla.png"
+      },
+      {
+        name: "Embla (Wet)",
+        path: "faces/dhunters/rk_embla_wet.png"
+      },
+      {
+        name: "Embla (Demonform)",
+        path: "faces/dhunters/rk_embla_demon.png"
+      },
+      {
+        name: "Arbalist",
+        path: "faces/dhunters/arbalist.png"
+      },
+      {
+        name: "Unnamed Scryer",
+        path: "faces/dhunters/scryer_cronch.png"
+      },
+      {
+        name: "Annikka",
+        path: "faces/dhunters/annikka.png"
+      },
+      {
+        name: "Annikka (Smiling)",
+        path: "faces/dhunters/annikka_smile.png"
+      },
+      {
+        name: "Annikka (Talking)",
+        path: "faces/dhunters/annikka_squawk.png"
+      }
+    ]
   },
   Lizards: {
     icon: "Sirtu",
-    entries: {
-      Sirtu: "faces/lizards/sirtu.png",
-      "Sirtu (Dressed Up)": "faces/lizards/sirtu_date.png",
-      Alzusi: "faces/lizards/alzusi.png",
-      "Alzusi (Naked)": "faces/lizards/alzusi_naked.png",
-      Bhisk: "faces/lizards/bhisk.png",
-      Dhex: "faces/lizards/dhex.png",
-      "Dhex (Naked)": "faces/lizards/dhex_naked.png",
-      Ataci: "faces/lizards/ataci.png",
-      Diata: "faces/lizards/diata.png",
-      Izdeh: "faces/lizards/izdeh.png",
-      Kroti: "faces/lizards/kroti.png",
-      Zochoss: "faces/lizards/zochoss.png",
-      Delzazi: "faces/lizards/delzazi.png",
-      "Delzazi (Oh My!)": "faces/lizards/delzazi_ohmy.png",
-      Aekex: "faces/lizards/aekex.png",
-      "Aekex (Declowned)": "faces/lizards/aekex_declowned.png",
-      "Khesk (Hidden)": "faces/lizards/khesk_hidden.png",
-      Khesk: "faces/lizards/khesk.png",
-      "Khesk (Naked)": "faces/lizards/khesk_naked.png",
-      Aoxi: "faces/lizards/aoxi.png"
-    }
+    entries: [
+      {
+        name: "Sirtu",
+        path: "faces/lizards/sirtu.png"
+      },
+      {
+        name: "Sirtu (Dressed Up)",
+        path: "faces/lizards/sirtu_date.png"
+      },
+      {
+        name: "Alzusi",
+        path: "faces/lizards/alzusi.png"
+      },
+      {
+        name: "Alzusi (Naked)",
+        path: "faces/lizards/alzusi_naked.png"
+      },
+      {
+        name: "Bhisk",
+        path: "faces/lizards/bhisk.png"
+      },
+      {
+        name: "Dhex",
+        path: "faces/lizards/dhex.png"
+      },
+      {
+        name: "Dhex (Naked)",
+        path: "faces/lizards/dhex_naked.png"
+      },
+      {
+        name: "Ataci",
+        path: "faces/lizards/ataci.png"
+      },
+      {
+        name: "Diata",
+        path: "faces/lizards/diata.png"
+      },
+      {
+        name: "Izdeh",
+        path: "faces/lizards/izdeh.png"
+      },
+      {
+        name: "Kroti",
+        path: "faces/lizards/kroti.png"
+      },
+      {
+        name: "Zochoss",
+        path: "faces/lizards/zochoss.png"
+      },
+      {
+        name: "Delzazi",
+        path: "faces/lizards/delzazi.png"
+      },
+      {
+        name: "Delzazi (Oh My!)",
+        path: "faces/lizards/delzazi_ohmy.png"
+      },
+      {
+        name: "Aekex",
+        path: "faces/lizards/aekex.png"
+      },
+      {
+        name: "Aekex (Declowned)",
+        path: "faces/lizards/aekex_declowned.png"
+      },
+      {
+        name: "Khesk (Hidden)",
+        path: "faces/lizards/khesk_hidden.png"
+      },
+      {
+        name: "Khesk",
+        path: "faces/lizards/khesk.png"
+      },
+      {
+        name: "Khesk (Naked)",
+        path: "faces/lizards/khesk_naked.png"
+      },
+      {
+        name: "Aoxi",
+        path: "faces/lizards/aoxi.png"
+      }
+    ]
   },
   Other: {
     icon: "Ash",
-    entries: {
-      Ash: "faces/other/ash.png",
-      Yew: "faces/other/yew.png",
-      Aisling: "faces/other/aisling.png",
-      Anna: "faces/other/anna.png",
-      Arcadius: "faces/other/arcadius.png",
-      "Arcadius (as Bramble)": "faces/other/arcadius_bramble.png",
-      "Arcadius (as Dan)": "faces/other/arcadius_dan.png",
-      "Arcadius (as Heats)": "faces/other/arcadius_heats.png",
-      "Arcadius (as Guard)": "faces/other/arcadius_guard.png",
-      "Arcadius (as Soupmaster)": "faces/other/arcadius_soupmaster.png",
-      "Arcadius (as Fencer)": "faces/other/arcadius_fencer.png",
-      Artemis: "faces/other/artemis.png",
-      Astra: "faces/other/astra.png",
-      Bagel: "faces/other/bagel.png",
-      "Bagel (Nervous)": "faces/other/bagel_ohshit.png",
-      Carmine: "faces/other/carmine.png",
-      Cedar: "faces/other/cedar.png",
-      Century: "faces/other/century.png",
-      "Century (Soulburnt)": "faces/other/century_angel.png",
-      Cerulean: "faces/other/cerulean.png",
-      Cherry: "faces/other/cherry.png",
-      Chisels: "faces/other/chisels.png",
-      Chops: "faces/other/chops.png",
-      Bud: "faces/other/bud.png",
-      Cleopatra: "faces/other/cleopatra.png",
-      Cloud: "faces/other/cloud.png",
-      Creme: "faces/other/creme.png",
-      Dagmar: "faces/other/dagmar.png",
-      "Dagmar (Smiling)": "faces/other/dagmar_smile.png",
-      "Dagmar (Talking)": "faces/other/dagmar_squawk.png",
-      Dalton: "faces/other/dalton.png",
-      Dawson: "faces/other/dawson.png",
-      Fusili: "faces/other/fusili.png",
-      Argha: "faces/other/argha.png",
-      Amethyst: "faces/other/amethyst.png",
-      Esja: "faces/other/esja.png",
-      Drowsy: "faces/other/drowsy.png",
-      Fir: "faces/other/fir.png",
-      "King Gideon": "faces/other/gideon.png",
-      Goldenrod: "faces/other/goldenrod.png",
-      Glasshoof: "faces/other/glasshoof.png",
-      Janes: "faces/other/janes.png",
-      Jasper: "faces/other/jasper.png",
-      Khaki: "faces/other/khaki.png",
-      Logan: "faces/other/logan.png",
-      Madeye: "faces/other/madeye.png",
-      Mahler: "faces/other/mahler.png",
-      "Mahler (Smiling)": "faces/other/mahler_smile.png",
-      "Mahler (X-Ray)": "faces/other/mahler_xray.png",
-      Mathew: "faces/other/mathew.png",
-      Midnight: "faces/other/midnight.png",
-      Moss: "faces/other/moss.png",
-      "Moss (Revealed)": "faces/other/moss_revealed.png",
-      Nine: "faces/other/nine.png",
-      Nova: "faces/other/nova.png",
-      Ochre: "faces/other/ochre.png",
-      Ortek: "faces/other/ortek.png",
-      "Patton/Cinnamon": "faces/other/patton_cinnamon.png",
-      Pearly: "faces/other/pearly.png",
-      Peppermint: "faces/other/peppermint.png",
-      "Pepper/Cerise/Raine": "faces/other/pepper_cerise_raine.png",
-      "Cerise (Lizardspeak)": "faces/other/cerise_lizardspeak.png",
-      Petal: "faces/other/petal.png",
-      Pinecone: "faces/other/pinecone.png",
-      Pumpkin: "faces/other/pumpkin.png",
-      Renard: "faces/other/renard.png",
-      "Reynard/Russet": "faces/other/reynard_russet.png",
-      "Alder/Copper": "faces/other/alder_copper.png",
-      Walnut: "faces/other/walnut.png",
-      Riptide: "faces/other/riptide.png",
-      Rose: "faces/other/rose.png",
-      Russel: "faces/other/russel.png",
-      Scout: "faces/other/scout.png",
-      "Sir Bearington": "faces/other/sir_bearington.png",
-      Selena: "faces/other/selena.png",
-      Serenity: "faces/other/serenity.png",
-      Sierra: "faces/other/sierra.png",
-      "Sierra (Past)": "faces/other/sierra_past.png",
-      Snow: "faces/other/snow.png",
-      Spice: "faces/other/spice.png",
-      Sprigs: "faces/other/sprigs.png",
-      Swift: "faces/other/swift.png",
-      Tinder: "faces/other/tinder.png",
-      Truffle: "faces/other/truffle.png",
-      Vanilla: "faces/other/vanilla.png",
-      Vurk: "faces/other/vurk.png",
-      Wellington: "faces/other/wellington.png",
-      Wescott: "faces/other/wescott.png",
-      Zorro: "faces/other/zorro.png",
-      "Lava Demon": "faces/other/lava_demon.png",
-      "Voice Demon": "faces/other/voice_demon.png",
-      "One-Wing": "faces/other/one_wing.png"
-    }
+    entries: [
+      {
+        name: "Ash",
+        path: "faces/other/ash.png"
+      },
+      {
+        name: "Yew",
+        path: "faces/other/yew.png"
+      },
+      {
+        name: "Aisling",
+        path: "faces/other/aisling.png"
+      },
+      {
+        name: "Anna",
+        path: "faces/other/anna.png"
+      },
+      {
+        name: "Arcadius",
+        path: "faces/other/arcadius.png"
+      },
+      {
+        name: "Arcadius (as Bramble)",
+        path: "faces/other/arcadius_bramble.png"
+      },
+      {
+        name: "Arcadius (as Dan)",
+        path: "faces/other/arcadius_dan.png"
+      },
+      {
+        name: "Arcadius (as Heats)",
+        path: "faces/other/arcadius_heats.png"
+      },
+      {
+        name: "Arcadius (as Guard)",
+        path: "faces/other/arcadius_guard.png"
+      },
+      {
+        name: "Arcadius (as Soupmaster)",
+        path: "faces/other/arcadius_soupmaster.png"
+      },
+      {
+        name: "Arcadius (as Fencer)",
+        path: "faces/other/arcadius_fencer.png"
+      },
+      {
+        name: "Artemis",
+        path: "faces/other/artemis.png"
+      },
+      {
+        name: "Astra",
+        path: "faces/other/astra.png"
+      },
+      {
+        name: "Bagel",
+        path: "faces/other/bagel.png"
+      },
+      {
+        name: "Bagel (Nervous)",
+        path: "faces/other/bagel_ohshit.png"
+      },
+      {
+        name: "Carmine",
+        path: "faces/other/carmine.png"
+      },
+      {
+        name: "Cedar",
+        path: "faces/other/cedar.png"
+      },
+      {
+        name: "Century",
+        path: "faces/other/century.png"
+      },
+      {
+        name: "Century (Soulburnt)",
+        path: "faces/other/century_angel.png"
+      },
+      {
+        name: "Cerulean",
+        path: "faces/other/cerulean.png"
+      },
+      {
+        name: "Cherry",
+        path: "faces/other/cherry.png"
+      },
+      {
+        name: "Chisels",
+        path: "faces/other/chisels.png"
+      },
+      {
+        name: "Chops",
+        path: "faces/other/chops.png"
+      },
+      {
+        name: "Bud",
+        path: "faces/other/bud.png"
+      },
+      {
+        name: "Cleopatra",
+        path: "faces/other/cleopatra.png"
+      },
+      {
+        name: "Cloud",
+        path: "faces/other/cloud.png"
+      },
+      {
+        name: "Creme",
+        path: "faces/other/creme.png"
+      },
+      {
+        name: "Dagmar",
+        path: "faces/other/dagmar.png"
+      },
+      {
+        name: "Dagmar (Smiling)",
+        path: "faces/other/dagmar_smile.png"
+      },
+      {
+        name: "Dagmar (Talking)",
+        path: "faces/other/dagmar_squawk.png"
+      },
+      {
+        name: "Dalton",
+        path: "faces/other/dalton.png"
+      },
+      {
+        name: "Dawson",
+        path: "faces/other/dawson.png"
+      },
+      {
+        name: "Fusili",
+        path: "faces/other/fusili.png"
+      },
+      {
+        name: "Argha",
+        path: "faces/other/argha.png"
+      },
+      {
+        name: "Amethyst",
+        path: "faces/other/amethyst.png"
+      },
+      {
+        name: "Esja",
+        path: "faces/other/esja.png"
+      },
+      {
+        name: "Drowsy",
+        path: "faces/other/drowsy.png"
+      },
+      {
+        name: "Fir",
+        path: "faces/other/fir.png"
+      },
+      {
+        name: "King Gideon",
+        path: "faces/other/gideon.png"
+      },
+      {
+        name: "Goldenrod",
+        path: "faces/other/goldenrod.png"
+      },
+      {
+        name: "Glasshoof",
+        path: "faces/other/glasshoof.png"
+      },
+      {
+        name: "Janes",
+        path: "faces/other/janes.png"
+      },
+      {
+        name: "Jasper",
+        path: "faces/other/jasper.png"
+      },
+      {
+        name: "Khaki",
+        path: "faces/other/khaki.png"
+      },
+      {
+        name: "Logan",
+        path: "faces/other/logan.png"
+      },
+      {
+        name: "Madeye",
+        path: "faces/other/madeye.png"
+      },
+      {
+        name: "Mahler",
+        path: "faces/other/mahler.png"
+      },
+      {
+        name: "Mahler (Smiling)",
+        path: "faces/other/mahler_smile.png"
+      },
+      {
+        name: "Mahler (X-Ray)",
+        path: "faces/other/mahler_xray.png"
+      },
+      {
+        name: "Mathew",
+        path: "faces/other/mathew.png"
+      },
+      {
+        name: "Midnight",
+        path: "faces/other/midnight.png"
+      },
+      {
+        name: "Moss",
+        path: "faces/other/moss.png"
+      },
+      {
+        name: "Moss (Revealed)",
+        path: "faces/other/moss_revealed.png"
+      },
+      {
+        name: "Nine",
+        path: "faces/other/nine.png"
+      },
+      {
+        name: "Nova",
+        path: "faces/other/nova.png"
+      },
+      {
+        name: "Ochre",
+        path: "faces/other/ochre.png"
+      },
+      {
+        name: "Ortek",
+        path: "faces/other/ortek.png"
+      },
+      {
+        name: "Patton/Cinnamon",
+        path: "faces/other/patton_cinnamon.png"
+      },
+      {
+        name: "Pearly",
+        path: "faces/other/pearly.png"
+      },
+      {
+        name: "Peppermint",
+        path: "faces/other/peppermint.png"
+      },
+      {
+        name: "Pepper/Cerise/Raine",
+        path: "faces/other/pepper_cerise_raine.png"
+      },
+      {
+        name: "Cerise (Lizardspeak)",
+        path: "faces/other/cerise_lizardspeak.png"
+      },
+      {
+        name: "Petal",
+        path: "faces/other/petal.png"
+      },
+      {
+        name: "Pinecone",
+        path: "faces/other/pinecone.png"
+      },
+      {
+        name: "Pumpkin",
+        path: "faces/other/pumpkin.png"
+      },
+      {
+        name: "Renard",
+        path: "faces/other/renard.png"
+      },
+      {
+        name: "Reynard/Russet",
+        path: "faces/other/reynard_russet.png"
+      },
+      {
+        name: "Alder/Copper",
+        path: "faces/other/alder_copper.png"
+      },
+      {
+        name: "Walnut",
+        path: "faces/other/walnut.png"
+      },
+      {
+        name: "Riptide",
+        path: "faces/other/riptide.png"
+      },
+      {
+        name: "Rose",
+        path: "faces/other/rose.png"
+      },
+      {
+        name: "Russel",
+        path: "faces/other/russel.png"
+      },
+      {
+        name: "Scout",
+        path: "faces/other/scout.png"
+      },
+      {
+        name: "Sir Bearington",
+        path: "faces/other/sir_bearington.png"
+      },
+      {
+        name: "Selena",
+        path: "faces/other/selena.png"
+      },
+      {
+        name: "Serenity",
+        path: "faces/other/serenity.png"
+      },
+      {
+        name: "Sierra",
+        path: "faces/other/sierra.png"
+      },
+      {
+        name: "Sierra (Past)",
+        path: "faces/other/sierra_past.png"
+      },
+      {
+        name: "Snow",
+        path: "faces/other/snow.png"
+      },
+      {
+        name: "Spice",
+        path: "faces/other/spice.png"
+      },
+      {
+        name: "Sprigs",
+        path: "faces/other/sprigs.png"
+      },
+      {
+        name: "Swift",
+        path: "faces/other/swift.png"
+      },
+      {
+        name: "Tinder",
+        path: "faces/other/tinder.png"
+      },
+      {
+        name: "Truffle",
+        path: "faces/other/truffle.png"
+      },
+      {
+        name: "Vanilla",
+        path: "faces/other/vanilla.png"
+      },
+      {
+        name: "Vurk",
+        path: "faces/other/vurk.png"
+      },
+      {
+        name: "Wellington",
+        path: "faces/other/wellington.png"
+      },
+      {
+        name: "Wescott",
+        path: "faces/other/wescott.png"
+      },
+      {
+        name: "Zorro",
+        path: "faces/other/zorro.png"
+      },
+      {
+        name: "Lava Demon",
+        path: "faces/other/lava_demon.png"
+      },
+      {
+        name: "Voice Demon",
+        path: "faces/other/voice_demon.png"
+      },
+      {
+        name: "One-Wing",
+        path: "faces/other/one_wing.png"
+      }
+    ]
   },
   Unknown: {
     icon: "Aristocrat Fox",
-    entries: {
-      "Aristocrat Fox": "faces/unknown/aristocrat_fox.png",
-      "Lizard (Brown)": "faces/unknown/lizard_brown.png",
-      "Lizard (Green)": "faces/unknown/lizard_green.png",
-      "Shirtless Guy": "faces/unknown/shirtless_guy.png"
-    }
+    entries: [
+      {
+        name: "Aristocrat Fox",
+        path: "faces/unknown/aristocrat_fox.png"
+      },
+      {
+        name: "Lizard (Brown)",
+        path: "faces/unknown/lizard_brown.png"
+      },
+      {
+        name: "Lizard (Green)",
+        path: "faces/unknown/lizard_green.png"
+      },
+      {
+        name: "Shirtless Guy",
+        path: "faces/unknown/shirtless_guy.png"
+      }
+    ]
   }
 }
