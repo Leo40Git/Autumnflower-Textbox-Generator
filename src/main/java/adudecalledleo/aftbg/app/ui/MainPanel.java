@@ -6,7 +6,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -58,7 +57,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
     private final List<Textbox> textboxes;
     private int currentTextbox;
     private final TextboxListAdapter projectSerializer;
-    private File currentProject;
+    private Path currentProject;
 
     private final JList<Textbox> textboxSelector;
     private final SelectFacePanel faceSelection;
@@ -346,10 +345,9 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                     throw new IOException("Could not delete file \"" + sel + "\"!");
                 }
             }
-            currentProject = sel;
+            currentProject = sel.toPath().toAbsolutePath();
         }
-        try (FileWriter fw = new FileWriter(currentProject);
-             JsonWriter out = JsonWriter.json(fw)) {
+        try (JsonWriter out = JsonWriter.json(currentProject)) {
             projectSerializer.write(textboxes, out);
         }
         return true;
@@ -538,7 +536,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
                         break;
                     }
 
-                    currentProject = src;
+                    currentProject = src.toPath().toAbsolutePath();
                     currentTextbox = 0;
                     textboxes.clear();
                     textboxes.addAll(newTextboxes);
