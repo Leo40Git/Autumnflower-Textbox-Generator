@@ -7,11 +7,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import adudecalledleo.aftbg.app.util.PathUtils;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
+import adudecalledleo.aftbg.json.MalformedJsonException;
 import org.jetbrains.annotations.ApiStatus;
+
+import org.quiltmc.json5.JsonReader;
+import org.quiltmc.json5.JsonWriter;
 
 public final class FacePool {
     private final Map<String, FaceCategory> categories, categoriesU;
@@ -90,24 +90,22 @@ public final class FacePool {
         categories.put(FaceCategory.NONE.getName(), FaceCategory.NONE);
     }
 
-    public static final class Adapter extends TypeAdapter<FacePool> {
-        @Override
-        public FacePool read(JsonReader in) throws IOException {
-            if (in.peek() == JsonToken.NULL) {
-                in.nextNull();
-                return null;
-            }
+    public static final class Adapter {
+        private Adapter() { }
 
+        public static FacePool read(JsonReader in) throws IOException {
             FacePool pool = new FacePool();
             in.beginObject();
 
             while (in.hasNext()) {
                 String name = in.nextName();
                 if (FaceCategory.NONE.getName().equals(name)) {
-                    throw new IllegalStateException("Category name \"" + FaceCategory.NONE.getName() + "\" is reserved!");
+                    throw new MalformedJsonException(in, "Tried to use reserve category name \"%s\""
+                            .formatted(FaceCategory.NONE.getName()));
                 }
                 if (name.contains("/")) {
-                    throw new IllegalStateException("Category name cannot contain slashes (/)!");
+                    throw new MalformedJsonException(in, "Tried to use invalid category name \"%s\" (contains slashes)"
+                            .formatted(name));
                 }
                 FaceCategory cat = pool.categories.computeIfAbsent(name, FaceCategory::new);
                 in.beginObject();
@@ -124,7 +122,7 @@ public final class FacePool {
             return pool;
         }
 
-        private void readCategoryEntries(FaceCategory cat, JsonReader in) throws IOException {
+        private static void readCategoryEntries(FaceCategory cat, JsonReader in) throws IOException {
             in.beginObject();
             while (in.hasNext()) {
                 String name = in.nextName();
@@ -134,8 +132,7 @@ public final class FacePool {
             in.endObject();
         }
 
-        @Override
-        public void write(JsonWriter out, FacePool value) throws IOException {
+        public static void write(JsonWriter out, FacePool value) throws IOException {
             if (value == null) {
                 out.nullValue();
                 return;

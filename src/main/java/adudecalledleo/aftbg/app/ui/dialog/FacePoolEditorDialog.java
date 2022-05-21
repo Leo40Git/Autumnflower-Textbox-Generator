@@ -2,10 +2,7 @@ package adudecalledleo.aftbg.app.ui.dialog;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -19,12 +16,14 @@ import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.face.FaceCategory;
 import adudecalledleo.aftbg.app.face.FaceLoadException;
 import adudecalledleo.aftbg.app.face.FacePool;
-import adudecalledleo.aftbg.app.game.Definition;
 import adudecalledleo.aftbg.app.ui.render.FaceCategoryListCellRenderer;
 import adudecalledleo.aftbg.app.ui.render.FaceListCellRenderer;
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
 import adudecalledleo.aftbg.app.ui.util.ListReorderTransferHandler;
 import adudecalledleo.aftbg.app.util.PathUtils;
+
+import org.quiltmc.json5.JsonReader;
+import org.quiltmc.json5.JsonWriter;
 
 import static adudecalledleo.aftbg.Main.logger;
 
@@ -84,8 +83,8 @@ public final class FacePoolEditorDialog extends ModalDialog {
             }
         }
 
-        try (BufferedWriter writer = Files.newBufferedWriter(filePath)) {
-            Definition.GSON.toJson(pool, writer);
+        try (JsonWriter writer = JsonWriter.json5(filePath)) {
+            FacePool.Adapter.write(writer, pool);
         } catch (Exception e) {
             logger().error("Failed to write face pool", e);
             DialogUtils.showErrorDialog(this,
@@ -149,8 +148,8 @@ public final class FacePoolEditorDialog extends ModalDialog {
                     }
                     Path newFilePath = file.toPath();
                     FacePool newPool;
-                    try (BufferedReader reader = Files.newBufferedReader(newFilePath)) {
-                        newPool = Definition.GSON.fromJson(reader, FacePool.class);
+                    try (JsonReader reader = JsonReader.json5(newFilePath)) {
+                        newPool = FacePool.Adapter.read(reader);
                         newPool.loadAll(newFilePath.getParent());
                     } catch (Exception e) {
                         logger().error("Failed to read face pool for editing", e);

@@ -1,46 +1,46 @@
 {
-  "Mercia": {
-    "entries": {
-      "Awkward": "faces/mercia/awkward.png",
-      "Blep": "faces/mercia/blep.png",
-      "Confident": "faces/mercia/confident.png",
-      "Huh": "faces/mercia/huh.png",
-      "Crying": "faces/mercia/crying.png",
+  Mercia: {
+    entries: {
+      Awkward: "faces/mercia/awkward.png",
+      Blep: "faces/mercia/blep.png",
+      Confident: "faces/mercia/confident.png",
+      Huh: "faces/mercia/huh.png",
+      Crying: "faces/mercia/crying.png",
       "Cookie'd": "faces/mercia/cookie.png",
       "Biting Lip": "faces/mercia/lipbite.png",
-      "Pog": "faces/mercia/pog.png"
+      Pog: "faces/mercia/pog.png"
     }
   },
-  "Kyron": {
-    "entries": {
-      "Huh": "faces/kyron/huh.png",
-      "Glasses": "faces/kyron/glasses.png",
-      "Smug": "faces/kyron/smug.png"
+  Kyron: {
+    entries: {
+      Huh: "faces/kyron/huh.png",
+      Glasses: "faces/kyron/glasses.png",
+      Smug: "faces/kyron/smug.png"
     }
   },
-  "Bailey": {
-    "entries": {
-      "Horny": "faces/bailey/horny.png",
-      "Huh": "faces/bailey/huh.png"
+  Bailey: {
+    entries: {
+      Horny: "faces/bailey/horny.png",
+      Huh: "faces/bailey/huh.png"
     }
   },
-  "Lif": {
-    "entries": {
-      "Flirty": "faces/lif/flirty.png",
-      "Shocked": "faces/lif/shocked.png",
-      "Beconed": "faces/lif/cone.png"
+  Lif: {
+    entries: {
+      Flirty: "faces/lif/flirty.png",
+      Shocked: "faces/lif/shocked.png",
+      Beconed: "faces/lif/cone.png"
     }
   },
-  "Sixty": {
-    "entries": {
-      "Angry": "faces/sixty/angry.png",
-      "Blushing": "faces/sixty/blush.png",
-      "Sigh": "faces/sixty/sigh.png",
-      "Aheago": "faces/sixty/aheago.png"
+  Sixty: {
+    entries: {
+      Angry: "faces/sixty/angry.png",
+      Blushing: "faces/sixty/blush.png",
+      Sigh: "faces/sixty/sigh.png",
+      Aheago: "faces/sixty/aheago.png"
     }
   },
-  "Twelve": {
-    "entries": {
+  Twelve: {
+    entries: {
       "Tiled (Smug)": "faces/twelve/tiled_smug.png"
     }
   }
