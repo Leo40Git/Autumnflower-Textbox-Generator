@@ -239,8 +239,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             case AC_TEXTBOX_CLONE -> {
                 flushChanges();
                 Textbox box = new Textbox(textboxes.get(currentTextbox));
-                textboxes.add(currentTextbox, box);
-                currentTextbox = textboxes.size() - 1;
+                textboxes.add(++currentTextbox, box);
                 updateTextboxEditors();
                 updateTextboxSelectorModel();
             }
