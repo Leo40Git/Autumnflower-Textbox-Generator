@@ -48,14 +48,10 @@ public final class AppPreferences {
         while (reader.hasNext()) {
             String field = reader.nextName();
             switch (field) {
-                case Key.VERSION -> reader.skipValue(); // known, but handled elsewhere - simply skip the value
                 case Key.AUTO_UPDATE_CHECK_ENABLED -> autoUpdateCheckEnabled = reader.nextBoolean();
                 case Key.LAST_GAME_DEFINITION -> lastGameDefinition = JsonReadUtils.readNullable(reader, JsonReadUtils::readPath);
                 case Key.LAST_EXTENSIONS -> JsonReadUtils.readNullableArray(reader, JsonReadUtils::readPath, lastExtensions::add);
-                default -> {
-                    Main.logger().info("Unknown preferences field \"{}\"{}", field, reader.locationString());
-                    reader.skipValue();
-                }
+                default -> reader.skipValue();
             }
         }
     }
