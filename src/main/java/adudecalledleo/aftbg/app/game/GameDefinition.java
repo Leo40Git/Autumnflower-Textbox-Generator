@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -14,7 +14,7 @@ import javax.imageio.ImageIO;
 import adudecalledleo.aftbg.app.face.FaceLoadException;
 import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.script.ScriptLoadException;
-import adudecalledleo.aftbg.app.script.TextboxScriptSet;
+import adudecalledleo.aftbg.app.script.TextboxScript;
 import adudecalledleo.aftbg.app.util.PathUtils;
 import adudecalledleo.aftbg.app.util.WindowTintAdapter;
 import adudecalledleo.aftbg.json.JsonReadUtils;
@@ -27,15 +27,15 @@ import org.quiltmc.json5.JsonReader;
 public final class GameDefinition extends Definition {
     private final WindowContext winCtx;
     private final FacePool baseFaces;
-    private final TextboxScriptSet baseScripts;
+    private final List<TextboxScript> baseScripts;
 
-    private final List<ExtensionDefinition> extensions, extensionsU;
+    private final List<ExtensionDefinition> extensions;
     private final FacePool allFaces;
-    private final TextboxScriptSet allScripts;
+    private final List<TextboxScript> allScripts;
 
     private GameDefinition(String id, String name, String[] description, String[] credits,
                           Path filePath, Path basePath,
-                          WindowContext winCtx, FacePool baseFaces, TextboxScriptSet baseScripts) {
+                          WindowContext winCtx, FacePool baseFaces, List<TextboxScript> baseScripts) {
         super(id, name, description, credits, filePath, basePath);
 
         this.winCtx = winCtx;
@@ -46,9 +46,8 @@ public final class GameDefinition extends Definition {
         setAsSource(this.baseScripts);
 
         extensions = new ArrayList<>();
-        extensionsU = Collections.unmodifiableList(extensions);
         allFaces = new FacePool();
-        allScripts = new TextboxScriptSet();
+        allScripts = new LinkedList<>();
         updateExtensions();
     }
 
@@ -120,14 +119,14 @@ public final class GameDefinition extends Definition {
                     .formatted(facesPath), e);
         }
 
-        TextboxScriptSet scripts;
+        List<TextboxScript> scripts;
         if (scriptsPathRaw == null) {
-            scripts = new TextboxScriptSet();
+            scripts = List.of();
         } else {
             Path scriptsPath = PathUtils.tryResolve(basePath, scriptsPathRaw, "scripts definition",
                     DefinitionLoadException::new);
             try (JsonReader reader = JsonReader.json5(scriptsPath)) {
-                scripts = TextboxScriptSet.Adapter.read(reader);
+                scripts = TextboxScript.ListAdapter.read(reader);
             } catch (Exception e) {
                 throw new DefinitionLoadException("Failed to read scripts definition from \"%s\""
                         .formatted(scriptsPath), e);
@@ -151,7 +150,7 @@ public final class GameDefinition extends Definition {
             throw new DefinitionLoadException("Failed to load face pool", e);
         }
         try {
-            scripts.loadAll(basePath);
+            TextboxScript.loadAll(basePath, scripts);
         } catch (ScriptLoadException e) {
             throw new DefinitionLoadException("Failed to load baseScripts", e);
         }
@@ -205,14 +204,14 @@ public final class GameDefinition extends Definition {
         allScripts.clear();
 
         allFaces.addFrom(baseFaces);
-        allScripts.addFrom(baseScripts);
+        allScripts.addAll(baseScripts);
 
         for (var ext : extensions) {
             if (ext.faces() != null) {
                 allFaces.addFrom(ext.faces());
             }
             if (ext.scripts() != null) {
-                allScripts.addFrom(ext.scripts());
+                allScripts.addAll(ext.scripts());
             }
         }
     }
@@ -225,11 +224,11 @@ public final class GameDefinition extends Definition {
         return allFaces;
     }
 
-    public TextboxScriptSet scripts() {
+    public List<TextboxScript> scripts() {
         return allScripts;
     }
 
     public List<ExtensionDefinition> extensions() {
-        return extensionsU;
+        return extensions;
     }
 }

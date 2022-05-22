@@ -8,7 +8,7 @@ import java.util.List;
 import adudecalledleo.aftbg.app.face.FaceLoadException;
 import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.script.ScriptLoadException;
-import adudecalledleo.aftbg.app.script.TextboxScriptSet;
+import adudecalledleo.aftbg.app.script.TextboxScript;
 import adudecalledleo.aftbg.app.util.PathUtils;
 import adudecalledleo.aftbg.json.JsonReadUtils;
 import org.jetbrains.annotations.Nullable;
@@ -18,11 +18,11 @@ import org.quiltmc.json5.JsonReader;
 public final class ExtensionDefinition extends Definition {
     private final String baseDefinition;
     private final @Nullable FacePool faces;
-    private final @Nullable TextboxScriptSet scripts;
+    private final @Nullable List<TextboxScript> scripts;
 
     private ExtensionDefinition(String id, String name, String[] description, String[] credits,
                                 Path filePath, Path basePath, String baseDefinition,
-                                @Nullable FacePool faces, @Nullable TextboxScriptSet scripts) {
+                                @Nullable FacePool faces, @Nullable List<TextboxScript> scripts) {
         super(id, name, description, credits, filePath, basePath);
 
         this.baseDefinition = baseDefinition;
@@ -94,12 +94,12 @@ public final class ExtensionDefinition extends Definition {
             }
         }
 
-        TextboxScriptSet scripts = null;
+        List<TextboxScript> scripts = null;
         if (scriptsPathRaw != null) {
             Path scriptsPath = PathUtils.tryResolve(basePath, scriptsPathRaw, "scripts definition",
                     DefinitionLoadException::new);
             try (JsonReader reader = JsonReader.json5(scriptsPath)) {
-                scripts = TextboxScriptSet.Adapter.read(reader);
+                scripts = TextboxScript.ListAdapter.read(reader);
             } catch (Exception e) {
                 throw new DefinitionLoadException("Failed to read scripts definition from \"%s\""
                         .formatted(scriptsPath));
@@ -115,7 +115,7 @@ public final class ExtensionDefinition extends Definition {
         }
         if (scripts != null) {
             try {
-                scripts.loadAll(basePath);
+                TextboxScript.loadAll(basePath, scripts);
             } catch (ScriptLoadException e) {
                 throw new DefinitionLoadException("Failed to load scripts", e);
             }
@@ -138,7 +138,7 @@ public final class ExtensionDefinition extends Definition {
         return faces;
     }
 
-    public @Nullable TextboxScriptSet scripts() {
+    public @Nullable List<TextboxScript> scripts() {
         return scripts;
     }
 }

@@ -4,7 +4,7 @@ import java.nio.file.Path;
 
 import adudecalledleo.aftbg.app.face.FaceCategory;
 import adudecalledleo.aftbg.app.face.FacePool;
-import adudecalledleo.aftbg.app.script.TextboxScriptSet;
+import adudecalledleo.aftbg.app.script.TextboxScript;
 import org.jetbrains.annotations.Nullable;
 
 public sealed abstract class Definition permits GameDefinition, ExtensionDefinition {
@@ -68,12 +68,12 @@ public sealed abstract class Definition permits GameDefinition, ExtensionDefinit
         }
     }
 
-    protected void setAsSource(@Nullable TextboxScriptSet scripts) {
+    protected void setAsSource(@Nullable Iterable<TextboxScript> scripts) {
         if (scripts == null) {
             return;
         }
 
-        for (var script : scripts.getScripts()) {
+        for (var script : scripts) {
             script.setSource(this);
         }
     }

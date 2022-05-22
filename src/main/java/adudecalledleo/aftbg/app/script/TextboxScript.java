@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 import javax.script.Bindings;
@@ -16,9 +19,14 @@ import adudecalledleo.aftbg.app.game.DefinitionObject;
 import adudecalledleo.aftbg.app.script.shim.ShimHelpers;
 import adudecalledleo.aftbg.app.script.shim.TextboxShim;
 import adudecalledleo.aftbg.app.util.PathUtils;
+import adudecalledleo.aftbg.json.MissingFieldsException;
 import jdk.dynalink.beans.StaticClass;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;
+
+import org.quiltmc.json5.JsonReader;
+import org.quiltmc.json5.JsonToken;
+import org.quiltmc.json5.JsonWriter;
 
 public final class TextboxScript extends DefinitionObject {
     private static final ScriptEngine ENGINE = createScriptEngine();
@@ -71,6 +79,12 @@ public final class TextboxScript extends DefinitionObject {
         }
     }
 
+    public static void loadAll(Path basePath, Iterable<TextboxScript> scripts) throws ScriptLoadException {
+        for (var script : scripts) {
+            script.load(basePath);
+        }
+    }
+
     public void run(FacePool faces, Textbox box) {
         TextboxShim boxShim = ShimHelpers.copy(box);
         updateTextboxFunc.call(null, ShimHelpers.wrap(faces), boxShim);
@@ -80,5 +94,85 @@ public final class TextboxScript extends DefinitionObject {
 
     private static ScriptEngine createScriptEngine() {
         return new NashornScriptEngineFactory().getScriptEngine("--no-java");
+    }
+
+    public static final class ListAdapter {
+        private static final String[] EMPTY_DESCRIPTION = new String[0];
+
+        private ListAdapter() { }
+
+        public static List<TextboxScript> read(JsonReader in) throws IOException {
+            List<TextboxScript> scripts = new LinkedList<>();
+            in.beginObject();
+
+            while (in.hasNext()) {
+                String scrName = in.nextName();
+                String path = null;
+                String[] desc = EMPTY_DESCRIPTION;
+
+                if (in.peek() == JsonToken.BEGIN_OBJECT) {
+                    in.beginObject();
+                    while (in.hasNext()) {
+                        String name = in.nextName();
+                        switch (name) {
+                        case "path" -> path = in.nextString();
+                        case "desc", "description" -> {
+                            if (in.peek() == JsonToken.BEGIN_ARRAY) {
+                                List<String> lines = new ArrayList<>();
+                                in.beginArray();
+                                while (in.hasNext()) {
+                                    lines.add(in.nextString());
+                                }
+                                in.endArray();
+                                desc = lines.toArray(EMPTY_DESCRIPTION);
+                            } else {
+                                desc = new String[] { in.nextString() };
+                            }
+                        }
+                        default -> in.skipValue();
+                        }
+                    }
+                    in.endObject();
+                } else {
+                    path = in.nextString();
+                }
+
+                if (path == null) {
+                    throw new MissingFieldsException(in, "Script declaration \"%s\"".formatted(scrName), "path");
+                }
+                scripts.add(new TextboxScript(scrName, path, desc));
+            }
+
+            in.endObject();
+            return scripts;
+        }
+
+        public static void write(JsonWriter out, List<TextboxScript> scripts) throws IOException {
+            out.beginObject();
+            for (var script : scripts) {
+                out.name(script.getName());
+                String path = PathUtils.sanitize(script.getPath());
+                String[] desc = script.getDescription();
+                if (desc.length == 0) {
+                    out.value(path);
+                } else {
+                    out.beginObject();
+                    out.name("path");
+                    out.value(path);
+                    out.name("description");
+                    if (desc.length == 1) {
+                        out.value(desc[0]);
+                    } else {
+                        out.beginArray();
+                        for (var line : desc) {
+                            out.value(line);
+                        }
+                        out.endArray();
+                    }
+                    out.endObject();
+                }
+            }
+            out.endObject();
+        }
     }
 }

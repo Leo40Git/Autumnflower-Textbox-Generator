@@ -22,7 +22,7 @@ import adudecalledleo.aftbg.app.Textbox;
 import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.game.GameDefinitionUpdateListener;
-import adudecalledleo.aftbg.app.script.TextboxScriptSet;
+import adudecalledleo.aftbg.app.script.TextboxScript;
 import adudecalledleo.aftbg.app.ui.dialog.AboutDialog;
 import adudecalledleo.aftbg.app.ui.dialog.FacePoolEditorDialog;
 import adudecalledleo.aftbg.app.ui.dialog.PreferencesDialog;
@@ -445,12 +445,12 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         public void updateGameDefinition(GameDefinition gameDef) {
             scriptsMenu.removeAll();
 
-            TextboxScriptSet scripts = gameDef.scripts();
+            List<TextboxScript> scripts = gameDef.scripts();
             if (scripts == null) {
                 scriptsMenu.setEnabled(false);
             } else {
                 scriptsMenu.setEnabled(true);
-                for (var script : scripts.getScripts()) {
+                for (var script : scripts) {
                     Action a = new AbstractAction(script.getName()) {
                         @Override
                         public void actionPerformed(ActionEvent evt) {
