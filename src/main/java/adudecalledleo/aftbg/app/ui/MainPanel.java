@@ -29,7 +29,6 @@ import adudecalledleo.aftbg.app.ui.dialog.PreferencesDialog;
 import adudecalledleo.aftbg.app.ui.render.TextboxListCellRenderer;
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
 import adudecalledleo.aftbg.app.ui.util.ListReorderTransferHandler;
-import adudecalledleo.aftbg.app.ui.util.MultilineBuilder;
 import adudecalledleo.aftbg.app.ui.worker.ExtensionDefinitionLoader;
 import adudecalledleo.aftbg.app.ui.worker.GameDefinitionLoader;
 import adudecalledleo.aftbg.app.ui.worker.TextboxGenerator;
@@ -449,30 +448,46 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             if (scripts == null) {
                 scriptsMenu.setEnabled(false);
             } else {
-                scriptsMenu.setEnabled(true);
                 for (var script : scripts) {
-                    Action a = new AbstractAction(script.getName()) {
-                        @Override
-                        public void actionPerformed(ActionEvent evt) {
-                            Textbox box = textboxes.get(currentTextbox);
-                            try {
-                                script.run(gameDef.faces(), box);
-                            } catch (Exception e) {
-                                logger().error("Failed to run script!", e);
-                                DialogUtils.showErrorDialog(MainPanel.this, "Failed to run script!", "Script Error");
-                                return;
-                            }
-                            updateTextboxEditors();
-                        }
-                    };
-
-                    a.putValue(Action.SHORT_DESCRIPTION, new MultilineBuilder()
-                            .lines(script.getDescription())
-                            .line("<b>From:</b> " + script.getSource().qualifiedName())
-                            .toString());
-
-                    scriptsMenu.add(a);
+                    scriptsMenu.add(new RunScriptAction(script));
                 }
+                scriptsMenu.setEnabled(true);
+            }
+        }
+
+        private final class RunScriptAction extends AbstractAction {
+            private final TextboxScript script;
+
+            public RunScriptAction(TextboxScript script) {
+                this.script = script;
+                putValue(NAME, script.getName());
+
+                String descBlock = String.join("<br>", script.getDescription());
+                String sourceBlock;
+                if (script.getSource() == null) {
+                    sourceBlock = "(source == null?!)";
+                } else {
+                    sourceBlock = "<b>From:</b> " + script.getSource().qualifiedName();
+                }
+
+                if (descBlock.isEmpty()) {
+                    putValue(SHORT_DESCRIPTION, "<html>%s</html>".formatted(sourceBlock));
+                } else {
+                    putValue(SHORT_DESCRIPTION, "<html>%s<br>%s</html>".formatted(descBlock, sourceBlock));
+                }
+            }
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Textbox box = textboxes.get(currentTextbox);
+                try {
+                    script.run(gameDef.faces(), box);
+                } catch (Exception ex) {
+                    logger().error("Failed to run script!", ex);
+                    DialogUtils.showErrorDialog(MainPanel.this, "Failed to run script!", "Script Error");
+                    return;
+                }
+                updateTextboxEditors();
             }
         }
 
