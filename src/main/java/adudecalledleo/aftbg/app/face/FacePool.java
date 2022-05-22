@@ -86,7 +86,6 @@ public final class FacePool {
 
     public void clear() {
         categories.clear();
-        categories.put(FaceCategory.NONE.getName(), FaceCategory.NONE);
     }
 
     public static final class Adapter {

@@ -135,9 +135,11 @@ public final class SelectFaceDialog extends DialogWithResult<Face> {
         }
 
         public void setCurrentFace(Face currentFace) {
-            var cat = faces.getCategory(currentFace.getCategory());
-            lstCategories.setSelectedValue(cat, true);
-            if (cat != FaceCategory.NONE) {
+            if (currentFace.isBlank()) {
+                lstCategories.setSelectedValue(FaceCategory.NONE, true);
+            } else {
+                var cat = faces.getCategory(currentFace.getCategory());
+                lstCategories.setSelectedValue(cat, true);
                 faceGrid.setSelectedFace(currentFace, true);
                 faceGrid.requestFocusInWindow();
             }
