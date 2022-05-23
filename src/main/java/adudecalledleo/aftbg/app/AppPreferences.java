@@ -24,6 +24,7 @@ public final class AppPreferences {
 
         private static final String VERSION = "version";
         private static final String AUTO_UPDATE_CHECK_ENABLED = "auto_update_check_enabled";
+        private static final String COPY_CURRENT_FACE = "copy_current_face";
         private static final String LAST_GAME_DEFINITION = "last_game_definition";
         private static final String LAST_EXTENSIONS = "last_extensions";
     }
@@ -31,26 +32,28 @@ public final class AppPreferences {
     private static AppPreferences instance;
 
     private boolean autoUpdateCheckEnabled;
+    private boolean shouldCopyCurrentFace;
     private @Nullable Path lastGameDefinition;
     private final Set<Path> lastExtensions;
 
     public AppPreferences() {
         // DEFAULT VALUES
         autoUpdateCheckEnabled = true;
+        shouldCopyCurrentFace = true;
         lastGameDefinition = null;
         lastExtensions = new LinkedHashSet<>();
     }
 
     public void read(int version, JsonReader reader) throws IOException {
         // in the future, the "version" property will determine how to read preferences from the object
-        //  to allow for backwards compatibility with older preferences files
-        // currently, though, there's only one version - the current one
+        //  to allow for backwards compatibility with older preferences files, in case a field name gets changed
 
         lastExtensions.clear();
         while (reader.hasNext()) {
             String field = reader.nextName();
             switch (field) {
                 case Fields.AUTO_UPDATE_CHECK_ENABLED -> autoUpdateCheckEnabled = reader.nextBoolean();
+                case Fields.COPY_CURRENT_FACE -> shouldCopyCurrentFace = reader.nextBoolean();
                 case Fields.LAST_GAME_DEFINITION -> lastGameDefinition = JsonReadUtils.readNullable(reader, JsonReadUtils::readPath);
                 case Fields.LAST_EXTENSIONS -> JsonReadUtils.readNullableArray(reader, JsonReadUtils::readPath, lastExtensions::add);
                 default -> reader.skipValue();
@@ -63,6 +66,8 @@ public final class AppPreferences {
         writer.value(CURRENT_VERSION);
         writer.name(Fields.AUTO_UPDATE_CHECK_ENABLED);
         writer.value(autoUpdateCheckEnabled);
+        writer.name(Fields.COPY_CURRENT_FACE);
+        writer.value(shouldCopyCurrentFace);
         writer.name(Fields.LAST_GAME_DEFINITION);
         JsonWriteUtils.writeNullable(writer, JsonWriteUtils::writePath, lastGameDefinition);
         writer.name(Fields.LAST_EXTENSIONS);
@@ -132,6 +137,14 @@ public final class AppPreferences {
 
     public static void setAutoUpdateCheckEnabled(boolean autoUpdateCheckEnabled) {
         instance.autoUpdateCheckEnabled = autoUpdateCheckEnabled;
+    }
+
+    public static boolean shouldCopyCurrentFace() {
+        return instance.shouldCopyCurrentFace;
+    }
+
+    public static void setShouldCopyCurrentFace(boolean shouldCopyCurrentFace) {
+        instance.shouldCopyCurrentFace = shouldCopyCurrentFace;
     }
 
     public static @Nullable Path getLastGameDefinition() {

@@ -22,7 +22,7 @@ public final class PreferencesDialog extends ModalDialog {
     }
 
     private final class ContentPane extends JPanel implements ActionListener {
-        private final JCheckBox cbAutoUpdateCheck;
+        private final JCheckBox cbCopyCurrentFace, cbAutoUpdateCheck;
         private final JButton btnOK, btnApply, btnCancel;
 
         public ContentPane() {
@@ -30,6 +30,9 @@ public final class PreferencesDialog extends ModalDialog {
 
             Box catGeneral = new Box(BoxLayout.PAGE_AXIS);
             catGeneral.setBorder(BorderFactory.createTitledBorder("General"));
+            cbCopyCurrentFace = new JCheckBox("Copy face from current textbox when creating new textbox");
+            cbCopyCurrentFace.setSelected(AppPreferences.shouldCopyCurrentFace());
+            catGeneral.add(cbCopyCurrentFace);
             cbAutoUpdateCheck = new JCheckBox("Automatically check for updates on app launch");
             cbAutoUpdateCheck.setSelected(AppPreferences.isAutoUpdateCheckEnabled());
             catGeneral.add(cbAutoUpdateCheck);
@@ -56,6 +59,7 @@ public final class PreferencesDialog extends ModalDialog {
         }
 
         private void doApply() {
+            AppPreferences.setShouldCopyCurrentFace(cbCopyCurrentFace.isSelected());
             AppPreferences.setAutoUpdateCheckEnabled(cbAutoUpdateCheck.isSelected());
         }
 

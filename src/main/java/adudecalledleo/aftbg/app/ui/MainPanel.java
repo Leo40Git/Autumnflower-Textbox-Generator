@@ -206,6 +206,15 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
         editorPane.setText(box.getText());
     }
 
+    private Textbox createNewTextbox() {
+        if (AppPreferences.shouldCopyCurrentFace()) {
+            var box = textboxes.get(currentTextbox);
+            return new Textbox(box.getFace(), "");
+        } else {
+            return new Textbox(Face.BLANK, "");
+        }
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
@@ -228,9 +237,7 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             }
             case AC_TEXTBOX_ADD -> {
                 flushChanges();
-                var copyBox = textboxes.get(textboxes.size() - 1);
-                var box = new Textbox(copyBox.getFace(), "");
-                textboxes.add(box);
+                textboxes.add(createNewTextbox());
                 currentTextbox = textboxes.size() - 1;
                 updateTextboxEditors();
                 updateTextboxSelectorModel();
@@ -244,17 +251,13 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             }
             case AC_TEXTBOX_INSERT_BEFORE -> {
                 flushChanges();
-                Textbox copyBox = textboxes.get(currentTextbox);
-                Textbox box = new Textbox(copyBox.getFace(), "");
-                textboxes.add(currentTextbox, box);
+                textboxes.add(currentTextbox, createNewTextbox());
                 updateTextboxEditors();
                 updateTextboxSelectorModel();
             }
             case AC_TEXTBOX_INSERT_AFTER -> {
                 flushChanges();
-                Textbox copyBox = textboxes.get(currentTextbox);
-                Textbox box = new Textbox(copyBox.getFace(), "");
-                textboxes.add(++currentTextbox, box);
+                textboxes.add(++currentTextbox, createNewTextbox());
                 updateTextboxEditors();
                 updateTextboxSelectorModel();
             }
