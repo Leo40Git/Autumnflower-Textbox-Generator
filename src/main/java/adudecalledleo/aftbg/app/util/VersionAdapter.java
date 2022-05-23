@@ -12,7 +12,7 @@ public final class VersionAdapter {
     public static Version read(JsonReader in) throws IOException {
         var s = in.nextString();
         try {
-            return Version.parseVersion(in.nextString(), true);
+            return Version.parseVersion(s, true);
         } catch (Version.VersionFormatException e) {
             throw new MalformedJsonException(in, "Invalid version \"%s\"".formatted(s), e);
         }
