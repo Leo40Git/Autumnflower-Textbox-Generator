@@ -31,6 +31,7 @@ import adudecalledleo.aftbg.app.ui.dialog.FormattingHelpDialog;
 import adudecalledleo.aftbg.app.ui.dialog.SelectColorDialog;
 import adudecalledleo.aftbg.app.ui.text.UnderlineHighlighter;
 import adudecalledleo.aftbg.app.ui.text.ZigZagHighlighter;
+import adudecalledleo.aftbg.app.ui.util.CompoundUndoManager;
 import adudecalledleo.aftbg.app.ui.util.ErrorMessageBuilder;
 import adudecalledleo.aftbg.app.ui.util.IconWithArrow;
 import adudecalledleo.aftbg.app.ui.util.UnmodifiableAttributeSetView;
@@ -51,6 +52,9 @@ public final class TextboxEditorPane extends JEditorPane
     public static final String A_TOOLBAR_SUBSCRIPT = "toolbar.subscript";
     public static final String A_TOOLBAR_COLOR = "toolbar.color";
 
+    public static final String A_UNDO = "undo";
+    public static final String A_REDO = "redo";
+
     private static final BufferedImage SCRATCH_IMAGE = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
     private static final Highlighter.HighlightPainter HLP_ERROR = new ZigZagHighlighter(Color.RED);
     private final Map<Color, UnderlineHighlighter> hlpEscapedColors = new HashMap<>();
@@ -63,6 +67,7 @@ public final class TextboxEditorPane extends JEditorPane
     private final Consumer<String> textUpdateConsumer;
     private final Timer updateTimer;
     private final Map<Object, Action> actions;
+    private final CompoundUndoManager undoMan;
     private final Map<Rectangle2D, String> errors;
     private final SimpleAttributeSet styleNormal, styleMod;
     private final JPopupMenu popupMenu;
@@ -93,6 +98,8 @@ public final class TextboxEditorPane extends JEditorPane
         setDocument(new StyledDocumentImpl());
         setEditorKit(new EditorKitImpl(styleNormal));
 
+        undoMan = new CompoundUndoManager(this, true);
+
         updateTimer = new Timer(250, e -> SwingUtilities.invokeLater(() -> {
             textUpdateConsumer.accept(getText());
             highlight();
@@ -101,6 +108,15 @@ public final class TextboxEditorPane extends JEditorPane
         updateTimer.setCoalesce(true);
 
         actions = createActionTable();
+
+        var actionMap = getActionMap();
+        actionMap.put(A_UNDO, undoMan.getUndoAction());
+        actionMap.put(A_REDO, undoMan.getRedoAction());
+
+        var inputMap = getInputMap(WHEN_FOCUSED);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK), A_UNDO);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK), A_REDO);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK), A_REDO);
 
         Graphics2D g = SCRATCH_IMAGE.createGraphics();
         g.setFont(DOMRenderer.DEFAULT_FONT);
@@ -190,14 +206,24 @@ public final class TextboxEditorPane extends JEditorPane
         item = new JMenuItem(actions.get(DefaultEditorKit.cutAction));
         item.setText("Cut");
         item.setIcon(AppResources.Icons.CUT.get());
+        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK));
         menu.add(item);
         item = new JMenuItem(actions.get(DefaultEditorKit.copyAction));
         item.setText("Copy");
         item.setIcon(AppResources.Icons.COPY.get());
+        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK));
         menu.add(item);
         item = new JMenuItem(actions.get(DefaultEditorKit.pasteAction));
         item.setText("Paste");
         item.setIcon(AppResources.Icons.PASTE.get());
+        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK));
+        menu.add(item);
+
+        menu.addSeparator();
+
+        item = new JMenuItem(undoMan.getUndoAction());
+        menu.add(item);
+        item = new JMenuItem(undoMan.getRedoAction());
         menu.add(item);
 
         return menu;
