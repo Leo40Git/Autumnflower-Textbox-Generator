@@ -224,41 +224,35 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        hoveredIndex = calculateFaceIndex(e);
-        repaint();
+        if (e.getSource() == this) {
+            hoveredIndex = calculateFaceIndex(e);
+            repaint();
+        }
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        hoveredIndex = -1;
-        repaint();
+        if (e.getSource() == this) {
+            hoveredIndex = -1;
+            repaint();
+        }
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        hoveredIndex = calculateFaceIndex(e);
-        tryUpdateSelectedIndex(hoveredIndex, false);
-        repaint();
+        if (e.getSource() == this) {
+            hoveredIndex = calculateFaceIndex(e);
+            tryUpdateSelectedIndex(hoveredIndex, false);
+            repaint();
+        }
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        hoveredIndex = calculateFaceIndex(e);
-        repaint();
-    }
-
-    private void setupKeyboardActions() {
-        var actions = getActionMap();
-        actions.put(ACTION_SELECT_FACE_NEXT, new SelectNextFaceAction());
-        actions.put(ACTION_SELECT_FACE_PREVIOUS, new SelectPreviousFaceAction());
-        actions.put(ACTION_SELECT_FACE_ABOVE, new SelectAboveFaceAction());
-        actions.put(ACTION_SELECT_FACE_BELOW, new SelectBelowFaceAction());
-
-        var inputs = getInputMap(WHEN_FOCUSED);
-        inputs.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), ACTION_SELECT_FACE_ABOVE);
-        inputs.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), ACTION_SELECT_FACE_BELOW);
-        inputs.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), ACTION_SELECT_FACE_PREVIOUS);
-        inputs.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), ACTION_SELECT_FACE_NEXT);
+        if (e.getSource() == this) {
+            hoveredIndex = calculateFaceIndex(e);
+            repaint();
+        }
     }
 
     private static final String ACTION_SELECT_FACE_NEXT = "select_face.next";
@@ -308,5 +302,19 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
         public void actionPerformed(ActionEvent e) {
             tryUpdateSelectedIndex(selectedIndex + 5, true);
         }
+    }
+
+    private void setupKeyboardActions() {
+        var actions = getActionMap();
+        actions.put(ACTION_SELECT_FACE_NEXT, new SelectNextFaceAction());
+        actions.put(ACTION_SELECT_FACE_PREVIOUS, new SelectPreviousFaceAction());
+        actions.put(ACTION_SELECT_FACE_ABOVE, new SelectAboveFaceAction());
+        actions.put(ACTION_SELECT_FACE_BELOW, new SelectBelowFaceAction());
+
+        var inputs = getInputMap(WHEN_FOCUSED);
+        inputs.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), ACTION_SELECT_FACE_ABOVE);
+        inputs.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), ACTION_SELECT_FACE_BELOW);
+        inputs.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), ACTION_SELECT_FACE_PREVIOUS);
+        inputs.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), ACTION_SELECT_FACE_NEXT);
     }
 }
