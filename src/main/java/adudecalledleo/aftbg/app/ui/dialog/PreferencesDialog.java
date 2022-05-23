@@ -51,11 +51,10 @@ public final class PreferencesDialog extends ModalDialog {
             catGeneral.add(cbAutoUpdateCheck);
 
             Box catAppearance = createCat("Appearance");
-            var lblTheme = new JLabel("Theme:");
-            lblTheme.setAlignmentX(LEFT_ALIGNMENT);
-            lblTheme.setAlignmentY(TOP_ALIGNMENT);
-            catAppearance.add(lblTheme);
+            catAppearance.add(createLbl("Theme:"));
             catAppearance.add(cbTheme);
+            catAppearance.add(createLbl("<html>You may need to <em>restart the application</em>,<br>"
+                    + "depending on which theme you are switching to and from.</html>"));
 
             Box mainBox = new Box(BoxLayout.PAGE_AXIS);
             mainBox.add(catGeneral);
@@ -91,7 +90,16 @@ public final class PreferencesDialog extends ModalDialog {
         private JButton createBtn(String label) {
             var btn = new JButton(label);
             btn.addActionListener(this);
+            btn.setAlignmentX(LEFT_ALIGNMENT);
+            btn.setAlignmentY(TOP_ALIGNMENT);
             return btn;
+        }
+
+        private JLabel createLbl(String text) {
+            var lbl = new JLabel(text);
+            lbl.setAlignmentX(LEFT_ALIGNMENT);
+            lbl.setAlignmentY(TOP_ALIGNMENT);
+            return lbl;
         }
 
         private void doApply() {

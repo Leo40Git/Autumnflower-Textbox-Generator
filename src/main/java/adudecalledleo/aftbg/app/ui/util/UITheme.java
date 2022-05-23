@@ -1,8 +1,6 @@
 package adudecalledleo.aftbg.app.ui.util;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.swing.*;
 import javax.swing.plaf.metal.*;
@@ -19,7 +17,7 @@ public sealed class UITheme {
 
     static {
         final String currentLAF = UIManager.getLookAndFeel().getClass().getName();
-        Map<String, UITheme> themes = new LinkedHashMap<>();
+        Map<String, UITheme> themes = new HashMap<>();
 
         for (var info : UIManager.getInstalledLookAndFeels()) {
             if (METAL_LAF_CLASS.equals(info.getClassName())) {
@@ -42,7 +40,12 @@ public sealed class UITheme {
             }
         }
 
-        THEMES = Map.copyOf(themes);
+        THEMES = new LinkedHashMap<>(themes.size());
+        List<String> names = new ArrayList<>(themes.keySet());
+        names.sort(Comparator.naturalOrder());
+        for (var name : names) {
+            THEMES.put(name, themes.get(name));
+        }
     }
 
     public static void init() { /* <clinit> */ }
@@ -60,8 +63,13 @@ public sealed class UITheme {
     }
 
     public static UITheme getThemeByClassName(String className) {
+        final String metalThemeProp = System.getProperty("swing.metalTheme");
         for (var theme : THEMES.values()) {
             if (className.equals(theme.getClassName())) {
+                // if we found a Metal theme, make sure it matches the property
+                if (theme instanceof Metal metalTheme && metalTheme.matchesProperty(metalThemeProp)) {
+                    continue;
+                }
                 return theme;
             }
         }
@@ -124,6 +132,14 @@ public sealed class UITheme {
         public Metal(String name, String className, MetalTheme theme) {
             super(name + " (" + theme.getName() + ")", className);
             this.theme = theme;
+        }
+
+        public boolean matchesProperty(String metalThemeProp) {
+            if ("steel".equals(metalThemeProp)) {
+                return theme.getClass() == DefaultMetalTheme.class;
+            } else {
+                return theme.getClass() == OceanTheme.class;
+            }
         }
 
         @Override

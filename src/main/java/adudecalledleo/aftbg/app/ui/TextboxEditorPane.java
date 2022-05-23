@@ -199,6 +199,11 @@ public final class TextboxEditorPane extends JEditorPane
         return actions;
     }
 
+    @Override
+    public JPopupMenu getComponentPopupMenu() {
+        return popupMenu;
+    }
+
     private JPopupMenu createPopupMenu() {
         final var menu = new JPopupMenu();
         JMenuItem item;
