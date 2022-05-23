@@ -33,7 +33,7 @@
         name: "Pog",
         path: "faces/mercia/pog.png",
         comments: [
-          "By TamLin"
+          "<em>by TamLin123</em>"
         ]
       }
     ]
@@ -60,7 +60,7 @@
         name: "Horny",
         path: "faces/bailey/horny.png",
         comments: [
-          "Creator unknown"
+          "<em>(creator unknown)</em>"
         ]
       },
       {
@@ -83,7 +83,7 @@
         name: "Beconed",
         path: "faces/lif/cone.png",
         comments: [
-          "Creator unknown"
+          "<em>(creator unknown)</em>"
         ]
       }
     ]
@@ -114,7 +114,7 @@
         name: "Tiled (Smug)",
         path: "faces/twelve/tiled_smug.png",
         comments: [
-          "By Kazerad"
+          "<em>by Kazerad</em>"
         ]
       }
     ]
