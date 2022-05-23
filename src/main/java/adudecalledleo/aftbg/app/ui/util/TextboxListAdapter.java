@@ -1,4 +1,4 @@
-package adudecalledleo.aftbg.app.util;
+package adudecalledleo.aftbg.app.ui.util;
 
 import java.awt.*;
 import java.io.IOException;
@@ -11,7 +11,6 @@ import adudecalledleo.aftbg.app.Textbox;
 import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.text.DOMInputSanitizer;
-import adudecalledleo.aftbg.app.ui.util.DialogUtils;
 import adudecalledleo.aftbg.json.MissingFieldsException;
 
 import org.quiltmc.json5.JsonReader;

@@ -73,7 +73,7 @@ public final class DOMRenderer {
         final int defaultMaxAscent = g.getFontMetrics().getMaxAscent();
         var data = new RendererData(g, oldState, defaultMaxAscent, x, y);
 
-        DOMRenderer.render0(root, data);
+        render0(root, data);
 
         oldState.restore(g);
     }

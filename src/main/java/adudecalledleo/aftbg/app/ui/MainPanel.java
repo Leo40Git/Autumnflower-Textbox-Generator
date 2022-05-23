@@ -29,10 +29,10 @@ import adudecalledleo.aftbg.app.ui.dialog.PreferencesDialog;
 import adudecalledleo.aftbg.app.ui.render.TextboxListCellRenderer;
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
 import adudecalledleo.aftbg.app.ui.util.ListReorderTransferHandler;
+import adudecalledleo.aftbg.app.ui.util.TextboxListAdapter;
 import adudecalledleo.aftbg.app.ui.worker.ExtensionDefinitionLoader;
 import adudecalledleo.aftbg.app.ui.worker.GameDefinitionLoader;
 import adudecalledleo.aftbg.app.ui.worker.TextboxGenerator;
-import adudecalledleo.aftbg.app.util.TextboxListAdapter;
 
 import org.quiltmc.json5.JsonReader;
 import org.quiltmc.json5.JsonWriter;
