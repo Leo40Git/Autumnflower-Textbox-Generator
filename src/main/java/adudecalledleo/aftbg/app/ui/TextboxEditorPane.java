@@ -222,8 +222,10 @@ public final class TextboxEditorPane extends JEditorPane
         menu.addSeparator();
 
         item = new JMenuItem(undoMan.getUndoAction());
+        item.setIcon(AppResources.Icons.UNDO.get());
         menu.add(item);
         item = new JMenuItem(undoMan.getRedoAction());
+        item.setIcon(AppResources.Icons.REDO.get());
         menu.add(item);
 
         return menu;
