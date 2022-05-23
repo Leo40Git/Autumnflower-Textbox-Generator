@@ -101,6 +101,7 @@ public final class PreferencesDialog extends ModalDialog {
             var newTheme = (UITheme) cbTheme.getSelectedItem();
             if (newTheme != null && UITheme.getCurrentTheme() != newTheme) {
                 if (newTheme.apply()) {
+                    AppPreferences.setThemeName(newTheme.getName());
                     UIColors.update();
                     SwingUtilities.updateComponentTreeUI(PreferencesDialog.this);
                     SwingUtilities.updateComponentTreeUI(getOwner());

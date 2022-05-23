@@ -14,7 +14,6 @@ import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.text.node.NodeRegistry;
 import adudecalledleo.aftbg.app.ui.AppFrame;
 import adudecalledleo.aftbg.app.ui.LoadFrame;
-import adudecalledleo.aftbg.app.ui.render.UIColors;
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
 import adudecalledleo.aftbg.app.ui.util.UITheme;
 import org.apache.logging.log4j.LogManager;
@@ -52,34 +51,43 @@ public final class Main {
             logger.info(" === DEVELOPMENT MODE! === ");
         }
 
-        Runtime.getRuntime().addShutdownHook(new Thread(Main::cleanup, "cleanup"));
-
-        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
-
-        NodeRegistry.init();
-
-        if (!Boolean.getBoolean("skipSystemLookAndFeel")) {
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-                     UnsupportedLookAndFeelException e) {
-                logger.error("Failed to set system L&F", e);
-            }
-        }
-
-        UITheme.init();
-        UIColors.update();
-
-        LoadFrame loadFrame = new LoadFrame("Loading...", true);
-
         try {
             AppPreferences.init();
         } catch (IOException e) {
             logger.error("Failed to initialize preferences!", e);
-            loadFrame.setAlwaysOnTop(false);
             DialogUtils.showErrorDialog(null, "Failed to initialize preferences!", "Failed to launch");
             System.exit(1);
         }
+
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
+        Runtime.getRuntime().addShutdownHook(new Thread(Main::cleanup, "cleanup"));
+
+        UITheme.init();
+        UITheme theme = null;
+        if (AppPreferences.getThemeName() != null) {
+            try {
+                theme = UITheme.getTheme(AppPreferences.getThemeName());
+            } catch (IllegalArgumentException e) {
+                JOptionPane.showMessageDialog(null,
+                        "Couldn't find theme with name \"" + AppPreferences.getThemeName() + "\"!\n"
+                                + "Using default theme instead.",
+                        "Invalid theme name", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        if (theme == null) {
+            theme = Boolean.getBoolean("skipSystemLookAndFeel") ? UITheme.getCrossPlatformTheme() : UITheme.getSystemTheme();
+        }
+        if (theme.apply()) {
+            AppPreferences.setThemeName(theme.getName());
+        } else {
+            JOptionPane.showMessageDialog(null,
+                    "Failed to set theme \"" + theme.getName() + "\"!\n"
+                            + DialogUtils.logFileInstruction() + "\n"
+                            + "Using default Swing theme instead.",
+                    "Failed to set theme!", JOptionPane.ERROR_MESSAGE);
+        }
+
+        LoadFrame loadFrame = new LoadFrame("Loading...", true);
 
         if (AppUpdateCheck.isAvailable() && !BuildInfo.isDevelopment() && AppPreferences.isAutoUpdateCheckEnabled()) {
             try {
@@ -177,6 +185,9 @@ public final class Main {
         }
 
         loadFrame.setLoadString("Opening...!");
+
+        NodeRegistry.init();
+
         AppFrame frame = new AppFrame(gameDef);
         loadFrame.dispose();
         frame.setLocationRelativeTo(null);

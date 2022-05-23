@@ -23,6 +23,7 @@ public final class AppPreferences {
         private Fields() { }
 
         private static final String VERSION = "version";
+        private static final String THEME = "theme";
         private static final String AUTO_UPDATE_CHECK_ENABLED = "auto_update_check_enabled";
         private static final String COPY_CURRENT_FACE = "copy_current_face";
         private static final String LAST_GAME_DEFINITION = "last_game_definition";
@@ -31,15 +32,17 @@ public final class AppPreferences {
 
     private static AppPreferences instance;
 
+    private @Nullable String theme;
     private boolean autoUpdateCheckEnabled;
-    private boolean shouldCopyCurrentFace;
+    private boolean copyCurrentFace;
     private @Nullable Path lastGameDefinition;
     private final Set<Path> lastExtensions;
 
     public AppPreferences() {
         // DEFAULT VALUES
+        theme = null;
         autoUpdateCheckEnabled = true;
-        shouldCopyCurrentFace = true;
+        copyCurrentFace = true;
         lastGameDefinition = null;
         lastExtensions = new LinkedHashSet<>();
     }
@@ -52,8 +55,9 @@ public final class AppPreferences {
         while (reader.hasNext()) {
             String field = reader.nextName();
             switch (field) {
+                case Fields.THEME -> theme = reader.nextString();
                 case Fields.AUTO_UPDATE_CHECK_ENABLED -> autoUpdateCheckEnabled = reader.nextBoolean();
-                case Fields.COPY_CURRENT_FACE -> shouldCopyCurrentFace = reader.nextBoolean();
+                case Fields.COPY_CURRENT_FACE -> copyCurrentFace = reader.nextBoolean();
                 case Fields.LAST_GAME_DEFINITION -> lastGameDefinition = JsonReadUtils.readNullable(reader, JsonReadUtils::readPath);
                 case Fields.LAST_EXTENSIONS -> JsonReadUtils.readNullableArray(reader, JsonReadUtils::readPath, lastExtensions::add);
                 default -> reader.skipValue();
@@ -64,10 +68,12 @@ public final class AppPreferences {
     public void write(JsonWriter writer) throws IOException {
         writer.name(Fields.VERSION);
         writer.value(CURRENT_VERSION);
+        writer.name(Fields.THEME);
+        writer.value(theme);
         writer.name(Fields.AUTO_UPDATE_CHECK_ENABLED);
         writer.value(autoUpdateCheckEnabled);
         writer.name(Fields.COPY_CURRENT_FACE);
-        writer.value(shouldCopyCurrentFace);
+        writer.value(copyCurrentFace);
         writer.name(Fields.LAST_GAME_DEFINITION);
         JsonWriteUtils.writeNullable(writer, JsonWriteUtils::writePath, lastGameDefinition);
         writer.name(Fields.LAST_EXTENSIONS);
@@ -131,6 +137,14 @@ public final class AppPreferences {
         }
     }
 
+    public static @Nullable String getThemeName() {
+        return instance.theme;
+    }
+
+    public static void setThemeName(@Nullable String theme) {
+        instance.theme = theme;
+    }
+
     public static boolean isAutoUpdateCheckEnabled() {
         return instance.autoUpdateCheckEnabled;
     }
@@ -140,11 +154,11 @@ public final class AppPreferences {
     }
 
     public static boolean shouldCopyCurrentFace() {
-        return instance.shouldCopyCurrentFace;
+        return instance.copyCurrentFace;
     }
 
     public static void setShouldCopyCurrentFace(boolean shouldCopyCurrentFace) {
-        instance.shouldCopyCurrentFace = shouldCopyCurrentFace;
+        instance.copyCurrentFace = shouldCopyCurrentFace;
     }
 
     public static @Nullable Path getLastGameDefinition() {
