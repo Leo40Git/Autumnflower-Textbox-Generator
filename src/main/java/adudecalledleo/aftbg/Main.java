@@ -14,6 +14,7 @@ import adudecalledleo.aftbg.app.game.GameDefinition;
 import adudecalledleo.aftbg.app.text.node.NodeRegistry;
 import adudecalledleo.aftbg.app.ui.AppFrame;
 import adudecalledleo.aftbg.app.ui.LoadFrame;
+import adudecalledleo.aftbg.app.ui.render.UIColors;
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
 import adudecalledleo.aftbg.app.ui.util.UITheme;
 import org.apache.logging.log4j.LogManager;
@@ -86,6 +87,8 @@ public final class Main {
                             + "Using default Swing theme instead.",
                     "Failed to set theme!", JOptionPane.ERROR_MESSAGE);
         }
+
+        UIColors.update();
 
         LoadFrame loadFrame = new LoadFrame("Loading...", true);
 
