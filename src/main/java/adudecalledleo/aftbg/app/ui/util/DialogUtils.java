@@ -8,6 +8,8 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 
+import org.jetbrains.annotations.Nullable;
+
 public final class DialogUtils {
     private DialogUtils() { }
 
@@ -89,8 +91,10 @@ public final class DialogUtils {
         return null;
     }
 
-    public static String showMultilineInputDialog(Component parent, String message, String title, int messageType) {
+    public static String showMultilineInputDialog(Component parent, String message, String title, int messageType,
+                                                  @Nullable String defaultValue) {
         JTextArea textArea = new JTextArea(5, 10);
+        textArea.setText(defaultValue);
         textArea.addHierarchyListener(he -> {
             if ((he.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
                 if (textArea.isShowing()) {

@@ -5,6 +5,8 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
+import adudecalledleo.aftbg.app.ui.util.DialogUtils;
+
 @SuppressWarnings("unused")
 public final class ScriptInputHelper {
     private static final String DIALOG_TITLE = "Script Input";
@@ -28,6 +30,15 @@ public final class ScriptInputHelper {
 
     public static String getString(String message) {
         return getString(message, "");
+    }
+
+    public static String getMultilineString(String message, String def) {
+        return DialogUtils.showMultilineInputDialog(null, message, DIALOG_TITLE,
+                JOptionPane.INFORMATION_MESSAGE, def);
+    }
+
+    public static String getMultilineString(String message) {
+        return getMultilineString(message, null);
     }
 
     public static Integer getInt(String message, int def) {

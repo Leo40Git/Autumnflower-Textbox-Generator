@@ -379,7 +379,7 @@ public final class FacePoolEditorDialog extends ModalDialog {
                     }
                     String commentsRaw = DialogUtils.showMultilineInputDialog(this,
                             "Enter comments for new face:",
-                            "Add Face", JOptionPane.INFORMATION_MESSAGE);
+                            "Add Face", JOptionPane.INFORMATION_MESSAGE, null);
                     String[] comments = Face.DEFAULT_COMMENTS;
                     if (commentsRaw != null) {
                         comments = commentsRaw.split("\n");
