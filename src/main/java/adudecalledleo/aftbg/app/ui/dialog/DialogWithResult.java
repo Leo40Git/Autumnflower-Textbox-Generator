@@ -19,15 +19,15 @@ public abstract class DialogWithResult<T> extends ModalDialog implements WindowL
     }
 
     @Override
-    public void windowClosed(WindowEvent e) {
+    public void windowOpened(WindowEvent e) { }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
         this.result = null;
     }
 
     @Override
-    public void windowOpened(WindowEvent e) { }
-
-    @Override
-    public void windowClosing(WindowEvent e) { }
+    public void windowClosed(WindowEvent e) { }
 
     @Override
     public void windowIconified(WindowEvent e) { }
