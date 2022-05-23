@@ -5,10 +5,8 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.swing.*;
@@ -147,10 +145,10 @@ public final class AppUpdateCheck {
                     .build();
 
             String renderedBlock = renderer.render(parser.parse(changelogs.entrySet().stream()
-                    .sorted(Map.Entry.comparingByKey())
+                    .sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
                     .map(entry -> "### " + entry.getKey() + "\n" + String.join("\n", entry.getValue()))
                     .collect(Collectors.joining("\n---\n"))));
-            renderedBlock = "<html><body>\n" + renderedBlock + "</html></body>";
+            renderedBlock = "<html><body>" + renderedBlock + "</html></body>";
 
             boolean wasAOT = loadFrame.isAlwaysOnTop();
             loadFrame.setAlwaysOnTop(false);
