@@ -67,7 +67,6 @@ public final class TextboxEditorPane extends JEditorPane
     private final SimpleAttributeSet styleNormal, styleMod;
     private final JPopupMenu popupMenu;
     private final JToolBar toolBar;
-    private FormattingHelpDialog dlgFormattingHelp;
 
     private GameDefinition gameDef;
     private WindowContext winCtx;
@@ -248,12 +247,10 @@ public final class TextboxEditorPane extends JEditorPane
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
             case A_TOOLBAR_FORMATTING_HELP -> {
-                if (dlgFormattingHelp == null) {
-                    dlgFormattingHelp = new FormattingHelpDialog(this);
-                    dlgFormattingHelp.setLocationRelativeTo(null);
-                }
-                dlgFormattingHelp.setVisible(true);
-                dlgFormattingHelp.requestFocus();
+                var dlg = new FormattingHelpDialog(this);
+                dlg.setLocationRelativeTo(null);
+                dlg.setVisible(true);
+                dlg.requestFocus();
             }
             case A_TOOLBAR_LINE_BREAK -> {
                 try {

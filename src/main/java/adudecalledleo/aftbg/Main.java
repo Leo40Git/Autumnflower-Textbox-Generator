@@ -16,6 +16,7 @@ import adudecalledleo.aftbg.app.ui.AppFrame;
 import adudecalledleo.aftbg.app.ui.LoadFrame;
 import adudecalledleo.aftbg.app.ui.render.UIColors;
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
+import adudecalledleo.aftbg.app.ui.util.UITheme;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -66,6 +67,7 @@ public final class Main {
             }
         }
 
+        UITheme.init();
         UIColors.update();
 
         LoadFrame loadFrame = new LoadFrame("Loading...", true);

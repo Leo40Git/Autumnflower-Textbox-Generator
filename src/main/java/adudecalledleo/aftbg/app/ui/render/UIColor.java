@@ -1,6 +1,7 @@
 package adudecalledleo.aftbg.app.ui.render;
 
 import java.awt.*;
+import java.util.Objects;
 
 import adudecalledleo.aftbg.app.util.ColorUtils;
 
@@ -13,6 +14,7 @@ public final class UIColor {
     private final String valueAsCSS;
 
     UIColor(Color value) {
+        Objects.requireNonNull(value, "value");
         this.value = value;
         this.valueAsCSS = toCSS(value);
     }

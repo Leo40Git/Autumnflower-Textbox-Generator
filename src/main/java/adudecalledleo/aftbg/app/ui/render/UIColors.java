@@ -14,11 +14,24 @@ public final class UIColors {
         return new UIColor(UIManager.getColor(key));
     }
 
+    private static UIColor getColor(String key, String... fallbackKeys) {
+        var c = UIManager.getColor(key);
+        if (c == null) {
+            for (String fallbackKey : fallbackKeys) {
+                c = UIManager.getColor(fallbackKey);
+                if (c != null) {
+                    break;
+                }
+            }
+        }
+        return new UIColor(c);
+    }
+
     public static final class Label {
         private static UIColor disabledForeground;
 
         private static void update() {
-            disabledForeground = getColor("Label.disabledForeground");
+            disabledForeground = getColor("Label.disabledForeground", "Label.disabledText");
         }
 
         public static UIColor getDisabledForeground() {
@@ -37,7 +50,7 @@ public final class UIColors {
         private static void update() {
             background = getColor("List.background");
             darkerBackground = background.darker(0.9);
-            selectionBackground = getColor("List.selectionBackground");
+            selectionBackground = getColor("List.selectionBackground", "List[Selected].textBackground");
             hoveredBackground = selectionBackground.withAlpha(127);
             disabledBackground = background.darker(0.6);
             darkerDisabledBackground = disabledBackground.darker(0.9);
