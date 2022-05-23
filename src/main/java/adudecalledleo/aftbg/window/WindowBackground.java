@@ -62,17 +62,10 @@ public final class WindowBackground {
 
             // reduce everyone's alpha by 25%
             // NOTE: this loop relies on the scratch buffer being of TYPE_INT_ARGB!
-            var buf = scratchBuf.getRaster().getDataBuffer();
-            for (int i = 0; i < buf.getSize(); i++) {
-                int pixel = buf.getElem(i);
-                // calculate new alpha...
-                int alpha = (pixel >> 24) & 0xFF;
-                alpha = (int) Math.floor(alpha * .75);
-                // ...mask out old alpha...
-                pixel &= ~0xFF000000;
-                // ...and OR in new alpha
-                pixel |= alpha >> 24;
-                buf.setElem(i, pixel);
+            int[] pixels = ((DataBufferInt) scratchBuf.getRaster().getDataBuffer()).getData();
+            for (int i = 0; i < pixels.length; i++) {
+                // mask out old alpha and OR in new alpha
+                pixels[i] = (pixels[i] & ~0xFF000000) | (((int) Math.floor(((pixels[i] >> 24) & 0xFF) * 0.75)) << 24);
             }
         }
 
