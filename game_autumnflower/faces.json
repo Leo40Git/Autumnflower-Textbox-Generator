@@ -423,8 +423,8 @@
         path: "faces/other/aisling.png"
       },
       {
-        name: "Anna",
-        path: "faces/other/anna.png"
+        name: "Anna/Dottie",
+        path: "faces/other/anna_dottie.png"
       },
       {
         name: "Arcadius",
