@@ -24,17 +24,11 @@ public final class PathUtils {
         return SANITIZE_PATTERN.matcher(path).replaceAll("/");
     }
 
-    /**
-     * Deletes a directory by deleting its contents.
-     *
-     * @param dir the path to the directory to delete
-     * @throws IOException if an I/O error occurs
-     */
-    public static void deleteDirectory(Path dir) throws IOException {
-        Files.walkFileTree(dir, new DirectoryDeleter());
-    }
-
     private static final class DirectoryDeleter extends SimpleFileVisitor<Path> {
+        static final DirectoryDeleter INSTANCE = new DirectoryDeleter();
+
+        private DirectoryDeleter() { }
+
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
             Objects.requireNonNull(file);
@@ -50,6 +44,16 @@ public final class PathUtils {
             Files.delete(dir);
             return FileVisitResult.CONTINUE;
         }
+    }
+
+    /**
+     * Deletes a directory by deleting its contents.
+     *
+     * @param dir the path to the directory to delete
+     * @throws IOException if an I/O error occurs
+     */
+    public static void deleteDirectory(Path dir) throws IOException {
+        Files.walkFileTree(dir, DirectoryDeleter.INSTANCE);
     }
 
     /**
