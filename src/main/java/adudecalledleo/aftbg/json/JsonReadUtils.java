@@ -30,15 +30,6 @@ public final class JsonReadUtils {
         reader.endArray();
     }
 
-    public static <T> void readNullableArray(JsonReader reader, JsonReadDelegate<T> delegate, Consumer<T> consumer) throws IOException {
-        if (reader.peek() == JsonToken.NULL) {
-            reader.nextNull();
-            return;
-        }
-
-        readArray(reader, delegate, consumer);
-    }
-
     public static <T> List<T> readArray(JsonReader reader, JsonReadDelegate<T> delegate) throws IOException {
         List<T> list = new ArrayList<>();
         readArray(reader, delegate, list::add);

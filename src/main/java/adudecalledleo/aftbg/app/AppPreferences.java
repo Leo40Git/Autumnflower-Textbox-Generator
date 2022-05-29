@@ -13,6 +13,7 @@ import adudecalledleo.aftbg.json.JsonWriteUtils;
 import org.jetbrains.annotations.Nullable;
 
 import org.quiltmc.json5.JsonReader;
+import org.quiltmc.json5.JsonToken;
 import org.quiltmc.json5.JsonWriter;
 
 public final class AppPreferences {
@@ -59,7 +60,13 @@ public final class AppPreferences {
                 case Fields.AUTO_UPDATE_CHECK_ENABLED -> autoUpdateCheckEnabled = reader.nextBoolean();
                 case Fields.COPY_CURRENT_FACE -> copyCurrentFace = reader.nextBoolean();
                 case Fields.LAST_GAME_DEFINITION -> lastGameDefinition = JsonReadUtils.readNullable(reader, JsonReadUtils::readPath);
-                case Fields.LAST_EXTENSIONS -> JsonReadUtils.readNullableArray(reader, JsonReadUtils::readPath, lastExtensions::add);
+                case Fields.LAST_EXTENSIONS -> {
+                    if (reader.peek() == JsonToken.NULL) {
+                        reader.nextNull();
+                    } else {
+                        JsonReadUtils.readArray(reader, JsonReadUtils::readPath, lastExtensions::add);
+                    }
+                }
                 default -> reader.skipValue();
             }
         }
