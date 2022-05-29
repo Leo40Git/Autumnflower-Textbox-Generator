@@ -21,7 +21,7 @@ public final class JsonWriteUtils {
 
     @FunctionalInterface
     public interface KeySerializer<K> {
-        String serialize(K key) throws IOException;
+        String serialize(K key);
     }
 
     /**
