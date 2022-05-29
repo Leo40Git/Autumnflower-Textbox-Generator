@@ -204,8 +204,12 @@ public final class JsonReadUtils {
         try {
             uri = new URI(s);
         } catch (URISyntaxException e) {
-            throw new IOException("Failed to parse path URI \"%s\"%s".formatted(s, reader.locationString()), e);
+            throw new IOException("Failed to parse URI \"%s\"%s".formatted(s, reader.locationString()), e);
         }
-        return Paths.get(uri);
+        try {
+            return Paths.get(uri);
+        } catch (IllegalArgumentException e) {
+            throw new IOException("Invalid path URI \"%s\"%s".formatted(uri, reader.locationString()), e);
+        }
     }
 }
