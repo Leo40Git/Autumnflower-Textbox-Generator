@@ -42,8 +42,9 @@ public final class JsonReadUtils {
         return set;
     }
 
-    public interface KeyParser<N> {
-        N parse(String name) throws Exception;
+    @FunctionalInterface
+    public interface KeyDeserializer<N> {
+        N deserialize(String name) throws Exception;
     }
 
     /**
@@ -55,10 +56,10 @@ public final class JsonReadUtils {
      * }
      * </code></pre>
      *
-     * As such, this method can only be used if the type of the key can be parsed from a string.
+     * As such, this method can only be used if the type of the key can be serialized as a string.
      *
      * @param reader JSON reader
-     * @param keyParser parser of key objects
+     * @param keyDeserializer deserializer of key objects
      * @param valueDelegate delegate to read value objects
      * @param consumer consumer to accept every read entry
      * @param <K> type of key
@@ -66,14 +67,14 @@ public final class JsonReadUtils {
      * @throws IOException if an I/O exception occurs.
      */
     public static <K, V> void readSimpleMap(JsonReader reader,
-                                            KeyParser<K> keyParser, JsonReadDelegate<V> valueDelegate,
+                                            KeyDeserializer<K> keyDeserializer, JsonReadDelegate<V> valueDelegate,
                                             BiConsumer<K, V> consumer) throws IOException {
         reader.beginObject();
         while (reader.hasNext()) {
             String name = reader.nextName();
             K key;
             try {
-                key = keyParser.parse(name);
+                key = keyDeserializer.deserialize(name);
             } catch (Exception e) {
                 throw new IOException("Failed to parse key \"%s\"%s".formatted(name, reader.locationString()), e);
             }
@@ -91,7 +92,7 @@ public final class JsonReadUtils {
      * }
      * </code></pre>
      *
-     * This method is a specialization of {@link #readSimpleMap(JsonReader, KeyParser, JsonReadDelegate, BiConsumer)},
+     * This method is a specialization of {@link #readSimpleMap(JsonReader, KeyDeserializer, JsonReadDelegate, BiConsumer)},
      * for maps with string keys.
      *
      * @param reader JSON reader
@@ -123,6 +124,8 @@ public final class JsonReadUtils {
      *   }
      * ]
      * </code></pre>
+     *
+     * Note that this method does not allow {@code null} keys.
      *
      * @param reader JSON reader
      * @param keyDelegate delegate to read key objects
@@ -164,8 +167,7 @@ public final class JsonReadUtils {
             }
 
             if (!missingFields.isEmpty()) {
-                throw new IOException("Map entry%sismissing following fields: %s"
-                        .formatted(reader.locationString(), String.join(", ", missingFields)));
+                throw new MissingFieldsException(reader, "Map entry", missingFields);
             }
 
             consumer.accept(key, value);
