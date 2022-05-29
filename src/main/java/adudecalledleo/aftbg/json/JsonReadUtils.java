@@ -76,7 +76,7 @@ public final class JsonReadUtils {
             try {
                 key = keyDeserializer.deserialize(name);
             } catch (Exception e) {
-                throw new IOException("Failed to parse key \"%s\"%s".formatted(name, reader.locationString()), e);
+                throw new MalformedJsonException(reader, "Failed to deserialize key from \"" + name + "\"", e);
             }
             consumer.accept(key, valueDelegate.read(reader));
         }
@@ -194,7 +194,7 @@ public final class JsonReadUtils {
         try {
             return new URL(s);
         } catch (MalformedURLException e) {
-            throw new IOException("Failed to parse URL \"%s\"%s".formatted(s, reader.locationString()));
+            throw new MalformedJsonException(reader, "Failed to parse URL \"" + s + "\"");
         }
     }
 
@@ -204,12 +204,12 @@ public final class JsonReadUtils {
         try {
             uri = new URI(s);
         } catch (URISyntaxException e) {
-            throw new IOException("Failed to parse URI \"%s\"%s".formatted(s, reader.locationString()), e);
+            throw new MalformedJsonException(reader, "Failed to parse URI \"" + s + "\"", e);
         }
         try {
             return Paths.get(uri);
         } catch (IllegalArgumentException e) {
-            throw new IOException("Invalid path URI \"%s\"%s".formatted(uri, reader.locationString()), e);
+            throw new MalformedJsonException(reader, "Invalid path URI \"" + uri + "\"", e);
         }
     }
 }
