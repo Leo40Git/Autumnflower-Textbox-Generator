@@ -19,6 +19,15 @@ public final class JsonWriteUtils {
         writer.endArray();
     }
 
+    @SafeVarargs
+    public static <T> void writeArray(JsonWriter writer, JsonWriteDelegate<T> delegate, T... values) throws IOException {
+        writer.beginArray();
+        for (var value : values) {
+            delegate.write(writer, value);
+        }
+        writer.endArray();
+    }
+
     @FunctionalInterface
     public interface KeySerializer<K> {
         String serialize(K key);
