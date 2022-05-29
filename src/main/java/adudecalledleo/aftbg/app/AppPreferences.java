@@ -84,9 +84,7 @@ public final class AppPreferences {
         writer.name(Fields.LAST_GAME_DEFINITION);
         JsonWriteUtils.writeNullable(writer, JsonWriteUtils::writePath, lastGameDefinition);
         writer.name(Fields.LAST_EXTENSIONS);
-        JsonWriteUtils.writeNullable(writer,
-                (writer1, value) -> JsonWriteUtils.writeArray(writer1, JsonWriteUtils::writePath, value),
-                lastExtensions);
+        JsonWriteUtils.writeArray(writer, JsonWriteUtils::writePath, lastExtensions);
     }
 
     public static void init() throws IOException {
