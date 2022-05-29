@@ -10,6 +10,7 @@ import java.util.List;
 
 import adudecalledleo.aftbg.json.JsonReadUtils;
 import adudecalledleo.aftbg.json.MalformedJsonException;
+import adudecalledleo.aftbg.json.MissingFieldsException;
 import de.skuzzle.semantic.Version;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,7 +38,7 @@ public final class BuildInfo {
         String verStr = null;
         try (InputStream in = openJsonStream();
              InputStreamReader isr = new InputStreamReader(in);
-             JsonReader reader = JsonReader.json5(isr)) {
+             JsonReader reader = JsonReader.json(isr)) {
             reader.beginObject();
             while (reader.hasNext()) {
                 String field = reader.nextName();
@@ -69,7 +70,7 @@ public final class BuildInfo {
         }
 
         if (!missingFields.isEmpty()) {
-            throw new IOException("Build info is missing following fields: %s".formatted(String.join(", ", missingFields)));
+            throw new MissingFieldsException("Build info", missingFields);
         }
 
         if ("${version}".equals(verStr)) {
@@ -102,14 +103,18 @@ public final class BuildInfo {
         while (reader.hasNext()) {
             String field = reader.nextName();
             switch (field) {
-                case "update_json" -> updateJsonUrl = JsonReadUtils.readNullableURL(reader);
-                case "homepage" -> homepageUrl = JsonReadUtils.readNullableURL(reader);
-                case "issues" -> issuesUrl = JsonReadUtils.readNullableURL(reader);
-                case "source" -> sourceUrl = JsonReadUtils.readNullableURL(reader);
+                case "update_json" -> updateJsonUrl = readNullableURL(reader);
+                case "homepage" -> homepageUrl = readNullableURL(reader);
+                case "issues" -> issuesUrl = readNullableURL(reader);
+                case "source" -> sourceUrl = readNullableURL(reader);
                 default -> throw new MalformedJsonException(reader, "Unknown field " + field);
             }
         }
         reader.endObject();
+    }
+
+    private static @Nullable URL readNullableURL(JsonReader reader) throws IOException {
+        return JsonReadUtils.readNullable(reader, JsonReadUtils::readURL);
     }
 
     private static void assertLoaded() {

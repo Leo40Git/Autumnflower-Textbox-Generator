@@ -205,10 +205,6 @@ public final class JsonReadUtils {
         }
     }
 
-    public static @Nullable URL readNullableURL(JsonReader reader) throws IOException {
-        return readNullable(reader, JsonReadUtils::readURL);
-    }
-
     public static Path readPath(JsonReader reader) throws IOException {
         String s = reader.nextString();
         URI uri;
