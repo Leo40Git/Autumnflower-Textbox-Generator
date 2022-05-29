@@ -31,9 +31,6 @@ public final class FacePool {
     public void addFrom(FacePool other) {
         for (var entry : other.categories.entrySet()) {
             var cat = categories.get(entry.getKey());
-            if (cat == FaceCategory.NONE) {
-                continue;
-            }
             if (cat == null) {
                 categories.put(entry.getKey(), new FaceCategory(entry.getValue()));
             } else {
@@ -99,7 +96,7 @@ public final class FacePool {
             while (in.hasNext()) {
                 String name = in.nextName();
                 if (FaceCategory.NONE.getName().equals(name)) {
-                    throw new MalformedJsonException(in, "Tried to use reserve category name \"%s\""
+                    throw new MalformedJsonException(in, "Tried to use reserved category name \"%s\""
                             .formatted(FaceCategory.NONE.getName()));
                 }
                 if (name.contains("/")) {
@@ -124,13 +121,8 @@ public final class FacePool {
         private static void readCategoryEntries(FaceCategory cat, JsonReader in, List<String> missingFields)
                 throws IOException {
             if (in.peek() == JsonToken.BEGIN_OBJECT) {
-                in.beginObject();
-                while (in.hasNext()) {
-                    String name = in.nextName();
-                    String imagePath = in.nextString();
-                    cat.add(name, Face.DEFAULT_COMMENTS, imagePath);
-                }
-                in.endObject();
+                JsonReadUtils.readSimpleMap(in, JsonReader::nextString,
+                        (name, imagePath) -> cat.add(name, Face.DEFAULT_COMMENTS, imagePath));
             } else {
                 in.beginArray();
                 while (in.hasNext()) {
