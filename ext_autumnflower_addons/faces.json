@@ -51,6 +51,13 @@
       {
         name: "Smug",
         path: "faces/kyron/smug.png"
+      },
+      {
+        name: "Smug (alt)",
+        path: "faces/kyron/smug_v2.png",
+        comments: [
+          "<em>by Madman</em>"
+        ]
       }
     ]
   },
@@ -115,6 +122,25 @@
         path: "faces/twelve/tiled_smug.png",
         comments: [
           "<em>by Kazerad</em>"
+        ]
+      }
+    ]
+  },
+  Other: {
+    entries: [
+      {
+        name: "Artemis (Smug)",
+        path: "faces/other/artemis_smug.png",
+        comments: [
+          "<em>by Madman</em>"
+        ]
+      },
+      {
+        name: "Artemis (Stuffed)",
+        path: "faces/other/artemis_stuffed.png",
+        comments: [
+          "alternate title: \"dear god how am I fitting this up my ass\"",
+          "<em>by Madman</em>"
         ]
       }
     ]
