@@ -53,11 +53,18 @@
         path: "faces/kyron/smug.png"
       },
       {
-        name: "Smug (alt)",
+        name: "Smug (alternate)",
         path: "faces/kyron/smug_v2.png",
         comments: [
           "<em>by Madman</em>"
         ]
+      },
+      {
+        name: "Intensely Smug",
+        path: "faces/kyron/smug_intense.png",
+        comments: [
+          "<em>by Madman</em>"
+        }
       }
     ]
   },
@@ -142,6 +149,13 @@
           "alternate title: \"dear god how am I fitting this up my ass\"",
           "<em>by Madman</em>"
         ]
+      },
+      {
+        name: "Artemis (Intensely Smug)",
+        path: "faces/other/artemis_smug_intense.png",
+        comments: [
+          "<em>by Madman</em>"
+        }
       }
     ]
   }
