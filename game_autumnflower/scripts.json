@@ -1,10 +1,10 @@
 {
-  "Make Sixty Textbox": {
+  "Twelve's Tiles": {
+    path: "scripts/twelve_tiles.js",
+    description: "Creates a textbox of Twelve using letter tiles to communicate."
+  },
+  "Sixty Noises": {
     path: "scripts/sixtybox.js",
     description: "Creates a textbox of Sixty noises."
   },
-  "Twelve's Tiles": {
-    path: "scripts/twelve_tiles.js",
-    description: "Creates a textbox of Twelve using tiles to communicate."
-  }
 }
