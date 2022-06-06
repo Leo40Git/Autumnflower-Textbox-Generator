@@ -40,8 +40,19 @@ public final class FacePool {
     }
 
     public void loadAll(Path basePath) throws FaceLoadException {
+        FaceLoadException bigE = null;
         for (FaceCategory cat : categories.values()) {
-            cat.loadAll(basePath);
+            try {
+                cat.loadAll(basePath);
+            } catch (FaceLoadException e) {
+                if (bigE == null) {
+                    bigE = new FaceLoadException();
+                }
+                bigE.addSuppressed(new FaceLoadException("Failed to load category \"" + cat.getName() + "\"", e));
+            }
+        }
+        if (bigE != null) {
+            throw bigE;
         }
     }
 

@@ -75,8 +75,19 @@ public final class FaceCategory {
     }
 
     public void loadAll(Path basePath) throws FaceLoadException {
+        FaceLoadException bigE = null;
         for (Face face : faces.values()) {
-            face.loadImage(basePath);
+            try {
+                face.loadImage(basePath);
+            } catch (FaceLoadException e) {
+                if (bigE == null) {
+                    bigE = new FaceLoadException();
+                }
+                bigE.addSuppressed(new FaceLoadException("Failed to load face \"" + face.getName() + "\"", e));
+            }
+        }
+        if (bigE != null) {
+            throw bigE;
         }
     }
 
