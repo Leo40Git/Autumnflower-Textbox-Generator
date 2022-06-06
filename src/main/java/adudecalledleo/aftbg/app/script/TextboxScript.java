@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -19,6 +18,7 @@ import adudecalledleo.aftbg.app.game.DefinitionObject;
 import adudecalledleo.aftbg.app.script.shim.ShimHelpers;
 import adudecalledleo.aftbg.app.script.shim.TextboxShim;
 import adudecalledleo.aftbg.app.util.PathUtils;
+import adudecalledleo.aftbg.json.JsonReadUtils;
 import adudecalledleo.aftbg.json.MissingFieldsException;
 import jdk.dynalink.beans.StaticClass;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
@@ -127,19 +127,7 @@ public final class TextboxScript extends DefinitionObject {
                         String name = in.nextName();
                         switch (name) {
                         case "path" -> path = in.nextString();
-                        case "desc", "description" -> {
-                            if (in.peek() == JsonToken.BEGIN_ARRAY) {
-                                List<String> lines = new ArrayList<>();
-                                in.beginArray();
-                                while (in.hasNext()) {
-                                    lines.add(in.nextString());
-                                }
-                                in.endArray();
-                                desc = lines.toArray(EMPTY_DESCRIPTION);
-                            } else {
-                                desc = new String[] { in.nextString() };
-                            }
-                        }
+                        case "desc", "description" -> desc = JsonReadUtils.readStringArray(in);
                         default -> in.skipValue();
                         }
                     }

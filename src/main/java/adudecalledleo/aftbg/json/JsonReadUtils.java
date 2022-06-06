@@ -186,7 +186,11 @@ public final class JsonReadUtils {
     private static final String[] DUMMY_STRING_ARRAY = new String[0];
 
     public static String[] readStringArray(JsonReader reader) throws IOException {
-        return readArray(reader, JsonReader::nextString).toArray(DUMMY_STRING_ARRAY);
+        if (reader.peek() == JsonToken.STRING) {
+            return new String[] { reader.nextString() };
+        } else {
+            return readArray(reader, JsonReader::nextString).toArray(DUMMY_STRING_ARRAY);
+        }
     }
 
     public static URL readURL(JsonReader reader) throws IOException {
