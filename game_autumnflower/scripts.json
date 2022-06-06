@@ -4,7 +4,7 @@
     description: "Creates a textbox of Twelve using letter tiles to communicate."
   },
   "Sixty Noises": {
-    path: "scripts/sixtybox.js",
+    path: "scripts/sixty_noises.js",
     description: "Creates a textbox of Sixty noises."
   },
 }
