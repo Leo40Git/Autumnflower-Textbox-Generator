@@ -1,14 +1,14 @@
 {
-  name: "Autumnflower Textbox Generator",
-  abbreviated_name: "AFTBG",
-  version: "${version}",
-  urls: {
-    update_json: "https://raw.githubusercontent.com/Leo40Git/Autumnflower-Textbox-Generator/master/update.json",
-    homepage: "https://github.com/Leo40Git/Autumnflower-Textbox-Generator",
-    source: "https://github.com/Leo40Git/Autumnflower-Textbox-Generator",
-    issues: "https://github.com/Leo40Git/Autumnflower-Textbox-Generator/issues"
+  "name": "Autumnflower Textbox Generator",
+  "abbreviated_name": "AFTBG",
+  "version": "${version}",
+  "urls": {
+    "update_json": "https://raw.githubusercontent.com/Leo40Git/Autumnflower-Textbox-Generator/master/update.json",
+    "homepage": "https://github.com/Leo40Git/Autumnflower-Textbox-Generator",
+    "source": "https://github.com/Leo40Git/Autumnflower-Textbox-Generator",
+    "issues": "https://github.com/Leo40Git/Autumnflower-Textbox-Generator/issues"
   },
-  credits: [
+  "credits": [
     "Programmed by ADudeCalledLeo"
   ]
 }
