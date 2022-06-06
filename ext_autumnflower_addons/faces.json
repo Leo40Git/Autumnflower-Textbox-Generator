@@ -32,9 +32,7 @@
       {
         name: "Pog",
         path: "faces/mercia/pog.png",
-        comments: [
-          "<em>by TamLin123</em>"
-        ]
+        description: "<em>by TamLin123</em>"
       }
     ]
   },
@@ -55,16 +53,12 @@
       {
         name: "Smug (alternate)",
         path: "faces/kyron/smug_v2.png",
-        comments: [
-          "<em>by Madman</em>"
-        ]
+        description: "<em>by Madman</em>"
       },
       {
         name: "Intensely Smug",
         path: "faces/kyron/smug_intense.png",
-        comments: [
-          "<em>by Madman</em>"
-        }
+        description: "<em>by Madman</em>"
       }
     ]
   },
@@ -73,9 +67,7 @@
       {
         name: "Horny",
         path: "faces/bailey/horny.png",
-        comments: [
-          "<em>by Kazerad</em>"
-        ]
+        description: "<em>by Kazerad</em>"
       },
       {
         name: "Huh",
@@ -96,9 +88,7 @@
       {
         name: "Beconed",
         path: "faces/lif/cone.png",
-        comments: [
-          "<em>(creator unknown)</em>"
-        ]
+        description: "<em>(creator unknown)</em>"
       }
     ]
   },
@@ -127,9 +117,7 @@
       {
         name: "Tiled (Smug)",
         path: "faces/twelve/tiled_smug.png",
-        comments: [
-          "<em>by Kazerad</em>"
-        ]
+        description: "<em>by Kazerad</em>"
       }
     ]
   },
@@ -138,14 +126,12 @@
       {
         name: "Artemis (Smug)",
         path: "faces/other/artemis_smug.png",
-        comments: [
-          "<em>by Madman</em>"
-        ]
+        description: "<em>by Madman</em>"
       },
       {
         name: "Artemis (Stuffed)",
         path: "faces/other/artemis_stuffed.png",
-        comments: [
+        description: [
           "alternate title: \"dear god how am I fitting this up my ass\"",
           "<em>by Madman</em>"
         ]
@@ -153,9 +139,7 @@
       {
         name: "Artemis (Intensely Smug)",
         path: "faces/other/artemis_smug_intense.png",
-        comments: [
-          "<em>by Madman</em>"
-        }
+        description: "<em>by Madman</em>"
       }
     ]
   }

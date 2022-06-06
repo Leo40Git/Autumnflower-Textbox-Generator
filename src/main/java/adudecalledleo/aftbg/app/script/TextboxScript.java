@@ -19,6 +19,7 @@ import adudecalledleo.aftbg.app.script.shim.ShimHelpers;
 import adudecalledleo.aftbg.app.script.shim.TextboxShim;
 import adudecalledleo.aftbg.app.util.PathUtils;
 import adudecalledleo.aftbg.json.JsonReadUtils;
+import adudecalledleo.aftbg.json.JsonWriteUtils;
 import adudecalledleo.aftbg.json.MissingFieldsException;
 import jdk.dynalink.beans.StaticClass;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
@@ -159,15 +160,7 @@ public final class TextboxScript extends DefinitionObject {
                     out.name("path");
                     out.value(path);
                     out.name("description");
-                    if (desc.length == 1) {
-                        out.value(desc[0]);
-                    } else {
-                        out.beginArray();
-                        for (var line : desc) {
-                            out.value(line);
-                        }
-                        out.endArray();
-                    }
+                    JsonWriteUtils.writeStringArray(out, desc);
                     out.endObject();
                 }
             }

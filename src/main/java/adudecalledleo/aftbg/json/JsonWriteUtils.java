@@ -136,6 +136,18 @@ public final class JsonWriteUtils {
         }
     }
 
+    public static void writeStringArray(JsonWriter writer, String[] values) throws IOException {
+        if (values.length == 1) {
+            writer.value(values[0]);
+        } else {
+            writer.beginArray();
+            for (var value : values) {
+                writer.value(value);
+            }
+            writer.endArray();
+        }
+    }
+
     public static void writePath(JsonWriter writer, Path path) throws IOException {
         writer.value(path.toUri().toString());
     }

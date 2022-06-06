@@ -377,14 +377,14 @@ public final class FacePoolEditorDialog extends ModalDialog {
                                 "Add Face", JOptionPane.ERROR_MESSAGE);
                         break;
                     }
-                    String commentsRaw = DialogUtils.showMultilineInputDialog(this,
-                            "Enter comments for new face:",
+                    String descRaw = DialogUtils.showMultilineInputDialog(this,
+                            "Enter description for new face:",
                             "Add Face", JOptionPane.INFORMATION_MESSAGE, null);
-                    String[] comments = Face.DEFAULT_COMMENTS;
-                    if (commentsRaw != null) {
-                        comments = commentsRaw.split("\n");
+                    String[] desc = Face.DEFAULT_DESCRIPTION;
+                    if (descRaw != null && !descRaw.isBlank()) {
+                        desc = descRaw.split("\n");
                     }
-                    var newFace = selectedCat.add(newName, comments,
+                    var newFace = selectedCat.add(newName, desc,
                             PathUtils.sanitize(imagePath.toString()));
                     try {
                         newFace.loadImage(filePath.getParent());
@@ -507,7 +507,7 @@ public final class FacePoolEditorDialog extends ModalDialog {
                                     "Add Entire Folder", JOptionPane.ERROR_MESSAGE);
                             continue;
                         }
-                        var newFace = newCat.add(faceName, Face.DEFAULT_COMMENTS,
+                        var newFace = newCat.add(faceName, Face.DEFAULT_DESCRIPTION,
                                 PathUtils.sanitize(imagePath.toString()));
                         try {
                             newFace.loadImage(filePath.getParent());

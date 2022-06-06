@@ -29,7 +29,7 @@ public final class FaceListCellRenderer extends BaseListCellRenderer<Face> {
         setIcon(value.getIcon());
         if (showImagePath) {
             setText("<html>%s<br><i>%s</i></html>".formatted(value.getName(), value.getImagePath()));
-            String tooltip = value.createCommentToolTip();
+            String tooltip = value.createDescriptionToolTip();
             if (tooltip.isEmpty()) {
                 setToolTipText(null);
             } else {

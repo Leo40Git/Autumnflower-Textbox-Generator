@@ -31,8 +31,8 @@ public final class FaceCategory {
         return name;
     }
 
-    public Face add(String name, String[] comments, String imagePath) {
-        Face face = new Face(name, this.name, comments, imagePath);
+    public Face add(String name, String[] description, String imagePath) {
+        Face face = new Face(name, this.name, description, imagePath);
         faces.put(name, face);
         return face;
     }

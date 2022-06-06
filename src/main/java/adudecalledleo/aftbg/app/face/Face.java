@@ -14,28 +14,28 @@ import adudecalledleo.aftbg.app.util.ColorUtils;
 import adudecalledleo.aftbg.app.util.PathUtils;
 
 public final class Face extends DefinitionObject {
-    public static final String[] DEFAULT_COMMENTS = new String[0];
+    public static final String[] DEFAULT_DESCRIPTION = new String[0];
 
-    public static final Face BLANK = new Face("Blank", "None", DEFAULT_COMMENTS,
+    public static final Face BLANK = new Face("Blank", "None", DEFAULT_DESCRIPTION,
             null, new BufferedImage(144, 144, BufferedImage.TYPE_INT_ARGB));
 
     private final String name;
     private final String category;
-    private final String[] comments;
+    private final String[] description;
     private final String imagePath;
     private BufferedImage image;
     private ImageIcon icon;
 
-    private Face(String name, String category, String[] comments, String imagePath, BufferedImage image) {
+    private Face(String name, String category, String[] description, String imagePath, BufferedImage image) {
         this.name = name;
         this.category = category;
-        this.comments = comments;
+        this.description = description;
         this.imagePath = imagePath;
         this.image = image;
     }
 
-    public Face(String name, String category, String[] comments, String imagePath) {
-        this(name, category, comments, imagePath, null);
+    public Face(String name, String category, String[] description, String imagePath) {
+        this(name, category, description, imagePath, null);
     }
 
     public boolean isBlank() {
@@ -50,8 +50,8 @@ public final class Face extends DefinitionObject {
         return category;
     }
 
-    public String[] getComments() {
-        return comments.clone();
+    public String[] getDescription() {
+        return description;
     }
 
     public String getPath() {
@@ -92,16 +92,18 @@ public final class Face extends DefinitionObject {
             }
         }
 
+        BufferedImage newImage;
         Path path = PathUtils.tryResolve(basePath, imagePath, "image", FaceLoadException::new).toAbsolutePath();
         try (var in = Files.newInputStream(path)) {
-            image = ImageIO.read(in);
+            newImage = ImageIO.read(in);
         } catch (IOException e) {
             throw new FaceLoadException("Exception occurred while loading image \"" + path + "\"", e);
         }
-        if (image.getWidth() != 144 || image.getHeight() != 144) {
+        if (newImage.getWidth() != 144 || newImage.getHeight() != 144) {
             throw new FaceLoadException("Image \"" + path + "\" must be 144 by 144," +
-                    "was " + image.getWidth() + " by " + image.getHeight());
+                    "was " + newImage.getWidth() + " by " + newImage.getHeight());
         }
+        image = newImage;
         icon = null;
     }
 
@@ -121,15 +123,15 @@ public final class Face extends DefinitionObject {
         return getPath();
     }
 
-    public String createCommentToolTip() {
-        return String.join("<br>", comments);
+    public String createDescriptionToolTip() {
+        return String.join("<br>", description);
     }
 
     public String toToolTipText(boolean includeName) {
         if (isBlank()) {
             return category;
         } else {
-            String commentBlock = createCommentToolTip();
+            String descBlock = createDescriptionToolTip();
             String sourceBlock;
             if (source == null) {
                 sourceBlock = "(source == null?!)";
@@ -137,16 +139,16 @@ public final class Face extends DefinitionObject {
                 sourceBlock = "<b>From:</b> " + source.qualifiedName();
             }
             if (includeName) {
-                if (commentBlock.isEmpty()) {
+                if (descBlock.isEmpty()) {
                     return "%s<br>%s".formatted(name, sourceBlock);
                 } else {
-                    return "%s<br>%s<br>%s".formatted(name, commentBlock, sourceBlock);
+                    return "%s<br>%s<br>%s".formatted(name, descBlock, sourceBlock);
                 }
             } else {
-                if (commentBlock.isEmpty()) {
+                if (descBlock.isEmpty()) {
                     return sourceBlock;
                 } else {
-                    return commentBlock + "<br>" + sourceBlock;
+                    return descBlock + "<br>" + sourceBlock;
                 }
             }
         }
