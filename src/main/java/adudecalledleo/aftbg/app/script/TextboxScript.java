@@ -80,8 +80,19 @@ public final class TextboxScript extends DefinitionObject {
     }
 
     public static void loadAll(Path basePath, Iterable<TextboxScript> scripts) throws ScriptLoadException {
+        ScriptLoadException bigE = null;
         for (var script : scripts) {
-            script.load(basePath);
+            try {
+                script.load(basePath);
+            } catch (ScriptLoadException e) {
+                if (bigE == null) {
+                    bigE = new ScriptLoadException();
+                }
+                bigE.addSuppressed(new ScriptLoadException("Failed to load script \"" + script.getName() + "\"", e));
+            }
+        }
+        if (bigE != null) {
+            throw bigE;
         }
     }
 

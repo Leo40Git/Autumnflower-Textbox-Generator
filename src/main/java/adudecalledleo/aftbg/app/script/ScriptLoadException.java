@@ -1,6 +1,8 @@
 package adudecalledleo.aftbg.app.script;
 
 public final class ScriptLoadException extends Exception {
+    public ScriptLoadException() { }
+
     public ScriptLoadException(String message) {
         super(message);
     }
