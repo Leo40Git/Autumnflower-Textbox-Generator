@@ -2,6 +2,7 @@ package adudecalledleo.aftbg.app.ui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.*;
 import java.util.List;
 import java.util.*;
 
@@ -40,6 +41,7 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
     private FaceCategory category;
     private Face selectedFace;
     private int selectedIndex, hoveredIndex;
+    private BufferedImage backplate;
 
     public FaceGrid() {
         faceList = new ArrayList<>();
@@ -63,33 +65,57 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
 
     @Override
     protected void paintComponent(Graphics g) {
-        final int faceCount = faceList.size();
-        final int lastTile = 8 * ((getHeight() / 8) + 1);
-        for (int i = 0; i < lastTile; i++) {
-            UIColor c;
-            if (i < faceCount) {
-                if (i == selectedIndex) {
-                    c = UIColors.List.getSelectionBackground();
-                } else {
-                    c = (i % 2 == 0) ? UIColors.List.getBackground() : UIColors.List.getDarkerBackground();
-                }
-            } else {
-                c = (i % 2 == 0) ? UIColors.List.getDisabledBackground() : UIColors.List.getDarkerDisabledBackground();
-            }
-            g.setColor(c.get());
-            g.fillRect((i % 5) * 72, (i / 5) * 72, 72, 72);
-            if (i < faceCount) {
-                if (i == hoveredIndex) {
-                    g.setColor(UIColors.List.getHoveredBackground().get());
-                    g.fillRect((i % 5) * 72, (i / 5) * 72, 72, 72);
-                }
+        paintBackplate(g);
 
-                var face = faceList.get(i);
-                if (face.getIcon() != null) {
-                    g.drawImage(face.getIcon().getImage(), (i % 5) * 72, (i / 5) * 72, null);
-                }
+        final int faceCount = faceList.size();
+        int x = 0, y = 0;
+        for (int i = 0; i < faceCount; i++) {
+            Face face = faceList.get(i);
+
+            UIColor bgCol;
+            if (i == selectedIndex) {
+                bgCol = UIColors.List.getSelectionBackground();
+            } else {
+                bgCol = (i % 2 == 0) ? UIColors.List.getBackground() : UIColors.List.getDarkerBackground();
+            }
+            g.setColor(bgCol.get());
+            g.fillRect(x, y, 72, 72);
+
+            if (i == hoveredIndex) {
+                g.setColor(UIColors.List.getHoveredBackground().get());
+                g.fillRect(x, y, 72, 72);
+            }
+
+            g.drawImage(Objects.requireNonNull(face.getIcon()).getImage(), x, y, null);
+
+            x += 72;
+            if (x >= 72 * 5) {
+                x = 0;
+                y += 72;
             }
         }
+    }
+
+    private void paintBackplate(Graphics g) {
+        if (backplate == null) {
+            final int width = getWidth(), height = getHeight();
+            backplate = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            Graphics2D bg = backplate.createGraphics();
+            bg.setColor(UIColors.List.getDisabledBackground().get());
+            bg.fillRect(0, 0, getWidth(), getHeight());
+            bg.setColor(UIColors.List.getDarkerDisabledBackground().get());
+            int x = 72, y = 0;
+            while (y < height) {
+                bg.fillRect(x, y, 72, 72);
+                x += 144;
+                if (x >= 72 * 5) {
+                    x -= 72 * 5;
+                    y += 72;
+                }
+            }
+            bg.dispose();
+        }
+        g.drawImage(backplate, 0, 0, null);
     }
 
     @Override
@@ -189,6 +215,11 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
                 newHeight = (newHeight / 5) + 1;
             }
             newHeight *= 72;
+
+            if (backplate != null && backplate.getHeight() != newHeight) {
+                backplate = null;
+            }
+
             var size = new Dimension(72 * 5, Math.max(72 * 8, newHeight));
             setSize(size);
             setMinimumSize(size);
