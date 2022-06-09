@@ -140,6 +140,11 @@
         name: "Artemis (Intensely Smug)",
         path: "faces/other/artemis_smug_intense.png",
         description: "<em>by Madman</em>"
+      },
+      {
+        name: "Artemis (Tired)",
+        path: "faces/other/artemis_tired.png",
+        description: "<em>by Madman</em>"
       }
     ]
   }
