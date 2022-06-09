@@ -27,6 +27,7 @@ import org.quiltmc.json5.JsonWriter;
 
 import static adudecalledleo.aftbg.Main.logger;
 
+// TODO rewrite this entire thing, god
 public final class FacePoolEditorDialog extends ModalDialog {
     private Path filePath;
     private FacePool pool;
@@ -377,6 +378,15 @@ public final class FacePoolEditorDialog extends ModalDialog {
                                 "Add Face", JOptionPane.ERROR_MESSAGE);
                         break;
                     }
+                    String group = JOptionPane.showInputDialog(this,
+                            "<html>Enter group for new face:<br>"
+                                    + "(use <code>after:&lt;face&gt;</code> to put it after an existing face)</html>",
+                            "Add Face", JOptionPane.INFORMATION_MESSAGE);
+                    if (group == null) {
+                        group = Face.DEFAULT_GROUP;
+                    } else {
+                        group = group.trim();
+                    }
                     String descRaw = DialogUtils.showMultilineInputDialog(this,
                             "Enter description for new face:",
                             "Add Face", JOptionPane.INFORMATION_MESSAGE, null);
@@ -384,7 +394,7 @@ public final class FacePoolEditorDialog extends ModalDialog {
                     if (descRaw != null && !descRaw.isBlank()) {
                         desc = descRaw.split("\n");
                     }
-                    var newFace = selectedCat.add(newName, desc,
+                    var newFace = selectedCat.add(newName, group, desc,
                             PathUtils.sanitize(imagePath.toString()));
                     try {
                         newFace.loadImage(filePath.getParent());
@@ -507,7 +517,7 @@ public final class FacePoolEditorDialog extends ModalDialog {
                                     "Add Entire Folder", JOptionPane.ERROR_MESSAGE);
                             continue;
                         }
-                        var newFace = newCat.add(faceName, Face.DEFAULT_DESCRIPTION,
+                        var newFace = newCat.add(faceName, Face.DEFAULT_GROUP, Face.DEFAULT_DESCRIPTION,
                                 PathUtils.sanitize(imagePath.toString()));
                         try {
                             newFace.loadImage(filePath.getParent());

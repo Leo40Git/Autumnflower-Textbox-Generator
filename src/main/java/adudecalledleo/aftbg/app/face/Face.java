@@ -14,28 +14,31 @@ import adudecalledleo.aftbg.app.util.ColorUtils;
 import adudecalledleo.aftbg.app.util.PathUtils;
 
 public final class Face extends DefinitionObject {
+    public static final String DEFAULT_GROUP = "";
     public static final String[] DEFAULT_DESCRIPTION = new String[0];
 
-    public static final Face BLANK = new Face("Blank", "None", DEFAULT_DESCRIPTION,
+    public static final Face BLANK = new Face("Blank", "None", DEFAULT_GROUP, DEFAULT_DESCRIPTION,
             null, new BufferedImage(144, 144, BufferedImage.TYPE_INT_ARGB));
 
     private final String name;
     private final String category;
+    private final String group;
     private final String[] description;
     private final String imagePath;
     private BufferedImage image;
     private ImageIcon icon;
 
-    private Face(String name, String category, String[] description, String imagePath, BufferedImage image) {
+    private Face(String name, String category, String group, String[] description, String imagePath, BufferedImage image) {
         this.name = name;
         this.category = category;
+        this.group = group;
         this.description = description;
         this.imagePath = imagePath;
         this.image = image;
     }
 
-    public Face(String name, String category, String[] description, String imagePath) {
-        this(name, category, description, imagePath, null);
+    public Face(String name, String category, String group, String[] description, String imagePath) {
+        this(name, category, group, description, imagePath, null);
     }
 
     public boolean isBlank() {
@@ -48,6 +51,10 @@ public final class Face extends DefinitionObject {
 
     public String getCategory() {
         return category;
+    }
+
+    public String getGroup() {
+        return group;
     }
 
     public String[] getDescription() {

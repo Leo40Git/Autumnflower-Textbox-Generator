@@ -134,18 +134,20 @@ public final class FacePool {
                 throws IOException {
             if (in.peek() == JsonToken.BEGIN_OBJECT) {
                 JsonReadUtils.readSimpleMap(in, JsonReader::nextString,
-                        (name, imagePath) -> cat.add(name, Face.DEFAULT_DESCRIPTION, imagePath));
+                        (name, imagePath) -> cat.add(name, Face.DEFAULT_GROUP, Face.DEFAULT_DESCRIPTION, imagePath));
             } else {
                 in.beginArray();
                 while (in.hasNext()) {
                     in.beginObject();
                     String name = null;
+                    String group = Face.DEFAULT_GROUP;
                     String[] desc = Face.DEFAULT_DESCRIPTION;
                     String imagePath = null;
                     while (in.hasNext()) {
                         String field = in.nextName();
                         switch (field) {
                             case "name" -> name = in.nextString();
+                            case "group" -> group = in.nextString();
                             case "desc", "description" -> desc = JsonReadUtils.readStringArray(in);
                             case "path" -> imagePath = in.nextString();
                             default -> in.skipValue();
@@ -163,7 +165,7 @@ public final class FacePool {
                         throw new MissingFieldsException(in, "Face", missingFields);
                     }
 
-                    cat.add(name, desc, imagePath);
+                    cat.add(name, group, desc, imagePath);
                 }
                 in.endArray();
             }
@@ -192,6 +194,10 @@ public final class FacePool {
                     out.value(face.getName());
                     out.name("path");
                     out.value(PathUtils.sanitize(face.getImagePath()));
+                    if (!face.getGroup().isEmpty()) {
+                        out.name("group");
+                        out.value(face.getGroup());
+                    }
                     final String[] desc = face.getDescription();
                     if (desc.length > 0) {
                         out.name("description");

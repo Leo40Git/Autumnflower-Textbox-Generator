@@ -2,9 +2,8 @@ package adudecalledleo.aftbg.app.ui;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import javax.swing.*;
 
@@ -26,13 +25,25 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
         return getDefaultSize(new Dimension());
     }
 
+    private static final class GroupInfo {
+        public final int firstIndex;
+        public int nextIndex;
+
+        public GroupInfo(int firstIndex) {
+            this.firstIndex = firstIndex;
+            nextIndex = firstIndex + 1;
+        }
+    }
+
     private final List<Face> faceList;
+    private final Map<String, GroupInfo> groups;
     private FaceCategory category;
     private Face selectedFace;
     private int selectedIndex, hoveredIndex;
 
     public FaceGrid() {
         faceList = new ArrayList<>();
+        groups = new HashMap<>();
         category = null;
         selectedFace = null;
         selectedIndex = hoveredIndex = -1;
@@ -134,12 +145,42 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
         this.category = category;
         if (!Objects.equals(oldCategory, category)) {
             faceList.clear();
-            faceList.addAll(category.getFaces().values());
-            if (selectedIndex >= 0 && selectedIndex < faceList.size()) {
-                setSelectedFace(faceList.get(selectedIndex), true);
-            } else {
-                setSelectedFace(null, false);
+            groups.clear();
+
+            Face selectedFace = null;
+
+            int i = 0;
+            for (var face : category.getFaces().values()) {
+                if (!face.getGroup().isEmpty()) {
+                    GroupInfo group = null;
+                    if (groups.containsKey(face.getGroup())) {
+                        group = groups.get(face.getGroup());
+                    } else if (face.getGroup().startsWith("after:")) {
+                        String faceName = face.getGroup().substring(6);
+                        var firstFace = category.getFace(faceName);
+                        int firstIndex = faceList.indexOf(firstFace);
+                        if (firstIndex >= 0) {
+                            group = new GroupInfo(firstIndex);
+                            groups.put(face.getGroup(), group);
+                        }
+                    }
+
+                    if (group == null) {
+                        group = new GroupInfo(i);
+                        groups.put(face.getGroup(), group);
+                    }
+                    faceList.add(group.nextIndex++, face);
+                } else {
+                    faceList.add(face);
+                }
+
+                if (i == selectedIndex) {
+                    selectedFace = face;
+                }
+                i++;
             }
+
+            setSelectedFace(selectedFace, selectedFace != null);
 
             int newHeight = faceList.size();
             if (newHeight % 5 == 0) {

@@ -126,11 +126,13 @@
       {
         name: "Artemis (Smug)",
         path: "faces/other/artemis_smug.png",
+        group: "after:Artemis",
         description: "<em>by Madman</em>"
       },
       {
         name: "Artemis (Stuffed)",
         path: "faces/other/artemis_stuffed.png",
+        group: "after:Artemis",
         description: [
           "alternate title: \"dear god how am I fitting this up my ass\"",
           "<em>by Madman</em>"
@@ -139,11 +141,13 @@
       {
         name: "Artemis (Intensely Smug)",
         path: "faces/other/artemis_smug_intense.png",
+        group: "after:Artemis",
         description: "<em>by Madman</em>"
       },
       {
         name: "Artemis (Tired)",
         path: "faces/other/artemis_tired.png",
+        group: "after:Artemis",
         description: "<em>by Madman</em>"
       }
     ]
