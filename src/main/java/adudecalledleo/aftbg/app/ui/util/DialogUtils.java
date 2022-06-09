@@ -32,7 +32,7 @@ public final class DialogUtils {
     public static final FileNameExtensionFilter FILTER_IMAGE_FILES
             = new FileNameExtensionFilter("Image files", ImageIO.getReaderFileSuffixes());
     public static final FileNameExtensionFilter FILTER_JSON_FILES
-            = new FileNameExtensionFilter("JSON files", "json");
+            = new FileNameExtensionFilter("JSON files", "json5", "json");
 
     private static final JFileChooser FC_OPEN = createFileChooser(), FC_SAVE = createFileChooser();
     private static final JFileChooser FC_OPEN_FOLDER = createFolderChooser();

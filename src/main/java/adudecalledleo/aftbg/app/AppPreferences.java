@@ -18,7 +18,7 @@ import org.quiltmc.json5.JsonWriter;
 
 public final class AppPreferences {
     public static final int CURRENT_VERSION = 1;
-    public static final Path PATH = Paths.get(".", "prefs.json").toAbsolutePath();
+    public static final Path PATH = Paths.get(".", "prefs.json5").toAbsolutePath();
 
     private static final class Fields {
         private Fields() { }

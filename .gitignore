@@ -4,4 +4,4 @@ build/
 out/
 output/
 *.log
-prefs.json
+prefs.json5

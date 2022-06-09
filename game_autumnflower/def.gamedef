@@ -15,6 +15,6 @@
     green: -255,
     blue: -255
   },
-  faces_path: "faces.json",
-  scripts_path: "scripts.json"
+  faces_path: "faces.json5",
+  scripts_path: "scripts.json5"
 }
