@@ -24,4 +24,3 @@ function updateTextbox(faces, box) {
     str += "[/color]"
     box.text = str;
 }
-

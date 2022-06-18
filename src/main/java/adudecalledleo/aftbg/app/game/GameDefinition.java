@@ -152,7 +152,7 @@ public final class GameDefinition extends Definition {
         try {
             TextboxScript.loadAll(basePath, scripts);
         } catch (ScriptLoadException e) {
-            throw new DefinitionLoadException("Failed to load baseScripts", e);
+            throw new DefinitionLoadException("Failed to load scripts", e);
         }
 
         return new GameDefinition(id, name, description, credits, filePath, basePath, winCtx, faces, scripts);

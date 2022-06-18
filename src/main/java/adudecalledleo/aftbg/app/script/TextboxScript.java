@@ -61,8 +61,8 @@ public final class TextboxScript extends DefinitionObject {
     public void load(Path basePath) throws ScriptLoadException {
         Path path = PathUtils.tryResolve(basePath, this.path, "script", ScriptLoadException::new).toAbsolutePath();
 
-        ENGINE.put(ScriptEngine.FILENAME, path.toString());
         Bindings bindings = ENGINE.createBindings();
+        bindings.put(ScriptEngine.FILENAME, path.toString());
         bindings.put("input", INPUT_CLASS);
         bindings.put("random", RANDOM);
 
@@ -76,7 +76,7 @@ public final class TextboxScript extends DefinitionObject {
         if (func instanceof ScriptObjectMirror mirror && mirror.isFunction()) {
             updateTextboxFunc = mirror;
         } else {
-            throw new ScriptLoadException("Failed to find function updateTextbox in script!");
+            throw new ScriptLoadException("Failed to find function 'updateTextbox' in script!");
         }
     }
 
