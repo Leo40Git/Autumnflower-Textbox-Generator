@@ -15,6 +15,7 @@ import adudecalledleo.aftbg.app.ui.render.UIColor;
 import adudecalledleo.aftbg.app.ui.render.UIColors;
 
 public final class FaceGrid extends JComponent implements Scrollable, MouseListener, MouseMotionListener {
+    private static final String AFTER_PREFIX = "after:";
     private static final Dimension DEFAULT_SIZE = new Dimension(72 * 5, 72 * 8);
 
     public static Dimension getDefaultSize(Dimension rv) {
@@ -92,7 +93,7 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
             String tag = null;
 
             GroupInfo group;
-            if (!face.getGroup().isEmpty() && (group = groups.get(face.getGroup())) != null) {
+            if ((group = getGroupInfo(face)) != null) {
                 if (i == group.firstIndex) {
                     tag = group.expanded ? "-" : "+";
                 } else if (!group.expanded) {
@@ -127,8 +128,8 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
             while (y < height) {
                 bg.fillRect(x, y, 72, 72);
                 x += 144;
-                if (x >= DEFAULT_SIZE.width) {
-                    x -= DEFAULT_SIZE.width;
+                if (x >= width) {
+                    x -= width;
                     y += 72;
                 }
             }
@@ -162,6 +163,14 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
         return false;
     }
 
+    private GroupInfo getGroupInfo(Face face) {
+        if (face.getGroup().isEmpty()) {
+            return groups.get(AFTER_PREFIX + face.getName());
+        } else {
+            return groups.get(face.getGroup());
+        }
+    }
+
     private int getFaceIndexAt(int mx, int my) {
         final int faceCount = faceList.size();
         int x = 0, y = 0;
@@ -169,7 +178,7 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
             Face face = faceList.get(i);
 
             GroupInfo group;
-            if (!face.getGroup().isEmpty() && (group = groups.get(face.getGroup())) != null) {
+            if ((group = getGroupInfo(face)) != null) {
                 if (i != group.firstIndex && !group.expanded) {
                     continue;
                 }
@@ -230,17 +239,21 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
                 GroupInfo group = null;
                 if (groups.containsKey(face.getGroup())) {
                     group = groups.get(face.getGroup());
-                } else if (face.getGroup().startsWith("after:")) {
-                    String faceName = face.getGroup().substring(6);
+                } else if (face.getGroup().startsWith(AFTER_PREFIX)) {
+                    String faceName = face.getGroup().substring(AFTER_PREFIX.length());
                     var firstFace = category.getFace(faceName);
-                    int firstIndex = faceList.indexOf(firstFace);
-                    if (firstIndex >= 0) {
-                        group = new GroupInfo(firstIndex);
-                        group.nextIndex++;
-                        groups.put(face.getGroup(), group);
+                    if (firstFace.getGroup().isEmpty()) {
+                        int firstIndex = faceList.indexOf(firstFace);
+                        if (firstIndex >= 0) {
+                            group = new GroupInfo(firstIndex);
+                            group.nextIndex++;
+                            groups.put(face.getGroup(), group);
+                        } else {
+                            Main.logger().warn("[FaceGrid] Tried to add \"{}\" group for non-existent face {}, "
+                                    + "adding new group at the end instead", AFTER_PREFIX, faceName);
+                        }
                     } else {
-                        Main.logger().warn("[FaceGrid] Tried to add \"after:\" group for non-existent face {}, "
-                                + "adding new group at the end instead", faceName);
+                        group = groups.get(firstFace.getGroup());
                     }
                 }
 
@@ -270,7 +283,7 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
             Face face = faceList.get(i);
 
             GroupInfo group;
-            if (!face.getGroup().isEmpty() && (group = groups.get(face.getGroup())) != null) {
+            if ((group = getGroupInfo(face)) != null) {
                 if (i != group.firstIndex && !group.expanded) {
                     continue;
                 }
@@ -360,7 +373,7 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
                 if (i >= 0) {
                     Face face = faceList.get(i);
                     GroupInfo group;
-                    if (face.getGroup().isEmpty() || (group = groups.get(face.getGroup())) == null) {
+                    if ((group = getGroupInfo(face)) == null) {
                         return;
                     }
                     if (i == group.firstIndex) {
