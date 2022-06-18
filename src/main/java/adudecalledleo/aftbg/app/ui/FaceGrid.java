@@ -29,10 +29,12 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
     private static final class GroupInfo {
         public final int firstIndex;
         public int nextIndex;
+        public boolean expanded;
 
         public GroupInfo(int firstIndex) {
             this.firstIndex = firstIndex;
-            nextIndex = firstIndex + 1;
+            nextIndex = firstIndex;
+            expanded = false;
         }
     }
 
@@ -86,10 +88,26 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
                 g.fillRect(x, y, 72, 72);
             }
 
+            String tag = null;
+
+            GroupInfo group;
+            if (!face.getGroup().isEmpty() && (group = groups.get(face.getGroup())) != null) {
+                if (i == group.firstIndex) {
+                    tag = group.expanded ? "-" : "+";
+                } else if (!group.expanded) {
+                    continue;
+                }
+            }
+
             g.drawImage(Objects.requireNonNull(face.getIcon()).getImage(), x, y, null);
 
+            if (tag != null) {
+                g.setColor(Color.black);
+                g.drawString(tag, x, y + 72);
+            }
+
             x += 72;
-            if (x >= 72 * 5) {
+            if (x >= DEFAULT_SIZE.width) {
                 x = 0;
                 y += 72;
             }
@@ -108,8 +126,8 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
             while (y < height) {
                 bg.fillRect(x, y, 72, 72);
                 x += 144;
-                if (x >= 72 * 5) {
-                    x -= 72 * 5;
+                if (x >= DEFAULT_SIZE.width) {
+                    x -= DEFAULT_SIZE.width;
                     y += 72;
                 }
             }
@@ -143,17 +161,39 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
         return false;
     }
 
-    private int calculateFaceIndex(int mx, int my) {
-        return (mx / 72) % 5 + (my / 72) * 5;
+    private int getFaceIndexAt(int mx, int my) {
+        final int faceCount = faceList.size();
+        int x = 0, y = 0;
+        for (int i = 0; i < faceCount; i++) {
+            Face face = faceList.get(i);
+
+            GroupInfo group;
+            if (!face.getGroup().isEmpty() && (group = groups.get(face.getGroup())) != null) {
+                if (i != group.firstIndex && !group.expanded) {
+                    continue;
+                }
+            }
+
+            if (mx >= x && my >= y && mx <= x + 72 && my <= y + 72) {
+                return i;
+            }
+
+            x += 72;
+            if (x >= DEFAULT_SIZE.width) {
+                x = 0;
+                y += 72;
+            }
+        }
+        return -1;
     }
 
-    private int calculateFaceIndex(MouseEvent event) {
-        return calculateFaceIndex(event.getX(), event.getY());
+    private int getFaceIndexAt(MouseEvent event) {
+        return getFaceIndexAt(event.getX(), event.getY());
     }
 
     @Override
     public String getToolTipText(MouseEvent event) {
-        int index = calculateFaceIndex(event);
+        int index = getFaceIndexAt(event);
         if (index < faceList.size()) {
             var face = faceList.get(index);
             return "<html>" + face.toToolTipText(true) + "</html>";
@@ -170,66 +210,89 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
         var oldCategory = this.category;
         this.category = category;
         if (!Objects.equals(oldCategory, category)) {
-            faceList.clear();
-            groups.clear();
-
-            Face selectedFace = null;
-
-            int i = 0;
-            for (var face : category.getFaces().values()) {
-                if (!face.getGroup().isEmpty()) {
-                    GroupInfo group = null;
-                    if (groups.containsKey(face.getGroup())) {
-                        group = groups.get(face.getGroup());
-                    } else if (face.getGroup().startsWith("after:")) {
-                        String faceName = face.getGroup().substring(6);
-                        var firstFace = category.getFace(faceName);
-                        int firstIndex = faceList.indexOf(firstFace);
-                        if (firstIndex >= 0) {
-                            group = new GroupInfo(firstIndex);
-                            groups.put(face.getGroup(), group);
-                        }
-                    }
-
-                    if (group == null) {
-                        group = new GroupInfo(i);
-                        groups.put(face.getGroup(), group);
-                    }
-                    faceList.add(group.nextIndex++, face);
-                } else {
-                    faceList.add(face);
-                }
-
-                if (i == selectedIndex) {
-                    selectedFace = face;
-                }
-                i++;
-            }
-
-            setSelectedFace(selectedFace, selectedFace != null);
-
-            int newHeight = faceList.size();
-            if (newHeight % 5 == 0) {
-                newHeight /= 5;
-            } else {
-                newHeight = (newHeight / 5) + 1;
-            }
-            newHeight *= 72;
-
-            if (backplate != null && backplate.getHeight() != newHeight) {
-                backplate = null;
-            }
-
-            var size = new Dimension(72 * 5, Math.max(72 * 8, newHeight));
-            setSize(size);
-            setMinimumSize(size);
-            setPreferredSize(size);
-            setMaximumSize(size);
-            invalidate();
-            repaint();
+            updateFaceList();
+            resize();
 
             firePropertyChange("category", oldCategory, category);
         }
+    }
+
+    private void updateFaceList() {
+        faceList.clear();
+        groups.clear();
+
+        Face selectedFace = null;
+
+        int i = 0;
+        for (var face : category.getFaces().values()) {
+            if (!face.getGroup().isEmpty()) {
+                GroupInfo group = null;
+                if (groups.containsKey(face.getGroup())) {
+                    group = groups.get(face.getGroup());
+                } else if (face.getGroup().startsWith("after:")) {
+                    String faceName = face.getGroup().substring(6);
+                    var firstFace = category.getFace(faceName);
+                    int firstIndex = faceList.indexOf(firstFace);
+                    if (firstIndex >= 0) {
+                        group = new GroupInfo(firstIndex);
+                        group.nextIndex++;
+                        groups.put(face.getGroup(), group);
+                    }
+                }
+
+                if (group == null) {
+                    group = new GroupInfo(i);
+                    groups.put(face.getGroup(), group);
+                }
+
+                faceList.add(group.nextIndex++, face);
+            } else {
+                faceList.add(face);
+            }
+
+            if (i == selectedIndex) {
+                selectedFace = face;
+            }
+            i++;
+        }
+
+        setSelectedFace(selectedFace, selectedFace != null);
+    }
+
+    private void resize() {
+        final int faceCount = faceList.size();
+        int newHeight = 0;
+        for (int i = 0; i < faceCount; i++) {
+            Face face = faceList.get(i);
+
+            GroupInfo group;
+            if (!face.getGroup().isEmpty() && (group = groups.get(face.getGroup())) != null) {
+                if (i != group.firstIndex && !group.expanded) {
+                    continue;
+                }
+            }
+
+            newHeight++;
+        }
+
+        if (newHeight % 5 == 0) {
+            newHeight /= 5;
+        } else {
+            newHeight = (newHeight / 5) + 1;
+        }
+        newHeight *= 72;
+
+        if (backplate != null && backplate.getHeight() != newHeight) {
+            backplate = null;
+        }
+
+        var size = new Dimension(DEFAULT_SIZE.width, Math.max(DEFAULT_SIZE.height, newHeight));
+        setSize(size);
+        setMinimumSize(size);
+        setPreferredSize(size);
+        setMaximumSize(size);
+        invalidate();
+        repaint();
     }
 
     public Face getSelectedFace() {
@@ -251,7 +314,13 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
                 if (shouldScroll) {
                     ensureIndexIsVisible(selectedIndex);
                 }
+
+                GroupInfo selectedGroup;
+                if (!selectedFace.getGroup().isEmpty() && (selectedGroup = groups.get(selectedFace.getGroup())) != null) {
+                    selectedGroup.expanded = true;
+                }
             }
+
             repaint();
 
             firePropertyChange("selectedFace", oldSelectedFace, selectedFace);
@@ -280,7 +349,24 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
     @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getSource() == this) {
-            tryUpdateSelectedIndex(calculateFaceIndex(e), false);
+            if (e.getButton() == MouseEvent.BUTTON3) {
+                // RMB, not MMB -
+                //  getButton() returns the index of the button from left to right
+                int i = getFaceIndexAt(e);
+                if (i >= 0) {
+                    Face face = faceList.get(i);
+                    GroupInfo group;
+                    if (face.getGroup().isEmpty() || (group = groups.get(face.getGroup())) == null) {
+                        return;
+                    }
+                    if (i == group.firstIndex) {
+                        group.expanded = !group.expanded;
+                        resize();
+                    }
+                }
+            } else if (e.getButton() == MouseEvent.BUTTON1) {
+                tryUpdateSelectedIndex(getFaceIndexAt(e), false);
+            }
         }
     }
 
@@ -297,7 +383,7 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
     @Override
     public void mouseEntered(MouseEvent e) {
         if (e.getSource() == this) {
-            hoveredIndex = calculateFaceIndex(e);
+            hoveredIndex = getFaceIndexAt(e);
             repaint();
         }
     }
@@ -313,7 +399,7 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
     @Override
     public void mouseDragged(MouseEvent e) {
         if (e.getSource() == this) {
-            hoveredIndex = calculateFaceIndex(e);
+            hoveredIndex = getFaceIndexAt(e);
             tryUpdateSelectedIndex(hoveredIndex, false);
             repaint();
         }
@@ -322,7 +408,7 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
     @Override
     public void mouseMoved(MouseEvent e) {
         if (e.getSource() == this) {
-            hoveredIndex = calculateFaceIndex(e);
+            hoveredIndex = getFaceIndexAt(e);
             repaint();
         }
     }

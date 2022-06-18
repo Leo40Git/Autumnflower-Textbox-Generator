@@ -428,30 +428,37 @@
       },
       {
         name: "Arcadius",
+        group: "Arcadius",
         path: "faces/other/arcadius.png"
       },
       {
         name: "Arcadius (as Bramble)",
+        group: "Arcadius",
         path: "faces/other/arcadius_bramble.png"
       },
       {
         name: "Arcadius (as Dan)",
+        group: "Arcadius",
         path: "faces/other/arcadius_dan.png"
       },
       {
         name: "Arcadius (as Heats)",
+        group: "Arcadius",
         path: "faces/other/arcadius_heats.png"
       },
       {
         name: "Arcadius (as Guard)",
+        group: "Arcadius",
         path: "faces/other/arcadius_guard.png"
       },
       {
         name: "Arcadius (as Soupmaster)",
+        group: "Arcadius",
         path: "faces/other/arcadius_soupmaster.png"
       },
       {
         name: "Arcadius (as Fencer)",
+        group: "Arcadius",
         path: "faces/other/arcadius_fencer.png"
       },
       {
