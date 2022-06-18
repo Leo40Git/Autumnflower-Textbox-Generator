@@ -204,7 +204,7 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
     @Override
     public String getToolTipText(MouseEvent event) {
         int index = getFaceIndexAt(event);
-        if (index < faceList.size()) {
+        if (index >= 0 && index < faceList.size()) {
             var face = faceList.get(index);
             return "<html>" + face.toToolTipText(true) + "</html>";
         }
