@@ -8,6 +8,7 @@ import java.util.*;
 
 import javax.swing.*;
 
+import adudecalledleo.aftbg.Main;
 import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.face.FaceCategory;
 import adudecalledleo.aftbg.app.ui.render.UIColor;
@@ -237,6 +238,9 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
                         group = new GroupInfo(firstIndex);
                         group.nextIndex++;
                         groups.put(face.getGroup(), group);
+                    } else {
+                        Main.logger().warn("[FaceGrid] Tried to add \"after:\" group for non-existent face {}, "
+                                + "adding new group at the end instead", faceName);
                     }
                 }
 
