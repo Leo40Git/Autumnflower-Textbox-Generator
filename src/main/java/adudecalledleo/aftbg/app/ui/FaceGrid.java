@@ -30,12 +30,13 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
 
     private static final class GroupInfo {
         public final int firstIndex;
-        public int nextIndex;
+        public int nextIndex, size;
         public boolean expanded;
 
         public GroupInfo(int firstIndex) {
             this.firstIndex = firstIndex;
             nextIndex = firstIndex;
+            size = 0;
             expanded = false;
         }
     }
@@ -66,6 +67,8 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
         setPreferredSize(DEFAULT_SIZE);
         setMaximumSize(DEFAULT_SIZE);
     }
+
+    private static final Font TAG_FONT = new Font(Font.MONOSPACED, Font.BOLD, 12);
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -104,6 +107,7 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
             g.drawImage(Objects.requireNonNull(face.getIcon()).getImage(), x, y, null);
 
             if (tag != null) {
+                g.setFont(TAG_FONT);
                 g.setColor(Color.black);
                 g.drawString(tag, x, y + 72);
             }
@@ -205,8 +209,14 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
     public String getToolTipText(MouseEvent event) {
         int index = getFaceIndexAt(event);
         if (index >= 0 && index < faceList.size()) {
-            var face = faceList.get(index);
-            return "<html>" + face.toToolTipText(true) + "</html>";
+            Face face = faceList.get(index);
+            GroupInfo group = getGroupInfo(face);
+            if (group == null || index != group.firstIndex) {
+                return "<html>" + face.toToolTipText(true) + "</html>";
+            } else {
+                return "<html>" + face.toToolTipText(true) + "<hr>"
+                        + "<em>group of %d - right-click to %s</em></html>".formatted(group.size, group.expanded ? "collapse" : "expand");
+            }
         }
         return null;
     }
@@ -247,6 +257,7 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
                         if (firstIndex >= 0) {
                             group = new GroupInfo(firstIndex);
                             group.nextIndex++;
+                            group.size++;
                             groups.put(face.getGroup(), group);
                         } else {
                             Main.logger().warn("[FaceGrid] Tried to add \"{}\" group for non-existent face {}, "
@@ -263,6 +274,7 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
                 }
 
                 faceList.add(group.nextIndex++, face);
+                group.size++;
             } else {
                 faceList.add(face);
             }
