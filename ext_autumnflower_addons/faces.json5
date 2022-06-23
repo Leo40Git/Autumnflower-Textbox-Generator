@@ -85,6 +85,11 @@
         name: "Shocked",
         path: "faces/lif/shocked.png"
       },
+	  {
+	    name: "\"Catsup\"",
+		path: "faces/lif/catsup.png",
+		description: "<em>by DusterFox</em>"
+	  },
       {
         name: "Beconed",
         path: "faces/lif/cone.png",
