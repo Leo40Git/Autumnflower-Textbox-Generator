@@ -98,8 +98,8 @@ public final class WindowBackground {
 
             @Override
             public void compose(Raster src, Raster dstIn, WritableRaster dstOut) {
-                int w = Math.min(src.getWidth(), dstIn.getWidth());
-                int h = Math.min(src.getHeight(), dstIn.getHeight());
+                int w = Math.min(src.getWidth(), dstOut.getWidth());
+                int h = Math.min(src.getHeight(), dstOut.getHeight());
 
                 int[] srcRgba = new int[4];
 
