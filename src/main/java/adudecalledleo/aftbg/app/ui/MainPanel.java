@@ -257,7 +257,8 @@ public final class MainPanel extends JPanel implements ActionListener, ListSelec
             }
             case AC_TEXTBOX_INSERT_AFTER -> {
                 flushChanges();
-                textboxes.add(++currentTextbox, createNewTextbox());
+                var newBox = createNewTextbox();
+                textboxes.add(++currentTextbox, newBox);
                 updateTextboxEditors();
                 updateTextboxSelectorModel();
             }
