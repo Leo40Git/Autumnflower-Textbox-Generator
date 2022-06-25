@@ -3,6 +3,7 @@ package adudecalledleo.aftbg.app.script.shim;
 import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.face.FaceCategory;
 import adudecalledleo.aftbg.app.face.FacePool;
+import org.graalvm.polyglot.HostAccess;
 
 @SuppressWarnings("unused")
 public final class FacePoolShim {
@@ -12,8 +13,10 @@ public final class FacePoolShim {
         this.delegate = delegate;
     }
 
+    @HostAccess.Export
     public final FaceShim blank = ShimHelpers.FACE_NONE;
 
+    @HostAccess.Export
     public FaceShim get(String category, String name) {
         FaceCategory cat = delegate.getCategory(category);
         if (cat == null) {

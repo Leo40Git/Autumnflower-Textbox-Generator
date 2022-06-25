@@ -35,4 +35,9 @@ public final class ShimHelpers {
     public static TextboxShim copy(Textbox box) {
         return new TextboxShim(wrap(box.getFace()), box.getText());
     }
+
+    public static void apply(TextboxShim copy, Textbox box) {
+        box.setFace(unwrap(copy.face));
+        box.setText(copy.text);
+    }
 }
