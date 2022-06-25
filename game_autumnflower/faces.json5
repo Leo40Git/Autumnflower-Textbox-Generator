@@ -163,8 +163,8 @@
         path: "faces/sixty/sad.png"
       },
       {
-        name: "Happy",
-        path: "faces/sixty/happy.png"
+        name: "Very Happy",
+        path: "faces/sixty/very_happy.png"
       },
       {
         name: "Danish'd",

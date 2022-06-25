@@ -99,6 +99,10 @@
   },
   Sixty: {
     entries: [
+	  {
+	    name: "Happy",
+		path: "faces/sixty/happy.png"
+	  },
       {
         name: "Angry",
         path: "faces/sixty/angry.png"
