@@ -1,7 +1,6 @@
 plugins {
     id 'java'
     id 'application'
-    id 'org.beryx.runtime' version '1.12.7'
 }
 
 java {
@@ -17,12 +16,6 @@ jar {
 
 application {
     mainClass = project.main_class
-}
-
-runtime {
-    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
-    modules = ['java.desktop', 'java.scripting', 'jdk.dynalink', 'java.xml', 'java.datatransfer', 'java.sql',
-               'java.logging', 'jdk.crypto.cryptoki', 'jdk.crypto.ec', 'jdk.crypto.mscapi', 'jdk.unsupported']
 }
 
 group 'adudecalledleo'
@@ -50,7 +43,6 @@ dependencies {
     implementation "org.commonmark:commonmark:${project.commonmark_version}"
     implementation "org.commonmark:commonmark-ext-autolink:${project.commonmark_version}"
     implementation "org.commonmark:commonmark-ext-gfm-strikethrough:${project.commonmark_version}"
-    implementation "org.openjdk.nashorn:nashorn-core:${project.nashorn_version}"
 
     devRuntimeOnly "org.fusesource.jansi:jansi:${project.jansi_version}"
 
