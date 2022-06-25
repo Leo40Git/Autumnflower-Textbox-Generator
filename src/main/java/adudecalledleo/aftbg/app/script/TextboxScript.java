@@ -26,6 +26,7 @@ public final class TextboxScript extends DefinitionObject implements Closeable {
     private final String name;
     private final String path;
     private final String[] description;
+
     private Context ctx;
     private Value funcValue;
 

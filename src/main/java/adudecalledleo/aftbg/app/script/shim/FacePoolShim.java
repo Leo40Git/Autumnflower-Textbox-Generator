@@ -5,7 +5,6 @@ import adudecalledleo.aftbg.app.face.FaceCategory;
 import adudecalledleo.aftbg.app.face.FacePool;
 import org.graalvm.polyglot.HostAccess;
 
-@SuppressWarnings("unused")
 public final class FacePoolShim {
     private final FacePool delegate;
 

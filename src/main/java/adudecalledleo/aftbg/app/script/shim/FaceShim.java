@@ -3,7 +3,6 @@ package adudecalledleo.aftbg.app.script.shim;
 import adudecalledleo.aftbg.app.face.Face;
 import org.graalvm.polyglot.HostAccess;
 
-@SuppressWarnings("unused")
 public final class FaceShim {
     final Face delegate;
 
