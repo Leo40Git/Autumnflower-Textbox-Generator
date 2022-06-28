@@ -1,8 +1,8 @@
 package adudecalledleo.aftbg.app.script.shim;
 
 import adudecalledleo.aftbg.app.face.Face;
+import org.graalvm.polyglot.HostAccess;
 
-@SuppressWarnings("unused")
 public final class FaceShim {
     final Face delegate;
 
@@ -10,10 +10,12 @@ public final class FaceShim {
         this.delegate = delegate;
     }
 
+    @HostAccess.Export
     public String getName() {
         return delegate.getName();
     }
 
+    @HostAccess.Export
     public String getCategory() {
         return delegate.getCategory();
     }

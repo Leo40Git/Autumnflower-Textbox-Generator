@@ -1,4 +1,4 @@
-function updateTextbox(faces, box) {
+(function updateTextbox(faces, box) {
     var addFace = input.getBoolean("Add face to textbox?");
     if (addFace == null) {
         return;
@@ -23,4 +23,4 @@ function updateTextbox(faces, box) {
     }
     str += "[/color]"
     box.text = str;
-}
+})

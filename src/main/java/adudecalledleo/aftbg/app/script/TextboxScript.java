@@ -1,44 +1,34 @@
 package adudecalledleo.aftbg.app.script;
 
-import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
-import javax.script.Bindings;
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
-
+import adudecalledleo.aftbg.Main;
 import adudecalledleo.aftbg.app.Textbox;
 import adudecalledleo.aftbg.app.face.FacePool;
 import adudecalledleo.aftbg.app.game.DefinitionObject;
 import adudecalledleo.aftbg.app.script.shim.ShimHelpers;
-import adudecalledleo.aftbg.app.script.shim.TextboxShim;
 import adudecalledleo.aftbg.app.util.PathUtils;
 import adudecalledleo.aftbg.json.JsonReadUtils;
 import adudecalledleo.aftbg.json.JsonWriteUtils;
 import adudecalledleo.aftbg.json.MissingFieldsException;
-import jdk.dynalink.beans.StaticClass;
-import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
-import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.graalvm.polyglot.*;
 
 import org.quiltmc.json5.JsonReader;
 import org.quiltmc.json5.JsonToken;
 import org.quiltmc.json5.JsonWriter;
 
-public final class TextboxScript extends DefinitionObject {
-    private static final ScriptEngine ENGINE = createScriptEngine();
-    private static final StaticClass INPUT_CLASS = StaticClass.forClass(ScriptInputHelper.class);
-    private static final Random RANDOM = new Random();
-
+public final class TextboxScript extends DefinitionObject implements Closeable {
     private final String name;
     private final String path;
     private final String[] description;
 
-    private ScriptObjectMirror updateTextboxFunc;
+    private Context ctx;
+    private Value funcValue;
 
     public TextboxScript(String name, String path, String[] description) {
         this.name = name;
@@ -59,24 +49,60 @@ public final class TextboxScript extends DefinitionObject {
     }
 
     public void load(Path basePath) throws ScriptLoadException {
-        Path path = PathUtils.tryResolve(basePath, this.path, "script", ScriptLoadException::new).toAbsolutePath();
-
-        Bindings bindings = ENGINE.createBindings();
-        bindings.put(ScriptEngine.FILENAME, path.toString());
-        bindings.put("input", INPUT_CLASS);
-        bindings.put("random", RANDOM);
-
-        try (BufferedReader reader = Files.newBufferedReader(path)) {
-            ENGINE.eval(reader, bindings);
-        } catch (IOException | ScriptException e) {
-            throw new ScriptLoadException("Failed to load script!", e);
+        if (ctx != null) {
+            close();
         }
 
-        Object func = bindings.get("updateTextbox");
-        if (func instanceof ScriptObjectMirror mirror && mirror.isFunction()) {
-            updateTextboxFunc = mirror;
-        } else {
-            throw new ScriptLoadException("Failed to find function 'updateTextbox' in script!");
+        Path path = PathUtils.tryResolve(basePath, this.path, "script", ScriptLoadException::new).toAbsolutePath();
+
+        Source source;
+        try (var reader = Files.newBufferedReader(path)) {
+            source = Source.newBuilder("js", reader, path.toString())
+                    .build();
+        } catch (IOException e) {
+            throw new ScriptLoadException("Failed to load script from file", e);
+        }
+
+        ctx = Context.newBuilder("js")
+                .allowExperimentalOptions(true)  // have to turn on experimental options to disable APIs...
+                .option("js.load", "false")             // obviously no.
+                .option("js.print", "false")            // we implement print and printErr ourselves
+                .option("js.console", "false")          // in-depth logging
+                .option("js.polyglot-builtin", "false") // getting/setting global variables + executing other langs
+                .build();
+        var bindings = ctx.getBindings("js");
+        bindings.putMember("input", ScriptInputHelper.INSTANCE);
+        bindings.putMember("random", ScriptRandomAccess.INSTANCE);
+        final String printPrefix = "[script:" + path.getFileName() + "] ";
+        bindings.putMember("print", new ScriptPrintFunction() {
+            @Override
+            @HostAccess.Export
+            public void print(String msg) {
+                Main.logger().info(printPrefix + msg);
+            }
+        });
+        bindings.putMember("printErr", new ScriptPrintFunction() {
+            @Override
+            @HostAccess.Export
+            public void print(String msg) {
+                Main.logger().error(printPrefix + msg);
+            }
+        });
+
+        try {
+            funcValue = ctx.eval(source);
+            if (!funcValue.canExecute()) {
+                funcValue = null;
+                yeetContext();
+                throw new ScriptLoadException("Script did not return function");
+            }
+        } catch (PolyglotException e) {
+            yeetContext();
+            if (e.isSyntaxError()) {
+                throw new ScriptLoadException("Failed to evaluate script", e);
+            } else {
+                throw new ScriptLoadException("Unknown polyglot failure?!", e);
+            }
         }
     }
 
@@ -98,14 +124,22 @@ public final class TextboxScript extends DefinitionObject {
     }
 
     public void run(FacePool faces, Textbox box) {
-        TextboxShim boxShim = ShimHelpers.copy(box);
-        updateTextboxFunc.call(null, ShimHelpers.wrap(faces), boxShim);
-        box.setFace(ShimHelpers.unwrap(boxShim.getFace()));
-        box.setText(boxShim.getText());
+        var copy = ShimHelpers.copy(box);
+        funcValue.executeVoid(ShimHelpers.wrap(faces), copy);
+        ShimHelpers.apply(copy, box);
     }
 
-    private static ScriptEngine createScriptEngine() {
-        return new NashornScriptEngineFactory().getScriptEngine("--no-java");
+    @Override
+    public void close() {
+        funcValue = null;
+        yeetContext();
+    }
+
+    private void yeetContext() {
+        try {
+            ctx.close(true);
+        } catch (PolyglotException ignored) { }
+        ctx = null;
     }
 
     public static final class ListAdapter {

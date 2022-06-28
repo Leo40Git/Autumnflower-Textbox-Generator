@@ -27,7 +27,7 @@ var xlat = {
     z: "Z₁₀"
 };
 
-function updateTextbox(faces, box) {
+(function updateTextbox(faces, box) {
     var text = input.getString("Enter text (case insensitive):", "scrabble is fun");
     if (text == null) {
         return
@@ -46,4 +46,4 @@ function updateTextbox(faces, box) {
     }
     str += "[/color]";
     box.text = str;
-}
+})

@@ -6,14 +6,21 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import adudecalledleo.aftbg.app.ui.util.DialogUtils;
+import org.graalvm.polyglot.HostAccess;
 
-@SuppressWarnings("unused")
 public final class ScriptInputHelper {
+    static final ScriptInputHelper INSTANCE = new ScriptInputHelper();
+
     private static final String DIALOG_TITLE = "Script Input";
 
     private ScriptInputHelper() { }
 
-    private static JDialog createDialog(JOptionPane pane) {
+    @HostAccess.Export
+    public void showMessage(String message) {
+        JOptionPane.showMessageDialog(null, message, DIALOG_TITLE, JOptionPane.PLAIN_MESSAGE);
+    }
+
+    private JDialog createDialog(JOptionPane pane) {
         JDialog dialog = new JDialog((Frame) null, DIALOG_TITLE, true);
         dialog.setContentPane(pane);
         dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
@@ -23,26 +30,31 @@ public final class ScriptInputHelper {
         return dialog;
     }
 
-    public static String getString(String message, String def) {
+    @HostAccess.Export
+    public String getString(String message, String def) {
         return (String) JOptionPane.showInputDialog(null, message, DIALOG_TITLE,
-                JOptionPane.INFORMATION_MESSAGE, null, null, def);
+                JOptionPane.PLAIN_MESSAGE, null, null, def);
     }
 
-    public static String getString(String message) {
+    @HostAccess.Export
+    public String getString(String message) {
         return getString(message, "");
     }
 
-    public static String getMultilineString(String message, String def) {
+    @HostAccess.Export
+    public String getMultilineString(String message, String def) {
         return DialogUtils.showMultilineInputDialog(null, message, DIALOG_TITLE,
-                JOptionPane.INFORMATION_MESSAGE, def);
+                JOptionPane.PLAIN_MESSAGE, def);
     }
 
-    public static String getMultilineString(String message) {
+    @HostAccess.Export
+    public String getMultilineString(String message) {
         return getMultilineString(message, null);
     }
 
-    public static Integer getInt(String message, int def) {
-        JOptionPane pane = new JOptionPane(message, JOptionPane.INFORMATION_MESSAGE, JOptionPane.OK_CANCEL_OPTION,
+    @HostAccess.Export
+    public Integer getInt(String message, int def) {
+        JOptionPane pane = new JOptionPane(message, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION,
                 null, null, null);
         pane.setWantsInput(true);
         pane.setInitialSelectionValue(def);
@@ -88,13 +100,15 @@ public final class ScriptInputHelper {
         return resultBuffer[0];
     }
 
-    public static Integer getInt(String message) {
+    @HostAccess.Export
+    public Integer getInt(String message) {
         return getInt(message, 0);
     }
 
-    public static Boolean getBoolean(String message) {
+    @HostAccess.Export
+    public Boolean getBoolean(String message) {
         return switch (JOptionPane.showConfirmDialog(null, message, DIALOG_TITLE, JOptionPane.YES_NO_OPTION,
-                JOptionPane.INFORMATION_MESSAGE)) {
+                JOptionPane.PLAIN_MESSAGE)) {
             case JOptionPane.YES_OPTION -> Boolean.TRUE;
             case JOptionPane.NO_OPTION -> Boolean.FALSE;
             default -> null;
