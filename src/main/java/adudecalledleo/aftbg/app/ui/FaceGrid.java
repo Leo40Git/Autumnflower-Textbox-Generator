@@ -9,8 +9,10 @@ import java.util.*;
 import javax.swing.*;
 
 import adudecalledleo.aftbg.Main;
+import adudecalledleo.aftbg.app.AppResources;
 import adudecalledleo.aftbg.app.face.Face;
 import adudecalledleo.aftbg.app.face.FaceCategory;
+import adudecalledleo.aftbg.app.ui.render.NegativeComposite;
 import adudecalledleo.aftbg.app.ui.render.UIColor;
 import adudecalledleo.aftbg.app.ui.render.UIColors;
 
@@ -68,11 +70,11 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
         setMaximumSize(DEFAULT_SIZE);
     }
 
-    private static final Font TAG_FONT = new Font(Font.MONOSPACED, Font.BOLD, 12);
-
     @Override
     protected void paintComponent(Graphics g) {
-        paintBackplate(g);
+        var g2d = (Graphics2D) g;
+
+        paintBackplate(g2d);
 
         final int faceCount = faceList.size();
         int x = 0, y = 0;
@@ -85,31 +87,29 @@ public final class FaceGrid extends JComponent implements Scrollable, MouseListe
             } else {
                 bgCol = (i % 2 == 0) ? UIColors.List.getBackground() : UIColors.List.getDarkerBackground();
             }
-            g.setColor(bgCol.get());
-            g.fillRect(x, y, 72, 72);
+            g2d.setColor(bgCol.get());
+            g2d.fillRect(x, y, 72, 72);
 
             if (i == hoveredIndex) {
-                g.setColor(UIColors.List.getHoveredBackground().get());
-                g.fillRect(x, y, 72, 72);
+                g2d.setColor(UIColors.List.getHoveredBackground().get());
+                g2d.fillRect(x, y, 72, 72);
             }
-
-            String tag = null;
 
             GroupInfo group;
             if ((group = getGroupInfo(face)) != null) {
-                if (i == group.firstIndex) {
-                    tag = group.expanded ? "-" : "+";
-                } else if (!group.expanded) {
+                if (!group.expanded && i != group.firstIndex) {
                     continue;
                 }
             }
 
-            g.drawImage(Objects.requireNonNull(face.getIcon()).getImage(), x, y, null);
+            g2d.drawImage(Objects.requireNonNull(face.getIcon()).getImage(), x, y, null);
 
-            if (tag != null) {
-                g.setFont(TAG_FONT);
-                g.setColor(Color.black);
-                g.drawString(tag, x, y + 72);
+            if (group != null && i == group.firstIndex) {
+                BufferedImage icon = group.expanded ? AppResources.getCollapseIcon() : AppResources.getExpandIcon();
+                var oldComp = g2d.getComposite();
+                g2d.setComposite(NegativeComposite.INSTANCE);
+                g2d.drawImage(icon, x, y + 72 - icon.getHeight(), null);
+                g2d.setComposite(oldComp);
             }
 
             x += 72;

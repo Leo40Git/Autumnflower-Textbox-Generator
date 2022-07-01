@@ -57,6 +57,7 @@ public final class AppResources {
     private static Font font;
     private static BufferedImage iconSheet;
     private static ImageIcon arrowIcon;
+    private static BufferedImage expandIcon, collapseIcon;
     private static StyleSheet styleSheet;
     private static String formattingHelpContents;
 
@@ -93,6 +94,14 @@ public final class AppResources {
             arrowImage = ImageIO.read(in);
         }
         arrowIcon = new ImageIcon(arrowImage);
+
+        try (InputStream in = openResourceStream("/expand.png")) {
+            expandIcon = ImageIO.read(in);
+        }
+
+        try (InputStream in = openResourceStream("/collapse.png")) {
+            collapseIcon = ImageIO.read(in);
+        }
 
         try (InputStream in = openResourceStream("/icons.png")) {
             iconSheet = ImageIO.read(in);
@@ -144,9 +153,23 @@ public final class AppResources {
 
     public static ImageIcon getArrowIcon() {
         if (arrowIcon == null) {
-            throw new IllegalStateException("Arrow hasn't been loaded!");
+            throw new IllegalStateException("Arrow icon hasn't been loaded!");
         }
         return arrowIcon;
+    }
+
+    public static BufferedImage getExpandIcon() {
+        if (expandIcon == null) {
+            throw new IllegalStateException("Expand icon hasn't been loaded!");
+        }
+        return expandIcon;
+    }
+
+    public static BufferedImage getCollapseIcon() {
+        if (collapseIcon == null) {
+            throw new IllegalStateException("Collapse icon hasn't been loaded!");
+        }
+        return collapseIcon;
     }
 
     public static StyleSheet getStyleSheet() {
