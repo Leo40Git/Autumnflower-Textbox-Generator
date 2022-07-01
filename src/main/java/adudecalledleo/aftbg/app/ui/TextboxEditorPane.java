@@ -210,27 +210,27 @@ public final class TextboxEditorPane extends JEditorPane
 
         item = new JMenuItem(actions.get(DefaultEditorKit.cutAction));
         item.setText("Cut");
-        item.setIcon(AppResources.Icons.CUT.get());
+        item.setIcon(AppResources.Icons.CUT);
         item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK));
         menu.add(item);
         item = new JMenuItem(actions.get(DefaultEditorKit.copyAction));
         item.setText("Copy");
-        item.setIcon(AppResources.Icons.COPY.get());
+        item.setIcon(AppResources.Icons.COPY);
         item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK));
         menu.add(item);
         item = new JMenuItem(actions.get(DefaultEditorKit.pasteAction));
         item.setText("Paste");
-        item.setIcon(AppResources.Icons.PASTE.get());
+        item.setIcon(AppResources.Icons.PASTE);
         item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK));
         menu.add(item);
 
         menu.addSeparator();
 
         item = new JMenuItem(undoMan.getUndoAction());
-        item.setIcon(AppResources.Icons.UNDO.get());
+        item.setIcon(AppResources.Icons.UNDO);
         menu.add(item);
         item = new JMenuItem(undoMan.getRedoAction());
-        item.setIcon(AppResources.Icons.REDO.get());
+        item.setIcon(AppResources.Icons.REDO);
         menu.add(item);
 
         return menu;
@@ -258,7 +258,7 @@ public final class TextboxEditorPane extends JEditorPane
 
         bar.addSeparator();
 
-        bar.add(createToolBarButton(A_TOOLBAR_COLOR, "Color", new IconWithArrow(AppResources.Icons.TOOLBAR_COLOR.get())));
+        bar.add(createToolBarButton(A_TOOLBAR_COLOR, "Color", new IconWithArrow(AppResources.Icons.TOOLBAR_COLOR)));
 
         return bar;
     }
@@ -273,7 +273,7 @@ public final class TextboxEditorPane extends JEditorPane
     }
 
     private JButton createToolBarButton(String actionCmd, String text, AppResources.Icons icon) {
-        return createToolBarButton(actionCmd, text, icon.get());
+        return createToolBarButton(actionCmd, text, (Icon) icon);
     }
 
     @Override

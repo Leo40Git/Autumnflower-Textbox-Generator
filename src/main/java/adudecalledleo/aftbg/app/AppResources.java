@@ -10,27 +10,52 @@ import javax.swing.*;
 import javax.swing.text.html.*;
 
 public final class AppResources {
-    public enum Icons {
+    public static final int ICON_SIZE = 16;
+
+    public enum Icons implements Icon {
         TEXTBOX_ADD, TEXTBOX_REMOVE, TEXTBOX_INSERT_BEFORE, TEXTBOX_INSERT_AFTER, TEXTBOX_CLONE, EDIT_FACE_POOL,
         TOOLBAR_BOLD, TOOLBAR_COLOR, CUT, COPY, PASTE, TOOLBAR_ITALIC, TOOLBAR_UNDERLINE, TOOLBAR_STRIKETHROUGH,
         TOOLBAR_LINE_BREAK, PREVIEW, PREFS, PROJECT_NEW, PROJECT_LOAD, PROJECT_SAVE, PROJECT_SAVE_AS, ABOUT,
         TOOLBAR_SUPERSCRIPT, TOOLBAR_SUBSCRIPT, UNDO, REDO;
 
-        private ImageIcon imageIcon;
+        private int sourceX, sourceY;
+        private BufferedImage imageRepr;
 
-        public ImageIcon get() {
-            if (imageIcon == null) {
+        private void assertLoaded() {
+            if (iconSheet == null) {
                 throw new IllegalStateException("Icons haven't been loaded!");
             }
-            return imageIcon;
         }
 
-        public Image getAsImage() {
-            return get().getImage();
+        @Override
+        public void paintIcon(Component c, Graphics g, int x, int y) {
+            assertLoaded();
+            g.drawImage(iconSheet, x, y, x + ICON_SIZE, y + ICON_SIZE,
+                    sourceX, sourceY, sourceX + ICON_SIZE, sourceY + ICON_SIZE,
+                    null);
+        }
+
+        @Override
+        public int getIconWidth() {
+            return ICON_SIZE;
+        }
+
+        @Override
+        public int getIconHeight() {
+            return ICON_SIZE;
+        }
+
+        public BufferedImage getAsImage() {
+            assertLoaded();
+            if (imageRepr == null) {
+                imageRepr = iconSheet.getSubimage(sourceX, sourceY, ICON_SIZE, ICON_SIZE);
+            }
+            return imageRepr;
         }
     }
 
     private static Font font;
+    private static BufferedImage iconSheet;
     private static ImageIcon arrowIcon;
     private static StyleSheet styleSheet;
     private static String formattingHelpContents;
@@ -69,13 +94,13 @@ public final class AppResources {
         }
         arrowIcon = new ImageIcon(arrowImage);
 
-        BufferedImage iconSheet;
         try (InputStream in = openResourceStream("/icons.png")) {
             iconSheet = ImageIO.read(in);
         }
         int ix = 0, iy = 0;
         for (Icons icon : Icons.values()) {
-            icon.imageIcon = new ImageIcon(iconSheet.getSubimage(ix, iy, 16, 16), icon.name());
+            icon.sourceX = ix;
+            icon.sourceY = iy;
             ix += 16;
             if (ix == iconSheet.getWidth()) {
                 ix = 0;
