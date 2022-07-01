@@ -14,6 +14,7 @@ public abstract class DialogWithResult<T> extends ModalDialog implements WindowL
     }
 
     public @Nullable T showDialog() {
+        setLocationRelativeTo(null);
         setVisible(true);
         return this.result;
     }

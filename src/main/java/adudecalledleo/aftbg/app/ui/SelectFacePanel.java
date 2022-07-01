@@ -102,9 +102,7 @@ public final class SelectFacePanel extends JPanel implements GameDefinitionUpdat
             return;
         }
 
-        var dlg = new SelectFaceDialog(this, faces, selectedFace);
-        dlg.setLocationRelativeTo(null);
-        Face newFace = dlg.showDialog();
+        Face newFace = new SelectFaceDialog(this, faces, selectedFace).showDialog();
         if (newFace != null) {
             setSelectedFace(newFace);
         }

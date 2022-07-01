@@ -310,18 +310,16 @@ public final class TextboxEditorPane extends JEditorPane
                 try {
                     forceCaretRendering = true;
                     var result = new SelectColorDialog(this, winCtx).showDialog();
-                    String value;
                     if (result instanceof SelectColorDialog.ConstantResult rConst) {
                         var c = rConst.getColor();
-                        value = "#%02X%02X%02X".formatted(c.getRed(), c.getGreen(), c.getBlue());
+                        wrapSelectionInTag("c=#%02X%02X%02X".formatted(
+                                c.getRed(), c.getGreen(), c.getBlue()), "c");
                     } else if (result instanceof SelectColorDialog.PaletteResult rPal) {
-                        value = "pal(%d)".formatted(rPal.getIndex());
-                    } else {
+                        wrapSelectionInTag("c=pal(%d)".formatted(rPal.getIndex()), "c");
+                    } else if (result != null) {
                         UIManager.getLookAndFeel().provideErrorFeedback(this);
                         logger().info("Got unknown result " + result + "!");
-                        return;
                     }
-                    wrapSelectionInTag("c=" + value, "c");
                 } finally {
                     forceCaretRendering = false;
                 }
